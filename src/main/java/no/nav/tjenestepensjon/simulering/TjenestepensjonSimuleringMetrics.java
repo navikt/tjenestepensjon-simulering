@@ -2,9 +2,13 @@ package no.nav.tjenestepensjon.simulering;
 
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_NAME;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_TIME;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_LATEST_SIMULERING_TIME;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_LATEST_STILLINGSPROSENT_TIME;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_SIMULERING_TIME;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME;
 
@@ -39,6 +43,7 @@ public class TjenestepensjonSimuleringMetrics {
         appMetrics.put(APP_TOTAL_STILLINGSPROSENT_CALLS, createCounter(APP_TOTAL_STILLINGSPROSENT_CALLS, "Totalt antall kall mot stillingsprosent"));
         appMetrics.put(APP_TOTAL_STILLINGSPROSENT_TIME, createCounter(APP_TOTAL_STILLINGSPROSENT_TIME, "Akkumulert responstid for alle kall mot stillingsprosent"));
         appMetrics.put(APP_TOTAL_SIMULERING_CALLS, createCounter(APP_TOTAL_SIMULERING_CALLS, "Totalt antall kall til endepunkt for simulering"));
+        appMetrics.put(APP_TOTAL_SIMULERING_TIME, createCounter(APP_TOTAL_SIMULERING_TIME, "Akkumulert responstid for simulering"));
         metrics.put(APP_NAME, appMetrics);
     }
 
@@ -54,6 +59,9 @@ public class TjenestepensjonSimuleringMetrics {
                 createCounter(TP_TOTAL_STILLINGSPROSENT_TIME + tpOrdning.getTpId(), "Akkumulert responstid for aktuell tp-ordning"));
         tpMetrics.put(TP_LATEST_STILLINGSPROSENT_TIME,
                 createGauge(tpOrdning.getTpId(), TP_LATEST_STILLINGSPROSENT_TIME));
+        tpMetrics.put(TP_TOTAL_SIMULERING_CALLS, createCounter(TP_TOTAL_SIMULERING_CALLS + tpOrdning.getTpId(), "Totalt antall kall til simulering hos aktuell tp-ordning"));
+        tpMetrics.put(TP_TOTAL_SIMULERING_TIME, createCounter(TP_TOTAL_SIMULERING_TIME + tpOrdning.getTpId(), "Akkumulert responstid for simulering hos aktuell tp-ordning"));
+        tpMetrics.put(TP_LATEST_SIMULERING_TIME, createGauge(tpOrdning.getTpId(), TP_LATEST_SIMULERING_TIME));
         return tpMetrics;
     }
 
@@ -63,8 +71,8 @@ public class TjenestepensjonSimuleringMetrics {
         return values;
     }
 
-    private Counter createCounter(String metric, String description) {
-        return Counter.builder(metric).description(description).register(meterRegistry);
+    private Counter createCounter(String id, String description) {
+        return Counter.builder(id).description(description).register(meterRegistry);
     }
 
     private Gauge createGauge(String prefix, String metric) {
@@ -79,6 +87,8 @@ public class TjenestepensjonSimuleringMetrics {
     public void incrementCounter(String prefix, String metric, double amount) {
         if (TP_TOTAL_STILLINGSPROSENT_TIME.equalsIgnoreCase(metric)) {
             gaugeValues.get(prefix).put(TP_LATEST_STILLINGSPROSENT_TIME, amount);
+        } else if (TP_TOTAL_SIMULERING_TIME.equalsIgnoreCase(metric)) {
+            gaugeValues.get(prefix).put(TP_LATEST_SIMULERING_TIME, amount);
         }
         getCounter(prefix, metric).increment(amount);
     }
@@ -115,5 +125,9 @@ public class TjenestepensjonSimuleringMetrics {
         public static final String APP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_app_stillingsprosent_calls";
         public static final String APP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_app_stillingsprosent_time";
         public static final String APP_TOTAL_SIMULERING_CALLS = APP_NAME + "_app_simulering_calls";
+        public static final String APP_TOTAL_SIMULERING_TIME = APP_NAME + "_app_simulering_time";
+        public static final String TP_TOTAL_SIMULERING_CALLS = APP_NAME + "_tp_simulering_calls_";
+        public static final String TP_TOTAL_SIMULERING_TIME = APP_NAME + "_tp_simulering_time_";
+        public static final String TP_LATEST_SIMULERING_TIME = APP_NAME + "_tp_simulering_time_latest_";
     }
 }
