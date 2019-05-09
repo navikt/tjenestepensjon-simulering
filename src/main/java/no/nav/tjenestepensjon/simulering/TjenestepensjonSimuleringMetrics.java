@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering;
 
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_NAME;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_LATEST_STILLINGSPROSENT_TIME;
@@ -37,6 +38,7 @@ public class TjenestepensjonSimuleringMetrics {
         Map<String, Meter> appMetrics = new HashMap<>();
         appMetrics.put(APP_TOTAL_STILLINGSPROSENT_CALLS, createCounter(APP_TOTAL_STILLINGSPROSENT_CALLS, "Totalt antall kall mot stillingsprosent"));
         appMetrics.put(APP_TOTAL_STILLINGSPROSENT_TIME, createCounter(APP_TOTAL_STILLINGSPROSENT_TIME, "Akkumulert responstid for alle kall mot stillingsprosent"));
+        appMetrics.put(APP_TOTAL_SIMULERING_CALLS, createCounter(APP_TOTAL_SIMULERING_CALLS, "Totalt antall kall til endepunkt for simulering"));
         metrics.put(APP_NAME, appMetrics);
     }
 
@@ -111,6 +113,7 @@ public class TjenestepensjonSimuleringMetrics {
         public static final String TP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_tp_ordning_time_";
         public static final String TP_LATEST_STILLINGSPROSENT_TIME = APP_NAME + "_tp_ordning_time_latest_";
         public static final String APP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_app_stillingsprosent_calls";
-        public static final String APP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_app_stillingsprosetnt_time";
+        public static final String APP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_app_stillingsprosent_time";
+        public static final String APP_TOTAL_SIMULERING_CALLS = APP_NAME + "_app_simulering_calls";
     }
 }
