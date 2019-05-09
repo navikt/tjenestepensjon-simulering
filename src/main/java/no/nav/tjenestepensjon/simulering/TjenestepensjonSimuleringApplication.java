@@ -9,5 +9,4 @@ public class TjenestepensjonSimuleringApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TjenestepensjonSimuleringApplication.class, args);
 	}
-
 }

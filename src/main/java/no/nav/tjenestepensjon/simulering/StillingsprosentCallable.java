@@ -1,5 +1,8 @@
 package no.nav.tjenestepensjon.simulering;
 
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME;
+
 import java.util.Random;
 import java.util.concurrent.Callable;
 
@@ -14,22 +17,26 @@ public class StillingsprosentCallable implements Callable {
     private final TPOrdning tpOrdning;
     private final String fnr;
     private final String simuleringsKode;
+    private final TjenestepensjonSimuleringMetrics metrics;
 
-    public StillingsprosentCallable(TPOrdning tpOrdning, String fnr, String simuleringsKode) {
+    public StillingsprosentCallable(TPOrdning tpOrdning, String fnr, String simuleringsKode, TjenestepensjonSimuleringMetrics metrics) {
         this.tpOrdning = tpOrdning;
         this.fnr = fnr;
         this.simuleringsKode = simuleringsKode;
+        this.metrics = metrics;
     }
 
     @Override
     public Object call() throws Exception {
-        long startTime = System.currentTimeMillis();
+        metrics.incrementCounter(tpOrdning.getTpId(), TP_TOTAL_STILLINGSPROSENT_CALLS);
+        long startTime = metrics.startTime();
         LOG.info("{} getting stillingsprosent from: {}", Thread.currentThread().getName(), tpOrdning.getTpId());
 
         //TODO implement soap-call
-        Thread.sleep(2500);
+        Thread.sleep(new Random().nextInt(3000));
 
-        long elapsed = System.currentTimeMillis() - startTime;
+        long elapsed = metrics.elapsedSince(startTime);
+        metrics.incrementCounter(tpOrdning.getTpId(), TP_TOTAL_STILLINGSPROSENT_TIME, elapsed);
         LOG.info("Retrieved stillingsprosent from: {} in: {} ms", tpOrdning.getTpId(), elapsed);
         return new Random().nextInt();
     }
