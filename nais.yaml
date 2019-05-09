@@ -9,6 +9,8 @@ spec:
   image: repo.adeo.no:5443/tjenestepensjon-simulering:latest
   port: 8080
   team: teampeon
+  ingresses:
+    - "https://tjenestepensjon-simulering.nais.preprod.local"
   liveness:
     path: isAlive
   readiness:
