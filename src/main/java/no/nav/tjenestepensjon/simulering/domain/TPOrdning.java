@@ -1,8 +1,10 @@
 package no.nav.tjenestepensjon.simulering.domain;
 
 public class TPOrdning {
-    private final String tssId;
-    private final String tpId;
+    private String tssId;
+    private String tpId;
+
+    public TPOrdning(){}
 
     public TPOrdning(String tssId, String tpId) {
         this.tssId = tssId;
