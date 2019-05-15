@@ -30,8 +30,6 @@ spec:
   prometheus:
     enabled: true
     path: actuator/prometheus
-fasitResources:
-  - alias: "tpregisteret-url"
-    resourceType: baseurl
-    propertyMap:
-      url: TP_REGISTERET_URL
+  env:
+    - name: TP_REGISTERET_URL
+      url: "https://tpregisteret.nais.preprod.local"
