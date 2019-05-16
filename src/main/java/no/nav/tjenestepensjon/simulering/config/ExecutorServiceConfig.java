@@ -11,7 +11,7 @@ public class ExecutorServiceConfig {
 
     @Bean
     public ExecutorService taskExecutor() {
-        //TODO select reasonable number
-        return Executors.newFixedThreadPool(4);
+        //TODO Inject number of providers? Should have 1 thread per provider.
+        return Executors.newFixedThreadPool(7);
     }
 }
