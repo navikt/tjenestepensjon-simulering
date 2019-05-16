@@ -1,3 +1,4 @@
+[![CircleCI](https://circleci.com/gh/navikt/tjenestepensjon-simulering.svg?style=svg)](https://circleci.com/gh/navikt/tjenestepensjon-simulering)
 # tjenestepensjon-simulering
 Mottar alderspensjonsinformasjon om en gitt person fra pesys via rest. 
 Deretter henter man tjenestepensjonsforholdene til denne personen basert på kall mot tjenestepensjonsregisteret.
