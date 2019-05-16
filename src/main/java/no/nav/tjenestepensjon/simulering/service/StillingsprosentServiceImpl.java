@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -28,12 +29,16 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(Stillingsprosent.class);
     private final AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable> asyncExecutor;
+    private final Tjenestepensjonsimulering simulering;
     private final TjenestepensjonSimuleringMetrics metrics;
     private final TpRegisterConsumer tpRegisterConsumer;
 
-    public StillingsprosentServiceImpl(AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable> asyncExecutor, TjenestepensjonSimuleringMetrics metrics,
-            TpRegisterConsumer tpRegisterConsumer) {
+    public StillingsprosentServiceImpl(AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable> asyncExecutor,
+                                       Tjenestepensjonsimulering simulering,
+                                       TjenestepensjonSimuleringMetrics metrics,
+                                       TpRegisterConsumer tpRegisterConsumer) {
         this.asyncExecutor = asyncExecutor;
+        this.simulering = simulering;
         this.metrics = metrics;
         this.tpRegisterConsumer = tpRegisterConsumer;
     }
@@ -97,7 +102,7 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
 
     private Map<TPOrdning, StillingsprosentCallable> toCallableMap(List<TPOrdning> tpOrdninger, String fnr, String simuleringsKode) {
         Map<TPOrdning, StillingsprosentCallable> callableMap = new HashMap<>();
-        tpOrdninger.forEach(tpOrdning -> callableMap.put(tpOrdning, new StillingsprosentCallable(tpOrdning, fnr, simuleringsKode, metrics)));
+        tpOrdninger.forEach(tpOrdning -> callableMap.put(tpOrdning, new StillingsprosentCallable(tpOrdning, fnr, simuleringsKode, simulering, metrics)));
         return callableMap;
     }
 }

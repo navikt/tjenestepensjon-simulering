@@ -4,7 +4,6 @@ import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
@@ -20,12 +19,18 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
     private final TPOrdning tpOrdning;
     private final String fnr;
     private final String simuleringsKode;
+    private final Tjenestepensjonsimulering simulering;
     private final TjenestepensjonSimuleringMetrics metrics;
 
-    public StillingsprosentCallable(TPOrdning tpOrdning, String fnr, String simuleringsKode, TjenestepensjonSimuleringMetrics metrics) {
+    public StillingsprosentCallable(TPOrdning tpOrdning,
+                                    String fnr,
+                                    String simuleringsKode,
+                                    Tjenestepensjonsimulering simulering,
+                                    TjenestepensjonSimuleringMetrics metrics) {
         this.tpOrdning = tpOrdning;
         this.fnr = fnr;
         this.simuleringsKode = simuleringsKode;
+        this.simulering = simulering;
         this.metrics = metrics;
     }
 
@@ -33,21 +38,14 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
     public List<Stillingsprosent> call() throws GenericStillingsprosentCallableException {
         metrics.incrementCounter(tpOrdning.getTpId(), TP_TOTAL_STILLINGSPROSENT_CALLS);
         long startTime = metrics.startTime();
-        LOG.info("{} getting stillingsprosent from: {}", Thread.currentThread().getName(), tpOrdning.getTpId());
+        LOG.info("{} getting stillingsprosenter from: {}", Thread.currentThread().getName(), tpOrdning.getTpId());
 
-        //TODO implement soap-call and throw GenericStillingsprosentCallableException on timeout or other errors
-        try {
-            Thread.sleep(new Random().nextInt(3000));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        //TODO throw GenericStillingsprosentCallableException on timeout or other errors
+        List<Stillingsprosent> stillingsprosenter = simulering.getStillingsprosenter();
 
         long elapsed = metrics.elapsedSince(startTime);
         metrics.incrementCounter(tpOrdning.getTpId(), TP_TOTAL_STILLINGSPROSENT_TIME, elapsed);
-        LOG.info("Retrieved stillingsprosent from: {} in: {} ms", tpOrdning.getTpId(), elapsed);
-
-        Stillingsprosent stillingsprosent = new Stillingsprosent();
-        stillingsprosent.setStillingsprosent(new Random().nextDouble());
-        return List.of(stillingsprosent);
+        LOG.info("Retrieved stillingsprosenter from: {} in: {} ms", tpOrdning.getTpId(), elapsed);
+        return stillingsprosenter;
     }
 }
