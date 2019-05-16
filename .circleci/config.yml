@@ -6,6 +6,7 @@ jobs:
     working_directory: ~/tjenestepensjon-simulering
     steps:
       - checkout
+      - setup_remote_docker
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
