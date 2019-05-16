@@ -6,7 +6,6 @@ import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +40,7 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
         long startTime = metrics.startTime();
         LOG.info("{} getting stillingsprosenter from: {}", Thread.currentThread().getName(), tpOrdning.getTpId());
 
+        //TODO throw GenericStillingsprosentCallableException on timeout or other errors
         List<Stillingsprosent> stillingsprosenter = simulering.getStillingsprosenter();
 
         long elapsed = metrics.elapsedSince(startTime);

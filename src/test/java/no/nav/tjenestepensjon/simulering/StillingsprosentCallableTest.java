@@ -2,6 +2,7 @@ package no.nav.tjenestepensjon.simulering;
 
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -15,8 +16,7 @@ import static org.mockito.Mockito.when;
 class StillingsprosentCallableTest {
 
     @Test
-    @SuppressWarnings("unchecked")
-    void call_shall_return_stillingsprosenter() {
+    void call_shall_return_stillingsprosenter() throws GenericStillingsprosentCallableException {
         var tpOrdning = new TPOrdning("tss1", "tp1");
         var simulering = mock(Tjenestepensjonsimulering.class);
         var metrics = mock(TjenestepensjonSimuleringMetrics.class);
@@ -24,7 +24,7 @@ class StillingsprosentCallableTest {
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
         when(simulering.getStillingsprosenter()).thenReturn(stillingsprosenter);
 
-        var result = (List<Stillingsprosent>) callable.call();
+        List<Stillingsprosent> result = callable.call();
 
         assertStillingsprosenter(stillingsprosenter, result);
     }
