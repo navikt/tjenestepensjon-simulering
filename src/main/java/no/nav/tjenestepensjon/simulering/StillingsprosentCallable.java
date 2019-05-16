@@ -10,9 +10,11 @@ import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
 
-public class StillingsprosentCallable implements Callable {
+public class StillingsprosentCallable implements Callable<List<Stillingsprosent>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(StillingsprosentCallable.class);
     private final TPOrdning tpOrdning;
@@ -34,7 +36,7 @@ public class StillingsprosentCallable implements Callable {
     }
 
     @Override
-    public Object call() {
+    public List<Stillingsprosent> call() throws GenericStillingsprosentCallableException {
         metrics.incrementCounter(tpOrdning.getTpId(), TP_TOTAL_STILLINGSPROSENT_CALLS);
         long startTime = metrics.startTime();
         LOG.info("{} getting stillingsprosenter from: {}", Thread.currentThread().getName(), tpOrdning.getTpId());

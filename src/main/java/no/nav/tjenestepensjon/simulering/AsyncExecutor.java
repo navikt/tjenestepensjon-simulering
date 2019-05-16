@@ -1,7 +1,9 @@
 package no.nav.tjenestepensjon.simulering;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -10,7 +12,7 @@ import java.util.concurrent.Future;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AsyncExecutor<T extends Callable, S> {
+public class AsyncExecutor<Result, T extends Callable<Result>> {
 
     private final ExecutorService executorService;
 
@@ -18,17 +20,32 @@ public class AsyncExecutor<T extends Callable, S> {
         this.executorService = executorService;
     }
 
-    public List<S> executeAsync(List<T> callables) throws ExecutionException, InterruptedException {
-        List<Future> futures = new ArrayList<>();
-        callables.forEach(callable -> futures.add(executorService.submit(callable)));
-        return getResult(futures);
+    public <Key> AsyncResponse<Key, Result> executeAsync(Map<Key, T> callableMap) {
+        Map<Key, Future<Result>> futureMap = new HashMap<>();
+        callableMap.forEach((key, t) -> futureMap.put(key, executorService.submit(t)));
+        AsyncResponse<Key, Result> response = new AsyncResponse<>();
+        for (Map.Entry<Key, Future<Result>> entry : futureMap.entrySet()) {
+            try {
+                response.getResultMap().put(entry.getKey(), entry.getValue().get());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                response.getExceptions().add(e);
+            }
+        }
+        return response;
     }
 
-    private List<S> getResult(List<Future> futures) throws ExecutionException, InterruptedException {
-        List<S> results = new ArrayList<>();
-        for (Future future : futures) {
-            results.add((S) future.get());
+    public static class AsyncResponse<Key, Result> {
+        private Map<Key, Result> resultMap = new HashMap<>();
+        private List<ExecutionException> exceptions = new ArrayList<>();
+
+        public Map<Key, Result> getResultMap() {
+            return resultMap;
         }
-        return results;
+
+        public List<ExecutionException> getExceptions() {
+            return exceptions;
+        }
     }
 }
