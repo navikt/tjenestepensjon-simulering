@@ -15,16 +15,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
+import no.nav.tjenestepensjon.simulering.consumer.TokenServiceConsumer;
 
 @RestController
 public class SimuleringEndpoint {
 
     private final SimuleringService service;
     private final TjenestepensjonSimuleringMetrics metrics;
+    private final TokenServiceConsumer tokenServiceConsumer;
 
-    public SimuleringEndpoint(SimuleringService service, TjenestepensjonSimuleringMetrics metrics) {
+    public SimuleringEndpoint(SimuleringService service, TjenestepensjonSimuleringMetrics metrics,
+            TokenServiceConsumer tokenServiceConsumer) {
         this.service = service;
         this.metrics = metrics;
+        this.tokenServiceConsumer = tokenServiceConsumer;
     }
 
     @RequestMapping(value = "simulering", method = RequestMethod.GET)
@@ -39,6 +43,8 @@ public class SimuleringEndpoint {
 
     @GetMapping("/async/{fnr}")
     public ResponseEntity async(@PathVariable("fnr") String fnr) throws ExecutionException, InterruptedException {
+        tokenServiceConsumer.getServiceUserSamlToken();
+        tokenServiceConsumer.getServiceUserOidcToken();
         IncomingRequest request = new IncomingRequest();
         request.setFnr(fnr);
         return ResponseEntity.ok(service.simuler(request));
