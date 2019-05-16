@@ -30,8 +30,3 @@ spec:
   prometheus:
     enabled: true
     path: actuator/prometheus
-  env:
-    - name: TP_REGISTERET_URL
-      url: "http://tpregisteret"
-    - name: STS_URL
-      url: "http://security-token-service"

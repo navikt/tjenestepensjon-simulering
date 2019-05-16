@@ -2,7 +2,6 @@ package no.nav.tjenestepensjon.simulering.consumer;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +14,7 @@ import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException;
 @Service
 public class TpRegisterConsumerService implements TpRegisterConsumer {
 
-    @Value("${TP_REGISTERET_URL}")
-    private String tpRegisterUrl;
+    private final String tpRegisterUrl = "http://tpregisteret";
 
     private final RestTemplate restTemplate = new RestTemplate();
 

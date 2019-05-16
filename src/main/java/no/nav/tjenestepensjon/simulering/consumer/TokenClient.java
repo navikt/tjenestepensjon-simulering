@@ -25,8 +25,7 @@ public class TokenClient implements TokenServiceConsumer {
     private String username;
     @Value("${SERVICE_USER_PASSWORD}")
     private String password;
-    @Value("${STS_URL}")
-    private String endpoint;
+    private final String endpoint = "http://security-token-service";
 
     private Token oidcToken;
     private Token samlToken;
