@@ -18,26 +18,30 @@ import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 @Component
 public class StillingsprosentDelegate {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Stillingsprosent.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StillingsprosentDelegate.class);
     private final AsyncExecutor<StillingsprosentCallable, Stillingsprosent> asyncExecutor;
+    private final Tjenestepensjonsimulering simulering;
     private final TjenestepensjonSimuleringMetrics metrics;
 
-    public StillingsprosentDelegate(AsyncExecutor<StillingsprosentCallable, Stillingsprosent> asyncExecutor, TjenestepensjonSimuleringMetrics metrics) {
+    public StillingsprosentDelegate(AsyncExecutor<StillingsprosentCallable, Stillingsprosent> asyncExecutor,
+                                    Tjenestepensjonsimulering simulering,
+                                    TjenestepensjonSimuleringMetrics metrics) {
         this.asyncExecutor = asyncExecutor;
+        this.simulering = simulering;
         this.metrics = metrics;
     }
 
     public List<Stillingsprosent> findStillingsprosenter(List<TPOrdning> tpOrdninger, String fnr, String simuleringsKode) throws ExecutionException, InterruptedException {
         metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_CALLS);
-        long startTime = metrics.startTime();
-        List<Stillingsprosent> stillingsprosentList = asyncExecutor.executeAsync(toCallables(tpOrdninger, fnr, simuleringsKode));
-        long elapsed = metrics.elapsedSince(startTime);
+        final long startTime = metrics.startTime();
+        final List<Stillingsprosent> stillingsprosenter = asyncExecutor.executeAsync(toCallables(tpOrdninger, fnr, simuleringsKode));
+        final long elapsed = metrics.elapsedSince(startTime);
         LOG.info("Retrieved all stillingsprosenter in: {} ms", elapsed);
         metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_TIME, elapsed);
-        return stillingsprosentList;
+        return stillingsprosenter;
     }
 
     private List<StillingsprosentCallable> toCallables(List<TPOrdning> tpOrdninger, String fnr, String simuleringsKode) {
-        return tpOrdninger.stream().map(tpOrdning -> new StillingsprosentCallable(tpOrdning, fnr, simuleringsKode, metrics)).collect(Collectors.toList());
+        return tpOrdninger.stream().map(tpOrdning -> new StillingsprosentCallable(tpOrdning, fnr, simuleringsKode, simulering, metrics)).collect(Collectors.toList());
     }
 }
