@@ -36,16 +36,16 @@ jobs:
             sed -i \'s/latest/${CIRCLE_SHA1}/\' nais.yaml
             deployment-cli deploy create --environment=dev-fss --repository=navikt/tjenestepensjon-simulering --team=teampeon -r=nais.yaml --version=${CIRCLE_SHA1}
 workflows:
-  version: 2.1
+  version: 2
   build_and_deploy:
     jobs:
       - build:
           filters:
-            brances:
+            branches:
               only: master
       - deploy:
           requires:
             - build
           filters:
-            brances:
+            branches:
               only: master
