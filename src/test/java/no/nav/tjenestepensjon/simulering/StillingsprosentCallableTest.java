@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -22,7 +23,7 @@ class StillingsprosentCallableTest {
         var metrics = mock(TjenestepensjonSimuleringMetrics.class);
         var callable = new StillingsprosentCallable(tpOrdning, "fnr1", "simulering1", simulering, metrics);
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
-        when(simulering.getStillingsprosenter()).thenReturn(stillingsprosenter);
+        when(simulering.getStillingsprosenter(any(), any(), any(), any())).thenReturn(stillingsprosenter);
 
         List<Stillingsprosent> result = callable.call();
 

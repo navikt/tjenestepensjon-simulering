@@ -5,7 +5,10 @@ import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.O
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.SimulerOffentligTjenestepensjonResponse;
 import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
+import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.mapper.AFPPrivatMapper;
 import no.nav.tjenestepensjon.simulering.mapper.StillingsprosentMapper;
+import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -25,19 +28,46 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
     }
 
     @Override
-    public List<Stillingsprosent> getStillingsprosenter() {
+    public List<Stillingsprosent> getStillingsprosenter(String fnr, String tpnr, String tssEksternId, String simuleringsKode) {
         var request = new ObjectFactory().createHentStillingsprosentListeRequest();
+        request.setFnr(fnr);
+        request.setTpnr(tpnr);
+        request.setTssEksternId(tssEksternId);
+        request.setSimuleringsKode(simuleringsKode);
+
         var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(request);
-        var mapper = new StillingsprosentMapper();
 
         return response.getStillingsprosentListe().stream()
-                .map(mapper::mapToStillingsprosent)
+                .map(new StillingsprosentMapper()::mapToStillingsprosent)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<OutgoingResponse.SimulertPensjon> simulerPensjon() {
+    public List<OutgoingResponse.SimulertPensjon> simulerPensjon(IncomingRequest incomingRequest, TPOrdning tpOrdning) {
+        var simulerTjenestepensjon = new ObjectFactory().createSimulerTjenestepensjon();
+        simulerTjenestepensjon.setFnr(incomingRequest.getFnr());
+        simulerTjenestepensjon.setTpnr(tpOrdning.getTpId());
+        simulerTjenestepensjon.setTssEksternId(tpOrdning.getTssId());
+        simulerTjenestepensjon.setSivilstandKode(incomingRequest.getSivilstandkode());
+        simulerTjenestepensjon.setSprak(incomingRequest.getSprak());
+        simulerTjenestepensjon.setSimulertAFPOffentlig(incomingRequest.getSimulertAFPOffentlig());
+        simulerTjenestepensjon.setSimulertAFPPrivat(new AFPPrivatMapper()
+            .mapToSimulertAFPPrivat(incomingRequest.getSimulertAFPPrivat()));
+        // TODO: Lists
+//        simulerTjenestepensjon.setForsteUttakDato();
+//        simulerTjenestepensjon.setUttaksgrad();
+//        simulerTjenestepensjon.setHeltUttakDato();
+//        simulerTjenestepensjon.setStillingsprosentOffHeltUttak();
+//        simulerTjenestepensjon.setStillingsprosentOffGradertUttak();
+//        simulerTjenestepensjon.setInntektForUttak();
+//        simulerTjenestepensjon.setInntektUnderGradertUttak();
+//        simulerTjenestepensjon.setInntektEtterHeltUttak();
+//        simulerTjenestepensjon.setAntallArInntektEtterHeltUttak();
+//        simulerTjenestepensjon.setSimulertAP2011();
+
         var request = new ObjectFactory().createSimulerOffentligTjenestepensjonRequest();
+        request.setSimulerTjenestepensjon(simulerTjenestepensjon);
+
         var response = (SimulerOffentligTjenestepensjonResponse) webServiceTemplate.marshalSendAndReceive(request);
         var simuletPensjonListe = new ArrayList<OutgoingResponse.SimulertPensjon>();
 

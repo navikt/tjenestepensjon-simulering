@@ -41,7 +41,8 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
         LOG.info("{} getting stillingsprosenter from: {}", Thread.currentThread().getName(), tpOrdning.getTpId());
 
         //TODO throw GenericStillingsprosentCallableException on timeout or other errors
-        List<Stillingsprosent> stillingsprosenter = simulering.getStillingsprosenter();
+        List<Stillingsprosent> stillingsprosenter = simulering.getStillingsprosenter(
+            fnr, tpOrdning.getTpId(), tpOrdning.getTssId(), simuleringsKode);
 
         long elapsed = metrics.elapsedSince(startTime);
         metrics.incrementCounter(tpOrdning.getTpId(), TP_TOTAL_STILLINGSPROSENT_TIME, elapsed);
