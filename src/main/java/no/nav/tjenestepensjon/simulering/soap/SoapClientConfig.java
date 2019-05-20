@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.soap;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -7,6 +8,9 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Configuration
 public class SoapClientConfig {
+
+    @Value("${PROVIDER_URI}")
+    private String providerUri;
 
     @Bean
     Jaxb2Marshaller jaxb2Marshaller() {
@@ -20,7 +24,7 @@ public class SoapClientConfig {
         WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setMarshaller(jaxb2Marshaller());
         webServiceTemplate.setUnmarshaller(jaxb2Marshaller());
-        webServiceTemplate.setDefaultUri("http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP");
+        webServiceTemplate.setDefaultUri(providerUri);
         return webServiceTemplate;
     }
 }

@@ -3,7 +3,6 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:11-jdk
-    working_directory: ~/tjenestepensjon-simulering
     steps:
       - checkout
       - setup_remote_docker
@@ -20,8 +19,33 @@ jobs:
       - run:
           name: release
           command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               docker build . -t navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
               echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
               docker push navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
             fi
+  deploy:
+    docker:
+      - image: navikt/deployment-cli:v0.1.3
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Deploy to preprod
+          command: |
+            sed -i \'s/latest/${CIRCLE_SHA1}/\' nais.yaml
+            deployment-cli deploy create --environment=dev-fss --repository=navikt/tjenestepensjon-simulering --team=teampeon -r=nais.yaml --version=${CIRCLE_SHA1}
+workflows:
+  version: 2.1
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            brances:
+              only: master
+      - deploy:
+          requires:
+            - build
+          filters:
+            brances:
+              only: master
