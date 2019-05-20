@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,12 +16,11 @@ import no.nav.tjenestepensjon.simulering.AsyncExecutor;
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
 import no.nav.tjenestepensjon.simulering.StillingsprosentCallable;
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
-import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer;
+import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException;
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException;
-import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException;
 
 @Component
 public class StillingsprosentServiceImpl implements StillingsprosentService {
@@ -31,22 +29,18 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
     private final AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable> asyncExecutor;
     private final Tjenestepensjonsimulering simulering;
     private final TjenestepensjonSimuleringMetrics metrics;
-    private final TpRegisterConsumer tpRegisterConsumer;
 
     public StillingsprosentServiceImpl(AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable> asyncExecutor,
-                                       Tjenestepensjonsimulering simulering,
-                                       TjenestepensjonSimuleringMetrics metrics,
-                                       TpRegisterConsumer tpRegisterConsumer) {
+            Tjenestepensjonsimulering simulering,
+            TjenestepensjonSimuleringMetrics metrics) {
         this.asyncExecutor = asyncExecutor;
         this.simulering = simulering;
         this.metrics = metrics;
-        this.tpRegisterConsumer = tpRegisterConsumer;
     }
 
     @Override
-    public StillingsprosentResponse getStillingsprosentListe(String fnr) throws NoTpOrdningerFoundException {
-        List<TPOrdning> tpOrdningerForPerson = tpRegisterConsumer.getTpOrdningerForPerson(fnr);
-        return retriveFromProviders(fnr, "kode", tpOrdningerForPerson);
+    public StillingsprosentResponse getStillingsprosentListe(String fnr, List<TPOrdning> tpOrdningList) {
+        return retriveFromProviders(fnr, "kode", tpOrdningList);
     }
 
     private StillingsprosentResponse retriveFromProviders(String fnr, String simuleringsKode, List<TPOrdning> tpOrdninger) {

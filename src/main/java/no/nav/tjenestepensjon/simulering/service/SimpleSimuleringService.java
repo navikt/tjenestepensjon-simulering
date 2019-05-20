@@ -1,11 +1,19 @@
 package no.nav.tjenestepensjon.simulering.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import no.nav.tjenestepensjon.simulering.AsyncExecutor;
+import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
+import no.nav.tjenestepensjon.simulering.consumer.FindTpLeverandorCallable;
+import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer;
+import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException;
 import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException;
@@ -19,16 +27,27 @@ import no.nav.tjenestepensjon.simulering.rest.SimuleringEndpoint;
 public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringService {
 
     private final StillingsprosentService stillingsprosentService;
+    private final TpConfigConsumer tpConfigConsumer;
+    private final List<TpLeverandor> tpLeverandorList;
+    private final TpRegisterConsumer tpRegisterConsumer;
+    private final AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor;
 
-    public SimpleSimuleringService(StillingsprosentService stillingsprosentService) {
+    public SimpleSimuleringService(StillingsprosentService stillingsprosentService, TpConfigConsumer tpConfigConsumer,
+            List<TpLeverandor> tpLeverandorList, TpRegisterConsumer tpRegisterConsumer,
+            AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor) {
         this.stillingsprosentService = stillingsprosentService;
+        this.tpConfigConsumer = tpConfigConsumer;
+        this.tpLeverandorList = tpLeverandorList;
+        this.tpRegisterConsumer = tpRegisterConsumer;
+        this.asyncExecutor = asyncExecutor;
     }
 
     @Override
     public OutgoingResponse simuler(IncomingRequest request) {
         OutgoingResponse response = createEmpyResponse();
         try {
-            StillingsprosentResponse stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.getFnr());
+            List<TPOrdning> tpOrdningList = getTpOrdningerAndLeverandor(request.getFnr());
+            StillingsprosentResponse stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.getFnr(), tpOrdningList);
             handleStillingsprosentExceptions(response, stillingsprosentResponse);
             TPOrdning latest = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.getTpOrdningListMap());
         } catch (DuplicateStillingsprosentEndDateException e) {
@@ -62,5 +81,14 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
         SimulertPensjon simulertPensjon = new SimulertPensjon();
         response.setSimulertPensjonListe(List.of(simulertPensjon));
         return response;
+    }
+
+    private List<TPOrdning> getTpOrdningerAndLeverandor(String fnr) throws NoTpOrdningerFoundException {
+        List<TPOrdning> tpOrdningList = tpRegisterConsumer.getTpOrdningerForPerson(fnr);
+        Map<TPOrdning, FindTpLeverandorCallable> callableMap = new HashMap<>();
+        tpOrdningList.forEach(tpOrdning -> callableMap.put(tpOrdning, new FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorList)));
+        AsyncResponse<TPOrdning, TpLeverandor> asyncResponse = asyncExecutor.executeAsync(callableMap);
+        tpOrdningList.forEach(tpOrdning -> tpOrdning.setTpLeverandor(asyncResponse.getResultMap().get(tpOrdning)));
+        return tpOrdningList;
     }
 }

@@ -12,6 +12,7 @@ import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 
-import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 
 @Component
 public class TjenestepensjonSimuleringMetrics {
@@ -32,10 +33,10 @@ public class TjenestepensjonSimuleringMetrics {
     private Map<String, Map<String, Meter>> metrics = new HashMap<>();
     private Map<String, Map<String, Number>> gaugeValues = new HashMap<>();
 
-    public TjenestepensjonSimuleringMetrics(List<TPOrdning> tpOrdningList, MeterRegistry meterRegistry) {
+    public TjenestepensjonSimuleringMetrics(MeterRegistry meterRegistry, List<TpLeverandor> tpLeverandorList) {
         this.meterRegistry = meterRegistry;
         initAppMetrics();
-        initTpOrdningMetrics(tpOrdningList);
+        initTpLeverandorMetrics(tpLeverandorList);
     }
 
     private void initAppMetrics() {
@@ -47,21 +48,21 @@ public class TjenestepensjonSimuleringMetrics {
         metrics.put(APP_NAME, appMetrics);
     }
 
-    private void initTpOrdningMetrics(List<TPOrdning> tpOrdningList) {
-        tpOrdningList.forEach(tpOrdning -> metrics.put(tpOrdning.getTpId(), metricsFor(tpOrdning)));
+    private void initTpLeverandorMetrics(Collection<TpLeverandor> tpLeverandorList) {
+        tpLeverandorList.forEach(tpLeverandor -> metrics.put(tpLeverandor.getName(), metricsFor(tpLeverandor)));
     }
 
-    private Map<String, Meter> metricsFor(TPOrdning tpOrdning) {
+    private Map<String, Meter> metricsFor(TpLeverandor tpLeverandor) {
         Map<String, Meter> tpMetrics = new HashMap<>();
         tpMetrics.put(TP_TOTAL_STILLINGSPROSENT_CALLS,
-                createCounter(TP_TOTAL_STILLINGSPROSENT_CALLS + tpOrdning.getTpId(), "Totalt antall kall mot stillingsprosent for aktuell tp-ordning"));
+                createCounter(TP_TOTAL_STILLINGSPROSENT_CALLS + tpLeverandor.getName(), "Totalt antall kall mot stillingsprosent for aktuell tp-leverandør"));
         tpMetrics.put(TP_TOTAL_STILLINGSPROSENT_TIME,
-                createCounter(TP_TOTAL_STILLINGSPROSENT_TIME + tpOrdning.getTpId(), "Akkumulert responstid for aktuell tp-ordning"));
+                createCounter(TP_TOTAL_STILLINGSPROSENT_TIME + tpLeverandor.getName(), "Akkumulert responstid for aktuell tp-leverandør"));
         tpMetrics.put(TP_LATEST_STILLINGSPROSENT_TIME,
-                createGauge(tpOrdning.getTpId(), TP_LATEST_STILLINGSPROSENT_TIME));
-        tpMetrics.put(TP_TOTAL_SIMULERING_CALLS, createCounter(TP_TOTAL_SIMULERING_CALLS + tpOrdning.getTpId(), "Totalt antall kall til simulering hos aktuell tp-ordning"));
-        tpMetrics.put(TP_TOTAL_SIMULERING_TIME, createCounter(TP_TOTAL_SIMULERING_TIME + tpOrdning.getTpId(), "Akkumulert responstid for simulering hos aktuell tp-ordning"));
-        tpMetrics.put(TP_LATEST_SIMULERING_TIME, createGauge(tpOrdning.getTpId(), TP_LATEST_SIMULERING_TIME));
+                createGauge(tpLeverandor.getName(), TP_LATEST_STILLINGSPROSENT_TIME));
+        tpMetrics.put(TP_TOTAL_SIMULERING_CALLS, createCounter(TP_TOTAL_SIMULERING_CALLS + tpLeverandor.getName(), "Totalt antall kall til simulering hos aktuell tp-leverandør"));
+        tpMetrics.put(TP_TOTAL_SIMULERING_TIME, createCounter(TP_TOTAL_SIMULERING_TIME + tpLeverandor.getName(), "Akkumulert responstid for simulering hos aktuell tp-leverandør"));
+        tpMetrics.put(TP_LATEST_SIMULERING_TIME, createGauge(tpLeverandor.getName(), TP_LATEST_SIMULERING_TIME));
         return tpMetrics;
     }
 
@@ -119,9 +120,9 @@ public class TjenestepensjonSimuleringMetrics {
 
     public class Metrics {
         public static final String APP_NAME = "tjenestepensjon_simulering";
-        public static final String TP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_tp_ordning_calls_";
-        public static final String TP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_tp_ordning_time_";
-        public static final String TP_LATEST_STILLINGSPROSENT_TIME = APP_NAME + "_tp_ordning_time_latest_";
+        public static final String TP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_tp_leverandor_calls_";
+        public static final String TP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_tp_leverandor_time_";
+        public static final String TP_LATEST_STILLINGSPROSENT_TIME = APP_NAME + "_tp_leverandor_time_latest_";
         public static final String APP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_app_stillingsprosent_calls";
         public static final String APP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_app_stillingsprosent_time";
         public static final String APP_TOTAL_SIMULERING_CALLS = APP_NAME + "_app_simulering_calls";

@@ -29,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.tjenestepensjon.simulering.AsyncExecutor;
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
-import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException;
@@ -45,8 +44,6 @@ class StillingsprosentServiceImplTest {
     private static final LocalDate may2019 = LocalDate.of(2019, Month.MAY, 1);
 
     @Mock
-    TpRegisterConsumer tpRegisterConsumer;
-    @Mock
     TjenestepensjonSimuleringMetrics metrics;
     @Mock
     AsyncExecutor asyncExecutor;
@@ -55,17 +52,16 @@ class StillingsprosentServiceImplTest {
     StillingsprosentServiceImpl stillingsprosentService;
 
     @Test
-    void shouldRetrieveFromTpRegisterAsync() throws Exception {
+    void shouldRetrieveFromTpRegisterAsync() {
         when(asyncExecutor.executeAsync(any(Map.class))).thenReturn(mock(AsyncResponse.class));
-        stillingsprosentService.getStillingsprosentListe("123");
-        verify(tpRegisterConsumer).getTpOrdningerForPerson(eq("123"));
+        stillingsprosentService.getStillingsprosentListe("123", List.of(new TPOrdning("1", "1")));
         verify(asyncExecutor).executeAsync(any(Map.class));
     }
 
     @Test
-    void handlesMetrics() throws Exception {
+    void handlesMetrics() {
         when(asyncExecutor.executeAsync(any(Map.class))).thenReturn(mock(AsyncResponse.class));
-        stillingsprosentService.getStillingsprosentListe("123");
+        stillingsprosentService.getStillingsprosentListe("123", List.of(new TPOrdning("1", "1")));
         verify(metrics).incrementCounter(eq(APP_NAME), eq(APP_TOTAL_STILLINGSPROSENT_CALLS));
         verify(metrics).incrementCounter(eq(APP_NAME), eq(APP_TOTAL_STILLINGSPROSENT_TIME), any(Double.class));
     }
