@@ -1,6 +1,12 @@
 package no.nav.tjenestepensjon.simulering.config;
 
+import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.valueOf;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,21 +17,35 @@ import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 @Configuration
 public class TpLeverandorConfig {
 
-    @Value("TP_LEVERANDOR_URL_MAP")
+    @Value("${TP_LEVERANDOR_URL_MAP}")
     private String leverandorUrlMap;
 
     @Bean
     public List<TpLeverandor> tpLeverandorList() {
-        return List.of(new TpLeverandor("1", "url1"), new TpLeverandor("2", "url2"), new TpLeverandor("3", "url3"));
+        return createListFromEnv(getLeverandorUrlMap());
+    }
+
+    public String getLeverandorUrlMap() {
+        return leverandorUrlMap;
     }
 
     /**
      * Parse env variable to generate a list of TpLeverandor.
+     * "," delimits the details of induvidual providers
+     * "|" delimits different providers
      *
-     * @param leverandorUrlMap env variable format "LEVERANDOR:URL,IMPL"
+     * @param leverandorUrlMap env variable format "LEVERANDOR,URL,IMPL|..."
      * @return List of TpLeverandor
      */
-    private List<TpLeverandor> createListFromEnv(String leverandorUrlMap) {
-        return null;
+    private List<TpLeverandor> createListFromEnv(@NotNull String leverandorUrlMap) {
+        List<TpLeverandor> providers = new ArrayList<>();
+        Arrays.stream(leverandorUrlMap.split("\\|")).forEach(provider -> providers.add(parseProvider(provider)));
+        return providers;
+    }
+
+    private TpLeverandor parseProvider(@NotNull String provider) {
+        String[] details = provider.split(",");
+        assert details.length == 3;
+        return new TpLeverandor(details[0], details[1], valueOf(details[2]));
     }
 }

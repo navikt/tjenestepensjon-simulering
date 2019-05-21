@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
+import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,7 @@ import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 class FindTpLeverandorCallableTest {
 
     private final TPOrdning tpOrdning = new TPOrdning("1234", "1234");
-    private final List<TpLeverandor> tpLeverandorMap = List.of(new TpLeverandor("tpLeverandorName", "url1"));
+    private final List<TpLeverandor> tpLeverandorMap = List.of(new TpLeverandor("tpLeverandorName", "url1", SOAP));
 
     @Mock
     private TpConfigConsumer tpConfigConsumer;

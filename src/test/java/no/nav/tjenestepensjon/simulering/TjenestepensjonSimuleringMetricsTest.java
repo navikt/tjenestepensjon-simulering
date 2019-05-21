@@ -12,6 +12,7 @@ import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_SIMULERING_TIME;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME;
+import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 
 import java.util.List;
 
@@ -24,8 +25,8 @@ import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 
 class TjenestepensjonSimuleringMetricsTest {
 
-    private static final TpLeverandor TP1 = new TpLeverandor("1", "url1");
-    private static final TpLeverandor TP2 = new TpLeverandor("2", "url2");
+    private static final TpLeverandor TP1 = new TpLeverandor("1", "url1", SOAP);
+    private static final TpLeverandor TP2 = new TpLeverandor("2", "url2", SOAP);
     private static final List<TpLeverandor> tpLeverandorList = List.of(TP1, TP2);
     private MeterRegistry meterRegistry = new SimpleMeterRegistry();
 

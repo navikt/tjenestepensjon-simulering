@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
+import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 import static no.nav.tjenestepensjon.simulering.rest.OutgoingResponse.SimulertPensjon;
 
 import java.util.List;
@@ -59,7 +60,7 @@ class SimpleSimuleringServiceTest {
     @Test
     void shouldReturnStatusAndFeilkodeWhenDuplicateStillingsprosentEndDate() throws Exception {
         TPOrdning tpOrdning = new TPOrdning("1", "1");
-        TpLeverandor tpLeverandor = new TpLeverandor("lev1", "url1");
+        TpLeverandor tpLeverandor = new TpLeverandor("lev1", "url1", SOAP);
 
         when(tpRegisterConsumer.getTpOrdningerForPerson(any())).thenReturn(List.of(tpOrdning));
         StillingsprosentResponse stillingsprosentResponse = mock(StillingsprosentResponse.class);
@@ -81,7 +82,7 @@ class SimpleSimuleringServiceTest {
     @Test
     void shouldReturnStatusAndFeilkodeWhenMissingStillingsprosent() throws Exception {
         TPOrdning tpOrdning = new TPOrdning("1", "1");
-        TpLeverandor tpLeverandor = new TpLeverandor("lev1", "url1");
+        TpLeverandor tpLeverandor = new TpLeverandor("lev1", "url1", SOAP);
 
         when(tpRegisterConsumer.getTpOrdningerForPerson(any())).thenReturn(List.of(tpOrdning));
         StillingsprosentResponse stillingsprosentResponse = mock(StillingsprosentResponse.class);
@@ -120,7 +121,7 @@ class SimpleSimuleringServiceTest {
     @Test
     void shouldMapLeverandorToTPordning() throws Exception {
         TPOrdning tpOrdning = new TPOrdning("1", "1");
-        TpLeverandor tpLeverandor = new TpLeverandor("lev1", "url1");
+        TpLeverandor tpLeverandor = new TpLeverandor("lev1", "url1", SOAP);
 
         when(tpRegisterConsumer.getTpOrdningerForPerson(any())).thenReturn(List.of(tpOrdning));
         StillingsprosentResponse stillingsprosentResponse = mock(StillingsprosentResponse.class);
