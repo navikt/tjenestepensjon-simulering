@@ -60,4 +60,16 @@ public class Stillingsprosent {
     public void setAldersgrense(Integer aldersgrense) {
         this.aldersgrense = aldersgrense;
     }
+
+    @Override
+    public String toString() {
+        return "Stillingsprosent{" +
+                "stillingsprosent=" + stillingsprosent +
+                ", datoFom=" + datoFom +
+                ", datoTom=" + datoTom +
+                ", faktiskHovedlonn='" + faktiskHovedlonn + '\'' +
+                ", stillingsuavhengigTilleggslonn='" + stillingsuavhengigTilleggslonn + '\'' +
+                ", aldersgrense=" + aldersgrense +
+                '}';
+    }
 }

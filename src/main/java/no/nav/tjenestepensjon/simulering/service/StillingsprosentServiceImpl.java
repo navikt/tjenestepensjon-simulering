@@ -60,6 +60,7 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
         Stillingsprosent latestPct = null;
         for (Map.Entry<TPOrdning, List<Stillingsprosent>> entry : map.entrySet()) {
             for (Stillingsprosent stillingsprosent : entry.getValue()) {
+                LOG.info("TPORDNING {} STILLINGSPROSENT {}", entry.getKey(), stillingsprosent);
                 if (latestOrdning == null) {
                     latestOrdning = entry.getKey();
                     latestPct = stillingsprosent;

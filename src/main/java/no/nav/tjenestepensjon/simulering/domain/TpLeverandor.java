@@ -27,4 +27,13 @@ public class TpLeverandor {
         SOAP,
         REST
     }
+
+    @Override
+    public String toString() {
+        return "TpLeverandor{" +
+                "name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", impl=" + impl +
+                '}';
+    }
 }

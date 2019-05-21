@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import no.nav.tjenestepensjon.simulering.AsyncExecutor;
@@ -25,6 +27,8 @@ import no.nav.tjenestepensjon.simulering.rest.SimuleringEndpoint;
 
 @Service
 public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleSimuleringService.class);
 
     private final StillingsprosentService stillingsprosentService;
     private final TpConfigConsumer tpConfigConsumer;
@@ -89,6 +93,7 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
         tpOrdningList.forEach(tpOrdning -> callableMap.put(tpOrdning, new FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorList)));
         AsyncResponse<TPOrdning, TpLeverandor> asyncResponse = asyncExecutor.executeAsync(callableMap);
         tpOrdningList.forEach(tpOrdning -> tpOrdning.setTpLeverandor(asyncResponse.getResultMap().get(tpOrdning)));
+        LOG.info("GOT TP ORDNINGER {} FOR USER {}", tpOrdningList.toString(), fnr);
         return tpOrdningList;
     }
 }

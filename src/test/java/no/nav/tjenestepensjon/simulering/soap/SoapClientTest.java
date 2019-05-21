@@ -1,22 +1,27 @@
 package no.nav.tjenestepensjon.simulering.soap;
 
-import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeRequest;
-import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeResponse;
-import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
-import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
-import org.junit.jupiter.api.Test;
-import org.springframework.ws.client.WebServiceIOException;
-import org.springframework.ws.client.core.WebServiceTemplate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.ws.client.WebServiceIOException;
+import org.springframework.ws.client.core.WebServiceTemplate;
+
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeRequest;
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeResponse;
+import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
+import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
+import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
 
 class SoapClientTest {
 
@@ -24,10 +29,12 @@ class SoapClientTest {
     void getStillingsprosenter_shall_return_list() throws GenericStillingsprosentCallableException {
         var template = mock(WebServiceTemplate.class);
         List<no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
-        when(template.marshalSendAndReceive(any(HentStillingsprosentListeRequest.class))).thenReturn(new TestResponse(stillingsprosenter));
+        when(template.marshalSendAndReceive(any(HentStillingsprosentListeRequest.class), any())).thenReturn(new TestResponse(stillingsprosenter));
         SoapClient client = new SoapClient(template);
+        TPOrdning tpOrdning = new TPOrdning("tss1", "tpnr1");
+        tpOrdning.setTpLeverandor(new TpLeverandor("name", "url", TpLeverandor.EndpointImpl.SOAP));
 
-        List<Stillingsprosent> result = client.getStillingsprosenter("fnr1", "tpnr1", "tss1", "simulering1");
+        List<Stillingsprosent> result = client.getStillingsprosenter("fnr1", "simulering1", tpOrdning);
 
         assertStillingsprosenter(result, stillingsprosenter);
     }
@@ -35,16 +42,19 @@ class SoapClientTest {
     @Test
     void webServiceException_shall_be_rethrown_as_GenericStillingsprosentCallableException() {
         var template = mock(WebServiceTemplate.class);
-        when(template.marshalSendAndReceive(any(HentStillingsprosentListeRequest.class))).thenThrow(new WebServiceIOException("oops!"));
+        when(template.marshalSendAndReceive(any(HentStillingsprosentListeRequest.class), any())).thenThrow(new WebServiceIOException("oops!"));
         SoapClient client = new SoapClient(template);
+        TPOrdning tpOrdning = new TPOrdning("tss1", "tpnr1");
+        tpOrdning.setTpLeverandor(new TpLeverandor("name", "url", TpLeverandor.EndpointImpl.SOAP));
 
         GenericStillingsprosentCallableException exception = assertThrows(GenericStillingsprosentCallableException.class,
-                () -> client.getStillingsprosenter("fnr1", "tpnr1", "tss1", "simulering1"));
+                () -> client.getStillingsprosenter("fnr1", "simulering1", tpOrdning));
 
         assertEquals("Web service call failed: oops!", exception.getMessage());
     }
 
-    private static void assertStillingsprosenter(List<Stillingsprosent> expected, List<no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent> actual) {
+    private static void assertStillingsprosenter(List<Stillingsprosent> expected,
+            List<no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent> actual) {
         assertEquals(expected.size(), actual.size());
 
         for (int index = 0; index < expected.size(); index++) {
@@ -66,7 +76,6 @@ class SoapClientTest {
         assertEquals(expected.getMonth().getValue(), actual.getMonth());
         assertEquals(expected.getDayOfMonth(), actual.getDay());
     }
-
 
     private static List<no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent> prepareStillingsprosenter() {
         var stillingsprosent1 = new StillingsprosentBuilder()

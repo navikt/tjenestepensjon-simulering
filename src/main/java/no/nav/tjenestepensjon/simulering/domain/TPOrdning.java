@@ -27,4 +27,13 @@ public class TPOrdning {
     public void setTpLeverandor(TpLeverandor tpLeverandor) {
         this.tpLeverandor = tpLeverandor;
     }
+
+    @Override
+    public String toString() {
+        return "TPOrdning{" +
+                "tssId='" + tssId + '\'' +
+                ", tpId='" + tpId + '\'' +
+                ", tpLeverandor=" + tpLeverandor +
+                '}';
+    }
 }

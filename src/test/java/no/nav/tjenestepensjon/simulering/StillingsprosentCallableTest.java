@@ -1,18 +1,19 @@
 package no.nav.tjenestepensjon.simulering;
 
-import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
-import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
-import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Test;
+
+import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
+import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
 
 class StillingsprosentCallableTest {
 
@@ -23,7 +24,7 @@ class StillingsprosentCallableTest {
         var metrics = mock(TjenestepensjonSimuleringMetrics.class);
         var callable = new StillingsprosentCallable(tpOrdning, "fnr1", "simulering1", simulering, metrics);
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
-        when(simulering.getStillingsprosenter(any(), any(), any(), any())).thenReturn(stillingsprosenter);
+        when(simulering.getStillingsprosenter(any(), any(), any())).thenReturn(stillingsprosenter);
 
         List<Stillingsprosent> result = callable.call();
 
