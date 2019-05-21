@@ -36,17 +36,17 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
 
     @Override
     public List<Stillingsprosent> call() throws GenericStillingsprosentCallableException {
-        metrics.incrementCounter(tpOrdning.getTpId(), TP_TOTAL_STILLINGSPROSENT_CALLS);
+        String tpId = tpOrdning.getTpId();
+        metrics.incrementCounter(tpId, TP_TOTAL_STILLINGSPROSENT_CALLS);
         long startTime = metrics.startTime();
-        LOG.info("{} getting stillingsprosenter from: {}", Thread.currentThread().getName(), tpOrdning.getTpId());
+        LOG.info("{} getting stillingsprosenter from: {}", Thread.currentThread().getName(), tpId);
 
-        //TODO throw GenericStillingsprosentCallableException on timeout or other errors
         List<Stillingsprosent> stillingsprosenter = simulering.getStillingsprosenter(
-            fnr, tpOrdning.getTpId(), tpOrdning.getTssId(), simuleringsKode);
+            fnr, tpId, tpOrdning.getTssId(), simuleringsKode);
 
         long elapsed = metrics.elapsedSince(startTime);
-        metrics.incrementCounter(tpOrdning.getTpId(), TP_TOTAL_STILLINGSPROSENT_TIME, elapsed);
-        LOG.info("Retrieved stillingsprosenter from: {} in: {} ms", tpOrdning.getTpId(), elapsed);
+        metrics.incrementCounter(tpId, TP_TOTAL_STILLINGSPROSENT_TIME, elapsed);
+        LOG.info("Retrieved stillingsprosenter from: {} in: {} ms", tpId, elapsed);
         return stillingsprosenter;
     }
 }

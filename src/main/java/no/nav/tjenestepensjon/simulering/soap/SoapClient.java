@@ -6,11 +6,13 @@ import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.S
 import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
 import no.nav.tjenestepensjon.simulering.mapper.AFPPrivatMapper;
 import no.nav.tjenestepensjon.simulering.mapper.StillingsprosentMapper;
 import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
@@ -28,18 +30,22 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
     }
 
     @Override
-    public List<Stillingsprosent> getStillingsprosenter(String fnr, String tpnr, String tssEksternId, String simuleringsKode) {
+    public List<Stillingsprosent> getStillingsprosenter(String fnr, String tpnr, String tssEksternId, String simuleringsKode) throws GenericStillingsprosentCallableException {
         var request = new ObjectFactory().createHentStillingsprosentListeRequest();
         request.setFnr(fnr);
         request.setTpnr(tpnr);
         request.setTssEksternId(tssEksternId);
         request.setSimuleringsKode(simuleringsKode);
 
-        var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(request);
+        try {
+            var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(request);
 
-        return response.getStillingsprosentListe().stream()
-                .map(new StillingsprosentMapper()::mapToStillingsprosent)
-                .collect(Collectors.toList());
+            return response.getStillingsprosentListe().stream()
+                    .map(new StillingsprosentMapper()::mapToStillingsprosent)
+                    .collect(Collectors.toList());
+        } catch (WebServiceClientException e) {
+            throw new GenericStillingsprosentCallableException("Web service call failed: " + e.getMessage(), tpnr);
+        }
     }
 
     @Override
@@ -52,7 +58,7 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
         simulerTjenestepensjon.setSprak(incomingRequest.getSprak());
         simulerTjenestepensjon.setSimulertAFPOffentlig(incomingRequest.getSimulertAFPOffentlig());
         simulerTjenestepensjon.setSimulertAFPPrivat(new AFPPrivatMapper()
-            .mapToSimulertAFPPrivat(incomingRequest.getSimulertAFPPrivat()));
+                .mapToSimulertAFPPrivat(incomingRequest.getSimulertAFPPrivat()));
         // TODO: Lists
 //        simulerTjenestepensjon.setForsteUttakDato();
 //        simulerTjenestepensjon.setUttaksgrad();
