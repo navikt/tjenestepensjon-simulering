@@ -1,10 +1,13 @@
 package no.nav.tjenestepensjon.simulering.soap;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
@@ -25,6 +28,8 @@ import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
 
 @Component
 public class SoapClient extends WebServiceGatewaySupport implements Tjenestepensjonsimulering {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SoapClient.class);
 
     private final WebServiceTemplate webServiceTemplate;
 
@@ -50,6 +55,7 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
                     .map(new StillingsprosentMapper()::mapToStillingsprosent)
                     .collect(Collectors.toList());
         } catch (Exception e) {
+            LOG.info("SoapClient exception: " + e.getMessage());
             throw new GenericStillingsprosentCallableException("Web service call failed: " + e.getMessage(), tpOrdning.getTpId());
         }
     }
