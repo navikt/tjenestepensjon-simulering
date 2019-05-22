@@ -75,6 +75,9 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
         response.getSimulertPensjonListe().get(0).setUtelatteTpnr(stillingsprosentResponse.getExceptions().stream()
                 .filter(e -> e.getCause() instanceof GenericStillingsprosentCallableException)
                 .map(e -> ((GenericStillingsprosentCallableException) e.getCause()).getTpnr()).collect(Collectors.toList()));
+        if (stillingsprosentResponse.getExceptions().size() > 0) {
+            stillingsprosentResponse.getExceptions().forEach(e -> LOG.error(e.getMessage()));
+        }
         if (stillingsprosentResponse.getTpOrdningListMap().size() == 0) {
             throw new NullPointerException("Could not get response fom any TP-Providers");
         }

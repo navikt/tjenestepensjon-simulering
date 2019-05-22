@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.soap.AbstractSoapMessage;
 import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.xml.transform.StringSource;
 
 import no.nav.tjenestepensjon.simulering.consumer.TokenClient;
@@ -36,7 +36,7 @@ public class SamlHeaderInterceptor implements ClientInterceptor {
     @Override
     public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
         LOG.info("INTERCEPTING REQUEST AND ADDING HEADER");
-        AbstractSoapMessage s = (AbstractSoapMessage) messageContext.getRequest().getPayloadSource();
+        SaajSoapMessage s = (SaajSoapMessage) messageContext.getRequest();
         SoapHeaderElement header = s.getSoapHeader().addHeaderElement(new QName("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "Security"));
         String saml = tokenClient.getSamlAccessToken().getAccessToken();
 

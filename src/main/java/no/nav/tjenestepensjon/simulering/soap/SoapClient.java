@@ -14,6 +14,7 @@ import org.springframework.ws.soap.addressing.version.Addressing10;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeResponse;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.ObjectFactory;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.SimulerOffentligTjenestepensjonResponse;
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillingsprosentListe;
 import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
@@ -34,14 +35,15 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
 
     @Override
     public List<Stillingsprosent> getStillingsprosenter(String fnr, String simuleringsKode, TPOrdning tpOrdning) throws GenericStillingsprosentCallableException {
+        HentStillingsprosentListe wrapperRequest = new HentStillingsprosentListe();
         var request = new ObjectFactory().createHentStillingsprosentListeRequest();
         request.setFnr(fnr);
         request.setTpnr(tpOrdning.getTpId());
         request.setTssEksternId(tpOrdning.getTssId());
         request.setSimuleringsKode(simuleringsKode);
-
+        wrapperRequest.setRequest(request);
         try {
-            var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(request,
+            var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(wrapperRequest,
                     new ActionCallback(
                             new URI("http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/Binding/TjenestepensjonSimulering/hentStillingsprosentListeRequest"),
                             new Addressing10(), new URI(tpOrdning.getTpLeverandor().getUrl())));
