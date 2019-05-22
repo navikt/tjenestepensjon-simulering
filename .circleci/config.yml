@@ -19,34 +19,29 @@ jobs:
       - run:
           name: release
           command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" && [ "${CIRCLE_BRANCH}" = "master" ]; then
               docker build . -t navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
               echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
               docker push navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
             fi
-  deploy:
-    docker:
-      - image: navikt/deployment-cli:v0.1.3
-    steps:
-      - checkout
-      - setup_remote_docker
       - run:
-          name: Deploy to preprod
+          name: deploy to preprod
           command: |
-            echo $GITHUB_KEY | tr '_' '\n' > github.pem
-            deployment-cli deploy create --environment=dev-fss --repository=navikt/tjenestepensjon-simulering --team=teampeon -r=nais.yaml --version=${CIRCLE_SHA1} --appid=23087 --key=github.pem
-            rm github.pem
-workflows:
-  version: 2.1
-  build_and_deploy:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only: master
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
+            curl -i \
+                -X POST \
+                -d '{
+                     "ref": "'"${CIRCLE_SHA1}"'",
+                     "description": "",
+                     "environment": "dev-fss",
+                     "required_contexts": [],
+                     "payload": {
+                       "version": [1, 0, 0],
+                       "team": "teampeon",
+                       "kubernetes": {
+                         "resources": ['"$(cat nais-dev.json | jq '.spec.image = "'navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}'"')"']
+                       }
+                     }
+                   }' \
+                -H "Accept: application/vnd.github.ant-man-preview+json" \
+                -u "$GITHUB_USERNAME":"$GITHUB_TOKEN" \
+                https://api.github.com/repos/navikt/tjenestepensjon-simulering/deployments
