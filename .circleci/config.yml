@@ -33,7 +33,6 @@ jobs:
       - run:
           name: Deploy to preprod
           command: |
-            sed -i 's/latest/${CIRCLE_SHA1}/' nais.yaml
             echo $GITHUB_KEY | tr '_' '\n' > github.pem
             deployment-cli deploy create --environment=dev-fss --repository=navikt/tjenestepensjon-simulering --team=teampeon -r=nais.yaml --version=${CIRCLE_SHA1} --appid=23087 --key=github.pem
             rm github.pem
