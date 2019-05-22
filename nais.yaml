@@ -6,7 +6,7 @@ metadata:
   labels:
     team: teampeon
 spec:
-  image: repo.adeo.no:5443/tjenestepensjon-simulering:latest
+  image: "navikt/tjenestepensjon-simulering:{{version}}"
   port: 8080
   team: teampeon
   ingresses:

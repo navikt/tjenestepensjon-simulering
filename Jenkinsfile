@@ -73,7 +73,7 @@ node {
 
     stage('deploy') {
         try {
-            sh "sed -i \'s/latest/${COMMIT_HASH_SHORT}/\' nais.yaml"
+            sh "sed -i \'s/{{version}}/${COMMIT_HASH_SHORT}/\' nais.yaml"
             sh "kubectl config use-context dev-fss"
             sh "kubectl apply -f nais.yaml"
             sh "kubectl rollout status -w deployment/${APP_NAME}"
