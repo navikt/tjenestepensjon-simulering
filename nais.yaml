@@ -6,7 +6,7 @@ metadata:
   labels:
     team: teampeon
 spec:
-  image: navikt/tjenestepensjon-simulering:{{version}}
+  image: "navikt/tjenestepensjon-simulering:{{version}}"
   port: 8080
   team: teampeon
   ingresses:

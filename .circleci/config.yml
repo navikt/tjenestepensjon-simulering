@@ -37,7 +37,7 @@ jobs:
             deployment-cli deploy create --environment=dev-fss --repository=navikt/tjenestepensjon-simulering --team=teampeon -r=nais.yaml --version=${CIRCLE_SHA1} --appid=23087 --key=github.pem
             rm github.pem
 workflows:
-  version: 2
+  version: 2.1
   build_and_deploy:
     jobs:
       - build:
