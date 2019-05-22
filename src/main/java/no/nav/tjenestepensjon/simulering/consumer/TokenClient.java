@@ -25,7 +25,7 @@ public class TokenClient implements TokenServiceConsumer {
     private String username;
     @Value("${SERVICE_USER_PASSWORD}")
     private String password;
-    private final String endpoint = "http://security-token-service";
+    private String endpoint = "http://security-token-service";
 
     private Token oidcToken;
     private Token samlToken;
@@ -64,8 +64,22 @@ public class TokenClient implements TokenServiceConsumer {
                 .header("Authorization", "Basic" + " " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()))
                 .build();
         ResponseEntity<TokenImpl> response = restTemplate.exchange(request, TokenImpl.class);
-        LOG.info("Aquired access-token {}", response.getBody());
+        validate(response);
         return response.getBody();
+    }
+
+    private void validate(ResponseEntity<TokenImpl> responseEntity) {
+        if (responseEntity.getStatusCodeValue() != 200) {
+            throw new RuntimeException("Error while retrieving token from provider, returned HttpStatus:" + responseEntity.getStatusCodeValue());
+        }
+        TokenImpl token = responseEntity.getBody();
+        if (token == null || token.getAccessToken() == null || token.getExpiresIn() == null) {
+            throw new RuntimeException("Retrieved invalid token from provider");
+        }
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 
     private URI getUrlForType(TokenType tokenType) {
