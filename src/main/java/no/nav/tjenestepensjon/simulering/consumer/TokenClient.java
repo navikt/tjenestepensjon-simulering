@@ -64,6 +64,7 @@ public class TokenClient implements TokenServiceConsumer {
                 .header("Authorization", "Basic" + " " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()))
                 .build();
         ResponseEntity<TokenImpl> response = restTemplate.exchange(request, TokenImpl.class);
+        LOG.info("Aquired access-token {}", response.getBody());
         return response.getBody();
     }
 

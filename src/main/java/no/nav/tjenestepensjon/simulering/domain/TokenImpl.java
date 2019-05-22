@@ -44,4 +44,15 @@ public class TokenImpl implements Token {
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(issuedAt.plusSeconds(expires_in));
     }
+
+    @Override
+    public String toString() {
+        return "TokenImpl{" +
+                "access_token='" + access_token + '\'' +
+                ", expires_in=" + expires_in +
+                ", token_type='" + token_type + '\'' +
+                ", issued_token_type='" + issued_token_type + '\'' +
+                ", issuedAt=" + issuedAt +
+                '}';
+    }
 }
