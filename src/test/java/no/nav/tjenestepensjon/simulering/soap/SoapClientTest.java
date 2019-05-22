@@ -16,8 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.ws.client.WebServiceIOException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeRequest;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeResponse;
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillingsprosentListe;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
@@ -29,7 +29,7 @@ class SoapClientTest {
     void getStillingsprosenter_shall_return_list() throws GenericStillingsprosentCallableException {
         var template = mock(WebServiceTemplate.class);
         List<no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
-        when(template.marshalSendAndReceive(any(HentStillingsprosentListeRequest.class), any())).thenReturn(new TestResponse(stillingsprosenter));
+        when(template.marshalSendAndReceive(any(HentStillingsprosentListe.class), any())).thenReturn(new TestResponse(stillingsprosenter));
         SoapClient client = new SoapClient(template);
         TPOrdning tpOrdning = new TPOrdning("tss1", "tpnr1");
         tpOrdning.setTpLeverandor(new TpLeverandor("name", "url", TpLeverandor.EndpointImpl.SOAP));
@@ -42,7 +42,7 @@ class SoapClientTest {
     @Test
     void webServiceException_shall_be_rethrown_as_GenericStillingsprosentCallableException() {
         var template = mock(WebServiceTemplate.class);
-        when(template.marshalSendAndReceive(any(HentStillingsprosentListeRequest.class), any())).thenThrow(new WebServiceIOException("oops!"));
+        when(template.marshalSendAndReceive(any(HentStillingsprosentListe.class), any())).thenThrow(new WebServiceIOException("oops!"));
         SoapClient client = new SoapClient(template);
         TPOrdning tpOrdning = new TPOrdning("tss1", "tpnr1");
         tpOrdning.setTpLeverandor(new TpLeverandor("name", "url", TpLeverandor.EndpointImpl.SOAP));
