@@ -10,8 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class ExecutorServiceConfig {
 
     @Bean
-    public ExecutorService taskExecutor() {
-        //TODO Inject number of providers? Should have 1 thread per provider.
-        return Executors.newFixedThreadPool(7);
+    public ExecutorService taskExecutor(TpLeverandorConfig tpLeverandorConfig) {
+        return Executors.newFixedThreadPool(tpLeverandorConfig.tpLeverandorList().size());
     }
 }
