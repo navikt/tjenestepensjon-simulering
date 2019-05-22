@@ -2,8 +2,12 @@ package no.nav.tjenestepensjon.simulering;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -13,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
 
 class StillingsprosentCallableTest {
@@ -20,6 +25,8 @@ class StillingsprosentCallableTest {
     @Test
     void call_shall_return_stillingsprosenter() throws GenericStillingsprosentCallableException {
         var tpOrdning = new TPOrdning("tss1", "tp1");
+        var tpLeverandor = new TpLeverandor("lev", "url1", SOAP);
+        tpOrdning.setTpLeverandor(tpLeverandor);
         var simulering = mock(Tjenestepensjonsimulering.class);
         var metrics = mock(TjenestepensjonSimuleringMetrics.class);
         var callable = new StillingsprosentCallable(tpOrdning, "fnr1", "simulering1", simulering, metrics);
@@ -28,6 +35,7 @@ class StillingsprosentCallableTest {
 
         List<Stillingsprosent> result = callable.call();
 
+        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), any());
         assertStillingsprosenter(stillingsprosenter, result);
     }
 
