@@ -19,7 +19,7 @@ jobs:
       - run:
           name: release
           command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" && [ "${CIRCLE_BRANCH}" = "master" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
               docker build . -t navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
               echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
               docker push navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
