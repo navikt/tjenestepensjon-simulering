@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import no.nav.tjenestepensjon.simulering.domain.Token;
 
 class TokenClientTest {
-
     private static TokenClient tokenClient = new TokenClient();
 
     private static WireMockServer wireMockServer;
@@ -24,7 +23,9 @@ class TokenClientTest {
     static void beforeAll() {
         wireMockServer = new WireMockServer();
         wireMockServer.start();
-        tokenClient.setEndpoint("http://localhost:" + wireMockServer.port());
+        tokenClient.setUsername("username");
+        tokenClient.setPassword("password");
+        tokenClient.setStsUrl("http://localhost:8080");
     }
 
     @Test

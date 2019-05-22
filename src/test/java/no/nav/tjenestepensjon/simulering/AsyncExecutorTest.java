@@ -52,7 +52,7 @@ class AsyncExecutorTest {
     private static class SleepyThrowsException extends Sleepy implements Callable<String> {
         @Override
         public String call() {
-            throw new RuntimeException("excpetion");
+            throw new RuntimeException("exception");
         }
     }
 }

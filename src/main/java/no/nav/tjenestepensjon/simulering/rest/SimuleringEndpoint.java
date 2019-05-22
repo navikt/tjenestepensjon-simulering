@@ -3,8 +3,6 @@ package no.nav.tjenestepensjon.simulering.rest;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_NAME;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS;
 
-import java.util.concurrent.ExecutionException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,9 +40,7 @@ public class SimuleringEndpoint {
     }
 
     @GetMapping("/async/{fnr}")
-    public ResponseEntity async(@PathVariable("fnr") String fnr) throws ExecutionException, InterruptedException {
-        tokenServiceConsumer.getServiceUserSamlToken();
-        tokenServiceConsumer.getServiceUserOidcToken();
+    public ResponseEntity async(@PathVariable("fnr") String fnr) {
         IncomingRequest request = new IncomingRequest();
         request.setFnr(fnr);
         return ResponseEntity.ok(service.simuler(request));

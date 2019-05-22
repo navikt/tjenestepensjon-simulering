@@ -17,16 +17,16 @@ import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 @Configuration
 public class TpLeverandorConfig {
 
-    @Value("${TP_LEVERANDOR_URL_MAP}")
     private String leverandorUrlMap;
+
+    @Value("${TP_LEVERANDOR_URL_MAP}")
+    public void setLeverandorUrlMap(String leverandorUrlMap) {
+        this.leverandorUrlMap = leverandorUrlMap;
+    }
 
     @Bean
     public List<TpLeverandor> tpLeverandorList() {
-        return createListFromEnv(getLeverandorUrlMap());
-    }
-
-    public String getLeverandorUrlMap() {
-        return leverandorUrlMap;
+        return createListFromEnv(leverandorUrlMap);
     }
 
     /**

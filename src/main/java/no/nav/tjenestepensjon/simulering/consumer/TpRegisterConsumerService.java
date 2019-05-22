@@ -2,6 +2,7 @@ package no.nav.tjenestepensjon.simulering.consumer;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,13 @@ import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException;
 @Service
 public class TpRegisterConsumerService implements TpRegisterConsumer {
 
-    private final String tpRegisterUrl = "http://tpregisteret";
-
+    private String tpRegisterUrl;
     private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${TP_REGISTERET_URL}")
+    public void setTpRegisterUrl(String tpRegisterUrl) {
+        this.tpRegisterUrl = tpRegisterUrl;
+    }
 
     @Override
     public List<TPOrdning> getTpOrdningerForPerson(String fnr) throws NoTpOrdningerFoundException {

@@ -21,27 +21,31 @@ import no.nav.tjenestepensjon.simulering.domain.TokenImpl;
 public class TokenClient implements TokenServiceConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(TokenClient.class);
 
-    @Value("${SERVICE_USER}")
     private String username;
-    @Value("${SERVICE_USER_PASSWORD}")
     private String password;
-    private String endpoint = "http://security-token-service";
+    private String stsUrl;
 
     private Token oidcToken;
     private Token samlToken;
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    @Override
-    public Token getServiceUserOidcToken() {
-        return getOidcAccessToken();
+    @Value("${SERVICE_USER}")
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Value("${SERVICE_USER_PASSWORD}")
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Value("${STS_URL}")
+    public void setStsUrl(String stsUrl) {
+        this.stsUrl = stsUrl;
     }
 
     @Override
-    public Token getServiceUserSamlToken() {
-        return getSamlAccessToken();
-    }
-
     public synchronized Token getOidcAccessToken() {
         if (oidcToken == null || oidcToken.isExpired()) {
             oidcToken = getTokenFromProvider(OIDC);
@@ -50,6 +54,7 @@ public class TokenClient implements TokenServiceConsumer {
         return oidcToken;
     }
 
+    @Override
     public synchronized Token getSamlAccessToken() {
         if (samlToken == null || samlToken.isExpired()) {
             samlToken = getTokenFromProvider(SAML);
@@ -78,20 +83,16 @@ public class TokenClient implements TokenServiceConsumer {
         }
     }
 
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
-
     private URI getUrlForType(TokenType tokenType) {
         return OIDC.equals(tokenType) ? getOidcEndpointUrl() : getSamlEndpointUrl();
     }
 
     private URI getOidcEndpointUrl() {
-        return URI.create(endpoint + "/rest/v1/sts/token?grant_type=client_credentials&scope=openid");
+        return URI.create(stsUrl + "/rest/v1/sts/token?grant_type=client_credentials&scope=openid");
     }
 
     private URI getSamlEndpointUrl() {
-        return URI.create(endpoint + "/rest/v1/sts/samltoken");
+        return URI.create(stsUrl + "/rest/v1/sts/samltoken");
     }
 
     enum TokenType {

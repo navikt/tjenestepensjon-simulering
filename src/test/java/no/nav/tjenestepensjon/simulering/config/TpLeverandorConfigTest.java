@@ -3,7 +3,6 @@ package no.nav.tjenestepensjon.simulering.config;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
 import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST;
 import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
@@ -11,24 +10,21 @@ import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 
-@ExtendWith(MockitoExtension.class)
 class TpLeverandorConfigTest {
+    private TpLeverandorConfig tpLeverandorConfig = new TpLeverandorConfig();
 
-    @Mock
-    private TpLeverandorConfig tpLeverandorConfig;
+    @BeforeEach
+    void beforeEach() {
+        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com,SOAP|anotherLeverandor,http://www.another.com,REST");
+    }
 
     @Test
     void shouldCreateListFromDelimitedString() {
-        when(tpLeverandorConfig.getLeverandorUrlMap()).thenReturn("leverandor,http://www.leverandor.com,SOAP|anotherLeverandor,http://www.another.com,REST");
-        when(tpLeverandorConfig.tpLeverandorList()).thenCallRealMethod();
-
         List<TpLeverandor> tpLeverandorList = tpLeverandorConfig.tpLeverandorList();
         Optional<TpLeverandor> leverandor = tpLeverandorList.stream().filter(l -> l.getName().equalsIgnoreCase("leverandor")).findAny();
         Optional<TpLeverandor> another = tpLeverandorList.stream().filter(l -> l.getName().equalsIgnoreCase("anotherLeverandor")).findAny();
@@ -46,8 +42,7 @@ class TpLeverandorConfigTest {
 
     @Test
     void failsWhenMissingProviderDetails() {
-        when(tpLeverandorConfig.getLeverandorUrlMap()).thenReturn("leverandor,http://www.leverandor.com");
-        when(tpLeverandorConfig.tpLeverandorList()).thenCallRealMethod();
+        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com");
 
         assertThrows(AssertionError.class, () -> tpLeverandorConfig.tpLeverandorList());
     }
