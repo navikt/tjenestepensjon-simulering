@@ -14,8 +14,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.jupiter.api.Test;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeResponse;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillingsprosentListe;
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillingsprosentListeResponse;
 import no.nav.tjenestepensjon.simulering.consumer.TokenClient;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
@@ -137,7 +137,8 @@ class SoapClientTest {
     private class TestResponse extends HentStillingsprosentListeResponse {
 
         TestResponse(List<no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent> stillingsprosenter) {
-            stillingsprosentListe = stillingsprosenter;
+            response = new no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeResponse();
+            response.getStillingsprosentListe().addAll(stillingsprosenter);
         }
     }
 }
