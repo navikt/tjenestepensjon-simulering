@@ -8,8 +8,8 @@ public class StillingsprosentCallableException extends ExecutionException {
 
     private final TPOrdning tpOrdning;
 
-    public StillingsprosentCallableException(String msg, TPOrdning tpOrdning) {
-        super(msg);
+    public StillingsprosentCallableException(String msg, Throwable cause, TPOrdning tpOrdning) {
+        super(msg, cause);
         this.tpOrdning = tpOrdning;
     }
 

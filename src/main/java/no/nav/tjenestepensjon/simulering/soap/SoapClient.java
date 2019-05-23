@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
-import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeResponse;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.ObjectFactory;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.SimulerOffentligTjenestepensjonResponse;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillingsprosentListe;
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillingsprosentListeResponse;
 import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering;
 import no.nav.tjenestepensjon.simulering.consumer.TokenClient;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
@@ -52,7 +52,7 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
                         tpOrdning.getTpLeverandor().getUrl(),
                         tokenClient.getSamlAccessToken().getAccessToken()));
 
-        return response.getStillingsprosentListe().stream()
+        return response.getResponse().getStillingsprosentListe().stream()
                 .map(new StillingsprosentMapper()::mapToStillingsprosent)
                 .collect(Collectors.toList());
     }
