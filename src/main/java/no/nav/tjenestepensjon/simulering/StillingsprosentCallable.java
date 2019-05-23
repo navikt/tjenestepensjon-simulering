@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
-import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
+import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException;
 
 public class StillingsprosentCallable implements Callable<List<Stillingsprosent>> {
 
@@ -36,13 +36,18 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
     }
 
     @Override
-    public List<Stillingsprosent> call() throws GenericStillingsprosentCallableException {
+    public List<Stillingsprosent> call() throws StillingsprosentCallableException {
         TpLeverandor tpLeverandor = tpOrdning.getTpLeverandor();
         metrics.incrementCounter(tpLeverandor.getName(), TP_TOTAL_STILLINGSPROSENT_CALLS);
         long startTime = metrics.startTime();
         LOG.info("{} getting stillingsprosenter from: {}", Thread.currentThread().getName(), tpLeverandor);
 
-        List<Stillingsprosent> stillingsprosenter = simulering.getStillingsprosenter(fnr, simuleringsKode, tpOrdning);
+        List<Stillingsprosent> stillingsprosenter;
+        try {
+            stillingsprosenter = simulering.getStillingsprosenter(fnr, simuleringsKode, tpOrdning);
+        } catch (Exception e) {
+            throw new StillingsprosentCallableException("Call to getStillingsprosenter failed: " + e.getMessage(), tpOrdning);
+        }
 
         long elapsed = metrics.elapsedSince(startTime);
         metrics.incrementCounter(tpLeverandor.getName(), TP_TOTAL_STILLINGSPROSENT_TIME, elapsed);

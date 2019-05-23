@@ -12,6 +12,11 @@ public class TPOrdning {
         this.tpId = tpId;
     }
 
+    public TPOrdning(String tssId, String tpId, TpLeverandor tpLeverandor){
+        this(tssId, tpId);
+        this.tpLeverandor = tpLeverandor;
+    }
+
     public String getTssId() {
         return tssId;
     }

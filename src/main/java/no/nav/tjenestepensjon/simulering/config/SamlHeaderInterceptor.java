@@ -45,7 +45,6 @@ public class SamlHeaderInterceptor implements ClientInterceptor {
         } catch (TransformerException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-        LOG.info("RESULT {}", messageContext.getRequest());
         return true;
     }
 

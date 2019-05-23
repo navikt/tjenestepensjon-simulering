@@ -1,9 +1,11 @@
 package no.nav.tjenestepensjon.simulering;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,29 +16,46 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.ws.client.WebServiceIOException;
 
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
-import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
+import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException;
 
+@ExtendWith(MockitoExtension.class)
 class StillingsprosentCallableTest {
 
+    @Mock
+    private Tjenestepensjonsimulering simulering;
+    @Mock
+    private TjenestepensjonSimuleringMetrics metrics;
+
     @Test
-    void call_shall_return_stillingsprosenter() throws GenericStillingsprosentCallableException {
-        var tpOrdning = new TPOrdning("tss1", "tp1");
-        var tpLeverandor = new TpLeverandor("lev", "url1", SOAP);
-        tpOrdning.setTpLeverandor(tpLeverandor);
-        var simulering = mock(Tjenestepensjonsimulering.class);
-        var metrics = mock(TjenestepensjonSimuleringMetrics.class);
+    void call_shall_return_stillingsprosenter() throws Exception {
+        var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", SOAP));
         var callable = new StillingsprosentCallable(tpOrdning, "fnr1", "simulering1", simulering, metrics);
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
         when(simulering.getStillingsprosenter(any(), any(), any())).thenReturn(stillingsprosenter);
 
         List<Stillingsprosent> result = callable.call();
 
-        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), any());
+        verify(metrics).incrementCounter(eq(tpOrdning.getTpLeverandor().getName()), any());
         assertStillingsprosenter(stillingsprosenter, result);
+    }
+
+    @Test
+    void exception_shall_be_rethrown_as_StillingsprosentCallableException() throws Exception {
+        var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", SOAP));
+        var callable = new StillingsprosentCallable(tpOrdning, "fnr1", "simulering1", simulering, metrics);
+        when(simulering.getStillingsprosenter(any(), any(), any())).thenThrow(new WebServiceIOException("msg from cause"));
+
+        StillingsprosentCallableException exception = assertThrows(StillingsprosentCallableException.class, () -> callable.call());
+        assertThat(exception.getMessage(), is("Call to getStillingsprosenter failed: msg from cause"));
+        assertThat(exception.getTpOrdning(), is(tpOrdning));
     }
 
     private static List<Stillingsprosent> prepareStillingsprosenter() {

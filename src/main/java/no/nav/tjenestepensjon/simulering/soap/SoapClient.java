@@ -1,7 +1,6 @@
 package no.nav.tjenestepensjon.simulering.soap;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +20,6 @@ import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillin
 import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
-import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
 import no.nav.tjenestepensjon.simulering.mapper.AFPPrivatMapper;
 import no.nav.tjenestepensjon.simulering.mapper.StillingsprosentMapper;
 import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
@@ -39,7 +37,7 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
     }
 
     @Override
-    public List<Stillingsprosent> getStillingsprosenter(String fnr, String simuleringsKode, TPOrdning tpOrdning) throws GenericStillingsprosentCallableException {
+    public List<Stillingsprosent> getStillingsprosenter(String fnr, String simuleringsKode, TPOrdning tpOrdning) throws Exception {
         HentStillingsprosentListe wrapperRequest = new HentStillingsprosentListe();
         var request = new ObjectFactory().createHentStillingsprosentListeRequest();
         request.setFnr(fnr);
@@ -47,19 +45,15 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
         request.setTssEksternId(tpOrdning.getTssId());
         request.setSimuleringsKode(simuleringsKode);
         wrapperRequest.setRequest(request);
-        try {
-            var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(wrapperRequest,
-                    new ActionCallback(
-                            new URI("http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/Binding/TjenestepensjonSimulering/hentStillingsprosentListeRequest"),
-                            new Addressing10(), new URI(tpOrdning.getTpLeverandor().getUrl())));
 
-            return response.getStillingsprosentListe().stream()
-                    .map(new StillingsprosentMapper()::mapToStillingsprosent)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            LOG.info("SoapClient exception: " + e.getMessage());
-            throw new GenericStillingsprosentCallableException("Web service call failed: " + e.getMessage(), tpOrdning.getTpId());
-        }
+        var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(wrapperRequest,
+                new ActionCallback(
+                        new URI("http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/Binding/TjenestepensjonSimulering/hentStillingsprosentListeRequest"),
+                        new Addressing10(), new URI(tpOrdning.getTpLeverandor().getUrl())));
+
+        return response.getStillingsprosentListe().stream()
+                .map(new StillingsprosentMapper()::mapToStillingsprosent)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -17,9 +17,9 @@ import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException;
-import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException;
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException;
+import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException;
 import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse.SimulertPensjon;
@@ -73,10 +73,10 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
 
     private void handleStillingsprosentExceptions(OutgoingResponse response, StillingsprosentResponse stillingsprosentResponse) {
         response.getSimulertPensjonListe().get(0).setUtelatteTpnr(stillingsprosentResponse.getExceptions().stream()
-                .filter(e -> e.getCause() instanceof GenericStillingsprosentCallableException)
-                .map(e -> ((GenericStillingsprosentCallableException) e.getCause()).getTpnr()).collect(Collectors.toList()));
+                .filter(e -> e.getCause() instanceof StillingsprosentCallableException)
+                .map(e -> ((StillingsprosentCallableException) e.getCause()).getTpOrdning().getTpId()).collect(Collectors.toList()));
         if (stillingsprosentResponse.getExceptions().size() > 0) {
-            stillingsprosentResponse.getExceptions().forEach(e -> LOG.error(e.getMessage()));
+            stillingsprosentResponse.getExceptions().forEach(e -> LOG.error(e.toString()));
         }
         if (stillingsprosentResponse.getTpOrdningListMap().size() == 0) {
             throw new NullPointerException("Could not get response fom any TP-Providers");

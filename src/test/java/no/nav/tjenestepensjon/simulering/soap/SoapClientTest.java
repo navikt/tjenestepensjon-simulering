@@ -1,7 +1,6 @@
 package no.nav.tjenestepensjon.simulering.soap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -13,7 +12,6 @@ import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.ws.client.WebServiceIOException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeResponse;
@@ -21,12 +19,11 @@ import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillin
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
-import no.nav.tjenestepensjon.simulering.exceptions.GenericStillingsprosentCallableException;
 
 class SoapClientTest {
 
     @Test
-    void getStillingsprosenter_shall_return_list() throws GenericStillingsprosentCallableException {
+    void getStillingsprosenter_shall_return_list() throws Exception {
         var template = mock(WebServiceTemplate.class);
         List<no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
         when(template.marshalSendAndReceive(any(HentStillingsprosentListe.class), any())).thenReturn(new TestResponse(stillingsprosenter));
@@ -37,20 +34,6 @@ class SoapClientTest {
         List<Stillingsprosent> result = client.getStillingsprosenter("fnr1", "simulering1", tpOrdning);
 
         assertStillingsprosenter(result, stillingsprosenter);
-    }
-
-    @Test
-    void webServiceException_shall_be_rethrown_as_GenericStillingsprosentCallableException() {
-        var template = mock(WebServiceTemplate.class);
-        when(template.marshalSendAndReceive(any(HentStillingsprosentListe.class), any())).thenThrow(new WebServiceIOException("oops!"));
-        SoapClient client = new SoapClient(template);
-        TPOrdning tpOrdning = new TPOrdning("tss1", "tpnr1");
-        tpOrdning.setTpLeverandor(new TpLeverandor("name", "url", TpLeverandor.EndpointImpl.SOAP));
-
-        GenericStillingsprosentCallableException exception = assertThrows(GenericStillingsprosentCallableException.class,
-                () -> client.getStillingsprosenter("fnr1", "simulering1", tpOrdning));
-
-        assertEquals("Web service call failed: oops!", exception.getMessage());
     }
 
     private static void assertStillingsprosenter(List<Stillingsprosent> expected,
