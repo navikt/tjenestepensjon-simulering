@@ -7,21 +7,20 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-
+import no.nav.tjenestepensjon.simulering.consumer.TokenClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.WebServiceClientException;
-import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.xml.transform.StringSource;
 
-import no.nav.tjenestepensjon.simulering.consumer.TokenClient;
-
 @Component
-public class SamlHeaderInterceptor implements ClientInterceptor {
+public class SamlHeaderInterceptor extends ClientInterceptorAdapter {
+
     private static final Logger LOG = LoggerFactory.getLogger(SamlHeaderInterceptor.class);
 
     private final Transformer transformer;
@@ -46,20 +45,5 @@ public class SamlHeaderInterceptor implements ClientInterceptor {
             throw new RuntimeException(e.getMessage(), e);
         }
         return true;
-    }
-
-    @Override
-    public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
-        return false;
-    }
-
-    @Override
-    public boolean handleFault(MessageContext messageContext) throws WebServiceClientException {
-        return false;
-    }
-
-    @Override
-    public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
-
     }
 }
