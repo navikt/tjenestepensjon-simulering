@@ -40,11 +40,7 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
 
     @Override
     public StillingsprosentResponse getStillingsprosentListe(String fnr, List<TPOrdning> tpOrdningList) {
-        return retriveFromProviders(fnr, "kode", tpOrdningList);
-    }
-
-    private StillingsprosentResponse retriveFromProviders(String fnr, String simuleringsKode, List<TPOrdning> tpOrdninger) {
-        Map<TPOrdning, StillingsprosentCallable> callableMap = toCallableMap(tpOrdninger, fnr, simuleringsKode);
+        Map<TPOrdning, StillingsprosentCallable> callableMap = toCallableMap(fnr, tpOrdningList);
         metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_CALLS);
         long startTime = metrics.startTime();
         AsyncResponse<TPOrdning, List<Stillingsprosent>> asyncResponse = asyncExecutor.executeAsync(callableMap);
@@ -95,9 +91,9 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
         }
     }
 
-    private Map<TPOrdning, StillingsprosentCallable> toCallableMap(List<TPOrdning> tpOrdninger, String fnr, String simuleringsKode) {
+    private Map<TPOrdning, StillingsprosentCallable> toCallableMap(String fnr, List<TPOrdning> tpOrdninger) {
         Map<TPOrdning, StillingsprosentCallable> callableMap = new HashMap<>();
-        tpOrdninger.forEach(tpOrdning -> callableMap.put(tpOrdning, new StillingsprosentCallable(tpOrdning, fnr, simuleringsKode, simulering, metrics)));
+        tpOrdninger.forEach(tpOrdning -> callableMap.put(tpOrdning, new StillingsprosentCallable(fnr, tpOrdning, simulering, metrics)));
         return callableMap;
     }
 }

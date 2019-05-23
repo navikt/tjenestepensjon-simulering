@@ -37,9 +37,9 @@ class StillingsprosentCallableTest {
     @Test
     void call_shall_return_stillingsprosenter() throws Exception {
         var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", SOAP));
-        var callable = new StillingsprosentCallable(tpOrdning, "fnr1", "simulering1", simulering, metrics);
+        var callable = new StillingsprosentCallable("fnr1", tpOrdning, simulering, metrics);
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
-        when(simulering.getStillingsprosenter(any(), any(), any())).thenReturn(stillingsprosenter);
+        when(simulering.getStillingsprosenter(any(), any())).thenReturn(stillingsprosenter);
 
         List<Stillingsprosent> result = callable.call();
 
@@ -50,8 +50,8 @@ class StillingsprosentCallableTest {
     @Test
     void exception_shall_be_rethrown_as_StillingsprosentCallableException() throws Exception {
         var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", SOAP));
-        var callable = new StillingsprosentCallable(tpOrdning, "fnr1", "simulering1", simulering, metrics);
-        when(simulering.getStillingsprosenter(any(), any(), any())).thenThrow(new WebServiceIOException("msg from cause"));
+        var callable = new StillingsprosentCallable("fnr1", tpOrdning, simulering, metrics);
+        when(simulering.getStillingsprosenter(any(), any())).thenThrow(new WebServiceIOException("msg from cause"));
 
         StillingsprosentCallableException exception = assertThrows(StillingsprosentCallableException.class, () -> callable.call());
         assertThat(exception.getMessage(), is("Call to getStillingsprosenter failed: msg from cause"));

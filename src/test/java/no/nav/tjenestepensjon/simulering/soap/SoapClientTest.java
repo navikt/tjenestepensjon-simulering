@@ -35,7 +35,7 @@ class SoapClientTest {
         TPOrdning tpOrdning = new TPOrdning("tss1", "tpnr1");
         tpOrdning.setTpLeverandor(new TpLeverandor("name", "url", TpLeverandor.EndpointImpl.SOAP));
 
-        List<Stillingsprosent> result = client.getStillingsprosenter("fnr1", "simulering1", tpOrdning);
+        List<Stillingsprosent> result = client.getStillingsprosenter("fnr1", tpOrdning);
 
         assertStillingsprosenter(result, stillingsprosenter);
     }
