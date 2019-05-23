@@ -16,8 +16,10 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeResponse;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillingsprosentListe;
+import no.nav.tjenestepensjon.simulering.consumer.TokenClient;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.domain.TokenImpl;
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 
 class SoapClientTest {
@@ -25,9 +27,11 @@ class SoapClientTest {
     @Test
     void getStillingsprosenter_shall_return_list() throws Exception {
         var template = mock(WebServiceTemplate.class);
+        var tokenClient = mock(TokenClient.class);
         List<no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
         when(template.marshalSendAndReceive(any(HentStillingsprosentListe.class), any())).thenReturn(new TestResponse(stillingsprosenter));
-        SoapClient client = new SoapClient(template);
+        when(tokenClient.getSamlAccessToken()).thenReturn(new TokenImpl());
+        SoapClient client = new SoapClient(template, tokenClient);
         TPOrdning tpOrdning = new TPOrdning("tss1", "tpnr1");
         tpOrdning.setTpLeverandor(new TpLeverandor("name", "url", TpLeverandor.EndpointImpl.SOAP));
 

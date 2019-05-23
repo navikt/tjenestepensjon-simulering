@@ -1,6 +1,5 @@
 package no.nav.tjenestepensjon.simulering.soap;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,14 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
-import org.springframework.ws.soap.addressing.client.ActionCallback;
-import org.springframework.ws.soap.addressing.version.Addressing10;
 
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeResponse;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.ObjectFactory;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.SimulerOffentligTjenestepensjonResponse;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillingsprosentListe;
 import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering;
+import no.nav.tjenestepensjon.simulering.consumer.TokenClient;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.mapper.AFPPrivatMapper;
@@ -31,9 +29,11 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
     private static final Logger LOG = LoggerFactory.getLogger(SoapClient.class);
 
     private final WebServiceTemplate webServiceTemplate;
+    private final TokenClient tokenClient;
 
-    public SoapClient(WebServiceTemplate template) {
+    public SoapClient(WebServiceTemplate template, TokenClient tokenClient) {
         this.webServiceTemplate = template;
+        this.tokenClient = tokenClient;
     }
 
     @Override
@@ -47,9 +47,10 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
         wrapperRequest.setRequest(request);
 
         var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(wrapperRequest,
-                new ActionCallback(
-                        new URI("http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/Binding/TjenestepensjonSimulering/hentStillingsprosentListeRequest"),
-                        new Addressing10(), new URI(tpOrdning.getTpLeverandor().getUrl())));
+                new StillingsprosentCallback(
+                        "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/Binding/TjenestepensjonSimulering/hentStillingsprosentListeRequest",
+                        tpOrdning.getTpLeverandor().getUrl(),
+                        tokenClient.getSamlAccessToken().getAccessToken()));
 
         return response.getStillingsprosentListe().stream()
                 .map(new StillingsprosentMapper()::mapToStillingsprosent)

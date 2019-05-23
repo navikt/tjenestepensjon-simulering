@@ -5,9 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.client.support.interceptor.ClientInterceptor;
-
-import no.nav.tjenestepensjon.simulering.config.SamlHeaderInterceptor;
 
 @Configuration
 public class SoapClientConfig {
@@ -23,13 +20,11 @@ public class SoapClientConfig {
     }
 
     @Bean
-    public WebServiceTemplate webServiceTemplate(SamlHeaderInterceptor samlHeaderInterceptor) {
+    public WebServiceTemplate webServiceTemplate() {
         WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setMarshaller(jaxb2Marshaller());
         webServiceTemplate.setUnmarshaller(jaxb2Marshaller());
         webServiceTemplate.setDefaultUri(providerUri);
-        ClientInterceptor[] interceptors = new ClientInterceptor[] {samlHeaderInterceptor};
-        webServiceTemplate.setInterceptors(interceptors);
         return webServiceTemplate;
     }
 }
