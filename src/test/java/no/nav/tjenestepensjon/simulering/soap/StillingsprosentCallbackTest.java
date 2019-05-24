@@ -2,6 +2,8 @@ package no.nav.tjenestepensjon.simulering.soap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -11,18 +13,32 @@ import javax.xml.transform.TransformerException;
 
 import com.sun.xml.messaging.saaj.soap.ver1_1.Message1_1Impl;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
+import org.springframework.ws.transport.context.DefaultTransportContext;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpUrlConnection;
 
+@ExtendWith(MockitoExtension.class)
 class StillingsprosentCallbackTest {
 
     private String token = "<saml2:Assertion xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\"></saml2:Assertion>\n";
+    private StillingsprosentCallback callback = new StillingsprosentCallback("action", "url", new String(Base64.getEncoder().encode(token.getBytes())));
+
+    @BeforeAll
+    static void beforeAll() {
+        DefaultTransportContext defaultTransportContext = mock(DefaultTransportContext.class);
+        when(defaultTransportContext.getConnection()).thenReturn(mock(HttpUrlConnection.class));
+        TransportContextHolder.setTransportContext(defaultTransportContext);
+    }
 
     @Test
     void shouldAddWsAddressing() throws IOException, TransformerException {
         String wsAddressingQname = "{http://www.w3.org/2005/08/addressing}To";
-        StillingsprosentCallback callback = new StillingsprosentCallback("action", "url", new String(Base64.getEncoder().encode(token.getBytes())));
 
         SoapMessage message = new SaajSoapMessage(new Message1_1Impl());
         assertThat(message.getSoapHeader().examineHeaderElements(QName.valueOf(wsAddressingQname)).hasNext(), is(false));
@@ -34,7 +50,6 @@ class StillingsprosentCallbackTest {
     @Test
     void shouldAddMessageId() throws IOException, TransformerException {
         String messageIdQname = "{http://www.w3.org/2005/08/addressing}MessageID";
-        StillingsprosentCallback callback = new StillingsprosentCallback("action", "url", new String(Base64.getEncoder().encode(token.getBytes())));
 
         SoapMessage message = new SaajSoapMessage(new Message1_1Impl());
         assertThat(message.getSoapHeader().examineHeaderElements(QName.valueOf(messageIdQname)).hasNext(), is(false));
@@ -46,7 +61,6 @@ class StillingsprosentCallbackTest {
     @Test
     void shouldAddWsAddressingAction() throws IOException, TransformerException {
         String addressActionQname = "{http://www.w3.org/2005/08/addressing}Action";
-        StillingsprosentCallback callback = new StillingsprosentCallback("action", "url", new String(Base64.getEncoder().encode(token.getBytes())));
 
         SoapMessage message = new SaajSoapMessage(new Message1_1Impl());
         assertThat(message.getSoapHeader().examineHeaderElements(QName.valueOf(addressActionQname)).hasNext(), is(false));
@@ -58,7 +72,6 @@ class StillingsprosentCallbackTest {
     @Test
     void shouldAddSamlTokenHeader() throws IOException, TransformerException {
         String securityHeaderQname = "{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security";
-        StillingsprosentCallback callback = new StillingsprosentCallback("action", "url", new String(Base64.getEncoder().encode(token.getBytes())));
 
         SoapMessage message = new SaajSoapMessage(new Message1_1Impl());
         assertThat(message.getSoapHeader().examineHeaderElements(QName.valueOf(securityHeaderQname)).hasNext(), is(false));
