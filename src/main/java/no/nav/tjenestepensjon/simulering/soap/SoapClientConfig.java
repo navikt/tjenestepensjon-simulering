@@ -25,7 +25,8 @@ public class SoapClientConfig {
         webServiceTemplate.setMarshaller(jaxb2Marshaller());
         webServiceTemplate.setUnmarshaller(jaxb2Marshaller());
         webServiceTemplate.setDefaultUri(providerUri);
-        webServiceTemplate.setFaultMessageResolver(new SoapFaultHandler());
+        webServiceTemplate.setFaultMessageResolver(new SoapFaultHandler(jaxb2Marshaller()));
+        webServiceTemplate.setCheckConnectionForFault(false);
         return webServiceTemplate;
     }
 }
