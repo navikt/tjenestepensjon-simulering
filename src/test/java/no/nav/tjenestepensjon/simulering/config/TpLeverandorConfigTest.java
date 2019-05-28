@@ -46,4 +46,11 @@ class TpLeverandorConfigTest {
 
         assertThrows(AssertionError.class, () -> tpLeverandorConfig.tpLeverandorList());
     }
+
+    @Test
+    void failsWhenGivenNonExistingEndPointImpl() {
+        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com,STRESS");
+
+        assertThrows(IllegalArgumentException.class, () -> tpLeverandorConfig.tpLeverandorList());
+    }
 }
