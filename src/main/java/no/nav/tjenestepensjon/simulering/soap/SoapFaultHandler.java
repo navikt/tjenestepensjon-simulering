@@ -43,20 +43,12 @@ public class SoapFaultHandler implements FaultMessageResolver {
     }
 
     static class SoapFaultException extends RuntimeException {
-        private String exception;
-        private String message;
 
-        public SoapFaultException(String original, String originalMessage) {
-            this.exception = original;
-            this.message = originalMessage;
-        }
-
-        @Override
-        public String toString() {
-            return "SoapFaultException{" +
+        SoapFaultException(String exception, String message) {
+            super("SoapFaultException{" +
                     "exception=" + exception +
                     ", message='" + message + '\'' +
-                    '}';
+                    '}');
         }
     }
 }
