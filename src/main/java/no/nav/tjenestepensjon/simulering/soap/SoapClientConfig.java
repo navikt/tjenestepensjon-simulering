@@ -27,6 +27,7 @@ public class SoapClientConfig {
         webServiceTemplate.setDefaultUri(providerUri);
         webServiceTemplate.setFaultMessageResolver(soapFaultHandler);
         webServiceTemplate.setCheckConnectionForFault(false);
+        webServiceTemplate.setCheckConnectionForError(false);
         return webServiceTemplate;
     }
 }
