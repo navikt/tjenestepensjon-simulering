@@ -48,7 +48,7 @@ public class StillingsprosentCallback implements WebServiceMessageCallback {
         TransportContext transportContext = TransportContextHolder.getTransportContext();
         HttpUrlConnection connection = (HttpUrlConnection) transportContext.getConnection();
         try {
-            connection.addRequestHeader("SOAPAction", "");
+            connection.addRequestHeader("SOAPAction", action);
         } catch (IOException e) {
             throw new RuntimeException("Exception while adding HTTP-header to SOAP-request", e);
         }
