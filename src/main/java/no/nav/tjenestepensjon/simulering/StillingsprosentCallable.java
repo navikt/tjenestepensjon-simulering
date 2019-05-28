@@ -42,6 +42,7 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
         try {
             stillingsprosenter = simulering.getStillingsprosenter(fnr, tpOrdning);
         } catch (Exception e) {
+            LOG.warn(e.toString());
             throw new StillingsprosentCallableException("Call to getStillingsprosenter failed: " + e.getMessage(), e, tpOrdning);
         }
 

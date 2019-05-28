@@ -20,12 +20,17 @@ public class SoapClientConfig {
     }
 
     @Bean
+    SoapFaultHandler soapFaultHandler() {
+        return new SoapFaultHandler(jaxb2Marshaller());
+    }
+
+    @Bean
     public WebServiceTemplate webServiceTemplate() {
         WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setMarshaller(jaxb2Marshaller());
         webServiceTemplate.setUnmarshaller(jaxb2Marshaller());
         webServiceTemplate.setDefaultUri(providerUri);
-        webServiceTemplate.setFaultMessageResolver(new SoapFaultHandler(jaxb2Marshaller()));
+        webServiceTemplate.setFaultMessageResolver(soapFaultHandler());
         webServiceTemplate.setCheckConnectionForFault(false);
         return webServiceTemplate;
     }

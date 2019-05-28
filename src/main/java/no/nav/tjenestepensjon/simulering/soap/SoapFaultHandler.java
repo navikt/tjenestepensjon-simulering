@@ -26,6 +26,7 @@ public class SoapFaultHandler implements FaultMessageResolver {
 
     @Override
     public void resolveFault(WebServiceMessage message) {
+        LOG.info("RESOLVING FAULT MESSAGE");
         SoapFaultException exception;
         SoapMessage soapMessage = (SoapMessage) message;
         SoapFault soapFault = soapMessage.getSoapBody().getFault();
