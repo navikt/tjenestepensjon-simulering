@@ -26,7 +26,7 @@ public class StillingsprosentCallback implements WebServiceMessageCallback {
 
     public StillingsprosentCallback(String action, String tpLeverandorUrl, String samlToken) {
         try {
-            this.wsAddressingCallback = new ActionCallback(new URI(action), new Addressing10(), new URI(tpLeverandorUrl));
+            this.wsAddressingCallback = new ActionCallback(new URI(""), new Addressing10(), new URI(tpLeverandorUrl));
             this.soapActionCallback = new SoapActionCallback(action);
             this.samlHeaderCallback = new SamlHeaderCallback(samlToken);
             this.action = action;
@@ -39,7 +39,7 @@ public class StillingsprosentCallback implements WebServiceMessageCallback {
     public void doWithMessage(WebServiceMessage message) throws IOException, TransformerException {
         Assert.isInstanceOf(SoapMessage.class, message);
         wsAddressingCallback.doWithMessage(message);
-//        soapActionCallback.doWithMessage(message);
+        soapActionCallback.doWithMessage(message);
         samlHeaderCallback.doWithMessage(message);
 //        addSoapActionHttpHeader(action);
     }
