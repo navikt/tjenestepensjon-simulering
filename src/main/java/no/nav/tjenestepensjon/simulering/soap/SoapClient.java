@@ -79,16 +79,16 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
 //        simulerTjenestepensjon.setInntektEtterHeltUttak();
 //        simulerTjenestepensjon.setAntallArInntektEtterHeltUttak();
         simulerTjenestepensjon.setSimulertAP2011(new SimulertAP2011Mapper()
-            .mapToSimulertAP2011(incomingRequest.getSimuleringsperioder().get(0)));
+                .mapToSimulertAP2011(incomingRequest.getSimuleringsperioder().get(0)));
 
         var request = new ObjectFactory().createSimulerOffentligTjenestepensjonRequest();
         request.setSimulerTjenestepensjon(simulerTjenestepensjon);
 
         var response = (SimulerOffentligTjenestepensjonResponse) webServiceTemplate.marshalSendAndReceive(request,
-            new StillingsprosentCallback(
-                "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/Binding/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest",
-                tpOrdning.getTpLeverandor().getUrl(),
-                tokenClient.getSamlAccessToken().getAccessToken()));
+                new StillingsprosentCallback(
+                        "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/Binding/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest",
+                        tpOrdning.getTpLeverandor().getUrl(),
+                        tokenClient.getSamlAccessToken().getAccessToken()));
 
         var simuletPensjonListe = new ArrayList<OutgoingResponse.SimulertPensjon>();
 
