@@ -48,7 +48,7 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
 
         var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(wrapperRequest,
                 new StillingsprosentCallback(
-                        "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/felles/v1/HentStillingsprosentListeRequest",
+                        "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListe",
                         tpOrdning.getTpLeverandor().getUrl(),
                         tokenClient.getSamlAccessToken().getAccessToken()));
 
