@@ -17,6 +17,7 @@ import static no.nav.tjenestepensjon.simulering.rest.OutgoingResponse.SimulertPe
 import java.util.List;
 import java.util.Map;
 
+import no.nav.tjenestepensjon.simulering.service.SimulerPensjonService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +48,8 @@ class SimpleSimuleringServiceTest {
     private AsyncExecutor asyncExecutor;
     @Mock
     private StillingsprosentService stillingsprosentService;
+    @Mock
+    private SimulerPensjonService simulerPensjonService;
     @InjectMocks
     private SimpleSimuleringService simuleringService;
 

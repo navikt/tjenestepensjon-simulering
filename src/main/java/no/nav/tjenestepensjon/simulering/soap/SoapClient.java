@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import no.nav.tjenestepensjon.simulering.mapper.SimulertAP2011Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -68,7 +69,6 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
         simulerTjenestepensjon.setSimulertAFPOffentlig(incomingRequest.getSimulertAFPOffentlig());
         simulerTjenestepensjon.setSimulertAFPPrivat(new AFPPrivatMapper()
                 .mapToSimulertAFPPrivat(incomingRequest.getSimulertAFPPrivat()));
-        // TODO: Lists
 //        simulerTjenestepensjon.setForsteUttakDato();
 //        simulerTjenestepensjon.setUttaksgrad();
 //        simulerTjenestepensjon.setHeltUttakDato();
@@ -78,12 +78,18 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
 //        simulerTjenestepensjon.setInntektUnderGradertUttak();
 //        simulerTjenestepensjon.setInntektEtterHeltUttak();
 //        simulerTjenestepensjon.setAntallArInntektEtterHeltUttak();
-//        simulerTjenestepensjon.setSimulertAP2011();
+        simulerTjenestepensjon.setSimulertAP2011(new SimulertAP2011Mapper()
+            .mapToSimulertAP2011(incomingRequest.getSimuleringsperioder().get(0)));
 
         var request = new ObjectFactory().createSimulerOffentligTjenestepensjonRequest();
         request.setSimulerTjenestepensjon(simulerTjenestepensjon);
 
-        var response = (SimulerOffentligTjenestepensjonResponse) webServiceTemplate.marshalSendAndReceive(request);
+        var response = (SimulerOffentligTjenestepensjonResponse) webServiceTemplate.marshalSendAndReceive(request,
+            new StillingsprosentCallback(
+                "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/Binding/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest",
+                tpOrdning.getTpLeverandor().getUrl(),
+                tokenClient.getSamlAccessToken().getAccessToken()));
+
         var simuletPensjonListe = new ArrayList<OutgoingResponse.SimulertPensjon>();
 
         for (var simulertPensjon : response.getSimulertPensjonListe()) {
