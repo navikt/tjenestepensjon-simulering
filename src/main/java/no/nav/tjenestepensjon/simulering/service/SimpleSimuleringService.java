@@ -31,15 +31,18 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
     private static final Logger LOG = LoggerFactory.getLogger(SimpleSimuleringService.class);
 
     private final StillingsprosentService stillingsprosentService;
+    private final SimulerPensjonService simulerPensjonService;
     private final TpConfigConsumer tpConfigConsumer;
     private final List<TpLeverandor> tpLeverandorList;
     private final TpRegisterConsumer tpRegisterConsumer;
     private final AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor;
 
-    public SimpleSimuleringService(StillingsprosentService stillingsprosentService, TpConfigConsumer tpConfigConsumer,
+    public SimpleSimuleringService(StillingsprosentService stillingsprosentService,
+            SimulerPensjonService simulerPensjonService, TpConfigConsumer tpConfigConsumer,
             List<TpLeverandor> tpLeverandorList, TpRegisterConsumer tpRegisterConsumer,
             AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor) {
         this.stillingsprosentService = stillingsprosentService;
+        this.simulerPensjonService = simulerPensjonService;
         this.tpConfigConsumer = tpConfigConsumer;
         this.tpLeverandorList = tpLeverandorList;
         this.tpRegisterConsumer = tpRegisterConsumer;
@@ -54,6 +57,7 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
             StillingsprosentResponse stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.getFnr(), tpOrdningList);
             handleStillingsprosentExceptions(response, stillingsprosentResponse);
             TPOrdning latest = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.getTpOrdningListMap());
+            SimulerPensjonResponse simulerPensjonResponse = simulerPensjonService.simulerPensjon(tpOrdningList, latest);
         } catch (DuplicateStillingsprosentEndDateException e) {
             SimulertPensjon simulertPensjon = response.getSimulertPensjonListe().get(0);
             simulertPensjon.setStatus("FEIL");
