@@ -41,7 +41,7 @@ public class StillingsprosentCallback implements WebServiceMessageCallback {
         wsAddressingCallback.doWithMessage(message);
 //        soapActionCallback.doWithMessage(message);
         samlHeaderCallback.doWithMessage(message);
-        addSoapActionHttpHeader(action);
+//        addSoapActionHttpHeader(action);
     }
 
     private void addSoapActionHttpHeader(String action) {
