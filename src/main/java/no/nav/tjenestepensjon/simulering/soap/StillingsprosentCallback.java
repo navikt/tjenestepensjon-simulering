@@ -39,7 +39,7 @@ public class StillingsprosentCallback implements WebServiceMessageCallback {
     public void doWithMessage(WebServiceMessage message) throws IOException, TransformerException {
         Assert.isInstanceOf(SoapMessage.class, message);
         wsAddressingCallback.doWithMessage(message);
-        soapActionCallback.doWithMessage(message);
+//        soapActionCallback.doWithMessage(message);
         samlHeaderCallback.doWithMessage(message);
         addSoapActionHttpHeader(action);
     }

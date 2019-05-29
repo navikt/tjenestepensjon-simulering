@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import no.nav.tjenestepensjon.simulering.mapper.SimulertAP2011Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,6 +19,7 @@ import no.nav.tjenestepensjon.simulering.consumer.TokenClient;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.mapper.AFPPrivatMapper;
+import no.nav.tjenestepensjon.simulering.mapper.SimulertAP2011Mapper;
 import no.nav.tjenestepensjon.simulering.mapper.StillingsprosentMapper;
 import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
@@ -49,7 +49,7 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
 
         var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(wrapperRequest,
                 new StillingsprosentCallback(
-                        "",
+                        "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListeRequest",
                         tpOrdning.getTpLeverandor().getUrl(),
                         tokenClient.getSamlAccessToken().getAccessToken()));
 
