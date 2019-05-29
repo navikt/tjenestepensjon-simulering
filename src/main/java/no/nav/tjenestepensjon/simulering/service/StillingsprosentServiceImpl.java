@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,6 @@ import no.nav.tjenestepensjon.simulering.AsyncExecutor;
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
 import no.nav.tjenestepensjon.simulering.StillingsprosentCallable;
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
-import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException;
@@ -27,14 +27,14 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(Stillingsprosent.class);
     private final AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable> asyncExecutor;
-    private final Tjenestepensjonsimulering simulering;
+    private final TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter;
     private final TjenestepensjonSimuleringMetrics metrics;
 
     public StillingsprosentServiceImpl(AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable> asyncExecutor,
-            Tjenestepensjonsimulering simulering,
-            TjenestepensjonSimuleringMetrics metrics) {
+                                       TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter,
+                                       TjenestepensjonSimuleringMetrics metrics) {
         this.asyncExecutor = asyncExecutor;
-        this.simulering = simulering;
+        this.simuleringEndPointRouter = simuleringEndPointRouter;
         this.metrics = metrics;
     }
 
@@ -51,7 +51,8 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
     }
 
     @Override
-    public TPOrdning getLatestFromStillingsprosent(Map<TPOrdning, List<Stillingsprosent>> map) throws DuplicateStillingsprosentEndDateException, MissingStillingsprosentException {
+    public TPOrdning getLatestFromStillingsprosent(Map<TPOrdning, List<Stillingsprosent>> map)
+            throws DuplicateStillingsprosentEndDateException, MissingStillingsprosentException {
         TPOrdning latestOrdning = null;
         Stillingsprosent latestPct = null;
         for (Map.Entry<TPOrdning, List<Stillingsprosent>> entry : map.entrySet()) {
@@ -93,7 +94,10 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
 
     private Map<TPOrdning, StillingsprosentCallable> toCallableMap(String fnr, List<TPOrdning> tpOrdninger) {
         Map<TPOrdning, StillingsprosentCallable> callableMap = new HashMap<>();
-        tpOrdninger.forEach(tpOrdning -> callableMap.put(tpOrdning, new StillingsprosentCallable(fnr, tpOrdning, simulering, metrics)));
+
+        tpOrdninger.forEach(tpOrdning -> callableMap.put(tpOrdning,
+                new StillingsprosentCallable(fnr, tpOrdning, simuleringEndPointRouter, metrics)));
+
         return callableMap;
     }
 }

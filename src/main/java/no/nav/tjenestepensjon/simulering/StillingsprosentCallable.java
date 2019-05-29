@@ -19,15 +19,15 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
     private static final Logger LOG = LoggerFactory.getLogger(StillingsprosentCallable.class);
     private final TPOrdning tpOrdning;
     private final String fnr;
-    private final Tjenestepensjonsimulering simulering;
+    private final TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter;
     private final TjenestepensjonSimuleringMetrics metrics;
 
     public StillingsprosentCallable(String fnr, TPOrdning tpOrdning,
-            Tjenestepensjonsimulering simulering,
+                                    TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter,
             TjenestepensjonSimuleringMetrics metrics) {
         this.tpOrdning = tpOrdning;
         this.fnr = fnr;
-        this.simulering = simulering;
+        this.simuleringEndPointRouter = simuleringEndPointRouter;
         this.metrics = metrics;
     }
 
@@ -40,7 +40,7 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
 
         List<Stillingsprosent> stillingsprosenter;
         try {
-            stillingsprosenter = simulering.getStillingsprosenter(fnr, tpOrdning);
+            stillingsprosenter = simuleringEndPointRouter.getStillingsprosenter(fnr, tpOrdning);
         } catch (Exception e) {
             LOG.warn(e.toString());
             throw new StillingsprosentCallableException("Call to getStillingsprosenter failed: " + e.getMessage(), e, tpOrdning);

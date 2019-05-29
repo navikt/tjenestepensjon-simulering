@@ -1,86 +1,88 @@
 package no.nav.tjenestepensjon.simulering;
 
-import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+        import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST;
+        import static org.junit.jupiter.api.Assertions.assertEquals;
+        import static org.mockito.ArgumentMatchers.any;
+        import static org.mockito.Mockito.when;
 
-import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
+        import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
+        import java.time.LocalDate;
+        import java.util.ArrayList;
+        import java.util.Arrays;
+        import java.util.List;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.ws.client.WebServiceIOException;
+        import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
+        import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
+        import no.nav.tjenestepensjon.simulering.rest.RestClient;
+        import no.nav.tjenestepensjon.simulering.soap.SoapClient;
+        import org.junit.jupiter.api.Test;
+        import org.junit.jupiter.api.extension.ExtendWith;
+        import org.mockito.InjectMocks;
+        import org.mockito.Mock;
+        import org.mockito.junit.jupiter.MockitoExtension;
 
-import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
-import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
-import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException;
+        import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
+        import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+        import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 
 @ExtendWith(MockitoExtension.class)
-class StillingsprosentCallableTest {
+class TjenestepensjonsimuleringEndpointRouterTest {
 
     @Mock
-    private TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter;
+    IncomingRequest incomingRequest;
+
     @Mock
-    private TjenestepensjonSimuleringMetrics metrics;
+    private RestClient restClient;
+
+    @Mock
+    private SoapClient soapClient;
+
+    @InjectMocks
+    private TjenestepensjonsimuleringEndpointRouter simuleringEndpointRouter;
 
     @Test
-    void call_shall_return_stillingsprosenter_with_soap() throws Exception {
+    void call_shall_return_stillingsprosenter_with_soap() {
         var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", SOAP));
-        var callable = new StillingsprosentCallable("fnr1", tpOrdning, simuleringEndPointRouter, metrics);
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
-        when(simuleringEndPointRouter.getStillingsprosenter(any(), any())).thenReturn(stillingsprosenter);
 
-        List<Stillingsprosent> result = callable.call();
+        when(soapClient.getStillingsprosenter(any(), any())).thenReturn(stillingsprosenter);
 
-        verify(metrics).incrementCounter(eq(tpOrdning.getTpLeverandor().getName()), any());
+        List<Stillingsprosent> result = simuleringEndpointRouter.getStillingsprosenter("fnr1", tpOrdning);
+
         assertStillingsprosenter(stillingsprosenter, result);
     }
 
     @Test
-    void call_shall_return_stillingsprosenter_with_rest() throws Exception {
+    void call_shall_return_stillingsprosenter_with_rest() {
         var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", REST));
-        var callable = new StillingsprosentCallable("fnr1", tpOrdning, simuleringEndPointRouter, metrics);
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
-        when(simuleringEndPointRouter.getStillingsprosenter(any(), any())).thenReturn(stillingsprosenter);
 
-        List<Stillingsprosent> result = callable.call();
+        when(restClient.getStillingsprosenter(any(), any())).thenReturn(stillingsprosenter);
 
-        verify(metrics).incrementCounter(eq(tpOrdning.getTpLeverandor().getName()), any());
+        List<Stillingsprosent> result = simuleringEndpointRouter.getStillingsprosenter("fnr1", tpOrdning);
+
         assertStillingsprosenter(stillingsprosenter, result);
     }
 
     @Test
-    void exception_shall_be_rethrown_as_StillingsprosentCallableException_with_soap() throws Exception {
+    void call_shall_return_simulerPensjon_with_soap() {
         var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", SOAP));
-        var callable = new StillingsprosentCallable("fnr1", tpOrdning, simuleringEndPointRouter, metrics);
-        when(simuleringEndPointRouter.getStillingsprosenter(any(), any())).thenThrow(new WebServiceIOException("msg from cause"));
 
-        StillingsprosentCallableException exception = assertThrows(StillingsprosentCallableException.class, () -> callable.call());
-        assertThat(exception.getMessage(), is("Call to getStillingsprosenter failed: msg from cause"));
-        assertThat(exception.getTpOrdning(), is(tpOrdning));
+        when(soapClient.simulerPensjon(any(), any())).thenReturn(new ArrayList<>());
+        List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, tpOrdning);
+
+        assertEquals(result, new ArrayList<OutgoingResponse.SimulertPensjon>() );
     }
 
     @Test
-    void exception_shall_be_rethrown_as_StillingsprosentCallableException_with_rest() throws Exception {
+    void call_shall_return_simulerPensjon_with_rest() {
         var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", REST));
-        var callable = new StillingsprosentCallable("fnr1", tpOrdning, simuleringEndPointRouter, metrics);
-        when(simuleringEndPointRouter.getStillingsprosenter(any(), any())).thenThrow(new WebServiceIOException("msg from cause"));
 
-        StillingsprosentCallableException exception = assertThrows(StillingsprosentCallableException.class, () -> callable.call());
-        assertThat(exception.getMessage(), is("Call to getStillingsprosenter failed: msg from cause"));
-        assertThat(exception.getTpOrdning(), is(tpOrdning));
+        when(restClient.simulerPensjon(any(), any())).thenReturn(new ArrayList<>());
+        List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, tpOrdning);
+
+        assertEquals(result, new ArrayList<OutgoingResponse.SimulertPensjon>() );
     }
 
     private static List<Stillingsprosent> prepareStillingsprosenter() {

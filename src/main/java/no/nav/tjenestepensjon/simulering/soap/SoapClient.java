@@ -38,7 +38,7 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
     }
 
     @Override
-    public List<Stillingsprosent> getStillingsprosenter(String fnr, TPOrdning tpOrdning) throws Exception {
+    public List<Stillingsprosent> getStillingsprosenter(String fnr, TPOrdning tpOrdning) {
         HentStillingsprosentListe wrapperRequest = new HentStillingsprosentListe();
         var request = new ObjectFactory().createHentStillingsprosentListeRequest();
         request.setFnr(fnr);
