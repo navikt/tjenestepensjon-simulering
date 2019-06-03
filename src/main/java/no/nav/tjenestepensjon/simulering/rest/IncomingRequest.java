@@ -3,6 +3,8 @@ package no.nav.tjenestepensjon.simulering.rest;
 import java.util.Date;
 import java.util.List;
 
+import no.nav.tjenestepensjon.simulering.domain.DelytelseType;
+
 public class IncomingRequest {
 
     private String fnr;
@@ -262,11 +264,15 @@ public class IncomingRequest {
         }
     }
 
-
     public static class Delytelse {
 
         private String pensjonstype;
         private Double belop;
+
+        public Delytelse(String pensjonstype, Double belop) {
+            this.pensjonstype = pensjonstype;
+            this.belop = belop;
+        }
 
         public String getPensjonstype() {
             return pensjonstype;
@@ -283,6 +289,9 @@ public class IncomingRequest {
         public void setBelop(Double belop) {
             this.belop = belop;
         }
-    }
 
+        public boolean hasPensjonstype(DelytelseType delytelseType) {
+            return delytelseType.name().equalsIgnoreCase(getPensjonstype());
+        }
+    }
 }

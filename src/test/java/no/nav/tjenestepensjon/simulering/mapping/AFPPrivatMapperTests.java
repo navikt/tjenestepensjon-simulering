@@ -1,11 +1,13 @@
 package no.nav.tjenestepensjon.simulering.mapping;
 
-import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.ObjectFactory;
-import no.nav.tjenestepensjon.simulering.mapper.AFPPrivatMapper;
-import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static no.nav.tjenestepensjon.simulering.mapper.AFPPrivatMapper.mapToSimulertAFPPrivat;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.ObjectFactory;
+import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
 
 public class AFPPrivatMapperTests {
 
@@ -19,7 +21,7 @@ public class AFPPrivatMapperTests {
         excpected.setAfpOpptjeningTotalbelop(200000);
         excpected.setKompensasjonstillegg(1000.0);
 
-        var mapped = new AFPPrivatMapper().mapToSimulertAFPPrivat(original);
+        var mapped = mapToSimulertAFPPrivat(original);
 
         assertEquals(excpected.getAfpOpptjeningTotalbelop(), mapped.getAfpOpptjeningTotalbelop());
         assertEquals(excpected.getKompensasjonstillegg(), mapped.getKompensasjonstillegg());

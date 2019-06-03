@@ -2,11 +2,11 @@ package no.nav.tjenestepensjon.simulering.mapper;
 
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.ObjectFactory;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.SimulertAFPPrivat;
-import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
+import no.nav.tjenestepensjon.simulering.rest.IncomingRequest.SimulerAfpPrivat;
 
 public class AFPPrivatMapper {
 
-    public SimulertAFPPrivat mapToSimulertAFPPrivat(IncomingRequest.SimulerAfpPrivat afpPrivat) {
+    public static SimulertAFPPrivat mapToSimulertAFPPrivat(SimulerAfpPrivat afpPrivat) {
         if (afpPrivat == null)
             return null;
 
