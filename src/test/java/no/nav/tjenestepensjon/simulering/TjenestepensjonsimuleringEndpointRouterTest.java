@@ -69,8 +69,8 @@ class TjenestepensjonsimuleringEndpointRouterTest {
     void call_shall_return_simulerPensjon_with_soap() {
         var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", SOAP));
 
-        when(soapClient.simulerPensjon(any(), any())).thenReturn(new ArrayList<>());
-        List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, tpOrdning);
+        when(soapClient.simulerPensjon(any(), any(), any())).thenReturn(new ArrayList<>());
+        List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, List.of(), tpOrdning);
 
         assertEquals(result, new ArrayList<OutgoingResponse.SimulertPensjon>() );
     }
@@ -79,8 +79,8 @@ class TjenestepensjonsimuleringEndpointRouterTest {
     void call_shall_return_simulerPensjon_with_rest() {
         var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", REST));
 
-        when(restClient.simulerPensjon(any(), any())).thenReturn(new ArrayList<>());
-        List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, tpOrdning);
+        when(restClient.simulerPensjon(any(), any(), any())).thenReturn(new ArrayList<>());
+        List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, List.of(), tpOrdning);
 
         assertEquals(result, new ArrayList<OutgoingResponse.SimulertPensjon>() );
     }

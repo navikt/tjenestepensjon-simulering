@@ -11,5 +11,5 @@ public interface Tjenestepensjonsimulering {
 
     List<Stillingsprosent> getStillingsprosenter(String fnr, TPOrdning tpOrdning) throws Exception;
 
-    List<OutgoingResponse.SimulertPensjon> simulerPensjon(IncomingRequest request, TPOrdning tpOrdning);
+    List<OutgoingResponse.SimulertPensjon> simulerPensjon(IncomingRequest request, List<TPOrdning> tpOrdning, TPOrdning latest);
 }

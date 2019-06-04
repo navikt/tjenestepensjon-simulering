@@ -45,16 +45,16 @@ public class TjenestepensjonsimuleringEndpointRouter implements Tjenestepensjons
     }
 
     @Override
-    public List<OutgoingResponse.SimulertPensjon> simulerPensjon(IncomingRequest incomingRequest, TPOrdning tpOrdning) {
+    public List<OutgoingResponse.SimulertPensjon> simulerPensjon(IncomingRequest request, List<TPOrdning> tpOrdningList, TPOrdning latest) {
         List<OutgoingResponse.SimulertPensjon> simuletPensjonListe;
 
-        TpLeverandor tpLeverandor = tpOrdning.getTpLeverandor();
+        TpLeverandor tpLeverandor = latest.getTpLeverandor();
         TpLeverandor.EndpointImpl endpointimpl = tpLeverandor.getImpl();
 
         if (endpointimpl == SOAP) {
-            simuletPensjonListe = soapClient.simulerPensjon(incomingRequest, tpOrdning);
+            simuletPensjonListe = soapClient.simulerPensjon(request, tpOrdningList, latest);
         } else {
-            simuletPensjonListe = restClient.simulerPensjon(incomingRequest, tpOrdning);
+            simuletPensjonListe = restClient.simulerPensjon(request, tpOrdningList, latest);
         }
 
         return simuletPensjonListe;

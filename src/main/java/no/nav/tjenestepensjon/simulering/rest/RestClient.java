@@ -18,7 +18,7 @@ public class RestClient implements Tjenestepensjonsimulering {
     }
 
     @Override
-    public List<OutgoingResponse.SimulertPensjon> simulerPensjon(IncomingRequest incomingRequest, TPOrdning tpOrdning) {
+    public List<OutgoingResponse.SimulertPensjon> simulerPensjon(IncomingRequest incomingRequest, List<TPOrdning> tpOrdningList, TPOrdning latest) {
         var simuletPensjonListe = new ArrayList<OutgoingResponse.SimulertPensjon>();
 
         return simuletPensjonListe;

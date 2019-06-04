@@ -4,6 +4,8 @@ import static no.nav.tjenestepensjon.simulering.mapper.AFPPrivatMapper.mapToSimu
 import static no.nav.tjenestepensjon.simulering.mapper.SimulertAP2011Mapper.mapToSimulertAP2011;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,7 @@ import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.SimulerOffe
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
+import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse.SimulertPensjon;
 
 public class SoapMapper {
@@ -77,14 +80,25 @@ public class SoapMapper {
             mappedSimulertPensjon.setNavnOrdning(simulertPensjon.getNavnOrdning());
             mappedSimulertPensjon.setInkluderteOrdninger(simulertPensjon.getInkludertOrdningListe());
             mappedSimulertPensjon.setLeverandorUrl(simulertPensjon.getLeverandorUrl());
-//            mappedSimulertPensjon.setInkluderteTpnr();
-//            mappedSimulertPensjon.setUtelatteTpnr();
-//            mappedSimulertPensjon.setStatus();
-//            mappedSimulertPensjon.setFeilkode();
-//            mappedSimulertPensjon.setFeilbeskrivelse();
-//            mappedSimulertPensjon.setUtbetalingsperioder();
+
+            var utbetalingsperioder = new ArrayList<OutgoingResponse.Utbetalingsperiode>();
+            for (var utbetalingsperiode : simulertPensjon.getUtbetalingsperiodeListe()) {
+                var mappedUtbetalingsperiode = new OutgoingResponse.Utbetalingsperiode();
+                mappedUtbetalingsperiode.setStartDato(convertToDato(utbetalingsperiode.getStartAlder(), utbetalingsperiode.getStartManed()));
+                mappedUtbetalingsperiode.setSluttDato(convertToDato(utbetalingsperiode.getSluttAlder(), utbetalingsperiode.getSluttManed()));
+                mappedUtbetalingsperiode.setGrad(utbetalingsperiode.getGrad());
+                mappedUtbetalingsperiode.setArligUtbetaling(utbetalingsperiode.getArligUtbetaling());
+                mappedUtbetalingsperiode.setYtelsekode(utbetalingsperiode.getYtelseKode());
+                mappedUtbetalingsperiode.setMangelfullSimuleringkode(utbetalingsperiode.getMangelfullSimuleringKode());
+            }
+            mappedSimulertPensjon.setUtbetalingsperioder(null);
             simulertPensjonList.add(mappedSimulertPensjon);
         }
         return simulertPensjonList;
+    }
+
+    //TODO: Date converter
+    private static Date convertToDato(Integer startAlder, Integer startManed) {
+        return null;
     }
 }
