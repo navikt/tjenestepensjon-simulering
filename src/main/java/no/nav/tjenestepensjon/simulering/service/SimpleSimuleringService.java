@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleSimuleringService.class);
 
+    private final TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter;
     private final StillingsprosentService stillingsprosentService;
     private final SimulerPensjonService simulerPensjonService;
     private final TpConfigConsumer tpConfigConsumer;
@@ -37,10 +39,11 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
     private final TpRegisterConsumer tpRegisterConsumer;
     private final AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor;
 
-    public SimpleSimuleringService(StillingsprosentService stillingsprosentService,
-            SimulerPensjonService simulerPensjonService, TpConfigConsumer tpConfigConsumer,
-            List<TpLeverandor> tpLeverandorList, TpRegisterConsumer tpRegisterConsumer,
-            AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor) {
+    public SimpleSimuleringService(TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter, StillingsprosentService stillingsprosentService,
+                                   SimulerPensjonService simulerPensjonService, TpConfigConsumer tpConfigConsumer,
+                                   List<TpLeverandor> tpLeverandorList, TpRegisterConsumer tpRegisterConsumer,
+                                   AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor) {
+        this.simuleringEndPointRouter = simuleringEndPointRouter;
         this.stillingsprosentService = stillingsprosentService;
         this.simulerPensjonService = simulerPensjonService;
         this.tpConfigConsumer = tpConfigConsumer;
@@ -57,16 +60,19 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
             StillingsprosentResponse stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.getFnr(), tpOrdningList);
             handleStillingsprosentExceptions(response, stillingsprosentResponse);
             TPOrdning latest = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.getTpOrdningListMap());
-            SimulerPensjonResponse simulerPensjonResponse = simulerPensjonService.simulerPensjon(tpOrdningList, latest);
+            List<SimulertPensjon> simulertPensjonList = simuleringEndPointRouter.simulerPensjon(request, tpOrdningList, latest);
+            response.setSimulertPensjonListe(simulertPensjonList);
         } catch (DuplicateStillingsprosentEndDateException e) {
-            SimulertPensjon simulertPensjon = response.getSimulertPensjonListe().get(0);
-            simulertPensjon.setStatus("FEIL");
-            simulertPensjon.setFeilkode("PARF");
+            for (var simulertPensjon : response.getSimulertPensjonListe()) {
+                simulertPensjon.setStatus("FEIL");
+                simulertPensjon.setFeilkode("PARF");
+            }
             return response;
         } catch (MissingStillingsprosentException e) {
-            SimulertPensjon simulertPensjon = response.getSimulertPensjonListe().get(0);
-            simulertPensjon.setStatus("FEIL");
-            simulertPensjon.setFeilkode("IKKE");
+            for (var simulertPensjon : response.getSimulertPensjonListe()) {
+                simulertPensjon.setStatus("FEIL");
+                simulertPensjon.setFeilkode("IKKE");
+            }
             return response;
         } catch (NoTpOrdningerFoundException e) {
             return new OutgoingResponse();
