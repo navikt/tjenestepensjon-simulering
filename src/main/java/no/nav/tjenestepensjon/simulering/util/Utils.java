@@ -2,6 +2,11 @@ package no.nav.tjenestepensjon.simulering.util;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 public class Utils {
 
@@ -61,5 +66,15 @@ public class Utils {
         Calendar firstCalendar = createDayResolutionCalendar(first);
         Calendar secondCalendar = createDayResolutionCalendar(second);
         return firstCalendar.equals(secondCalendar);
+    }
+
+    public static XMLGregorianCalendar convertToXmlGregorianCalendar(Date date) {
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        gregorianCalendar.setTime(date);
+        try {
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+        } catch (DatatypeConfigurationException e) {
+            throw new RuntimeException("Exception while getting forsteUttakDato", e);
+        }
     }
 }
