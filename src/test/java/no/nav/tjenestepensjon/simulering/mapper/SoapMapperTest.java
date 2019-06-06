@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import static no.nav.tjenestepensjon.simulering.util.Utils.createDate;
 
@@ -20,6 +22,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.ObjectFactory;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.SimulerOffentligTjenestepensjonRequest;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.SimulerTjenestepensjon;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.SimulerOffentligTjenestepensjon;
@@ -164,6 +167,50 @@ class SoapMapperTest {
         assertThat(SoapMapper.findInntektForUttak(inntektList, createDate(2018, Calendar.MARCH, 1)), is(2017));
         assertThat(SoapMapper.findInntektForUttak(inntektList, createDate(2020, Calendar.JULY, 1)), is(2018));
         assertThat(SoapMapper.findInntektForUttak(inntektList, createDate(2016, Calendar.JULY, 1)), is(nullValue()));
+    }
+
+    @Test
+    public void mapSimulerTjenestepensjonResponse() {
+        var utbetalingsperiode = new ObjectFactory().createUtbetalingsperiode();
+        utbetalingsperiode.setStartAlder(68);
+        utbetalingsperiode.setSluttAlder(78);
+        utbetalingsperiode.setStartManed(3);
+        utbetalingsperiode.setSluttManed(2);
+        utbetalingsperiode.setGrad(100);
+        utbetalingsperiode.setArligUtbetaling(84000.0);
+        utbetalingsperiode.setYtelseKode("AFP");
+        utbetalingsperiode.setMangelfullSimuleringKode("ABC");
+
+        var simulertPensjon = new ObjectFactory().createSimulertPensjon();
+        simulertPensjon.setTpnr("1234");
+        simulertPensjon.setNavnOrdning("TP");
+        simulertPensjon.setLeverandorUrl("TP_URL");
+        simulertPensjon.getInkludertOrdningListe().add("TP_INK");
+        simulertPensjon.getUtbetalingsperiodeListe().add(utbetalingsperiode);
+
+        var simulertResponse = new ObjectFactory().createSimulerOffentligTjenestepensjonResponse();
+        simulertResponse.getSimulertPensjonListe().add(simulertPensjon);
+
+        var response = new no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.ObjectFactory()
+                .createSimulerOffentligTjenestepensjonResponse();
+        response.setResponse(simulertResponse);
+
+        var result = SoapMapper.mapSimulerTjenestepensjonResponse("14034800000", response).get(0);
+
+        assertEquals("1234", result.getTpnr());
+        assertEquals("TP", result.getNavnOrdning());
+        assertEquals("TP_URL", result.getLeverandorUrl());
+        assertNull(result.getStatus());
+        assertNull(result.getFeilkode());
+        assertNull(result.getFeilbeskrivelse());
+        assertEquals("TP_INK", result.getInkluderteOrdninger().get(0));
+        assertNull(result.getInkluderteTpnr());
+        assertEquals(createDate(2016, Calendar.JUNE, 1), result.getUtbetalingsperioder().get(0).getStartDato());
+        assertEquals(createDate(2026, Calendar.MAY, 1), result.getUtbetalingsperioder().get(0).getSluttDato());
+        assertEquals(100, result.getUtbetalingsperioder().get(0).getGrad());
+        assertEquals(84000.0, result.getUtbetalingsperioder().get(0).getArligUtbetaling());
+        assertEquals("AFP", result.getUtbetalingsperioder().get(0).getYtelsekode());
+        assertEquals("ABC", result.getUtbetalingsperioder().get(0).getMangelfullSimuleringkode());
     }
 
     private static Simuleringsperiode createSimuleringsperiode(Date date, Integer uttaksgrad) {
