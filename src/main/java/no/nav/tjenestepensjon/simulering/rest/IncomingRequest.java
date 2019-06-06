@@ -81,6 +81,20 @@ public class IncomingRequest {
         this.inntekter = inntekter;
     }
 
+    @Override
+    public String toString() {
+        return "IncomingRequest{" +
+                "fnr='" + fnr + '\'' +
+                ", sivilstandkode='" + sivilstandkode + '\'' +
+                ", sprak='" + sprak + '\'' +
+                ", simuleringsperioder=" + simuleringsperioder +
+                ", simulertAFPOffentlig=" + simulertAFPOffentlig +
+                ", simulertAFPPrivat=" + simulertAFPPrivat +
+                ", pensjonsbeholdningsperioder=" + pensjonsbeholdningsperioder +
+                ", inntekter=" + inntekter +
+                '}';
+    }
+
     public static class Simuleringsperiode implements Dateable {
 
         private Date datoFom;
@@ -182,6 +196,23 @@ public class IncomingRequest {
         public void setDelytelser(List<Delytelse> delytelser) {
             this.delytelser = delytelser;
         }
+
+        @Override
+        public String toString() {
+            return "Simuleringsperiode{" +
+                    "datoFom=" + datoFom +
+                    ", utg=" + utg +
+                    ", stillingsprosentOffentlig=" + stillingsprosentOffentlig +
+                    ", poengArTom1991=" + poengArTom1991 +
+                    ", poengArFom1992=" + poengArFom1992 +
+                    ", sluttpoengtall=" + sluttpoengtall +
+                    ", anvendtTrygdetid=" + anvendtTrygdetid +
+                    ", forholdstall=" + forholdstall +
+                    ", delingstall=" + delingstall +
+                    ", uforegradVedOmregning=" + uforegradVedOmregning +
+                    ", delytelser=" + delytelser +
+                    '}';
+        }
     }
 
     public static class SimulerAfpPrivat {
@@ -209,6 +240,14 @@ public class IncomingRequest {
 
         public void setKompensasjonstillegg(Double kompensasjonstillegg) {
             this.kompensasjonstillegg = kompensasjonstillegg;
+        }
+
+        @Override
+        public String toString() {
+            return "SimulerAfpPrivat{" +
+                    "afpOpptjeningTotalbelop=" + afpOpptjeningTotalbelop +
+                    ", kompensasjonstillegg=" + kompensasjonstillegg +
+                    '}';
         }
     }
 
@@ -249,6 +288,16 @@ public class IncomingRequest {
         public void setGarantilleggsbeholdning(Integer garantilleggsbeholdning) {
             this.garantilleggsbeholdning = garantilleggsbeholdning;
         }
+
+        @Override
+        public String toString() {
+            return "Pensjonsbeholdningperiode{" +
+                    "datoFom=" + datoFom +
+                    ", pensjonsbeholdning=" + pensjonsbeholdning +
+                    ", garantipensjonsbeholdning=" + garantipensjonsbeholdning +
+                    ", garantilleggsbeholdning=" + garantilleggsbeholdning +
+                    '}';
+        }
     }
 
     public static class Inntekt implements Dateable {
@@ -276,6 +325,14 @@ public class IncomingRequest {
 
         public void setInntekt(Double inntekt) {
             this.inntekt = inntekt;
+        }
+
+        @Override
+        public String toString() {
+            return "Inntekt{" +
+                    "datoFom=" + datoFom +
+                    ", inntekt=" + inntekt +
+                    '}';
         }
     }
 
@@ -309,6 +366,14 @@ public class IncomingRequest {
 
         public boolean hasPensjonstype(DelytelseType delytelseType) {
             return delytelseType.name().equalsIgnoreCase(getPensjonstype());
+        }
+
+        @Override
+        public String toString() {
+            return "Delytelse{" +
+                    "pensjonstype='" + pensjonstype + '\'' +
+                    ", belop=" + belop +
+                    '}';
         }
     }
 }

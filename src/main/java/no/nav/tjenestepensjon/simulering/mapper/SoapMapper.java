@@ -8,6 +8,7 @@ import static no.nav.tjenestepensjon.simulering.mapper.SimulertAP2011Mapper.mapG
 import static no.nav.tjenestepensjon.simulering.util.Utils.convertToDato;
 import static no.nav.tjenestepensjon.simulering.util.Utils.convertToXmlGregorianCalendar;
 import static no.nav.tjenestepensjon.simulering.util.Utils.isSameDay;
+import static no.nav.tjenestepensjon.simulering.util.Utils.reflectionToString;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,7 +19,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.ObjectFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.HentStillingsprosentListeRequest;
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.SimulerOffentligTjenestepensjonRequest;
+import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.SimulerTjenestepensjon;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillingsprosentListe;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.HentStillingsprosentListeResponse;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.SimulerOffentligTjenestepensjon;
@@ -34,13 +40,11 @@ import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse.SimulertPensjon;
 
 public class SoapMapper {
 
-    private static final no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.ObjectFactory wrapperFactory =
-            new no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.ObjectFactory();
-    private static final ObjectFactory contentFactory = new ObjectFactory();
+    public static final Logger LOG = LoggerFactory.getLogger(SoapMapper.class);
 
     public static HentStillingsprosentListe mapStillingsprosentRequest(String fnr, TPOrdning tpOrdning) {
-        var wrapperRequest = wrapperFactory.createHentStillingsprosentListe();
-        var request = contentFactory.createHentStillingsprosentListeRequest();
+        HentStillingsprosentListe wrapperRequest = new HentStillingsprosentListe();
+        HentStillingsprosentListeRequest request = new HentStillingsprosentListeRequest();
         request.setFnr(fnr);
         request.setTpnr(tpOrdning.getTpId());
         request.setTssEksternId(tpOrdning.getTssId());
@@ -56,9 +60,9 @@ public class SoapMapper {
     }
 
     public static SimulerOffentligTjenestepensjon mapSimulerTjenestepensjonRequest(IncomingRequest incomingRequest, TPOrdning tpOrdning) {
-        var wrapperRequest = wrapperFactory.createSimulerOffentligTjenestepensjon();
-        var request = contentFactory.createSimulerOffentligTjenestepensjonRequest();
-        var simulerTjenestepensjon = contentFactory.createSimulerTjenestepensjon();
+        SimulerOffentligTjenestepensjon wrapperRequest = new SimulerOffentligTjenestepensjon();
+        SimulerOffentligTjenestepensjonRequest request = new SimulerOffentligTjenestepensjonRequest();
+        SimulerTjenestepensjon simulerTjenestepensjon = new SimulerTjenestepensjon();
         simulerTjenestepensjon.setFnr(incomingRequest.getFnr());
         simulerTjenestepensjon.setTpnr(tpOrdning.getTpId());
         simulerTjenestepensjon.setTssEksternId(tpOrdning.getTssId());
@@ -96,7 +100,7 @@ public class SoapMapper {
 
         request.setSimulerTjenestepensjon(simulerTjenestepensjon);
         wrapperRequest.setRequest(request);
-
+        LOG.info("Mapped IncomingRequest: {} to SimulerOffentligTjenestepensjon: {}", incomingRequest, reflectionToString(simulerTjenestepensjon));
         return wrapperRequest;
     }
 
@@ -124,6 +128,7 @@ public class SoapMapper {
             mappedSimulertPensjon.setUtbetalingsperioder(utbetalingsperioder);
             simulertPensjonList.add(mappedSimulertPensjon);
         }
+        LOG.info("Mapped SimulerOffentligTjenestepensjonResponse: {} to List<SimulertPensjon> {}: ", reflectionToString(response.getResponse()), simulertPensjonList.toString());
         return simulertPensjonList;
     }
 

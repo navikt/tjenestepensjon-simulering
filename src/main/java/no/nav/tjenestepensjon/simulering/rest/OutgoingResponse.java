@@ -15,6 +15,13 @@ public class OutgoingResponse {
         this.simulertPensjonListe = simulertPensjonListe;
     }
 
+    @Override
+    public String toString() {
+        return "OutgoingResponse{" +
+                "simulertPensjonListe=" + simulertPensjonListe +
+                '}';
+    }
+
     public static class SimulertPensjon {
 
         private String tpnr;
@@ -107,6 +114,22 @@ public class OutgoingResponse {
         public void setUtbetalingsperioder(List<Utbetalingsperiode> utbetalingsperioder) {
             this.utbetalingsperioder = utbetalingsperioder;
         }
+
+        @Override
+        public String toString() {
+            return "SimulertPensjon{" +
+                    "tpnr='" + tpnr + '\'' +
+                    ", navnOrdning='" + navnOrdning + '\'' +
+                    ", inkluderteOrdninger=" + inkluderteOrdninger +
+                    ", leverandorUrl='" + leverandorUrl + '\'' +
+                    ", inkluderteTpnr=" + inkluderteTpnr +
+                    ", utelatteTpnr=" + utelatteTpnr +
+                    ", status='" + status + '\'' +
+                    ", feilkode='" + feilkode + '\'' +
+                    ", feilbeskrivelse='" + feilbeskrivelse + '\'' +
+                    ", utbetalingsperioder=" + utbetalingsperioder +
+                    '}';
+        }
     }
 
     public static class Utbetalingsperiode {
@@ -163,6 +186,18 @@ public class OutgoingResponse {
 
         public void setMangelfullSimuleringkode(String mangelfullSimuleringkode) {
             this.mangelfullSimuleringkode = mangelfullSimuleringkode;
+        }
+
+        @Override
+        public String toString() {
+            return "Utbetalingsperiode{" +
+                    "startDato=" + startDato +
+                    ", sluttDato=" + sluttDato +
+                    ", grad=" + grad +
+                    ", arligUtbetaling=" + arligUtbetaling +
+                    ", ytelsekode='" + ytelsekode + '\'' +
+                    ", mangelfullSimuleringkode='" + mangelfullSimuleringkode + '\'' +
+                    '}';
         }
     }
 

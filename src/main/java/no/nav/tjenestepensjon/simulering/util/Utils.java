@@ -1,8 +1,13 @@
 package no.nav.tjenestepensjon.simulering.util;
 
+import static org.springframework.util.ReflectionUtils.getField;
+import static org.springframework.util.ReflectionUtils.makeAccessible;
+
+import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -84,5 +89,36 @@ public class Utils {
         startDato.add(Calendar.MONTH, startManed);
         startDato.add(Calendar.YEAR, startAlder);
         return startDato.getTime();
+    }
+
+    public static String reflectionToString(Object object) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Field[] fields = object.getClass().getDeclaredFields();
+        for (Field property : fields) {
+            makeAccessible(property);
+            Object value = getField(property, object);
+            if (value != null && value.getClass().getPackageName().contains("no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering")) {
+                stringBuilder.append(reflectionToString(value));
+            } else if (value instanceof List) {
+                ((List) value).forEach(o -> {
+                    if (property.getGenericType().getTypeName().contains("no.nav")) {
+                        stringBuilder.append(reflectionToString(o));
+                    } else {
+                        append(stringBuilder, property.getName(), o);
+                    }
+                });
+            } else {
+                append(stringBuilder, property.getName(), value);
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private static void append(StringBuilder stringBuilder, String property, Object value) {
+        stringBuilder
+                .append(property)
+                .append(":")
+                .append(value != null ? value.toString() : "")
+                .append("\n");
     }
 }
