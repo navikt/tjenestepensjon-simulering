@@ -55,6 +55,6 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
                         latest.getTpLeverandor().getUrl(),
                         tokenClient.getSamlAccessToken().getAccessToken()));
 
-        return mapSimulerTjenestepensjonResponse(response);
+        return mapSimulerTjenestepensjonResponse(incomingRequest.getFnr(), response);
     }
 }

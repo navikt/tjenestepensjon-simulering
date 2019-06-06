@@ -62,4 +62,12 @@ public class Utils {
         Calendar secondCalendar = createDayResolutionCalendar(second);
         return firstCalendar.equals(secondCalendar);
     }
+
+    public static Date convertToDato(String fnr, Integer startAlder, Integer startManed) {
+        var startDato = createDayResolutionCalendar(getBirthDate(fnr));
+        startDato.set(Calendar.DATE, 1);
+        startDato.add(Calendar.MONTH, startManed);
+        startDato.add(Calendar.YEAR, startAlder);
+        return startDato.getTime();
+    }
 }
