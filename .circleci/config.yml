@@ -17,6 +17,15 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
       - run: mvn clean install
       - run:
+          name: github creds
+          command: |
+            git clone https://github.com/navikt/github-apps-support.git
+            export PATH=`pwd`/github-apps-support/bin:$PATH
+            echo $GITHUB_KEY | tr '_' '\n' > peonci.key
+            export GITHUB_TOKEN=$(generate-installation-token.sh `generate-jwt.sh peonci.key 23087`)
+            echo -e "machine api.github.com login x-access-token password $GITHUB_TOKEN" > ~/.netrc
+            rm peonci.key
+      - run:
           name: release
           command: |
             if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
