@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.mapping;
+package no.nav.tjenestepensjon.simulering.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

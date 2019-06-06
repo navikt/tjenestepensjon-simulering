@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.mapping;
+package no.nav.tjenestepensjon.simulering.mapper;
 
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.mapper.StillingsprosentMapper;
