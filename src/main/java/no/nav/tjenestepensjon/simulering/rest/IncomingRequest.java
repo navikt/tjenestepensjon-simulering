@@ -3,6 +3,7 @@ package no.nav.tjenestepensjon.simulering.rest;
 import java.util.Date;
 import java.util.List;
 
+import no.nav.tjenestepensjon.simulering.domain.Dateable;
 import no.nav.tjenestepensjon.simulering.domain.DelytelseType;
 
 public class IncomingRequest {
@@ -80,7 +81,7 @@ public class IncomingRequest {
         this.inntekter = inntekter;
     }
 
-    public static class Simuleringsperiode {
+    public static class Simuleringsperiode implements Dateable {
 
         private Date datoFom;
         private Integer utg;
@@ -187,6 +188,13 @@ public class IncomingRequest {
         private Integer afpOpptjeningTotalbelop;
         private Double kompensasjonstillegg;
 
+        public SimulerAfpPrivat(){}
+
+        public SimulerAfpPrivat(Integer afpOpptjeningTotalbelop, Double kompensasjonstillegg) {
+            this.afpOpptjeningTotalbelop = afpOpptjeningTotalbelop;
+            this.kompensasjonstillegg = kompensasjonstillegg;
+        }
+
         public Integer getAfpOpptjeningTotalbelop() {
             return afpOpptjeningTotalbelop;
         }
@@ -243,9 +251,16 @@ public class IncomingRequest {
         }
     }
 
-    public static class Inntekt {
+    public static class Inntekt implements Dateable {
         private Date datoFom;
         private Double inntekt;
+
+        public Inntekt(){}
+
+        public Inntekt(Date datoFom, Double inntekt) {
+            this.datoFom = datoFom;
+            this.inntekt = inntekt;
+        }
 
         public Date getDatoFom() {
             return datoFom;
@@ -268,6 +283,8 @@ public class IncomingRequest {
 
         private String pensjonstype;
         private Double belop;
+
+        public Delytelse(){}
 
         public Delytelse(String pensjonstype, Double belop) {
             this.pensjonstype = pensjonstype;
