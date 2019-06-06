@@ -5,7 +5,9 @@ import static java.util.Calendar.YEAR;
 import static no.nav.tjenestepensjon.simulering.mapper.AFPPrivatMapper.mapToSimulertAFPPrivat;
 import static no.nav.tjenestepensjon.simulering.mapper.SimulertAP2011Mapper.mapFulltUttak;
 import static no.nav.tjenestepensjon.simulering.mapper.SimulertAP2011Mapper.mapGradertUttak;
+import static no.nav.tjenestepensjon.simulering.util.Utils.convertToDato;
 import static no.nav.tjenestepensjon.simulering.util.Utils.convertToXmlGregorianCalendar;
+import static no.nav.tjenestepensjon.simulering.util.Utils.isSameDay;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,7 +31,6 @@ import no.nav.tjenestepensjon.simulering.rest.IncomingRequest.Inntekt;
 import no.nav.tjenestepensjon.simulering.rest.IncomingRequest.Simuleringsperiode;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse.SimulertPensjon;
-import no.nav.tjenestepensjon.simulering.util.Utils;
 
 public class SoapMapper {
 
@@ -68,7 +69,8 @@ public class SoapMapper {
 
         Simuleringsperiode forsteUttak = incomingRequest.getSimuleringsperioder().stream().min(Dateable::sortAscendingByFomDato).get();
         Optional<Simuleringsperiode> potentialHeltUttak = incomingRequest.getSimuleringsperioder().stream()
-                .filter(simuleringsperiode -> !simuleringsperiode.equals(forsteUttak)).max(Dateable::sortAscendingByFomDato);
+                .filter(simuleringsperiode -> !isSameDay(simuleringsperiode.getDatoFom(), forsteUttak.getDatoFom()))
+                .max(Dateable::sortAscendingByFomDato);
 
         if (isGradertForsteuttak(forsteUttak) && potentialHeltUttak.isPresent()) {
             Simuleringsperiode heltUttak = potentialHeltUttak.get();
@@ -111,8 +113,8 @@ public class SoapMapper {
             var utbetalingsperioder = new ArrayList<OutgoingResponse.Utbetalingsperiode>();
             for (var utbetalingsperiode : simulertPensjon.getUtbetalingsperiodeListe()) {
                 var mappedUtbetalingsperiode = new OutgoingResponse.Utbetalingsperiode();
-                mappedUtbetalingsperiode.setStartDato(Utils.convertToDato(fnr, utbetalingsperiode.getStartAlder(), utbetalingsperiode.getStartManed()));
-                mappedUtbetalingsperiode.setSluttDato(Utils.convertToDato(fnr, utbetalingsperiode.getSluttAlder(), utbetalingsperiode.getSluttManed()));
+                mappedUtbetalingsperiode.setStartDato(convertToDato(fnr, utbetalingsperiode.getStartAlder(), utbetalingsperiode.getStartManed()));
+                mappedUtbetalingsperiode.setSluttDato(convertToDato(fnr, utbetalingsperiode.getSluttAlder(), utbetalingsperiode.getSluttManed()));
                 mappedUtbetalingsperiode.setGrad(utbetalingsperiode.getGrad());
                 mappedUtbetalingsperiode.setArligUtbetaling(utbetalingsperiode.getArligUtbetaling());
                 mappedUtbetalingsperiode.setYtelsekode(utbetalingsperiode.getYtelseKode());
