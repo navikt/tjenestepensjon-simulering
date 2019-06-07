@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:11
+      - image: circleci/openjdk:11-jdk
     steps:
       - checkout
       - setup_remote_docker
@@ -17,29 +17,39 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
       - run: mvn clean install
       - run:
+          name: github creds
+          command: |
+            git clone https://github.com/navikt/github-apps-support.git
+            export PATH=`pwd`/github-apps-support/bin:$PATH
+            echo $GITHUB_APP_KEY | tr '_' '\n' > peonci.key
+            export GITHUB_APP_TOKEN=$(generate-installation-token.sh `generate-jwt.sh peonci.key 23087`)
+            echo -e "machine api.github.com login x-access-token password $GITHUB_APP_TOKEN" > ~/.netrc
+            rm peonci.key
+      - run:
           name: release
           command: |
-            docker build . -t navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
-            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            docker push navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
-  deploy:
-    docker:
-      - image: navikt/deployment-cli:0.1.6
-    steps:
+            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
+              docker build . -t navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
+              echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+              docker push navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
+            fi
       - run:
-          name: deploy to dev
-          command: deployment-cli deploy create --cluster=dev-fss --repository=navikt/tjenestepensjon-simulering --team=teampeon -r=nais.yaml --version=${CIRCLE_SHA1}
-workflows:
-  version: 2.1
-  build_and_release:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only: master
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
+          name: deploy to preprod
+          command: |
+            curl -i \
+                -X POST \
+                -d '{
+                     "ref": "'"${CIRCLE_SHA1}"'",
+                     "description": "",
+                     "environment": "dev-fss",
+                     "required_contexts": [],
+                     "payload": {
+                       "version": [1, 0, 0],
+                       "team": "teampeon",
+                       "kubernetes": {
+                         "resources": ['"$(cat nais-dev.json | jq '.spec.image = "'navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}'"')"']
+                       }
+                     }
+                   }' \
+                -H "Accept: application/vnd.github.ant-man-preview+json" \
+                https://api.github.com/repos/navikt/tjenestepensjon-simulering/deployments
