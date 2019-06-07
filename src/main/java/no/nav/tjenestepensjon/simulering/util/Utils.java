@@ -84,11 +84,14 @@ public class Utils {
     }
 
     public static Date convertToDato(String fnr, Integer startAlder, Integer startManed) {
-        var startDato = createDayResolutionCalendar(getBirthDate(fnr));
-        startDato.set(Calendar.DATE, 1);
-        startDato.add(Calendar.MONTH, startManed);
-        startDato.add(Calendar.YEAR, startAlder);
-        return startDato.getTime();
+        if (startAlder != null && startManed != null) {
+            var startDato = createDayResolutionCalendar(getBirthDate(fnr));
+            startDato.set(Calendar.DATE, 1);
+            startDato.add(Calendar.MONTH, startManed);
+            startDato.add(Calendar.YEAR, startAlder);
+            return startDato.getTime();
+        }
+        return null;
     }
 
     public static String reflectionToString(Object object) {
