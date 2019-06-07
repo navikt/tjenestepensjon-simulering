@@ -55,7 +55,7 @@ class SoapMapperTest {
     void sholdMapCommonValues() {
         incomingRequest.setSimuleringsperioder(List.of(createSimuleringsperiode(createDate(2020, Calendar.JANUARY, 1), 100)));
 
-        SimulerOffentligTjenestepensjon wrapperWrapper = SoapMapper.mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning);
+        SimulerOffentligTjenestepensjon wrapperWrapper = SoapMapper.mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning, List.of(tpOrdning));
         SimulerOffentligTjenestepensjonRequest wrapper = wrapperWrapper.getRequest();
         SimulerTjenestepensjon request = wrapper.getSimulerTjenestepensjon();
 
@@ -75,7 +75,7 @@ class SoapMapperTest {
         incomingRequest.setSimuleringsperioder(List.of(fulltForsteUttak));
         incomingRequest.setInntekter(List.of(new Inntekt(fulltForsteUttak.getDatoFom(), 55000d)));
 
-        SimulerOffentligTjenestepensjon wrapperWrapper = SoapMapper.mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning);
+        SimulerOffentligTjenestepensjon wrapperWrapper = SoapMapper.mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning, List.of(tpOrdning));
         SimulerOffentligTjenestepensjonRequest wrapper = wrapperWrapper.getRequest();
         SimulerTjenestepensjon request = wrapper.getSimulerTjenestepensjon();
 
@@ -95,7 +95,7 @@ class SoapMapperTest {
         incomingRequest.setSimuleringsperioder(List.of(heltUttak, forsteUttak));
         incomingRequest.setInntekter(List.of(new Inntekt(forsteUttak.getDatoFom(), 55000d), new Inntekt(heltUttak.getDatoFom(), 21000d)));
 
-        SimulerOffentligTjenestepensjon wrapperWrapper = SoapMapper.mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning);
+        SimulerOffentligTjenestepensjon wrapperWrapper = SoapMapper.mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning, List.of(tpOrdning));
         SimulerOffentligTjenestepensjonRequest wrapper = wrapperWrapper.getRequest();
         SimulerTjenestepensjon request = wrapper.getSimulerTjenestepensjon();
 

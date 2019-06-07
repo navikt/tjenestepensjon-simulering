@@ -47,9 +47,9 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
     }
 
     @Override
-    public List<SimulertPensjon> simulerPensjon(IncomingRequest incomingRequest, List<TPOrdning> tpOrdning, TPOrdning latest) {
+    public List<SimulertPensjon> simulerPensjon(IncomingRequest incomingRequest, List<TPOrdning> tpOrdningList, TPOrdning latest) {
         var response = (SimulerOffentligTjenestepensjonResponse) webServiceTemplate.marshalSendAndReceive(
-                mapSimulerTjenestepensjonRequest(incomingRequest, latest),
+                mapSimulerTjenestepensjonRequest(incomingRequest, latest, tpOrdningList),
                 new StillingsprosentCallback(
                         "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest",
                         latest.getTpLeverandor().getUrl(),

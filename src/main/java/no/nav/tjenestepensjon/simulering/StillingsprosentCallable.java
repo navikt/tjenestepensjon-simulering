@@ -23,7 +23,7 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
     private final TjenestepensjonSimuleringMetrics metrics;
 
     public StillingsprosentCallable(String fnr, TPOrdning tpOrdning,
-                                    TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter,
+            TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter,
             TjenestepensjonSimuleringMetrics metrics) {
         this.tpOrdning = tpOrdning;
         this.fnr = fnr;
@@ -49,6 +49,7 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
         long elapsed = metrics.elapsedSince(startTime);
         metrics.incrementCounter(tpLeverandor.getName(), TP_TOTAL_STILLINGSPROSENT_TIME, elapsed);
         LOG.info("Retrieved stillingsprosenter from: {} in: {} ms", tpLeverandor, elapsed);
+        tpOrdning.setStillingsprosentList(stillingsprosenter);
         return stillingsprosenter;
     }
 }

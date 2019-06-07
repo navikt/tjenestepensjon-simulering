@@ -5,6 +5,7 @@ import static java.util.Calendar.YEAR;
 import static no.nav.tjenestepensjon.simulering.mapper.AFPPrivatMapper.mapToSimulertAFPPrivat;
 import static no.nav.tjenestepensjon.simulering.mapper.SimulertAP2011Mapper.mapFulltUttak;
 import static no.nav.tjenestepensjon.simulering.mapper.SimulertAP2011Mapper.mapGradertUttak;
+import static no.nav.tjenestepensjon.simulering.mapper.TpForholdMapper.mapToTpForhold;
 import static no.nav.tjenestepensjon.simulering.util.Utils.convertToDato;
 import static no.nav.tjenestepensjon.simulering.util.Utils.convertToXmlGregorianCalendar;
 import static no.nav.tjenestepensjon.simulering.util.Utils.isSameDay;
@@ -55,11 +56,11 @@ public class SoapMapper {
 
     public static List<Stillingsprosent> mapStillingsprosentResponse(HentStillingsprosentListeResponse response) {
         return response.getResponse().getStillingsprosentListe().stream()
-                .map(new StillingsprosentMapper()::mapToStillingsprosent)
+                .map(StillingsprosentMapper::mapToStillingsprosent)
                 .collect(Collectors.toList());
     }
 
-    public static SimulerOffentligTjenestepensjon mapSimulerTjenestepensjonRequest(IncomingRequest incomingRequest, TPOrdning tpOrdning) {
+    public static SimulerOffentligTjenestepensjon mapSimulerTjenestepensjonRequest(IncomingRequest incomingRequest, TPOrdning tpOrdning, List<TPOrdning> tpOrdningList) {
         SimulerOffentligTjenestepensjon wrapperRequest = new SimulerOffentligTjenestepensjon();
         SimulerOffentligTjenestepensjonRequest request = new SimulerOffentligTjenestepensjonRequest();
         SimulerTjenestepensjon simulerTjenestepensjon = new SimulerTjenestepensjon();
@@ -70,6 +71,7 @@ public class SoapMapper {
         simulerTjenestepensjon.setSprak(incomingRequest.getSprak());
         simulerTjenestepensjon.setSimulertAFPOffentlig(incomingRequest.getSimulertAFPOffentlig());
         simulerTjenestepensjon.setSimulertAFPPrivat(mapToSimulertAFPPrivat(incomingRequest.getSimulertAFPPrivat()));
+        simulerTjenestepensjon.getTpForholdListe().addAll(mapToTpForhold(tpOrdningList));
 
         Simuleringsperiode forsteUttak = incomingRequest.getSimuleringsperioder().stream().min(Dateable::sortAscendingByFomDato).get();
         Optional<Simuleringsperiode> potentialHeltUttak = incomingRequest.getSimuleringsperioder().stream()

@@ -1,16 +1,21 @@
 package no.nav.tjenestepensjon.simulering.mapper;
 
-import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
+import static no.nav.tjenestepensjon.simulering.util.Utils.convertToXmlGregorianCalendar;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+
+import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 
 // Maps WSDL generated Stillingsprosent class to domain class
 public class StillingsprosentMapper {
 
-    public Stillingsprosent mapToStillingsprosent(
-        no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent stillingsprosent) {
-        if (stillingsprosent == null)
+    public static Stillingsprosent mapToStillingsprosent(
+            no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent stillingsprosent) {
+        if (stillingsprosent == null) {
             return null;
+        }
 
         var datoFom = stillingsprosent.getDatoFom();
         var datoTom = stillingsprosent.getDatoTom();
@@ -24,5 +29,17 @@ public class StillingsprosentMapper {
         mappedStillingsprosent.setAldersgrense(stillingsprosent.getAldersgrense());
 
         return mappedStillingsprosent;
+    }
+
+    public static no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent mapToStillingsprosent(Stillingsprosent stillingsprosent) {
+        no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent mapped =
+                new no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent();
+        mapped.setDatoFom(convertToXmlGregorianCalendar(Date.from(stillingsprosent.getDatoFom().atStartOfDay(ZoneId.systemDefault()).toInstant())));
+        mapped.setDatoTom(convertToXmlGregorianCalendar(Date.from(stillingsprosent.getDatoTom().atStartOfDay(ZoneId.systemDefault()).toInstant())));
+        mapped.setAldersgrense(stillingsprosent.getAldersgrense());
+        mapped.setFaktiskHovedlonn(stillingsprosent.getFaktiskHovedlonn());
+        mapped.setStillingsprosent(stillingsprosent.getStillingsprosent());
+        mapped.setStillingsuavhengigTilleggslonn(stillingsprosent.getStillingsuavhengigTilleggslonn());
+        return mapped;
     }
 }
