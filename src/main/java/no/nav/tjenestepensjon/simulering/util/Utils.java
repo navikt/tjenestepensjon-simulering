@@ -95,17 +95,26 @@ public class Utils {
     }
 
     public static String reflectionToString(Object object) {
+        return reflectionToString(object, 0);
+    }
+
+    public static String reflectionToString(Object object, int tabindex) {
         StringBuilder stringBuilder = new StringBuilder();
         Field[] fields = object.getClass().getDeclaredFields();
+        stringBuilder.append(object.getClass().getSimpleName()).append(": {").append("\n");
         for (Field property : fields) {
+            int parentTab = tabindex;
+            for (int i = 0; i < parentTab + 1; i++) {
+                stringBuilder.append("\t");
+            }
             makeAccessible(property);
             Object value = getField(property, object);
             if (value != null && value.getClass().getPackageName().contains("no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering")) {
-                stringBuilder.append(reflectionToString(value));
+                stringBuilder.append(reflectionToString(value, parentTab + 1));
             } else if (value instanceof List) {
                 ((List) value).forEach(o -> {
                     if (property.getGenericType().getTypeName().contains("no.nav")) {
-                        stringBuilder.append(reflectionToString(o));
+                        stringBuilder.append(reflectionToString(o, parentTab +1));
                     } else {
                         append(stringBuilder, property.getName(), o);
                     }
@@ -114,6 +123,10 @@ public class Utils {
                 append(stringBuilder, property.getName(), value);
             }
         }
+        for (int i = 0; i < tabindex; i++) {
+            stringBuilder.append("\t");
+        }
+        stringBuilder.append("}").append("\n");
         return stringBuilder.toString();
     }
 
