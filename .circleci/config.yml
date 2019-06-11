@@ -22,7 +22,8 @@ jobs:
             git clone https://github.com/navikt/github-apps-support.git
             export PATH=`pwd`/github-apps-support/bin:$PATH
             echo $GITHUB_APP_KEY | tr '_' '\n' > peonci.key
-            export GITHUB_APP_TOKEN=$(generate-installation-token.sh `generate-jwt.sh peonci.key 23087`)
+            echo 'export GITHUB_APP_TOKEN=$(generate-installation-token.sh `generate-jwt.sh peonci.key 23087`)' >> $BASH_ENV
+            source $BASH_ENV
             rm peonci.key
       - run:
           name: release
