@@ -13,6 +13,7 @@ import org.springframework.ws.soap.SoapFaultDetailElement;
 import org.springframework.ws.soap.SoapMessage;
 
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.felles.v1.StelvioFault;
+import no.nav.tjenestepensjon.simulering.exceptions.SoapFaultException;
 
 @Component
 public class SoapFaultHandler implements FaultMessageResolver {
@@ -26,7 +27,6 @@ public class SoapFaultHandler implements FaultMessageResolver {
 
     @Override
     public void resolveFault(WebServiceMessage message) {
-        LOG.info("RESOLVING FAULT MESSAGE");
         SoapFaultException exception;
         SoapMessage soapMessage = (SoapMessage) message;
         SoapFault soapFault = soapMessage.getSoapBody().getFault();
@@ -41,15 +41,5 @@ public class SoapFaultHandler implements FaultMessageResolver {
             LOG.warn("Could not resolve known error from SoapFaultDetail. Resolved from SaopFault: {}", exception.toString());
         }
         throw exception;
-    }
-
-    static class SoapFaultException extends RuntimeException {
-
-        SoapFaultException(String exception, String message) {
-            super("SoapFaultException{" +
-                    "exception=" + exception +
-                    ", message='" + message + '\'' +
-                    '}');
-        }
     }
 }

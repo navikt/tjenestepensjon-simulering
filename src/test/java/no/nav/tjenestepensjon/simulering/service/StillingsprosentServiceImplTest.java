@@ -56,14 +56,14 @@ class StillingsprosentServiceImplTest {
     @Test
     void shouldRetrieveFromTpRegisterAsync() {
         when(asyncExecutor.executeAsync(any(Map.class))).thenReturn(mock(AsyncResponse.class));
-        stillingsprosentService.getStillingsprosentListe("123", Map.of(new TPOrdning("1", "1"), new TpLeverandor("name","url", SOAP)));
+        stillingsprosentService.getStillingsprosentListe("123", Map.of(new TPOrdning("1", "1"), new TpLeverandor("name", "url", SOAP)));
         verify(asyncExecutor).executeAsync(any(Map.class));
     }
 
     @Test
     void handlesMetrics() {
         when(asyncExecutor.executeAsync(any(Map.class))).thenReturn(mock(AsyncResponse.class));
-        stillingsprosentService.getStillingsprosentListe("123", Map.of(new TPOrdning("1", "1"), new TpLeverandor("name","url", SOAP)));
+        stillingsprosentService.getStillingsprosentListe("123", Map.of(new TPOrdning("1", "1"), new TpLeverandor("name", "url", SOAP)));
         verify(metrics).incrementCounter(eq(APP_NAME), eq(APP_TOTAL_STILLINGSPROSENT_CALLS));
         verify(metrics).incrementCounter(eq(APP_NAME), eq(APP_TOTAL_STILLINGSPROSENT_TIME), any(Double.class));
     }

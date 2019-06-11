@@ -1,9 +1,10 @@
 package no.nav.tjenestepensjon.simulering.service;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException;
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException;
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException;
+import no.nav.tjenestepensjon.simulering.exceptions.SoapFaultException;
 import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException;
 import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
@@ -60,40 +62,49 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
             stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.getFnr(), tpOrdningAndLeverandorMap);
 
             if (stillingsprosentResponse.getTpOrdningStillingsprosentMap().size() == 0) {
-                throw new NullPointerException("Could not get response fom any TP-Providers");
+                response.setSimulertPensjonListe(addResponseInfoWhenError("", "Could not get stillingsprosent from any TP-Providers"));
+                return response;
             }
 
-            TPOrdning tpOrdningLatest = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.getTpOrdningStillingsprosentMap());
-            List<SimulertPensjon> simulertPensjonList = simuleringEndPointRouter
-                    .simulerPensjon(request, tpOrdningLatest, tpOrdningAndLeverandorMap.get(tpOrdningLatest), stillingsprosentResponse.getTpOrdningStillingsprosentMap());
-            response.setSimulertPensjonListe(addTpOrdningInfo(simulertPensjonList, stillingsprosentResponse));
+            TPOrdning tpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.getTpOrdningStillingsprosentMap());
+            TpLeverandor tpLeverandor = tpOrdningAndLeverandorMap.get(tpOrdning);
+            List<SimulertPensjon> simulertPensjonList =
+                    simuleringEndPointRouter.simulerPensjon(request, tpOrdning, tpLeverandor, stillingsprosentResponse.getTpOrdningStillingsprosentMap());
+            response.setSimulertPensjonListe(addResponseInfoWhenSimulert(simulertPensjonList, stillingsprosentResponse));
         } catch (DuplicateStillingsprosentEndDateException e) {
-            response.setSimulertPensjonListe(addResponseInfoWhenException(List.of(new SimulertPensjon()), stillingsprosentResponse, "PARF", e));
-        } catch (MissingStillingsprosentException e) {
-            response.setSimulertPensjonListe(addResponseInfoWhenException(List.of(new SimulertPensjon()), stillingsprosentResponse, "IKKE", e));
+            response.setSimulertPensjonListe(addResponseInfoWhenError("PARF", e.getMessage()));
+        } catch (MissingStillingsprosentException | SoapFaultException e) {
+            response.setSimulertPensjonListe(addResponseInfoWhenError("IKKE", e.getMessage()));
         } catch (NoTpOrdningerFoundException e) {
-            return new OutgoingResponse();
+            response.setSimulertPensjonListe(addResponseInfoWhenError("", e.getMessage()));
         }
-
+        LOG.info("Returning response: {}", response.toString());
         return response;
     }
 
-    private List<SimulertPensjon> addResponseInfoWhenException(List<SimulertPensjon> simulertPensjonList, StillingsprosentResponse stillingsprosentResponse, String feilKode,
-            Exception e) {
+    private List<SimulertPensjon> addResponseInfoWhenError(String feilKode, String msg) {
+        List<SimulertPensjon> simulertPensjonList = List.of(new SimulertPensjon());
         simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setFeilkode(feilKode));
-        simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setFeilbeskrivelse(e.getMessage()));
+        simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setFeilbeskrivelse(msg));
         simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setStatus("FEIL"));
-        addTpOrdningInfo(simulertPensjonList, stillingsprosentResponse);
         return simulertPensjonList;
     }
 
-    private List<SimulertPensjon> addTpOrdningInfo(List<SimulertPensjon> simulertPensjonList, StillingsprosentResponse stillingsprosentResponse) {
-        List<String> utelatteTpOrdninger = stillingsprosentResponse.getExceptions().stream()
+    private List<SimulertPensjon> addResponseInfoWhenSimulert(List<SimulertPensjon> simulertPensjonList, StillingsprosentResponse stillingsprosentResponse) {
+        List<String> utelatteTpNr = stillingsprosentResponse.getExceptions().stream()
                 .filter(e -> e.getCause() instanceof StillingsprosentCallableException)
-                .map(e -> ((StillingsprosentCallableException) e.getCause()).getTpOrdning().getTpId()).collect(Collectors.toList());
-        simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setUtelatteTpnr(utelatteTpOrdninger));
-        simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setInkluderteTpnr(stillingsprosentResponse.getTpOrdningStillingsprosentMap().keySet().stream()
-                .map(TPOrdning::getTpId).collect(Collectors.toList())));
+                .map(e -> ((StillingsprosentCallableException) e.getCause()).getTpOrdning().getTpId())
+                .collect(toList());
+        List<String> inkluderteTpNr = stillingsprosentResponse.getTpOrdningStillingsprosentMap().keySet().stream()
+                .map(TPOrdning::getTpId)
+                .collect(toList());
+        simulertPensjonList.forEach(simulertPensjon -> {
+            simulertPensjon.setUtelatteTpnr(utelatteTpNr);
+            simulertPensjon.setInkluderteTpnr(inkluderteTpNr);
+            if (utelatteTpNr.size() > 0) {
+                simulertPensjon.setStatus("UFUL");
+            }
+        });
         return simulertPensjonList;
     }
 

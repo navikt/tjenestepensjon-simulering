@@ -3,8 +3,6 @@ package no.nav.tjenestepensjon.simulering;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -104,23 +102,24 @@ class SimpleSimuleringServiceTest {
     }
 
     @Test
-    void shouldThrowNullpointerIfNoTpOrdningAnswersStillingsprosent() {
+    void shouldAddResponseInfoWhenNoStillingsprosentAvailable() {
         when(asyncExecutor.executeAsync(any())).thenReturn(new AsyncResponse());
         when(stillingsprosentService.getStillingsprosentListe(any(), any())).thenReturn(mock(StillingsprosentResponse.class));
 
-        assertThrows(NullPointerException.class, () -> simuleringService.simuler(request));
+        OutgoingResponse response = simuleringService.simuler(request);
+        assertThat(response.getSimulertPensjonListe().get(0).getStatus(), is("FEIL"));
     }
 
     @Test
-    void shouldReturnEmptyResponseWhenNoTpOrdningerFound() throws Exception {
+    void shouldAddResponseInfoWhenNoTpOrdningFound() throws Exception {
         when(tpRegisterConsumer.getTpOrdningerForPerson(any())).thenThrow(new NoTpOrdningerFoundException("exception"));
 
         OutgoingResponse response = simuleringService.simuler(request);
-        assertThat(response.getSimulertPensjonListe(), is(nullValue()));
+        assertThat(response.getSimulertPensjonListe().get(0).getStatus(), is("FEIL"));
     }
 
     @Test
-    void shouldAddInformationAboutTpNrToResponse() {
+    void shouldAddResponseInfoWhenSimuleringOk() {
         when(asyncExecutor.executeAsync(any())).thenReturn(new AsyncResponse());
         Map<TPOrdning, List<Stillingsprosent>> map = Map.of(new TPOrdning("tssInkluder", "tpInkluder"), List.of(new Stillingsprosent()));
         List<ExecutionException> exceptions = List.of(new ExecutionException(new StillingsprosentCallableException("msg", null, new TPOrdning("tssUtelatt", "tpUtelatt"))));
@@ -131,5 +130,6 @@ class SimpleSimuleringServiceTest {
         OutgoingResponse response = simuleringService.simuler(request);
         assertThat(response.getSimulertPensjonListe().get(0).getUtelatteTpnr().contains("tpUtelatt"), is(true));
         assertThat(response.getSimulertPensjonListe().get(0).getInkluderteTpnr().contains("tpInkluder"), is(true));
+        assertThat(response.getSimulertPensjonListe().get(0).getStatus(), is("UFUL"));
     }
 }
