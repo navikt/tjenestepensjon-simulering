@@ -17,25 +17,19 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
       - run: mvn clean install
       - run:
-          name: github creds
-          command: |
-            git clone https://github.com/navikt/github-apps-support.git
-            export PATH=`pwd`/github-apps-support/bin:$PATH
-            echo "$GITHUB_KEY" | tr '_' '\n' > peonci.key
-            export GITHUB_APP_TOKEN=$(generate-installation-token.sh `generate-jwt.sh peonci.key 23087`)
-            echo -e "machine api.github.com login x-access-token password $GITHUB_APP_TOKEN" > ~/.netrc
-            rm peonci.key
-      - run:
           name: release
           command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
-              docker build . -t navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
-              echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-              docker push navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
-            fi
+            docker build . -t navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker push navikt/tjenestepensjon-simulering:${CIRCLE_SHA1}
       - run:
           name: deploy to preprod
           command: |
+            git clone https://github.com/navikt/github-apps-support.git
+            export PATH=`pwd`/github-apps-support/bin:$PATH
+            echo $GITHUB_APP_KEY | tr '_' '\n' > peonci.key
+            export GITHUB_APP_TOKEN=$(generate-installation-token.sh `generate-jwt.sh peonci.key 23087`)
+            rm peonci.key
             curl -i \
                 -X POST \
                 -d '{
@@ -52,5 +46,5 @@ jobs:
                      }
                    }' \
                 -H "Accept: application/vnd.github.ant-man-preview+json" \
-                -u "$GITHUB_USERNAME":"$GITHUB_TOKEN" \
+                -u "$GITHUB_APP":"$GITHUB_APP_TOKEN" \
                 https://api.github.com/repos/navikt/tjenestepensjon-simulering/deployments
