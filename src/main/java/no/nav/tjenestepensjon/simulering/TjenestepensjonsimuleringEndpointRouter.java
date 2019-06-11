@@ -1,5 +1,12 @@
 package no.nav.tjenestepensjon.simulering;
 
+import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
@@ -7,14 +14,9 @@ import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
 import no.nav.tjenestepensjon.simulering.rest.RestClient;
 import no.nav.tjenestepensjon.simulering.soap.SoapClient;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-
-import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 
 @Component
-public class TjenestepensjonsimuleringEndpointRouter implements Tjenestepensjonsimulering {
+public class TjenestepensjonsimuleringEndpointRouter {
 
     private final SoapClient soapClient;
     private final RestClient restClient;
@@ -24,40 +26,20 @@ public class TjenestepensjonsimuleringEndpointRouter implements Tjenestepensjons
         this.restClient = restClient;
     }
 
-    @Override
-    public List<Stillingsprosent> getStillingsprosenter(String fnr, TPOrdning tpOrdning) {
-
-        List<Stillingsprosent> stillingsprosenter;
-
-        TpLeverandor tpLeverandor = tpOrdning.getTpLeverandor();
-        TpLeverandor.EndpointImpl endpointimpl = tpLeverandor.getImpl();
-
-        if (endpointimpl == SOAP) {
-            System.out.println("Alternative 1 happened");
-            stillingsprosenter = soapClient.getStillingsprosenter(fnr, tpOrdning);
+    public List<Stillingsprosent> getStillingsprosenter(String fnr, TPOrdning tpOrdning, TpLeverandor tpLeverandor) {
+        if (tpLeverandor.getImpl() == SOAP) {
+            return soapClient.getStillingsprosenter(fnr, tpOrdning, tpLeverandor);
+        } else {
+            return restClient.getStillingsprosenter(fnr, tpOrdning, tpLeverandor);
         }
-        else {
-            System.out.println("Alternative 2 happened");
-            stillingsprosenter = restClient.getStillingsprosenter(fnr, tpOrdning);
-        }
-
-        return stillingsprosenter;
     }
 
-    @Override
-    public List<OutgoingResponse.SimulertPensjon> simulerPensjon(IncomingRequest request, List<TPOrdning> tpOrdningList, TPOrdning latest) {
-        List<OutgoingResponse.SimulertPensjon> simuletPensjonListe;
-
-        TpLeverandor tpLeverandor = latest.getTpLeverandor();
-        TpLeverandor.EndpointImpl endpointimpl = tpLeverandor.getImpl();
-
-        if (endpointimpl == SOAP) {
-            simuletPensjonListe = soapClient.simulerPensjon(request, tpOrdningList, latest);
+    public List<OutgoingResponse.SimulertPensjon> simulerPensjon(IncomingRequest request, TPOrdning tpOrdning,
+            TpLeverandor tpLeverandor, Map<TPOrdning, List<Stillingsprosent>> tpOrdningStillingsprosentMap) {
+        if (tpLeverandor.getImpl() == SOAP) {
+            return soapClient.simulerPensjon(request, tpOrdning, tpLeverandor, tpOrdningStillingsprosentMap);
         } else {
-            simuletPensjonListe = restClient.simulerPensjon(request, tpOrdningList, latest);
+            return restClient.simulerPensjon(request, tpOrdning, tpLeverandor, tpOrdningStillingsprosentMap);
         }
-
-        return simuletPensjonListe;
-
     }
 }

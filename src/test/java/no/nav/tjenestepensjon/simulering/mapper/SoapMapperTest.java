@@ -7,12 +7,18 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import static no.nav.tjenestepensjon.simulering.mapper.SoapMapper.findAntallArInntektEtterHeltUttak;
+import static no.nav.tjenestepensjon.simulering.mapper.SoapMapper.findInntektForUttak;
+import static no.nav.tjenestepensjon.simulering.mapper.SoapMapper.findInntektOnDate;
+import static no.nav.tjenestepensjon.simulering.mapper.SoapMapper.mapSimulerTjenestepensjonRequest;
 import static no.nav.tjenestepensjon.simulering.util.Utils.createDate;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -27,6 +33,7 @@ import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.S
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.SimulerTjenestepensjon;
 import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.v1.SimulerOffentligTjenestepensjon;
 import no.nav.tjenestepensjon.simulering.domain.Dateable;
+import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
 import no.nav.tjenestepensjon.simulering.rest.IncomingRequest.Delytelse;
@@ -38,6 +45,7 @@ class SoapMapperTest {
 
     private static IncomingRequest incomingRequest;
     private static final TPOrdning tpOrdning = new TPOrdning("tssId", "tpId");
+    private static final Stillingsprosent stillingsprosent = new Stillingsprosent();
 
     @BeforeAll
     static void beforeAll() {
@@ -49,13 +57,15 @@ class SoapMapperTest {
         incomingRequest.setSimulertAFPPrivat(
                 new SimulerAfpPrivat(245000, 5000d));
         incomingRequest.setInntekter(List.of());
+        stillingsprosent.setDatoFom(LocalDate.now());
+        stillingsprosent.setDatoTom(LocalDate.now());
     }
 
     @Test
     void sholdMapCommonValues() {
         incomingRequest.setSimuleringsperioder(List.of(createSimuleringsperiode(createDate(2020, Calendar.JANUARY, 1), 100)));
 
-        SimulerOffentligTjenestepensjon wrapperWrapper = SoapMapper.mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning, List.of(tpOrdning));
+        SimulerOffentligTjenestepensjon wrapperWrapper = mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning, Map.of(tpOrdning, List.of(stillingsprosent)));
         SimulerOffentligTjenestepensjonRequest wrapper = wrapperWrapper.getRequest();
         SimulerTjenestepensjon request = wrapper.getSimulerTjenestepensjon();
 
@@ -75,7 +85,7 @@ class SoapMapperTest {
         incomingRequest.setSimuleringsperioder(List.of(fulltForsteUttak));
         incomingRequest.setInntekter(List.of(new Inntekt(fulltForsteUttak.getDatoFom(), 55000d)));
 
-        SimulerOffentligTjenestepensjon wrapperWrapper = SoapMapper.mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning, List.of(tpOrdning));
+        SimulerOffentligTjenestepensjon wrapperWrapper = mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning, Map.of(tpOrdning, List.of(stillingsprosent)));
         SimulerOffentligTjenestepensjonRequest wrapper = wrapperWrapper.getRequest();
         SimulerTjenestepensjon request = wrapper.getSimulerTjenestepensjon();
 
@@ -95,7 +105,7 @@ class SoapMapperTest {
         incomingRequest.setSimuleringsperioder(List.of(heltUttak, forsteUttak));
         incomingRequest.setInntekter(List.of(new Inntekt(forsteUttak.getDatoFom(), 55000d), new Inntekt(heltUttak.getDatoFom(), 21000d)));
 
-        SimulerOffentligTjenestepensjon wrapperWrapper = SoapMapper.mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning, List.of(tpOrdning));
+        SimulerOffentligTjenestepensjon wrapperWrapper = mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning, Map.of(tpOrdning, List.of(stillingsprosent)));
         SimulerOffentligTjenestepensjonRequest wrapper = wrapperWrapper.getRequest();
         SimulerTjenestepensjon request = wrapper.getSimulerTjenestepensjon();
 
@@ -133,9 +143,9 @@ class SoapMapperTest {
                 new Inntekt(createDate(2027, Calendar.JULY, 1), 2027d)
         );
 
-        assertThat(SoapMapper.findInntektOnDate(inntektList, createDate(2020, Calendar.JULY, 1)).get().getInntekt(), is(2020d));
-        assertThat(SoapMapper.findInntektOnDate(inntektList, createDate(2029, Calendar.DECEMBER, 1)).get().getInntekt(), is(2029d));
-        assertThat(SoapMapper.findInntektOnDate(inntektList, createDate(2065, Calendar.APRIL, 1)).isPresent(), is(false));
+        assertThat(findInntektOnDate(inntektList, createDate(2020, Calendar.JULY, 1)).get().getInntekt(), is(2020d));
+        assertThat(findInntektOnDate(inntektList, createDate(2029, Calendar.DECEMBER, 1)).get().getInntekt(), is(2029d));
+        assertThat(findInntektOnDate(inntektList, createDate(2065, Calendar.APRIL, 1)).isPresent(), is(false));
     }
 
     @Test
@@ -148,10 +158,10 @@ class SoapMapperTest {
                 new Inntekt(createDate(2027, Calendar.JULY, 1), 2027d)
         );
 
-        assertThat(SoapMapper.findAntallArInntektEtterHeltUttak(inntektList, createDate(2027, Calendar.JULY, 1)), is(2029 - 2027));
-        assertThat(SoapMapper.findAntallArInntektEtterHeltUttak(inntektList, createDate(2018, Calendar.MARCH, 1)), is(2029 - 2018));
-        assertThat(SoapMapper.findAntallArInntektEtterHeltUttak(inntektList, createDate(2029, Calendar.DECEMBER, 1)), is(0));
-        assertThat(SoapMapper.findAntallArInntektEtterHeltUttak(inntektList, createDate(2014, Calendar.DECEMBER, 1)), is(0));
+        assertThat(findAntallArInntektEtterHeltUttak(inntektList, createDate(2027, Calendar.JULY, 1)), is(2029 - 2027));
+        assertThat(findAntallArInntektEtterHeltUttak(inntektList, createDate(2018, Calendar.MARCH, 1)), is(2029 - 2018));
+        assertThat(findAntallArInntektEtterHeltUttak(inntektList, createDate(2029, Calendar.DECEMBER, 1)), is(0));
+        assertThat(findAntallArInntektEtterHeltUttak(inntektList, createDate(2014, Calendar.DECEMBER, 1)), is(0));
     }
 
     @Test
@@ -164,9 +174,9 @@ class SoapMapperTest {
                 new Inntekt(createDate(2027, Calendar.JULY, 1), 2027d)
         );
 
-        assertThat(SoapMapper.findInntektForUttak(inntektList, createDate(2018, Calendar.MARCH, 1)), is(2017));
-        assertThat(SoapMapper.findInntektForUttak(inntektList, createDate(2020, Calendar.JULY, 1)), is(2018));
-        assertThat(SoapMapper.findInntektForUttak(inntektList, createDate(2016, Calendar.JULY, 1)), is(nullValue()));
+        assertThat(findInntektForUttak(inntektList, createDate(2018, Calendar.MARCH, 1)), is(2017));
+        assertThat(findInntektForUttak(inntektList, createDate(2020, Calendar.JULY, 1)), is(2018));
+        assertThat(findInntektForUttak(inntektList, createDate(2016, Calendar.JULY, 1)), is(nullValue()));
     }
 
     @Test

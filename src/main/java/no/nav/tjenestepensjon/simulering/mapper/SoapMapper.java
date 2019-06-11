@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,8 @@ public class SoapMapper {
                 .collect(Collectors.toList());
     }
 
-    public static SimulerOffentligTjenestepensjon mapSimulerTjenestepensjonRequest(IncomingRequest incomingRequest, TPOrdning tpOrdning, List<TPOrdning> tpOrdningList) {
+    public static SimulerOffentligTjenestepensjon mapSimulerTjenestepensjonRequest(IncomingRequest incomingRequest, TPOrdning tpOrdning,
+            Map<TPOrdning, List<Stillingsprosent>> tpOrdningStillingsprosentMap) {
         SimulerOffentligTjenestepensjon wrapperRequest = new SimulerOffentligTjenestepensjon();
         SimulerOffentligTjenestepensjonRequest request = new SimulerOffentligTjenestepensjonRequest();
         SimulerTjenestepensjon simulerTjenestepensjon = new SimulerTjenestepensjon();
@@ -71,7 +73,7 @@ public class SoapMapper {
         simulerTjenestepensjon.setSprak(incomingRequest.getSprak());
         simulerTjenestepensjon.setSimulertAFPOffentlig(incomingRequest.getSimulertAFPOffentlig());
         simulerTjenestepensjon.setSimulertAFPPrivat(mapToSimulertAFPPrivat(incomingRequest.getSimulertAFPPrivat()));
-        simulerTjenestepensjon.getTpForholdListe().addAll(mapToTpForhold(tpOrdningList));
+        simulerTjenestepensjon.getTpForholdListe().addAll(mapToTpForhold(tpOrdningStillingsprosentMap));
 
         Simuleringsperiode forsteUttak = incomingRequest.getSimuleringsperioder().stream().min(Dateable::sortAscendingByFomDato).get();
         Optional<Simuleringsperiode> potentialHeltUttak = incomingRequest.getSimuleringsperioder().stream()

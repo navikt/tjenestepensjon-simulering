@@ -18,38 +18,39 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
 
     private static final Logger LOG = LoggerFactory.getLogger(StillingsprosentCallable.class);
     private final TPOrdning tpOrdning;
+    private final TpLeverandor tpLeverandor;
     private final String fnr;
-    private final TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter;
+    private final TjenestepensjonsimuleringEndpointRouter endpointRouter;
     private final TjenestepensjonSimuleringMetrics metrics;
 
     public StillingsprosentCallable(String fnr, TPOrdning tpOrdning,
-            TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter,
+            TpLeverandor tpLeverandor, TjenestepensjonsimuleringEndpointRouter endpointRouter,
             TjenestepensjonSimuleringMetrics metrics) {
         this.tpOrdning = tpOrdning;
         this.fnr = fnr;
-        this.simuleringEndPointRouter = simuleringEndPointRouter;
+        this.tpLeverandor = tpLeverandor;
+        this.endpointRouter = endpointRouter;
         this.metrics = metrics;
     }
 
     @Override
     public List<Stillingsprosent> call() throws StillingsprosentCallableException {
-        TpLeverandor tpLeverandor = tpOrdning.getTpLeverandor();
         metrics.incrementCounter(tpLeverandor.getName(), TP_TOTAL_STILLINGSPROSENT_CALLS);
         long startTime = metrics.startTime();
         LOG.info("{} getting stillingsprosenter from: {}", Thread.currentThread().getName(), tpLeverandor);
 
         List<Stillingsprosent> stillingsprosenter;
         try {
-            stillingsprosenter = simuleringEndPointRouter.getStillingsprosenter(fnr, tpOrdning);
+            stillingsprosenter = endpointRouter.getStillingsprosenter(fnr, tpOrdning, tpLeverandor);
         } catch (Exception e) {
-            LOG.warn(e.toString());
-            throw new StillingsprosentCallableException("Call to getStillingsprosenter failed: " + e.getMessage(), e, tpOrdning);
+            StillingsprosentCallableException ex = new StillingsprosentCallableException("Call to getStillingsprosenter failed: " + e.getMessage(), e, tpOrdning);
+            LOG.warn(ex.toString());
+            throw ex;
         }
 
         long elapsed = metrics.elapsedSince(startTime);
         metrics.incrementCounter(tpLeverandor.getName(), TP_TOTAL_STILLINGSPROSENT_TIME, elapsed);
         LOG.info("Retrieved stillingsprosenter from: {} in: {} ms", tpLeverandor, elapsed);
-        tpOrdning.setStillingsprosentList(stillingsprosenter);
         return stillingsprosenter;
     }
 }

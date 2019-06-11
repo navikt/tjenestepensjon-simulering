@@ -1,30 +1,31 @@
 package no.nav.tjenestepensjon.simulering;
 
-        import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST;
-        import static org.junit.jupiter.api.Assertions.assertEquals;
-        import static org.mockito.ArgumentMatchers.any;
-        import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-        import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
+import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST;
+import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 
-        import java.time.LocalDate;
-        import java.util.ArrayList;
-        import java.util.Arrays;
-        import java.util.List;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
-        import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
-        import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
-        import no.nav.tjenestepensjon.simulering.rest.RestClient;
-        import no.nav.tjenestepensjon.simulering.soap.SoapClient;
-        import org.junit.jupiter.api.Test;
-        import org.junit.jupiter.api.extension.ExtendWith;
-        import org.mockito.InjectMocks;
-        import org.mockito.Mock;
-        import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-        import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
-        import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
-        import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
+import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
+import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
+import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
+import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
+import no.nav.tjenestepensjon.simulering.rest.RestClient;
+import no.nav.tjenestepensjon.simulering.soap.SoapClient;
 
 @ExtendWith(MockitoExtension.class)
 class TjenestepensjonsimuleringEndpointRouterTest {
@@ -43,46 +44,52 @@ class TjenestepensjonsimuleringEndpointRouterTest {
 
     @Test
     void call_shall_return_stillingsprosenter_with_soap() {
-        var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", SOAP));
+        var tpOrdning = new TPOrdning("tss1", "tp1");
+        var tpLeverandor = new TpLeverandor("lev", "url1", SOAP);
+
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
 
-        when(soapClient.getStillingsprosenter(any(), any())).thenReturn(stillingsprosenter);
+        when(soapClient.getStillingsprosenter(any(), any(), any())).thenReturn(stillingsprosenter);
 
-        List<Stillingsprosent> result = simuleringEndpointRouter.getStillingsprosenter("fnr1", tpOrdning);
+        List<Stillingsprosent> result = simuleringEndpointRouter.getStillingsprosenter("fnr1", tpOrdning, tpLeverandor);
 
         assertStillingsprosenter(stillingsprosenter, result);
     }
 
     @Test
     void call_shall_return_stillingsprosenter_with_rest() {
-        var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", REST));
+        var tpOrdning = new TPOrdning("tss1", "tp1");
+        var tpLeverandor = new TpLeverandor("lev", "url1", REST);
+
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
 
-        when(restClient.getStillingsprosenter(any(), any())).thenReturn(stillingsprosenter);
+        when(restClient.getStillingsprosenter(any(), any(), any())).thenReturn(stillingsprosenter);
 
-        List<Stillingsprosent> result = simuleringEndpointRouter.getStillingsprosenter("fnr1", tpOrdning);
+        List<Stillingsprosent> result = simuleringEndpointRouter.getStillingsprosenter("fnr1", tpOrdning, tpLeverandor);
 
         assertStillingsprosenter(stillingsprosenter, result);
     }
 
     @Test
     void call_shall_return_simulerPensjon_with_soap() {
-        var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", SOAP));
+        var tpOrdning = new TPOrdning("tss1", "tp1");
+        var tpLeverandor = new TpLeverandor("lev", "url1", SOAP);
 
-        when(soapClient.simulerPensjon(any(), any(), any())).thenReturn(new ArrayList<>());
-        List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, List.of(), tpOrdning);
+        when(soapClient.simulerPensjon(any(), any(), any(), any())).thenReturn(new ArrayList<>());
+        List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, tpOrdning, tpLeverandor, Map.of());
 
-        assertEquals(result, new ArrayList<OutgoingResponse.SimulertPensjon>() );
+        assertEquals(result, new ArrayList<OutgoingResponse.SimulertPensjon>());
     }
 
     @Test
     void call_shall_return_simulerPensjon_with_rest() {
-        var tpOrdning = new TPOrdning("tss1", "tp1", new TpLeverandor("lev", "url1", REST));
+        var tpOrdning = new TPOrdning("tss1", "tp1");
+        var tpLeverandor = new TpLeverandor("lev", "url1", REST);
 
-        when(restClient.simulerPensjon(any(), any(), any())).thenReturn(new ArrayList<>());
-        List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, List.of(), tpOrdning);
+        when(restClient.simulerPensjon(any(), any(), any(), any())).thenReturn(new ArrayList<>());
+        List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, tpOrdning, tpLeverandor, Map.of());
 
-        assertEquals(result, new ArrayList<OutgoingResponse.SimulertPensjon>() );
+        assertEquals(result, new ArrayList<OutgoingResponse.SimulertPensjon>());
     }
 
     private static List<Stillingsprosent> prepareStillingsprosenter() {

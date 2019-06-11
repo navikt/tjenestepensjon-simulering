@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,8 +16,10 @@ import no.nav.tjenestepensjon.simulering.AsyncExecutor;
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
 import no.nav.tjenestepensjon.simulering.StillingsprosentCallable;
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
+import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException;
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException;
 
@@ -31,16 +32,16 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
     private final TjenestepensjonSimuleringMetrics metrics;
 
     public StillingsprosentServiceImpl(AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable> asyncExecutor,
-                                       TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter,
-                                       TjenestepensjonSimuleringMetrics metrics) {
+            TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter,
+            TjenestepensjonSimuleringMetrics metrics) {
         this.asyncExecutor = asyncExecutor;
         this.simuleringEndPointRouter = simuleringEndPointRouter;
         this.metrics = metrics;
     }
 
     @Override
-    public StillingsprosentResponse getStillingsprosentListe(String fnr, List<TPOrdning> tpOrdningList) {
-        Map<TPOrdning, StillingsprosentCallable> callableMap = toCallableMap(fnr, tpOrdningList);
+    public StillingsprosentResponse getStillingsprosentListe(String fnr, Map<TPOrdning, TpLeverandor> tpOrdningAndLeverandorMap) {
+        Map<TPOrdning, StillingsprosentCallable> callableMap = toCallableMap(fnr, tpOrdningAndLeverandorMap);
         metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_CALLS);
         long startTime = metrics.startTime();
         AsyncResponse<TPOrdning, List<Stillingsprosent>> asyncResponse = asyncExecutor.executeAsync(callableMap);
@@ -51,8 +52,7 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
     }
 
     @Override
-    public TPOrdning getLatestFromStillingsprosent(Map<TPOrdning, List<Stillingsprosent>> map)
-            throws DuplicateStillingsprosentEndDateException, MissingStillingsprosentException {
+    public TPOrdning getLatestFromStillingsprosent(Map<TPOrdning, List<Stillingsprosent>> map) throws DuplicateStillingsprosentEndDateException, MissingStillingsprosentException {
         TPOrdning latestOrdning = null;
         Stillingsprosent latestPct = null;
         for (Map.Entry<TPOrdning, List<Stillingsprosent>> entry : map.entrySet()) {
@@ -82,7 +82,7 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
         } else if (latest.getDatoTom() != null && other.getDatoTom() == null) {
             return other;
         } else if (latest.getDatoTom() == null && other.getDatoTom() == null || latest.getDatoTom().isEqual(other.getDatoTom())) {
-            throw new DuplicateStillingsprosentEndDateException("Stillingsprosent");
+            throw new DuplicateStillingsprosentEndDateException("Could not decide latest stillingprosent due to multiple stillingsprosent having the same end date");
         } else if (latest.getDatoTom() == null || latest.getDatoTom().isAfter(other.getDatoTom())) {
             return latest;
         } else if (other.getDatoTom() == null || other.getDatoTom().isAfter(latest.getDatoTom())) {
@@ -92,12 +92,10 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
         }
     }
 
-    private Map<TPOrdning, StillingsprosentCallable> toCallableMap(String fnr, List<TPOrdning> tpOrdninger) {
+    private Map<TPOrdning, StillingsprosentCallable> toCallableMap(String fnr, Map<TPOrdning, TpLeverandor> tpOrdningAndLeverandorMap) {
         Map<TPOrdning, StillingsprosentCallable> callableMap = new HashMap<>();
-
-        tpOrdninger.forEach(tpOrdning -> callableMap.put(tpOrdning,
-                new StillingsprosentCallable(fnr, tpOrdning, simuleringEndPointRouter, metrics)));
-
+        tpOrdningAndLeverandorMap.keySet().forEach(tpOrdning -> callableMap
+                .put(tpOrdning, new StillingsprosentCallable(fnr, tpOrdning, tpOrdningAndLeverandorMap.get(tpOrdning), simuleringEndPointRouter, metrics)));
         return callableMap;
     }
 }

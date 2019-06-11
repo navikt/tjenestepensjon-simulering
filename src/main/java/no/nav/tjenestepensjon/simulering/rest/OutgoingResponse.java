@@ -1,6 +1,5 @@
 package no.nav.tjenestepensjon.simulering.rest;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class OutgoingResponse {
         private List<String> inkluderteOrdninger;
         private String leverandorUrl;
         private List<String> inkluderteTpnr;
-        private List<String> utelatteTpnr = new ArrayList<>();
+        private List<String> utelatteTpnr;
         private String status;
         private String feilkode;
         private String feilbeskrivelse;

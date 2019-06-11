@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import no.nav.tjenestepensjon.simulering.AsyncExecutor;
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
+import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter;
 import no.nav.tjenestepensjon.simulering.consumer.FindTpLeverandorCallable;
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer;
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer;
@@ -33,19 +33,17 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
 
     private final TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter;
     private final StillingsprosentService stillingsprosentService;
-    private final SimulerPensjonService simulerPensjonService;
     private final TpConfigConsumer tpConfigConsumer;
     private final List<TpLeverandor> tpLeverandorList;
     private final TpRegisterConsumer tpRegisterConsumer;
     private final AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor;
 
     public SimpleSimuleringService(TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter, StillingsprosentService stillingsprosentService,
-                                   SimulerPensjonService simulerPensjonService, TpConfigConsumer tpConfigConsumer,
-                                   List<TpLeverandor> tpLeverandorList, TpRegisterConsumer tpRegisterConsumer,
-                                   AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor) {
+            TpConfigConsumer tpConfigConsumer,
+            List<TpLeverandor> tpLeverandorList, TpRegisterConsumer tpRegisterConsumer,
+            AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor) {
         this.simuleringEndPointRouter = simuleringEndPointRouter;
         this.stillingsprosentService = stillingsprosentService;
-        this.simulerPensjonService = simulerPensjonService;
         this.tpConfigConsumer = tpConfigConsumer;
         this.tpLeverandorList = tpLeverandorList;
         this.tpRegisterConsumer = tpRegisterConsumer;
@@ -54,26 +52,25 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
 
     @Override
     public OutgoingResponse simuler(IncomingRequest request) {
-        OutgoingResponse response = createEmpyResponse();
+        OutgoingResponse response = new OutgoingResponse();
+        StillingsprosentResponse stillingsprosentResponse = null;
         try {
-            List<TPOrdning> tpOrdningList = getTpOrdningerAndLeverandor(request.getFnr());
-            StillingsprosentResponse stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.getFnr(), tpOrdningList);
-            handleStillingsprosentExceptions(response, stillingsprosentResponse);
-            TPOrdning latest = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.getTpOrdningListMap());
-            List<SimulertPensjon> simulertPensjonList = simuleringEndPointRouter.simulerPensjon(request, tpOrdningList, latest);
-            response.setSimulertPensjonListe(simulertPensjonList);
+            List<TPOrdning> tpOrdningList = tpRegisterConsumer.getTpOrdningerForPerson(request.getFnr());
+            Map<TPOrdning, TpLeverandor> tpOrdningAndLeverandorMap = getTpLeverandorer(tpOrdningList);
+            stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.getFnr(), tpOrdningAndLeverandorMap);
+
+            if (stillingsprosentResponse.getTpOrdningStillingsprosentMap().size() == 0) {
+                throw new NullPointerException("Could not get response fom any TP-Providers");
+            }
+
+            TPOrdning tpOrdningLatest = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.getTpOrdningStillingsprosentMap());
+            List<SimulertPensjon> simulertPensjonList = simuleringEndPointRouter
+                    .simulerPensjon(request, tpOrdningLatest, tpOrdningAndLeverandorMap.get(tpOrdningLatest), stillingsprosentResponse.getTpOrdningStillingsprosentMap());
+            response.setSimulertPensjonListe(addTpOrdningInfo(simulertPensjonList, stillingsprosentResponse));
         } catch (DuplicateStillingsprosentEndDateException e) {
-            for (var simulertPensjon : response.getSimulertPensjonListe()) {
-                simulertPensjon.setStatus("FEIL");
-                simulertPensjon.setFeilkode("PARF");
-            }
-            return response;
+            response.setSimulertPensjonListe(addResponseInfoWhenException(List.of(new SimulertPensjon()), stillingsprosentResponse, "PARF", e));
         } catch (MissingStillingsprosentException e) {
-            for (var simulertPensjon : response.getSimulertPensjonListe()) {
-                simulertPensjon.setStatus("FEIL");
-                simulertPensjon.setFeilkode("IKKE");
-            }
-            return response;
+            response.setSimulertPensjonListe(addResponseInfoWhenException(List.of(new SimulertPensjon()), stillingsprosentResponse, "IKKE", e));
         } catch (NoTpOrdningerFoundException e) {
             return new OutgoingResponse();
         }
@@ -81,32 +78,29 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
         return response;
     }
 
-    private void handleStillingsprosentExceptions(OutgoingResponse response, StillingsprosentResponse stillingsprosentResponse) {
-        response.getSimulertPensjonListe().get(0).setUtelatteTpnr(stillingsprosentResponse.getExceptions().stream()
+    private List<SimulertPensjon> addResponseInfoWhenException(List<SimulertPensjon> simulertPensjonList, StillingsprosentResponse stillingsprosentResponse, String feilKode,
+            Exception e) {
+        simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setFeilkode(feilKode));
+        simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setFeilbeskrivelse(e.getMessage()));
+        simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setStatus("FEIL"));
+        addTpOrdningInfo(simulertPensjonList, stillingsprosentResponse);
+        return simulertPensjonList;
+    }
+
+    private List<SimulertPensjon> addTpOrdningInfo(List<SimulertPensjon> simulertPensjonList, StillingsprosentResponse stillingsprosentResponse) {
+        List<String> utelatteTpOrdninger = stillingsprosentResponse.getExceptions().stream()
                 .filter(e -> e.getCause() instanceof StillingsprosentCallableException)
-                .map(e -> ((StillingsprosentCallableException) e.getCause()).getTpOrdning().getTpId()).collect(Collectors.toList()));
-        if (stillingsprosentResponse.getExceptions().size() > 0) {
-            stillingsprosentResponse.getExceptions().forEach(e -> LOG.error(e.toString()));
-        }
-        if (stillingsprosentResponse.getTpOrdningListMap().size() == 0) {
-            throw new NullPointerException("Could not get response fom any TP-Providers");
-        }
+                .map(e -> ((StillingsprosentCallableException) e.getCause()).getTpOrdning().getTpId()).collect(Collectors.toList());
+        simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setUtelatteTpnr(utelatteTpOrdninger));
+        simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setInkluderteTpnr(stillingsprosentResponse.getTpOrdningStillingsprosentMap().keySet().stream()
+                .map(TPOrdning::getTpId).collect(Collectors.toList())));
+        return simulertPensjonList;
     }
 
-    private OutgoingResponse createEmpyResponse() {
-        OutgoingResponse response = new OutgoingResponse();
-        SimulertPensjon simulertPensjon = new SimulertPensjon();
-        response.setSimulertPensjonListe(List.of(simulertPensjon));
-        return response;
-    }
-
-    private List<TPOrdning> getTpOrdningerAndLeverandor(String fnr) throws NoTpOrdningerFoundException {
-        List<TPOrdning> tpOrdningList = tpRegisterConsumer.getTpOrdningerForPerson(fnr);
+    private Map<TPOrdning, TpLeverandor> getTpLeverandorer(List<TPOrdning> tpOrdningList) {
         Map<TPOrdning, FindTpLeverandorCallable> callableMap = new HashMap<>();
         tpOrdningList.forEach(tpOrdning -> callableMap.put(tpOrdning, new FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorList)));
         AsyncResponse<TPOrdning, TpLeverandor> asyncResponse = asyncExecutor.executeAsync(callableMap);
-        tpOrdningList.forEach(tpOrdning -> tpOrdning.setTpLeverandor(asyncResponse.getResultMap().get(tpOrdning)));
-        LOG.info("GOT TP ORDNINGER {} FOR USER {}", tpOrdningList.toString(), fnr);
-        return tpOrdningList;
+        return asyncResponse.getResultMap();
     }
 }

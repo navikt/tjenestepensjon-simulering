@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -32,10 +34,8 @@ class SoapClientTest {
         when(template.marshalSendAndReceive(any(HentStillingsprosentListe.class), any())).thenReturn(new TestResponse(stillingsprosenter));
         when(tokenClient.getSamlAccessToken()).thenReturn(new TokenImpl());
         SoapClient client = new SoapClient(template, tokenClient);
-        TPOrdning tpOrdning = new TPOrdning("tss1", "tpnr1");
-        tpOrdning.setTpLeverandor(new TpLeverandor("name", "url", TpLeverandor.EndpointImpl.SOAP));
 
-        List<Stillingsprosent> result = client.getStillingsprosenter("fnr1", tpOrdning);
+        List<Stillingsprosent> result = client.getStillingsprosenter("fnr1", new TPOrdning("tssid", "tpid"), new TpLeverandor("name", "url", SOAP));
 
         assertStillingsprosenter(result, stillingsprosenter);
     }

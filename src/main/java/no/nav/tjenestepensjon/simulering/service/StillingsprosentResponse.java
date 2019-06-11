@@ -8,17 +8,17 @@ import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 
 public class StillingsprosentResponse {
-    private final Map<TPOrdning, List<Stillingsprosent>> tpOrdningListMap;
+    private final Map<TPOrdning, List<Stillingsprosent>> tpOrdningStillingsprosentMap;
     private final List<ExecutionException> exceptions;
 
     public StillingsprosentResponse(
-            Map<TPOrdning, List<Stillingsprosent>> tpOrdningListMap, List<ExecutionException> exceptions) {
-        this.tpOrdningListMap = tpOrdningListMap;
+            Map<TPOrdning, List<Stillingsprosent>> tpOrdningStillingsprosentMap, List<ExecutionException> exceptions) {
+        this.tpOrdningStillingsprosentMap = tpOrdningStillingsprosentMap;
         this.exceptions = exceptions;
     }
 
-    public Map<TPOrdning, List<Stillingsprosent>> getTpOrdningListMap() {
-        return tpOrdningListMap;
+    public Map<TPOrdning, List<Stillingsprosent>> getTpOrdningStillingsprosentMap() {
+        return tpOrdningStillingsprosentMap;
     }
 
     public List<ExecutionException> getExceptions() {

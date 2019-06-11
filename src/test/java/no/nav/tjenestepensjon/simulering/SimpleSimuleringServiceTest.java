@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
@@ -16,12 +15,11 @@ import static no.nav.tjenestepensjon.simulering.rest.OutgoingResponse.SimulertPe
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
-import no.nav.tjenestepensjon.simulering.service.SimulerPensjonService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,6 +31,7 @@ import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException;
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException;
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException;
+import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException;
 import no.nav.tjenestepensjon.simulering.rest.IncomingRequest;
 import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse;
 import no.nav.tjenestepensjon.simulering.service.SimpleSimuleringService;
@@ -49,9 +48,7 @@ class SimpleSimuleringServiceTest {
     @Mock
     private StillingsprosentService stillingsprosentService;
     @Mock
-    private SimulerPensjonService simulerPensjonService;
-    @Mock
-    private TjenestepensjonsimuleringEndpointRouter tjenestepensjonsimuleringEndpointRouter;
+    private TjenestepensjonsimuleringEndpointRouter simuleringEnpointRouter;
     @InjectMocks
     private SimpleSimuleringService simuleringService;
 
@@ -69,7 +66,7 @@ class SimpleSimuleringServiceTest {
 
         when(tpRegisterConsumer.getTpOrdningerForPerson(any())).thenReturn(List.of(tpOrdning));
         StillingsprosentResponse stillingsprosentResponse = mock(StillingsprosentResponse.class);
-        when(stillingsprosentResponse.getTpOrdningListMap()).thenReturn(Map.of(tpOrdning, List.of(new Stillingsprosent())));
+        when(stillingsprosentResponse.getTpOrdningStillingsprosentMap()).thenReturn(Map.of(tpOrdning, List.of(new Stillingsprosent())));
         when(stillingsprosentService.getStillingsprosentListe(any(), any())).thenReturn(stillingsprosentResponse);
         AsyncResponse<TPOrdning, TpLeverandor> asyncResponse = new AsyncResponse<>();
         asyncResponse.getResultMap().put(tpOrdning, tpLeverandor);
@@ -91,7 +88,7 @@ class SimpleSimuleringServiceTest {
 
         when(tpRegisterConsumer.getTpOrdningerForPerson(any())).thenReturn(List.of(tpOrdning));
         StillingsprosentResponse stillingsprosentResponse = mock(StillingsprosentResponse.class);
-        when(stillingsprosentResponse.getTpOrdningListMap()).thenReturn(Map.of(tpOrdning, List.of(new Stillingsprosent())));
+        when(stillingsprosentResponse.getTpOrdningStillingsprosentMap()).thenReturn(Map.of(tpOrdning, List.of(new Stillingsprosent())));
         when(stillingsprosentService.getStillingsprosentListe(any(), any())).thenReturn(stillingsprosentResponse);
         AsyncResponse<TPOrdning, TpLeverandor> asyncResponse = new AsyncResponse<>();
         asyncResponse.getResultMap().put(tpOrdning, tpLeverandor);
@@ -108,9 +105,8 @@ class SimpleSimuleringServiceTest {
 
     @Test
     void shouldThrowNullpointerIfNoTpOrdningAnswersStillingsprosent() {
-        StillingsprosentResponse mockStillingsprosentResponse = mock(StillingsprosentResponse.class);
-
-        when(stillingsprosentService.getStillingsprosentListe(any(), any())).thenReturn(mockStillingsprosentResponse);
+        when(asyncExecutor.executeAsync(any())).thenReturn(new AsyncResponse());
+        when(stillingsprosentService.getStillingsprosentListe(any(), any())).thenReturn(mock(StillingsprosentResponse.class));
 
         assertThrows(NullPointerException.class, () -> simuleringService.simuler(request));
     }
@@ -124,26 +120,16 @@ class SimpleSimuleringServiceTest {
     }
 
     @Test
-    void shouldMapLeverandorToTPordning() throws Exception {
-        TPOrdning tpOrdning = new TPOrdning("1", "1");
-        TpLeverandor tpLeverandor = new TpLeverandor("lev1", "url1", SOAP);
-
-        when(tpRegisterConsumer.getTpOrdningerForPerson(any())).thenReturn(List.of(tpOrdning));
-        StillingsprosentResponse stillingsprosentResponse = mock(StillingsprosentResponse.class);
-        when(stillingsprosentResponse.getTpOrdningListMap()).thenReturn(Map.of(tpOrdning, List.of(new Stillingsprosent())));
+    void shouldAddInformationAboutTpNrToResponse() {
+        when(asyncExecutor.executeAsync(any())).thenReturn(new AsyncResponse());
+        Map<TPOrdning, List<Stillingsprosent>> map = Map.of(new TPOrdning("tssInkluder", "tpInkluder"), List.of(new Stillingsprosent()));
+        List<ExecutionException> exceptions = List.of(new ExecutionException(new StillingsprosentCallableException("msg", null, new TPOrdning("tssUtelatt", "tpUtelatt"))));
+        StillingsprosentResponse stillingsprosentResponse = new StillingsprosentResponse(map, exceptions);
         when(stillingsprosentService.getStillingsprosentListe(any(), any())).thenReturn(stillingsprosentResponse);
-        AsyncResponse<TPOrdning, TpLeverandor> asyncResponse = new AsyncResponse<>();
-        asyncResponse.getResultMap().put(tpOrdning, tpLeverandor);
-        when(asyncExecutor.executeAsync(any())).thenReturn(asyncResponse);
-        when(stillingsprosentService.getLatestFromStillingsprosent(any())).thenReturn(tpOrdning);
+        when(simuleringEnpointRouter.simulerPensjon(any(), any(), any(), any())).thenReturn(List.of(new SimulertPensjon()));
 
-        ArgumentCaptor<List<TPOrdning>> captor = ArgumentCaptor.forClass(List.class);
-
-        simuleringService.simuler(request);
-
-        verify(stillingsprosentService).getStillingsprosentListe(any(), captor.capture());
-        assertThat(captor.getValue().get(0).getTpLeverandor(), is(notNullValue()));
-        assertThat(captor.getValue().get(0).getTpLeverandor(), is(tpOrdning.getTpLeverandor()));
-        assertThat(captor.getValue().get(0).getTpLeverandor().getName(), is(tpLeverandor.getName()));
+        OutgoingResponse response = simuleringService.simuler(request);
+        assertThat(response.getSimulertPensjonListe().get(0).getUtelatteTpnr().contains("tpUtelatt"), is(true));
+        assertThat(response.getSimulertPensjonListe().get(0).getInkluderteTpnr().contains("tpInkluder"), is(true));
     }
 }

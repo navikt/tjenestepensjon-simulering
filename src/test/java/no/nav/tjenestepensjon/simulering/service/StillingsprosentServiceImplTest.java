@@ -13,6 +13,7 @@ import static no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_NAME;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS;
 import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME;
+import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -31,6 +32,7 @@ import no.nav.tjenestepensjon.simulering.AsyncExecutor;
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
+import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException;
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException;
 
@@ -54,14 +56,14 @@ class StillingsprosentServiceImplTest {
     @Test
     void shouldRetrieveFromTpRegisterAsync() {
         when(asyncExecutor.executeAsync(any(Map.class))).thenReturn(mock(AsyncResponse.class));
-        stillingsprosentService.getStillingsprosentListe("123", List.of(new TPOrdning("1", "1")));
+        stillingsprosentService.getStillingsprosentListe("123", Map.of(new TPOrdning("1", "1"), new TpLeverandor("name","url", SOAP)));
         verify(asyncExecutor).executeAsync(any(Map.class));
     }
 
     @Test
     void handlesMetrics() {
         when(asyncExecutor.executeAsync(any(Map.class))).thenReturn(mock(AsyncResponse.class));
-        stillingsprosentService.getStillingsprosentListe("123", List.of(new TPOrdning("1", "1")));
+        stillingsprosentService.getStillingsprosentListe("123", Map.of(new TPOrdning("1", "1"), new TpLeverandor("name","url", SOAP)));
         verify(metrics).incrementCounter(eq(APP_NAME), eq(APP_TOTAL_STILLINGSPROSENT_CALLS));
         verify(metrics).incrementCounter(eq(APP_NAME), eq(APP_TOTAL_STILLINGSPROSENT_TIME), any(Double.class));
     }
