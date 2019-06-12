@@ -36,7 +36,7 @@ public class TpRegisterConsumerService implements TpRegisterConsumer {
         List<TPOrdning> tpOrdningerFromTpRegisteret = webClient.get()
                 .uri(tpRegisterUrl + "/person/" + fnr + "/tpordninger")
                 .accept(MediaType.APPLICATION_JSON_UTF8)
-                .header("Authorization", "Bearer " + tokenClient.getOidcAccessToken())
+                .header("Authorization", "Bearer " + tokenClient.getOidcAccessToken().getAccessToken())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<TPOrdning>>() {
                 })
