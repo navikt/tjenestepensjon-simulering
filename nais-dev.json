@@ -16,10 +16,12 @@
       "https://tjenestepensjon-simulering.nais.preprod.local"
     ],
     "liveness": {
-      "path": "isAlive"
+      "path": "isAlive",
+      "initialDelay": 35
     },
     "readiness": {
-      "path": "isReady"
+      "path": "isReady",
+      "initialDelay": 35
     },
     "vault": {
       "enabled": true
