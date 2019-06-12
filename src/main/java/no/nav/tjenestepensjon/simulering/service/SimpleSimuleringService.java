@@ -2,6 +2,11 @@ package no.nav.tjenestepensjon.simulering.service;
 
 import static java.util.stream.Collectors.toList;
 
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_NAME;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_FEIL;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_OK;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import no.nav.tjenestepensjon.simulering.AsyncExecutor;
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
+import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
 import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter;
 import no.nav.tjenestepensjon.simulering.consumer.FindTpLeverandorCallable;
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer;
@@ -39,17 +45,19 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
     private final List<TpLeverandor> tpLeverandorList;
     private final TpRegisterConsumer tpRegisterConsumer;
     private final AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor;
+    private final TjenestepensjonSimuleringMetrics metrics;
 
     public SimpleSimuleringService(TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter, StillingsprosentService stillingsprosentService,
             TpConfigConsumer tpConfigConsumer,
             List<TpLeverandor> tpLeverandorList, TpRegisterConsumer tpRegisterConsumer,
-            AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor) {
+            AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor, TjenestepensjonSimuleringMetrics metrics) {
         this.simuleringEndPointRouter = simuleringEndPointRouter;
         this.stillingsprosentService = stillingsprosentService;
         this.tpConfigConsumer = tpConfigConsumer;
         this.tpLeverandorList = tpLeverandorList;
         this.tpRegisterConsumer = tpRegisterConsumer;
         this.asyncExecutor = asyncExecutor;
+        this.metrics = metrics;
     }
 
     @Override
@@ -82,6 +90,7 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
     }
 
     private List<SimulertPensjon> addResponseInfoWhenError(String feilKode, String msg) {
+        metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_FEIL);
         List<SimulertPensjon> simulertPensjonList = List.of(new SimulertPensjon());
         simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setFeilkode(feilKode));
         simulertPensjonList.forEach(simulertPensjon -> simulertPensjon.setFeilbeskrivelse(msg));
@@ -102,6 +111,9 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
             simulertPensjon.setInkluderteTpnr(inkluderteTpNr);
             if (utelatteTpNr.size() > 0) {
                 simulertPensjon.setStatus("UFUL");
+                metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL);
+            } else {
+                metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_OK);
             }
         });
         return simulertPensjonList;

@@ -47,6 +47,8 @@ class SimpleSimuleringServiceTest {
     private StillingsprosentService stillingsprosentService;
     @Mock
     private TjenestepensjonsimuleringEndpointRouter simuleringEnpointRouter;
+    @Mock
+    private TjenestepensjonSimuleringMetrics metrics;
     @InjectMocks
     private SimpleSimuleringService simuleringService;
 
