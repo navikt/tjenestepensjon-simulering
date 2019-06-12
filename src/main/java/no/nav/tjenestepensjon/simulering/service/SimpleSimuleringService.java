@@ -78,7 +78,6 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
         } catch (NoTpOrdningerFoundException e) {
             response.setSimulertPensjonListe(addResponseInfoWhenError("", e.getMessage()));
         }
-        LOG.info("Returning response: {}", response.toString());
         return response;
     }
 

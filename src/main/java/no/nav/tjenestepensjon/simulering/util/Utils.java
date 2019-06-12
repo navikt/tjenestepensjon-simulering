@@ -1,7 +1,10 @@
 package no.nav.tjenestepensjon.simulering.util;
 
+import static java.lang.String.valueOf;
+
 import static org.springframework.util.ReflectionUtils.getField;
 import static org.springframework.util.ReflectionUtils.makeAccessible;
+import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
 
 import java.lang.reflect.Field;
 import java.util.Calendar;
@@ -12,6 +15,8 @@ import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.springframework.web.context.request.RequestContextHolder;
 
 public class Utils {
 
@@ -114,7 +119,7 @@ public class Utils {
             } else if (value instanceof List) {
                 ((List) value).forEach(o -> {
                     if (property.getGenericType().getTypeName().contains("no.nav")) {
-                        stringBuilder.append(reflectionToString(o, parentTab +1));
+                        stringBuilder.append(reflectionToString(o, parentTab + 1));
                     } else {
                         append(stringBuilder, property.getName(), o);
                     }
@@ -136,5 +141,15 @@ public class Utils {
                 .append(":")
                 .append(value != null ? value.toString() : "")
                 .append("\n");
+    }
+
+    public static void addHeaderToRequestContext(String key, String value) {
+        if (value != null) {
+            RequestContextHolder.currentRequestAttributes().setAttribute(key, value, SCOPE_REQUEST);
+        }
+    }
+
+    public static String getHeaderFromRequestContext(String key) {
+        return valueOf(RequestContextHolder.currentRequestAttributes().getAttribute(key, SCOPE_REQUEST));
     }
 }
