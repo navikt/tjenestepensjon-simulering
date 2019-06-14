@@ -25,10 +25,10 @@ import org.springframework.ws.transport.context.TransportContextHolder;
 import org.springframework.ws.transport.http.HttpUrlConnection;
 
 @ExtendWith(MockitoExtension.class)
-class StillingsprosentCallbackTest {
+class SOAPCallbackTest {
 
     private String token = "<saml2:Assertion xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\"></saml2:Assertion>\n";
-    private StillingsprosentCallback callback = new StillingsprosentCallback("soapAction", "tpLeverandorUrl", new String(Base64.getEncoder().encode(token.getBytes())));
+    private SOAPCallback callback = new SOAPCallback("soapAction", "tpLeverandorUrl", new String(Base64.getEncoder().encode(token.getBytes())));
 
     @BeforeAll
     static void beforeAll() {

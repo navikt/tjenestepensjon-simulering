@@ -14,13 +14,13 @@ import org.springframework.ws.soap.addressing.client.ActionCallback;
 import org.springframework.ws.soap.addressing.version.Addressing10;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 
-public class StillingsprosentCallback implements WebServiceMessageCallback {
+public class SOAPCallback implements WebServiceMessageCallback {
 
     private final ActionCallback wsAddressingCallback;
     private final SoapActionCallback soapActionCallback;
     private final SamlHeaderCallback samlHeaderCallback;
 
-    public StillingsprosentCallback(String action, String tpLeverandorUrl, String samlToken) {
+    public SOAPCallback(String action, String tpLeverandorUrl, String samlToken) {
         try {
             this.wsAddressingCallback = new ActionCallback(new URI(""), new Addressing10(), new URI(tpLeverandorUrl));
             this.soapActionCallback = new SoapActionCallback(action);

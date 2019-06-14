@@ -41,7 +41,7 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
     public List<Stillingsprosent> getStillingsprosenter(String fnr, TPOrdning tpOrdning, TpLeverandor tpLeverandor) {
         var response = (HentStillingsprosentListeResponse) webServiceTemplate.marshalSendAndReceive(
                 mapStillingsprosentRequest(fnr, tpOrdning),
-                new StillingsprosentCallback(
+                new SOAPCallback(
                         "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListeRequest",
                         tpLeverandor.getUrl(),
                         tokenClient.getSamlAccessToken().getAccessToken()));
@@ -53,7 +53,7 @@ public class SoapClient extends WebServiceGatewaySupport implements Tjenestepens
             Map<TPOrdning, List<Stillingsprosent>> tpOrdningStillingsprosentMap) {
         var response = (SimulerOffentligTjenestepensjonResponse) webServiceTemplate.marshalSendAndReceive(
                 mapSimulerTjenestepensjonRequest(incomingRequest, tpOrdning, tpOrdningStillingsprosentMap),
-                new StillingsprosentCallback(
+                new SOAPCallback(
                         "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest",
                         tpLeverandor.getUrl(),
                         tokenClient.getSamlAccessToken().getAccessToken()));
