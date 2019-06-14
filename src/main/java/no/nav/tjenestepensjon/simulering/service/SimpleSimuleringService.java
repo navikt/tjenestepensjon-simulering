@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME;
 import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_FEIL;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_MANGEL;
 import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_OK;
 import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL;
 
@@ -111,12 +112,27 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
             simulertPensjon.setInkluderteTpnr(inkluderteTpNr);
             if (utelatteTpNr.size() > 0) {
                 simulertPensjon.setStatus("UFUL");
-                metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL);
-            } else {
-                metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_OK);
             }
         });
+        incrementMetrics(simulertPensjonList, utelatteTpNr);
         return simulertPensjonList;
+    }
+
+    private void incrementMetrics(List<SimulertPensjon> simulertPensjonList, List<String> utelatteTpNr) {
+        boolean ufullstendig = utelatteTpNr.size() > 0;
+        boolean mangelfull = simulertPensjonList.stream()
+                .anyMatch(simulertPensjon -> simulertPensjon.getUtbetalingsperioder().stream()
+                        .anyMatch(utbetalingsperiode -> utbetalingsperiode.getMangelfullSimuleringkode() != null));
+
+        if (ufullstendig) {
+            metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL);
+        }
+        if (mangelfull) {
+            metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_MANGEL);
+        }
+        if (!ufullstendig && !mangelfull) {
+            metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_OK);
+        }
     }
 
     private Map<TPOrdning, TpLeverandor> getTpLeverandorer(List<TPOrdning> tpOrdningList) {

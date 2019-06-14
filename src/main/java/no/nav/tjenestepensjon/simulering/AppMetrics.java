@@ -3,6 +3,7 @@ package no.nav.tjenestepensjon.simulering;
 import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME;
 import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS;
 import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_FEIL;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_MANGEL;
 import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_OK;
 import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_TIME;
 import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL;
@@ -49,8 +50,9 @@ public class AppMetrics {
         appMetrics.put(APP_TOTAL_SIMULERING_CALLS, createCounter(APP_TOTAL_SIMULERING_CALLS, "Totalt antall kall til endepunkt for simulering"));
         appMetrics.put(APP_TOTAL_SIMULERING_TIME, createCounter(APP_TOTAL_SIMULERING_TIME, "Akkumulert responstid for simulering"));
         appMetrics.put(APP_TOTAL_SIMULERING_OK, createCounter(APP_TOTAL_SIMULERING_OK, "Totalt antall fullstendige simuleringer"));
-        appMetrics.put(APP_TOTAL_SIMULERING_UFUL, createCounter(APP_TOTAL_SIMULERING_UFUL, "Totalt antall ufullstendige simuleringer"));
+        appMetrics.put(APP_TOTAL_SIMULERING_UFUL, createCounter(APP_TOTAL_SIMULERING_UFUL, "Totalt antall ufullstendige simuleringer grunnet kommunikasjonsproblemer mot TP Leverandør"));
         appMetrics.put(APP_TOTAL_SIMULERING_FEIL, createCounter(APP_TOTAL_SIMULERING_FEIL, "Totalt antall som ikke kunne simuleres"));
+        appMetrics.put(APP_TOTAL_SIMULERING_MANGEL, createCounter(APP_TOTAL_SIMULERING_MANGEL, "Totalt antall simuleringer med kode for mangelfull simulering"));
         metrics.put(APP_NAME, appMetrics);
     }
 
@@ -136,6 +138,7 @@ public class AppMetrics {
         public static final String APP_TOTAL_SIMULERING_OK = APP_NAME + "_app_simulering_ok";
         public static final String APP_TOTAL_SIMULERING_UFUL = APP_NAME + "_app_simulering_ufullstendig";
         public static final String APP_TOTAL_SIMULERING_FEIL = APP_NAME + "_app_simulering_feil";
+        public static final String APP_TOTAL_SIMULERING_MANGEL = APP_NAME + "_app_simulering_mangel";
         public static final String TP_TOTAL_SIMULERING_CALLS = APP_NAME + "_tp_simulering_calls_";
         public static final String TP_TOTAL_SIMULERING_TIME = APP_NAME + "_tp_simulering_time_";
         public static final String TP_LATEST_SIMULERING_TIME = APP_NAME + "_tp_simulering_time_latest_";

@@ -3,13 +3,19 @@ package no.nav.tjenestepensjon.simulering;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_MANGEL;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL;
 import static no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
 import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 import static no.nav.tjenestepensjon.simulering.rest.OutgoingResponse.SimulertPensjon;
+import static no.nav.tjenestepensjon.simulering.rest.OutgoingResponse.Utbetalingsperiode;
 
 import java.util.List;
 import java.util.Map;
@@ -121,17 +127,49 @@ class SimpleSimuleringServiceTest {
     }
 
     @Test
-    void shouldAddResponseInfoWhenSimuleringOk() {
+    void shouldAddResponseInfoWhenSimuleringReturnsOkStatus() {
         when(asyncExecutor.executeAsync(any())).thenReturn(new AsyncResponse());
         Map<TPOrdning, List<Stillingsprosent>> map = Map.of(new TPOrdning("tssInkluder", "tpInkluder"), List.of(new Stillingsprosent()));
         List<ExecutionException> exceptions = List.of(new ExecutionException(new StillingsprosentCallableException("msg", null, new TPOrdning("tssUtelatt", "tpUtelatt"))));
         StillingsprosentResponse stillingsprosentResponse = new StillingsprosentResponse(map, exceptions);
         when(stillingsprosentService.getStillingsprosentListe(any(), any())).thenReturn(stillingsprosentResponse);
-        when(simuleringEnpointRouter.simulerPensjon(any(), any(), any(), any())).thenReturn(List.of(new SimulertPensjon()));
+
+        SimulertPensjon s1 = new SimulertPensjon();
+        Utbetalingsperiode p1 = new Utbetalingsperiode();
+        s1.setUtbetalingsperioder(List.of(p1));
+
+        when(simuleringEnpointRouter.simulerPensjon(any(), any(), any(), any())).thenReturn(List.of(s1));
 
         OutgoingResponse response = simuleringService.simuler(request);
+
+        verify(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL);
         assertThat(response.getSimulertPensjonListe().get(0).getUtelatteTpnr().contains("tpUtelatt"), is(true));
         assertThat(response.getSimulertPensjonListe().get(0).getInkluderteTpnr().contains("tpInkluder"), is(true));
         assertThat(response.getSimulertPensjonListe().get(0).getStatus(), is("UFUL"));
+    }
+
+    @Test
+    void shouldIncrementMetrics() {
+        when(asyncExecutor.executeAsync(any())).thenReturn(new AsyncResponse());
+        Map<TPOrdning, List<Stillingsprosent>> map = Map.of(new TPOrdning("tssInkluder", "tpInkluder"), List.of(new Stillingsprosent()));
+        StillingsprosentResponse stillingsprosentResponse = new StillingsprosentResponse(map, List.of());
+        when(stillingsprosentService.getStillingsprosentListe(any(), any())).thenReturn(stillingsprosentResponse);
+
+        SimulertPensjon s1 = new SimulertPensjon();
+        Utbetalingsperiode p1 = new Utbetalingsperiode();
+        p1.setMangelfullSimuleringkode("PRIVAT");
+        s1.setUtbetalingsperioder(List.of(p1));
+
+        SimulertPensjon s2 = new SimulertPensjon();
+        Utbetalingsperiode p2 = new Utbetalingsperiode();
+        p2.setMangelfullSimuleringkode("LOPENDE");
+        s2.setUtbetalingsperioder(List.of(p2));
+
+        when(simuleringEnpointRouter.simulerPensjon(any(), any(), any(), any())).thenReturn(List.of(s1, s2));
+
+        OutgoingResponse response = simuleringService.simuler(request);
+
+        verify(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_MANGEL);
+        assertThat(response.getSimulertPensjonListe().get(0).getStatus(), is(nullValue()));
     }
 }
