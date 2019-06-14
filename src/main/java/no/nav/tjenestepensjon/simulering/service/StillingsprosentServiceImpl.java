@@ -1,8 +1,8 @@
 package no.nav.tjenestepensjon.simulering.service;
 
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_NAME;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import no.nav.tjenestepensjon.simulering.AppMetrics;
 import no.nav.tjenestepensjon.simulering.AsyncExecutor;
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
 import no.nav.tjenestepensjon.simulering.StillingsprosentCallable;
-import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
 import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
@@ -29,11 +29,11 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
     private static final Logger LOG = LoggerFactory.getLogger(Stillingsprosent.class);
     private final AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable> asyncExecutor;
     private final TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter;
-    private final TjenestepensjonSimuleringMetrics metrics;
+    private final AppMetrics metrics;
 
     public StillingsprosentServiceImpl(AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable> asyncExecutor,
             TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter,
-            TjenestepensjonSimuleringMetrics metrics) {
+            AppMetrics metrics) {
         this.asyncExecutor = asyncExecutor;
         this.simuleringEndPointRouter = simuleringEndPointRouter;
         this.metrics = metrics;

@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.rest;
 
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_NAME;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS;
 import static no.nav.tjenestepensjon.simulering.util.Utils.addHeaderToRequestContext;
 import static no.nav.tjenestepensjon.simulering.util.Utils.getHeaderFromRequestContext;
 
@@ -15,16 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
+import no.nav.tjenestepensjon.simulering.AppMetrics;
 
 @RestController
 public class SimuleringEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimuleringEndpoint.class);
     private final SimuleringService service;
-    private final TjenestepensjonSimuleringMetrics metrics;
+    private final AppMetrics metrics;
 
-    public SimuleringEndpoint(SimuleringService service, TjenestepensjonSimuleringMetrics metrics) {
+    public SimuleringEndpoint(SimuleringService service, AppMetrics metrics) {
         this.service = service;
         this.metrics = metrics;
     }

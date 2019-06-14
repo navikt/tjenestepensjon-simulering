@@ -2,10 +2,10 @@ package no.nav.tjenestepensjon.simulering.service;
 
 import static java.util.stream.Collectors.toList;
 
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_NAME;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_FEIL;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_OK;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_FEIL;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_OK;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import no.nav.tjenestepensjon.simulering.AppMetrics;
 import no.nav.tjenestepensjon.simulering.AsyncExecutor;
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
-import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
 import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter;
 import no.nav.tjenestepensjon.simulering.consumer.FindTpLeverandorCallable;
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer;
@@ -45,12 +45,12 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
     private final List<TpLeverandor> tpLeverandorList;
     private final TpRegisterConsumer tpRegisterConsumer;
     private final AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor;
-    private final TjenestepensjonSimuleringMetrics metrics;
+    private final AppMetrics metrics;
 
     public SimpleSimuleringService(TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter, StillingsprosentService stillingsprosentService,
             TpConfigConsumer tpConfigConsumer,
             List<TpLeverandor> tpLeverandorList, TpRegisterConsumer tpRegisterConsumer,
-            AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor, TjenestepensjonSimuleringMetrics metrics) {
+            AsyncExecutor<TpLeverandor, FindTpLeverandorCallable> asyncExecutor, AppMetrics metrics) {
         this.simuleringEndPointRouter = simuleringEndPointRouter;
         this.stillingsprosentService = stillingsprosentService;
         this.tpConfigConsumer = tpConfigConsumer;

@@ -1,9 +1,9 @@
 package no.nav.tjenestepensjon.simulering;
 
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_SIMULERING_TIME;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME;
 import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 
 import java.util.List;
@@ -27,9 +27,9 @@ public class TjenestepensjonsimuleringEndpointRouter {
     private static final Logger LOG = LoggerFactory.getLogger(TjenestepensjonsimuleringEndpointRouter.class);
     private final SoapClient soapClient;
     private final RestClient restClient;
-    private final TjenestepensjonSimuleringMetrics metrics;
+    private final AppMetrics metrics;
 
-    public TjenestepensjonsimuleringEndpointRouter(SoapClient soapClient, RestClient restClient, TjenestepensjonSimuleringMetrics metrics) {
+    public TjenestepensjonsimuleringEndpointRouter(SoapClient soapClient, RestClient restClient, AppMetrics metrics) {
         this.soapClient = soapClient;
         this.restClient = restClient;
         this.metrics = metrics;

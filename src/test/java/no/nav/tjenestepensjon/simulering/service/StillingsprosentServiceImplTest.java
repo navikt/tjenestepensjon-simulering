@@ -9,10 +9,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS;
+import static no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME;
 import static no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_NAME;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS;
-import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME;
 import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 
 import java.time.LocalDate;
@@ -28,8 +28,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import no.nav.tjenestepensjon.simulering.AppMetrics;
 import no.nav.tjenestepensjon.simulering.AsyncExecutor;
-import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics;
 import no.nav.tjenestepensjon.simulering.domain.Stillingsprosent;
 import no.nav.tjenestepensjon.simulering.domain.TPOrdning;
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor;
@@ -46,7 +46,7 @@ class StillingsprosentServiceImplTest {
     private static final LocalDate may2019 = LocalDate.of(2019, Month.MAY, 1);
 
     @Mock
-    TjenestepensjonSimuleringMetrics metrics;
+    AppMetrics metrics;
     @Mock
     AsyncExecutor asyncExecutor;
 
