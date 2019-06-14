@@ -2,8 +2,14 @@ package no.nav.tjenestepensjon.simulering;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_SIMULERING_TIME;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS;
+import static no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME;
 import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST;
 import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP;
 
@@ -32,13 +38,12 @@ class TjenestepensjonsimuleringEndpointRouterTest {
 
     @Mock
     IncomingRequest incomingRequest;
-
     @Mock
     private RestClient restClient;
-
     @Mock
     private SoapClient soapClient;
-
+    @Mock
+    private TjenestepensjonSimuleringMetrics metrics;
     @InjectMocks
     private TjenestepensjonsimuleringEndpointRouter simuleringEndpointRouter;
 
@@ -53,6 +58,8 @@ class TjenestepensjonsimuleringEndpointRouterTest {
 
         List<Stillingsprosent> result = simuleringEndpointRouter.getStillingsprosenter("fnr1", tpOrdning, tpLeverandor);
 
+        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), eq(TP_TOTAL_STILLINGSPROSENT_CALLS));
+        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), eq(TP_TOTAL_STILLINGSPROSENT_TIME), any(double.class));
         assertStillingsprosenter(stillingsprosenter, result);
     }
 
@@ -67,6 +74,8 @@ class TjenestepensjonsimuleringEndpointRouterTest {
 
         List<Stillingsprosent> result = simuleringEndpointRouter.getStillingsprosenter("fnr1", tpOrdning, tpLeverandor);
 
+        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), eq(TP_TOTAL_STILLINGSPROSENT_CALLS));
+        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), eq(TP_TOTAL_STILLINGSPROSENT_TIME), any(double.class));
         assertStillingsprosenter(stillingsprosenter, result);
     }
 
@@ -78,6 +87,8 @@ class TjenestepensjonsimuleringEndpointRouterTest {
         when(soapClient.simulerPensjon(any(), any(), any(), any())).thenReturn(new ArrayList<>());
         List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, tpOrdning, tpLeverandor, Map.of());
 
+        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), eq(TP_TOTAL_SIMULERING_CALLS));
+        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), eq(TP_TOTAL_SIMULERING_TIME), any(double.class));
         assertEquals(result, new ArrayList<OutgoingResponse.SimulertPensjon>());
     }
 
@@ -89,6 +100,8 @@ class TjenestepensjonsimuleringEndpointRouterTest {
         when(restClient.simulerPensjon(any(), any(), any(), any())).thenReturn(new ArrayList<>());
         List<OutgoingResponse.SimulertPensjon> result = simuleringEndpointRouter.simulerPensjon(incomingRequest, tpOrdning, tpLeverandor, Map.of());
 
+        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), eq(TP_TOTAL_SIMULERING_CALLS));
+        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), eq(TP_TOTAL_SIMULERING_TIME), any(double.class));
         assertEquals(result, new ArrayList<OutgoingResponse.SimulertPensjon>());
     }
 

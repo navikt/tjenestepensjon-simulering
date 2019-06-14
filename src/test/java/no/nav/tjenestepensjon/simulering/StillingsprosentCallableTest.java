@@ -5,8 +5,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST;
@@ -32,20 +30,17 @@ class StillingsprosentCallableTest {
 
     @Mock
     private TjenestepensjonsimuleringEndpointRouter simuleringEndPointRouter;
-    @Mock
-    private TjenestepensjonSimuleringMetrics metrics;
 
     @Test
     void call_shall_return_stillingsprosenter_with_soap() throws Exception {
         var tpOrdning = new TPOrdning("tss1", "tp1");
         var tpLeverandor = new TpLeverandor("lev", "url1", SOAP);
-        var callable = new StillingsprosentCallable("fnr1", tpOrdning, tpLeverandor, simuleringEndPointRouter, metrics);
+        var callable = new StillingsprosentCallable("fnr1", tpOrdning, tpLeverandor, simuleringEndPointRouter);
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
         when(simuleringEndPointRouter.getStillingsprosenter(any(), any(), any())).thenReturn(stillingsprosenter);
 
         List<Stillingsprosent> result = callable.call();
 
-        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), any());
         assertStillingsprosenter(stillingsprosenter, result);
     }
 
@@ -53,13 +48,12 @@ class StillingsprosentCallableTest {
     void call_shall_return_stillingsprosenter_with_rest() throws Exception {
         var tpOrdning = new TPOrdning("tss1", "tp1");
         var tpLeverandor = new TpLeverandor("lev", "url1", REST);
-        var callable = new StillingsprosentCallable("fnr1", tpOrdning, tpLeverandor, simuleringEndPointRouter, metrics);
+        var callable = new StillingsprosentCallable("fnr1", tpOrdning, tpLeverandor, simuleringEndPointRouter);
         List<Stillingsprosent> stillingsprosenter = prepareStillingsprosenter();
         when(simuleringEndPointRouter.getStillingsprosenter(any(), any(), any())).thenReturn(stillingsprosenter);
 
         List<Stillingsprosent> result = callable.call();
 
-        verify(metrics).incrementCounter(eq(tpLeverandor.getName()), any());
         assertStillingsprosenter(stillingsprosenter, result);
     }
 
@@ -67,7 +61,7 @@ class StillingsprosentCallableTest {
     void exception_shall_be_rethrown_as_StillingsprosentCallableException_with_soap() throws Exception {
         var tpOrdning = new TPOrdning("tss1", "tp1");
         var tpLeverandor = new TpLeverandor("lev", "url1", SOAP);
-        var callable = new StillingsprosentCallable("fnr1", tpOrdning, tpLeverandor, simuleringEndPointRouter, metrics);
+        var callable = new StillingsprosentCallable("fnr1", tpOrdning, tpLeverandor, simuleringEndPointRouter);
         when(simuleringEndPointRouter.getStillingsprosenter(any(), any(), any())).thenThrow(new WebServiceIOException("msg from cause"));
 
         StillingsprosentCallableException exception = assertThrows(StillingsprosentCallableException.class, () -> callable.call());
@@ -79,7 +73,7 @@ class StillingsprosentCallableTest {
     void exception_shall_be_rethrown_as_StillingsprosentCallableException_with_rest() throws Exception {
         var tpOrdning = new TPOrdning("tss1", "tp1");
         var tpLeverandor = new TpLeverandor("lev", "url1", REST);
-        var callable = new StillingsprosentCallable("fnr1", tpOrdning, tpLeverandor, simuleringEndPointRouter, metrics);
+        var callable = new StillingsprosentCallable("fnr1", tpOrdning, tpLeverandor, simuleringEndPointRouter);
         when(simuleringEndPointRouter.getStillingsprosenter(any(), any(), any())).thenThrow(new WebServiceIOException("msg from cause"));
 
         StillingsprosentCallableException exception = assertThrows(StillingsprosentCallableException.class, () -> callable.call());

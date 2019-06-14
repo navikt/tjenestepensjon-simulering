@@ -94,8 +94,8 @@ public class StillingsprosentServiceImpl implements StillingsprosentService {
 
     private Map<TPOrdning, StillingsprosentCallable> toCallableMap(String fnr, Map<TPOrdning, TpLeverandor> tpOrdningAndLeverandorMap) {
         Map<TPOrdning, StillingsprosentCallable> callableMap = new HashMap<>();
-        tpOrdningAndLeverandorMap.keySet().forEach(tpOrdning -> callableMap
-                .put(tpOrdning, new StillingsprosentCallable(fnr, tpOrdning, tpOrdningAndLeverandorMap.get(tpOrdning), simuleringEndPointRouter, metrics)));
+        tpOrdningAndLeverandorMap.keySet()
+                .forEach(tpOrdning -> callableMap.put(tpOrdning, new StillingsprosentCallable(fnr, tpOrdning, tpOrdningAndLeverandorMap.get(tpOrdning), simuleringEndPointRouter)));
         return callableMap;
     }
 }
