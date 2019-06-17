@@ -28,6 +28,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         List<String> jwksUrls = this.jwksUrls.stream().map(URL::toString).collect(Collectors.toList());
         resources.tokenStore(new JwkTokenStore(jwksUrls, null, claimsSetVerifier));
+        resources.resourceId(null); //Avoid audience-claim check.
     }
 
     @Override
