@@ -63,7 +63,7 @@ class TokenClientTest {
     }
 
     @AfterAll
-    static void afterEach() {
+    static void afterAll() {
         wireMockServer.stop();
     }
 }
