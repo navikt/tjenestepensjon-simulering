@@ -1,8 +1,7 @@
 package no.nav.tjenestepensjon.simulering.config;
 
-import java.net.URL;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Map;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,18 +15,17 @@ import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStor
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
-    private final List<URL> jwksUrls;
+    private final Map<String, String> issuerJwksMap;
     private final JwtClaimsSetVerifier claimsSetVerifier;
 
-    public ResourceServerConfig(List<URL> jwksUrls, JwtClaimsSetVerifier claimsSetVerifier) {
-        this.jwksUrls = jwksUrls;
+    public ResourceServerConfig(Map<String, String> issuerJwksMap, JwtClaimsSetVerifier claimsSetVerifier) {
+        this.issuerJwksMap = issuerJwksMap;
         this.claimsSetVerifier = claimsSetVerifier;
     }
 
     @Override
-    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-        List<String> jwksUrls = this.jwksUrls.stream().map(URL::toString).collect(Collectors.toList());
-        resources.tokenStore(new JwkTokenStore(jwksUrls, null, claimsSetVerifier));
+    public void configure(ResourceServerSecurityConfigurer resources) {
+        resources.tokenStore(new JwkTokenStore(new ArrayList<>(issuerJwksMap.values()), null, claimsSetVerifier));
         resources.resourceId(null); //Avoid audience-claim check.
     }
 

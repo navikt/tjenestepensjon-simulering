@@ -5,9 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static no.nav.tjenestepensjon.simulering.config.ClaimSetVerifierConfig.IssuerClaimVerifier;
 
-import java.net.URL;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,11 +24,11 @@ class ClaimSetVerifierConfigTest {
     }
 
     @Test
-    void shouldValidateIssuer() throws Exception {
-        IssuerClaimVerifier invalid = new IssuerClaimVerifier(List.of(new URL("http://bogusissuer.com")));
+    void shouldValidateIssuer() {
+        IssuerClaimVerifier invalid = new IssuerClaimVerifier(Set.of("http://bogusissuer.com"));
         assertThrows(InvalidTokenException.class, () -> invalid.verify(claims));
 
-        IssuerClaimVerifier valid = new IssuerClaimVerifier(List.of(new URL("http://localhost.com:8080")));
+        IssuerClaimVerifier valid = new IssuerClaimVerifier(Set.of("http://localhost.com:8080"));
         assertDoesNotThrow(() -> valid.verify(claims));
     }
 }

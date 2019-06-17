@@ -1,9 +1,8 @@
 package no.nav.tjenestepensjon.simulering.config;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,39 +15,33 @@ import org.springframework.util.CollectionUtils;
 @Configuration
 public class ClaimSetVerifierConfig {
 
-    private final List<URL> jwksUrls;
+    private final Map<String, String> issuerJwksMap;
 
-    public ClaimSetVerifierConfig(List<URL> jwksUrls) {
-        this.jwksUrls = jwksUrls;
+    public ClaimSetVerifierConfig(Map<String, String> issuerJwksMap) {
+        this.issuerJwksMap = issuerJwksMap;
     }
 
     @Bean
     public JwtClaimsSetVerifier claimsSetVerifier() {
-        return new DelegatingJwtClaimsSetVerifier(List.of(new IssuerClaimVerifier(jwksUrls)));
+        return new DelegatingJwtClaimsSetVerifier(List.of(new IssuerClaimVerifier(issuerJwksMap.keySet())));
     }
 
     static class IssuerClaimVerifier implements JwtClaimsSetVerifier {
         private static final String ISS_CLAIM = "iss";
-        private final List<URL> jwksUrls;
+        private final Set<String> issuerUrls;
 
-        public IssuerClaimVerifier(List<URL> jwksUrls) {
-            Assert.notNull(jwksUrls, "jwksUrls cannot be null");
-            Assert.notEmpty(jwksUrls, "jwksUrls cannot be empty");
-            this.jwksUrls = jwksUrls;
-        }
-
-        private static String getHostName(URL url) {
-            String port = url.getPort() != -1 ? ":" + url.getPort() : "";
-            return url.getProtocol() + "://" + url.getHost() + port;
+        public IssuerClaimVerifier(Set<String> issuerUrls) {
+            Assert.notNull(issuerUrls, "issuerUrls cannot be null");
+            Assert.notEmpty(issuerUrls, "issuerUrls cannot be empty");
+            this.issuerUrls = issuerUrls;
         }
 
         @Override
         public void verify(Map<String, Object> claims) {
             if (!CollectionUtils.isEmpty(claims) && claims.containsKey(ISS_CLAIM)) {
                 String jwtIssuer = (String) claims.get(ISS_CLAIM);
-                List<String> hostnames = jwksUrls.stream().map(IssuerClaimVerifier::getHostName).collect(Collectors.toList());
-                if (!hostnames.contains(jwtIssuer)) {
-                    throw new InvalidTokenException("Invalid issuers (iss) claim: " + jwtIssuer);
+                if (!issuerUrls.contains(jwtIssuer)) {
+                    throw new InvalidTokenException("Invalid issuer (iss) claim: " + jwtIssuer);
                 }
             }
         }
