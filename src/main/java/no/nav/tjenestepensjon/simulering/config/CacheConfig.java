@@ -3,15 +3,11 @@ package no.nav.tjenestepensjon.simulering.config;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
 
-import java.util.List;
-
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
-import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,13 +17,6 @@ public class CacheConfig {
 
     public static final String TP_ORDNING_LEVERANDOR_CACHE = "TP_ORDNING_LEVERANDOR_CACHE";
     public static final String TP_ORDNING_PERSON_CACHE = "TP_ORDNING_PERSON_CACHE";
-
-    @Bean
-    public CacheManager cacheManager() {
-        SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
-        simpleCacheManager.setCaches(List.of(tpOrdningLeverandorCache(), tpOrdningPersonCache()));
-        return simpleCacheManager;
-    }
 
     @Bean
     public Cache tpOrdningLeverandorCache() {
