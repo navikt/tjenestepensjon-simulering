@@ -21,6 +21,7 @@ public class CacheConfig {
     @Bean
     public Cache tpOrdningLeverandorCache() {
         return new CaffeineCache(TP_ORDNING_LEVERANDOR_CACHE, Caffeine.newBuilder()
+                .recordStats()
                 .expireAfterWrite(1, DAYS)
                 .build());
     }
@@ -28,6 +29,7 @@ public class CacheConfig {
     @Bean
     public Cache tpOrdningPersonCache() {
         return new CaffeineCache(TP_ORDNING_PERSON_CACHE, Caffeine.newBuilder()
+                .recordStats()
                 .expireAfterWrite(1, HOURS)
                 .build());
     }
