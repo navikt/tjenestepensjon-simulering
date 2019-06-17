@@ -37,7 +37,7 @@ class CacheConfigTest {
         long endTime = System.currentTimeMillis() - startTime;
         String valueFromCache = cacheManager.getCache(TEST_CACHE).get(input, String.class);
 
-        assertThat(endTime > SLEEP_TIME, is(true));
+        assertThat(endTime >= SLEEP_TIME, is(true));
         assertThat(valueFromCache, is(equalTo(value)));
         assertThat(valueFromCache, is("cached"));
 
