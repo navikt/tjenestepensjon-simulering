@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.rest;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,7 +34,7 @@ public class SimuleringEndpointTest {
 
     @Test
     public void endepunkt_kalles_uten_requestbody() throws Exception {
-        mockMvc.perform(get("/simulering").header("Authorization", "Bearer " + getAccessToken())).andExpect(status().isBadRequest());
+        mockMvc.perform(get("/simulering").header(AUTHORIZATION, "Bearer " + getAccessToken())).andExpect(status().isBadRequest());
     }
 
 //    @Test

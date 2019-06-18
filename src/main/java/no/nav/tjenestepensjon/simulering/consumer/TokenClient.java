@@ -1,7 +1,9 @@
 package no.nav.tjenestepensjon.simulering.consumer;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
 
+import static no.nav.tjenestepensjon.simulering.config.WebClientConfig.webClient;
 import static no.nav.tjenestepensjon.simulering.consumer.TokenClient.TokenType.OIDC;
 import static no.nav.tjenestepensjon.simulering.consumer.TokenClient.TokenType.SAML;
 
@@ -28,7 +30,7 @@ public class TokenClient implements TokenServiceConsumer {
     private Token oidcToken;
     private Token samlToken;
 
-    private WebClient webClient = WebClient.create();
+    private WebClient webClient = webClient();
 
     @Value("${SERVICE_USER}")
     public void setUsername(String username) {
@@ -67,7 +69,7 @@ public class TokenClient implements TokenServiceConsumer {
         LOG.info("Getting new access-token for user: {} from: {}", username, getUrlForType(tokenType));
         Token token = webClient.get()
                 .uri(getUrlForType(tokenType))
-                .header("Authorization", "Basic" + " " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()))
+                .header(AUTHORIZATION, "Basic" + " " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()))
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus != OK, clientResponse -> {
                     throw new RuntimeException("Error while retrieving token from provider, returned HttpStatus:" + clientResponse.statusCode().value());

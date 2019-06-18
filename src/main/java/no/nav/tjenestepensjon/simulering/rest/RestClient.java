@@ -1,12 +1,13 @@
 package no.nav.tjenestepensjon.simulering.rest;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
+import static no.nav.tjenestepensjon.simulering.config.WebClientConfig.webClient;
+
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -19,9 +20,7 @@ import no.nav.tjenestepensjon.simulering.rest.OutgoingResponse.SimulertPensjon;
 
 @Component
 public class RestClient implements Tjenestepensjonsimulering {
-    private WebClient webClient = WebClient.create();
-
-    private static final Logger LOG = LoggerFactory.getLogger(RestClient.class);
+    private WebClient webClient = webClient();
 
     private final TokenClient tokenClient;
 
@@ -33,8 +32,7 @@ public class RestClient implements Tjenestepensjonsimulering {
     public List<Stillingsprosent> getStillingsprosenter(String fnr, TPOrdning tpOrdning, TpLeverandor tpLeverandor) {
         return webClient.get()
                 .uri(tpLeverandor.getUrl())
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .header("Authorization", "Bearer " + tokenClient.getOidcAccessToken())
+                .header(AUTHORIZATION, "Bearer " + tokenClient.getOidcAccessToken())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<Stillingsprosent>>() {
                 })
@@ -46,8 +44,7 @@ public class RestClient implements Tjenestepensjonsimulering {
             Map<TPOrdning, List<Stillingsprosent>> tpOrdningStillingsprosentMap) {
         return webClient.get()
                 .uri(tpLeverandor.getUrl())
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .header("Authorization", "Bearer " + tokenClient.getOidcAccessToken())
+                .header(AUTHORIZATION, "Bearer " + tokenClient.getOidcAccessToken())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<SimulertPensjon>>() {
                 })

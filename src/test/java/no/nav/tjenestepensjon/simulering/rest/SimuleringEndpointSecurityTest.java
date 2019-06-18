@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.rest;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -56,14 +57,14 @@ public class SimuleringEndpointSecurityTest {
     @Test
     void secureEndpointUnauthorizedWhenInvalidToken() throws Exception {
         mockMvc.perform(get("/simulering").contentType(MediaType.APPLICATION_JSON).content("{}")
-                .header("Authorization", "Bearer abc1234"))
+                .header(AUTHORIZATION, "Bearer abc1234"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void secureEndpointOkWithValidToken() throws Exception {
         mockMvc.perform(get("/simulering").contentType(MediaType.APPLICATION_JSON).content("{}")
-                .header("Authorization", "Bearer " + getAccessToken()))
+                .header(AUTHORIZATION, "Bearer " + getAccessToken()))
                 .andExpect(status().isOk());
     }
 
