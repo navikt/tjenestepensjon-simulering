@@ -2,6 +2,7 @@ package no.nav.tjenestepensjon.simulering.rest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static no.nav.tjenestepensjon.simulering.config.TokenProviderStub.configureTokenProviderStub;
@@ -50,20 +51,20 @@ public class SimuleringEndpointSecurityTest {
 
     @Test
     void secureEndpointUnauthorizedWhenNoToken() throws Exception {
-        mockMvc.perform(get("/simulering").contentType(MediaType.APPLICATION_JSON).content("{}"))
+        mockMvc.perform(post("/simulering").contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void secureEndpointUnauthorizedWhenInvalidToken() throws Exception {
-        mockMvc.perform(get("/simulering").contentType(MediaType.APPLICATION_JSON).content("{}")
+        mockMvc.perform(post("/simulering").contentType(MediaType.APPLICATION_JSON).content("{}")
                 .header(AUTHORIZATION, "Bearer abc1234"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void secureEndpointOkWithValidToken() throws Exception {
-        mockMvc.perform(get("/simulering").contentType(MediaType.APPLICATION_JSON).content("{}")
+        mockMvc.perform(post("/simulering").contentType(MediaType.APPLICATION_JSON).content("{}")
                 .header(AUTHORIZATION, "Bearer " + getAccessToken()))
                 .andExpect(status().isOk());
     }
