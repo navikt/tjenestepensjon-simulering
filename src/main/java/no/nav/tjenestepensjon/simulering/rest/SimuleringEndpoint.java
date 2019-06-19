@@ -29,7 +29,7 @@ public class SimuleringEndpoint {
         this.metrics = metrics;
     }
 
-    @RequestMapping(value = "/simulering", method = RequestMethod.GET)
+    @RequestMapping(value = "/simulering", method = RequestMethod.POST)
     public ResponseEntity<OutgoingResponse> simuler(@RequestBody IncomingRequest request, @RequestHeader(value = "nav-call-id", required = false) String navCallId) {
         addHeaderToRequestContext("nav-call-id", navCallId);
         LOG.info("Processing nav-call-id: {}, request: {}", getHeaderFromRequestContext("nav-call-id"), request.toString());

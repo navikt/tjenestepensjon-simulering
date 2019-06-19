@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.rest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static no.nav.tjenestepensjon.simulering.config.TokenProviderStub.configureTokenProviderStub;
@@ -62,7 +63,7 @@ public class SimuleringEndpointSecurityTest {
 
     @Test
     void secureEndpointOkWithValidToken() throws Exception {
-        mockMvc.perform(get("/simulering").contentType(MediaType.APPLICATION_JSON).content("{}")
+        mockMvc.perform(post("/simulering").contentType(MediaType.APPLICATION_JSON).content("{}")
                 .header("Authorization", "Bearer " + getAccessToken()))
                 .andExpect(status().isOk());
     }
