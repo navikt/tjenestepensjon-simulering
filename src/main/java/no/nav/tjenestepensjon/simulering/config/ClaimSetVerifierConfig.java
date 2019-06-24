@@ -3,6 +3,7 @@ package no.nav.tjenestepensjon.simulering.config;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,18 +13,20 @@ import org.springframework.security.oauth2.provider.token.store.JwtClaimsSetVeri
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import no.nav.tjenestepensjon.simulering.config.TokenProviderConfig.TokenProvider;
+
 @Configuration
 public class ClaimSetVerifierConfig {
 
-    private final Map<String, String> issuerJwksMap;
+    private final List<TokenProvider> tokenProviders;
 
-    public ClaimSetVerifierConfig(Map<String, String> issuerJwksMap) {
-        this.issuerJwksMap = issuerJwksMap;
+    public ClaimSetVerifierConfig(List<TokenProvider> tokenProviders) {
+        this.tokenProviders = tokenProviders;
     }
 
     @Bean
     public JwtClaimsSetVerifier claimsSetVerifier() {
-        return new DelegatingJwtClaimsSetVerifier(List.of(new IssuerClaimVerifier(issuerJwksMap.keySet())));
+        return new DelegatingJwtClaimsSetVerifier(List.of(new IssuerClaimVerifier(tokenProviders.stream().map(TokenProvider::getIssuer).collect(Collectors.toSet()))));
     }
 
     static class IssuerClaimVerifier implements JwtClaimsSetVerifier {
