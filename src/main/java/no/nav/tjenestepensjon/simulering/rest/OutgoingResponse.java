@@ -132,27 +132,27 @@ public class OutgoingResponse {
     }
 
     public static class Utbetalingsperiode {
-        private Date startDato;
-        private Date sluttDato;
+        private Date datoFom;
+        private Date datoTom;
         private Integer grad;
         private Double arligUtbetaling;
         private String ytelsekode;
         private String mangelfullSimuleringkode;
 
-        public Date getStartDato() {
-            return startDato;
+        public Date getDatoFom() {
+            return datoFom;
         }
 
-        public void setStartDato(Date startDato) {
-            this.startDato = startDato;
+        public void setDatoFom(Date datoFom) {
+            this.datoFom = datoFom;
         }
 
-        public Date getSluttDato() {
-            return sluttDato;
+        public Date getDatoTom() {
+            return datoTom;
         }
 
-        public void setSluttDato(Date sluttDato) {
-            this.sluttDato = sluttDato;
+        public void setDatoTom(Date datoTom) {
+            this.datoTom = datoTom;
         }
 
         public Integer getGrad() {
@@ -190,8 +190,8 @@ public class OutgoingResponse {
         @Override
         public String toString() {
             return "Utbetalingsperiode{" +
-                    "startDato=" + startDato +
-                    ", sluttDato=" + sluttDato +
+                    "datoFom=" + datoFom +
+                    ", datoTom=" + datoTom +
                     ", grad=" + grad +
                     ", arligUtbetaling=" + arligUtbetaling +
                     ", ytelsekode='" + ytelsekode + '\'' +

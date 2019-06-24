@@ -67,8 +67,8 @@ curl -k -X GET https://tjenestepensjon-simulering.nais.preprod.local/simulering 
 #			"feilkode": "...",
 #			"feilbeskrivelse": "...",
 #			"utbetalingsperioder": [{
-#					"startDato": "...",
-#					"sluttDato": "...",
+#					"datoFom": "...",
+#					"datoTom": "...",
 #					"grad": 0,
 #					"arligUtbetaling": 0.0,
 #					"ytelsekode": "...",
