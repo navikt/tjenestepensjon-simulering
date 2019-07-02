@@ -23,7 +23,7 @@ public class StillingsprosentMapper {
         var mappedStillingsprosent = new Stillingsprosent();
         mappedStillingsprosent.setStillingsprosent(stillingsprosent.getStillingsprosent());
         mappedStillingsprosent.setDatoFom(LocalDate.of(datoFom.getYear(), datoFom.getMonth(), datoFom.getDay()));
-        mappedStillingsprosent.setDatoTom(LocalDate.of(datoTom.getYear(), datoTom.getMonth(), datoTom.getDay()));
+        mappedStillingsprosent.setDatoTom(datoTom != null ? LocalDate.of(datoTom.getYear(), datoTom.getMonth(), datoTom.getDay()) : null);
         mappedStillingsprosent.setFaktiskHovedlonn(stillingsprosent.getFaktiskHovedlonn());
         mappedStillingsprosent.setStillingsuavhengigTilleggslonn(stillingsprosent.getStillingsuavhengigTilleggslonn());
         mappedStillingsprosent.setAldersgrense(stillingsprosent.getAldersgrense());
@@ -35,7 +35,8 @@ public class StillingsprosentMapper {
         no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent mapped =
                 new no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent();
         mapped.setDatoFom(convertToXmlGregorianCalendar(Date.from(stillingsprosent.getDatoFom().atStartOfDay(ZoneId.systemDefault()).toInstant())));
-        mapped.setDatoTom(convertToXmlGregorianCalendar(Date.from(stillingsprosent.getDatoTom().atStartOfDay(ZoneId.systemDefault()).toInstant())));
+        mapped.setDatoTom(stillingsprosent.getDatoTom() != null ?
+                convertToXmlGregorianCalendar(Date.from(stillingsprosent.getDatoTom().atStartOfDay(ZoneId.systemDefault()).toInstant())) : null);
         mapped.setAldersgrense(stillingsprosent.getAldersgrense());
         mapped.setFaktiskHovedlonn(stillingsprosent.getFaktiskHovedlonn());
         mapped.setStillingsprosent(stillingsprosent.getStillingsprosent());
