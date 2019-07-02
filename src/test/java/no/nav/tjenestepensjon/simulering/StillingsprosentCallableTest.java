@@ -65,7 +65,7 @@ class StillingsprosentCallableTest {
         when(simuleringEndPointRouter.getStillingsprosenter(any(), any(), any())).thenThrow(new WebServiceIOException("msg from cause"));
 
         StillingsprosentCallableException exception = assertThrows(StillingsprosentCallableException.class, () -> callable.call());
-        assertThat(exception.getMessage(), is("Call to getStillingsprosenter failed: msg from cause"));
+        assertThat(exception.getMessage(), is("Call to getStillingsprosenter failed with exception: org.springframework.ws.client.WebServiceIOException: msg from cause"));
         assertThat(exception.getTpOrdning(), is(tpOrdning));
     }
 
@@ -77,7 +77,7 @@ class StillingsprosentCallableTest {
         when(simuleringEndPointRouter.getStillingsprosenter(any(), any(), any())).thenThrow(new WebServiceIOException("msg from cause"));
 
         StillingsprosentCallableException exception = assertThrows(StillingsprosentCallableException.class, () -> callable.call());
-        assertThat(exception.getMessage(), is("Call to getStillingsprosenter failed: msg from cause"));
+        assertThat(exception.getMessage(), is("Call to getStillingsprosenter failed with exception: org.springframework.ws.client.WebServiceIOException: msg from cause"));
         assertThat(exception.getTpOrdning(), is(tpOrdning));
     }
 
