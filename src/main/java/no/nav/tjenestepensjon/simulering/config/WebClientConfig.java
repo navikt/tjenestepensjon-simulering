@@ -10,8 +10,8 @@ import reactor.netty.tcp.TcpClient;
 
 public class WebClientConfig {
 
-    public static final Integer CONNECT_TIMEOUT_MILLIS = 10000;
-    public static final Integer READ_TIMEOUT_MILLIS = 10000;
+    public static final Integer CONNECT_TIMEOUT_MILLIS = 3000;
+    public static final Integer READ_TIMEOUT_MILLIS = 5000;
 
     public static WebClient webClient() {
         return WebClient.builder()

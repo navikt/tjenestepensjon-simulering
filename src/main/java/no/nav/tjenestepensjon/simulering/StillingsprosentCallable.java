@@ -32,8 +32,9 @@ public class StillingsprosentCallable implements Callable<List<Stillingsprosent>
         try {
             stillingsprosenter = endpointRouter.getStillingsprosenter(fnr, tpOrdning, tpLeverandor);
         } catch (Exception e) {
+            LOG.warn(e.toString());
             StillingsprosentCallableException ex = new StillingsprosentCallableException("Call to getStillingsprosenter failed: " + e.getMessage(), e, tpOrdning);
-            LOG.warn(ex.toString());
+            LOG.warn("Rethrowing as: {}", ex.toString());
             throw ex;
         }
         return stillingsprosenter;
