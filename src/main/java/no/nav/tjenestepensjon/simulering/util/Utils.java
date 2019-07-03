@@ -88,12 +88,20 @@ public class Utils {
         }
     }
 
-    public static Date convertToDato(String fnr, Integer startAlder, Integer startManed) {
-        if (startAlder != null && startManed != null) {
+    public static Date convertToDato(String fnr, Integer alder, Integer maned, boolean manedIsSluttManed) {
+        if (alder != null && maned != null) {
             var startDato = createDayResolutionCalendar(getBirthDate(fnr));
-            startDato.set(Calendar.DATE, 1);
-            startDato.add(Calendar.MONTH, startManed);
-            startDato.add(Calendar.YEAR, startAlder);
+
+            startDato.add(Calendar.MONTH, maned);
+            startDato.add(Calendar.YEAR, alder);
+
+            if (manedIsSluttManed) {
+                startDato.set(Calendar.DATE, startDato.getActualMaximum(Calendar.DATE));
+            }
+            else {
+                startDato.set(Calendar.DATE, 1);
+            }
+
             return startDato.getTime();
         }
         return null;

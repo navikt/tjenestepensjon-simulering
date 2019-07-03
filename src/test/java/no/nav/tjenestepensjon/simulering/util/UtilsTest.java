@@ -54,11 +54,23 @@ class UtilsTest {
     }
 
     @Test
-    void shouldConvertStartAlderMndToDate() {
-        Date date = convertToDato("01016092500", 80, 0);
+    void shouldConvertStartAlderStartManedToDate() {
+        Date date = convertToDato("01016092500", 80, 0, false);
         assertThat(isSameDay(date, createDate(2040, Calendar.JANUARY, 1)), is(true));
 
-        Date noMonthOrYear = convertToDato("01016092500", null, null);
+        Date noMonthOrYear = convertToDato("01016092500", null, null, false);
         assertThat(noMonthOrYear, is(nullValue()));
+    }
+
+    @Test
+    void shouldConvertStartAlderSluttManedToTypicalDate() {
+        Date date = convertToDato("01016092500", 60, 3, true);
+        assertThat(isSameDay(date, createDate(2020, Calendar.APRIL, 30)), is(true));
+    }
+
+    @Test
+    void shouldConvertStartAlderSluttManedToFebruaryDate() {
+        Date date = convertToDato("01016092500", 60, 1, true);
+        assertThat(isSameDay(date, createDate(2020, Calendar.FEBRUARY, 29)), is(true));
     }
 }

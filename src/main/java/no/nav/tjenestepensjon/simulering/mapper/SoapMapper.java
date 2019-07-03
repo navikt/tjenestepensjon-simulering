@@ -121,8 +121,8 @@ public class SoapMapper {
             var utbetalingsperioder = new ArrayList<OutgoingResponse.Utbetalingsperiode>();
             for (var utbetalingsperiode : simulertPensjon.getUtbetalingsperiodeListe()) {
                 var mappedUtbetalingsperiode = new OutgoingResponse.Utbetalingsperiode();
-                mappedUtbetalingsperiode.setDatoFom(convertToDato(fnr, utbetalingsperiode.getStartAlder(), utbetalingsperiode.getStartManed()));
-                mappedUtbetalingsperiode.setDatoTom(convertToDato(fnr, utbetalingsperiode.getSluttAlder(), utbetalingsperiode.getSluttManed()));
+                mappedUtbetalingsperiode.setDatoFom(convertToDato(fnr, utbetalingsperiode.getStartAlder(), utbetalingsperiode.getStartManed(), false));
+                mappedUtbetalingsperiode.setDatoTom(convertToDato(fnr, utbetalingsperiode.getSluttAlder(), utbetalingsperiode.getSluttManed(), true));
                 mappedUtbetalingsperiode.setGrad(utbetalingsperiode.getGrad());
                 mappedUtbetalingsperiode.setArligUtbetaling(utbetalingsperiode.getArligUtbetaling());
                 mappedUtbetalingsperiode.setYtelsekode(utbetalingsperiode.getYtelseKode());
