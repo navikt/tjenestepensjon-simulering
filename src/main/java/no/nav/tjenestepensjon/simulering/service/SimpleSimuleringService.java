@@ -87,6 +87,14 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
         } catch (NoTpOrdningerFoundException e) {
             response.setSimulertPensjonListe(addResponseInfoWhenError("", e.getMessage()));
         }
+
+        for (SimulertPensjon simulering : response.getSimulertPensjonListe()) {
+            for (OutgoingResponse.Utbetalingsperiode periode : simulering.getUtbetalingsperioder()) {
+                LOG.info("DATO FOM: " + periode.getDatoFom());
+                LOG.info("DATO FOM: " + periode.getDatoTom());
+            }
+        }
+
         return response;
     }
 
