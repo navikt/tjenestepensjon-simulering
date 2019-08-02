@@ -1,5 +1,7 @@
 package no.nav.tjenestepensjon.simulering.rest;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 import java.util.List;
 
@@ -132,7 +134,9 @@ public class OutgoingResponse {
     }
 
     public static class Utbetalingsperiode {
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private Date datoFom;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private Date datoTom;
         private Integer grad;
         private Double arligUtbetaling;
