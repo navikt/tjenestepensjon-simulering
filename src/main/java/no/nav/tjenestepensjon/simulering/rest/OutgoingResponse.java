@@ -149,7 +149,8 @@ public class OutgoingResponse {
         }
 
         public void setDatoFom(Date datoFom) {
-            this.datoFom = datoFom.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            if (datoFom != null)
+                this.datoFom = datoFom.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
 
         public LocalDate getDatoTom() {
@@ -157,7 +158,8 @@ public class OutgoingResponse {
         }
 
         public void setDatoTom(Date datoTom) {
-            this.datoTom = datoTom.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            if (datoTom != null)
+                this.datoTom = datoTom.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
 
         public Integer getGrad() {
