@@ -2,8 +2,11 @@ package no.nav.tjenestepensjon.simulering.rest;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class OutgoingResponse {
     private List<SimulertPensjon> simulertPensjonListe;
@@ -134,29 +137,27 @@ public class OutgoingResponse {
     }
 
     public static class Utbetalingsperiode {
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-        private Date datoFom;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-        private Date datoTom;
+        private LocalDate datoFom;
+        private LocalDate datoTom;
         private Integer grad;
         private Double arligUtbetaling;
         private String ytelsekode;
         private String mangelfullSimuleringkode;
 
-        public Date getDatoFom() {
+        public LocalDate getDatoFom() {
             return datoFom;
         }
 
         public void setDatoFom(Date datoFom) {
-            this.datoFom = datoFom;
+            this.datoFom = datoFom.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
 
-        public Date getDatoTom() {
+        public LocalDate getDatoTom() {
             return datoTom;
         }
 
         public void setDatoTom(Date datoTom) {
-            this.datoTom = datoTom;
+            this.datoTom = datoTom.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
 
         public Integer getGrad() {

@@ -215,8 +215,8 @@ class SoapMapperTest {
         assertNull(result.getFeilbeskrivelse());
         assertEquals("TP_INK", result.getInkluderteOrdninger().get(0));
         assertNull(result.getInkluderteTpnr());
-        assertEquals(createDate(2016, Calendar.JUNE, 1), result.getUtbetalingsperioder().get(0).getDatoFom());
-        assertEquals(createDate(2026, Calendar.MAY, 31), result.getUtbetalingsperioder().get(0).getDatoTom());
+        assertEquals(LocalDate.of(2016, 6, 1), result.getUtbetalingsperioder().get(0).getDatoFom());
+        assertEquals(LocalDate.of(2026, 5, 31), result.getUtbetalingsperioder().get(0).getDatoTom());
         assertEquals(100, result.getUtbetalingsperioder().get(0).getGrad());
         assertEquals(84000.0, result.getUtbetalingsperioder().get(0).getArligUtbetaling());
         assertEquals("AFP", result.getUtbetalingsperioder().get(0).getYtelsekode());
