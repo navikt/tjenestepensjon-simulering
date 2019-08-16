@@ -4,13 +4,12 @@ metadata:
   name: tjenestepensjon-simulering
   namespace: default
   labels:
-    team: teampeon
+    team: {{team}}
 spec:
-  image: "navikt/tjenestepensjon-simulering:{{version}}"
+  image: {{version}}
   port: 8080
-  team: teampeon
   ingresses:
-    - "https://tjenestepensjon-simulering.nais.preprod.local"
+    - https://tjenestepensjon-simulering.nais.preprod.local
   liveness:
     path: isAlive
   readiness:
