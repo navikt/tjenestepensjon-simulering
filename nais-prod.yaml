@@ -1,0 +1,32 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: tjenestepensjon-simulering
+  namespace: default
+  labels:
+    team: teampeon
+spec:
+  image: "navikt/tjenestepensjon-simulering:{{version}}"
+  port: 8080
+  team: teampeon
+  ingresses:
+    - "https://tjenestepensjon-simulering.nais.adeo.no"
+  liveness:
+    path: isAlive
+  readiness:
+    path: isReady
+  vault:
+    enabled: true
+  replicas:
+    min: 1
+    max: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi
+  prometheus:
+    enabled: true
+    path: actuator/prometheus
