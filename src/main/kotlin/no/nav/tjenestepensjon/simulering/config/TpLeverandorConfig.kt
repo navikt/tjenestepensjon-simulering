@@ -5,11 +5,10 @@ import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.util.*
-import javax.validation.constraints.NotNull
 
 @Configuration
 class TpLeverandorConfig {
+
     private lateinit var leverandorUrlMap: String
     @Value("\${TP_LEVERANDOR_URL_MAP}")
     fun setLeverandorUrlMap(leverandorUrlMap: String) {

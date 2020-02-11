@@ -35,18 +35,18 @@ workflows:
             branches:
               only:
                 - master
-      - nais/deploy:
-          name: Deploy prod
-          repo: navikt/tjenestepensjon-simulering
-          image: navikt/tjenestepensjon-simulering
-          github-app-id: 23087
-          nais-template: nais-prod.yaml
-          environment: prod-fss
-          team: teampeon
-          build-and-push-docker-image: false
-          requires:
-            - build_and_release
-          filters:
-            branches:
-              only:
-                - master
+#      - nais/deploy:
+#          name: Deploy prod
+#          repo: navikt/tjenestepensjon-simulering
+#          image: navikt/tjenestepensjon-simulering
+#          github-app-id: 23087
+#          nais-template: nais-prod.yaml
+#          environment: prod-fss
+#          team: teampeon
+#          build-and-push-docker-image: false
+#          requires:
+#            - build_and_release
+#          filters:
+#            branches:
+#              only:
+#                - master

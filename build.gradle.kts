@@ -20,25 +20,29 @@ repositories {
 }
 
 dependencies {
-    compile(kotlin("stdlib"))
-    compile(kotlin("reflect"))
-    compile("javax.xml.bind", "jaxb-api", "2.3.1")
-    compile("com.nimbusds", "nimbus-jose-jwt", "2.10.1")
-    compile("org.springframework","spring-context-support", "5.2.3.RELEASE")
-    compile("org.springframework","spring-webflux", "5.2.3.RELEASE")
-    compile("org.springframework.ws", "spring-ws-core", "3.0.8.RELEASE")
-    compile("org.springframework.boot", "spring-boot-starter-web", "2.2.4.RELEASE")
-    compile("org.springframework.security.oauth", "spring-security-oauth2", "2.3.6.RELEASE")
-    compile("org.springframework.security", "spring-security-jwt", "1.0.10.RELEASE")
-    compile("org.projectreactor", "reactor-spring", "1.0.1.RELEASE")
-    compile("io.projectreactor.netty", "reactor-netty", "0.8.6.RELEASE")
-    compile("io.micrometer", "micrometer-registry-prometheus", "1.1.4")
+    implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
+    implementation(kotlin("allopen"))
     implementation("com.fasterxml.jackson.core", "jackson-annotations", "2.10.2")
     implementation("com.github.ben-manes.caffeine", "caffeine", "2.7.0")
-    testCompile("org.mockito", "mockito-junit-jupiter", "2.23.4")
-    testCompile("com.github.tomakehurst", "wiremock-jre8", "2.23.2")
+    implementation("com.sun.xml.messaging.saaj", "saaj-impl", "1.5.1")
+    implementation("com.nimbusds", "nimbus-jose-jwt", "2.10.1")
+    implementation("io.micrometer", "micrometer-registry-prometheus", "1.1.4")
+    implementation("io.projectreactor.netty", "reactor-netty", "0.8.6.RELEASE")
+    implementation("javax.xml.bind", "jaxb-api", "2.3.1")
+    implementation("javax.xml.soap", "javax.xml.soap-api", "1.4.0")
+    implementation("org.projectreactor", "reactor-spring", "1.0.1.RELEASE")
+    implementation("org.springframework","spring-context-support", "5.2.3.RELEASE")
+    implementation("org.springframework","spring-webflux", "5.2.3.RELEASE")
+    implementation("org.springframework.boot", "spring-boot-starter-web", "2.2.4.RELEASE")
+    implementation("org.springframework.security", "spring-security-jwt", "1.0.10.RELEASE")
+    implementation("org.springframework.security.oauth", "spring-security-oauth2", "2.3.6.RELEASE")
+    implementation("org.springframework.ws", "spring-ws-core", "3.0.8.RELEASE")
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
+    testImplementation("com.github.tomakehurst", "wiremock-jre8", "2.23.2")
+    testImplementation("org.mockito", "mockito-junit-jupiter", "2.23.4")
+    testImplementation("org.springframework.boot", "spring-boot-starter-test", "2.2.4.RELEASE")
 }
 
 
@@ -51,10 +55,17 @@ publishing {
 }
 
 tasks {
+    test{
+        useJUnitPlatform()
+    }
+
     compileJava {
         options.encoding = "UTF-8"
     }
     compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+    compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
 }

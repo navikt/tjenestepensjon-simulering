@@ -9,6 +9,7 @@ import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
+import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentMap
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.stereotype.Component
@@ -20,25 +21,25 @@ class RestClient(private val tokenClient: TokenClient) : Tjenestepensjonsimuleri
             fnr: FNR,
             tpOrdning: TPOrdning,
             tpLeverandor: TpLeverandor
-    ) =
+    ): List<Stillingsprosent> =
             webClient.get()
                     .uri(tpLeverandor.url)
                     .header(AUTHORIZATION, "Bearer " + tokenClient.oidcAccessToken)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<List<Stillingsprosent>>() {})
-                    .block()
+                    .block() ?: emptyList()
 
     override fun simulerPensjon(
             request: SimulerPensjonRequest,
             tpOrdning: TPOrdning,
             tpLeverandor: TpLeverandor,
-            tpOrdningStillingsprosentMap: Map<TPOrdning, List<Stillingsprosent>>
-    ) =
+            tpOrdningStillingsprosentMap: TPOrdningStillingsprosentMap
+    ): List<SimulertPensjon> =
             webClient.get()
                     .uri(tpLeverandor.url)
                     .header(AUTHORIZATION, "Bearer " + tokenClient.oidcAccessToken)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<List<SimulertPensjon>>() {})
-                    .block()
+                    .block() ?: emptyList()
 
 }

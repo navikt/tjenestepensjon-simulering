@@ -17,8 +17,8 @@ class ClaimSetVerifierConfig(private val tokenProviders: List<TokenProvider>) {
     internal class IssuerClaimVerifier(private val issuerUrls: Set<String>) : JwtClaimsSetVerifier {
 
         override fun verify(claims: Map<String, Any>) {
-            claims[ISS_CLAIM]?.toString()?.takeUnless(issuerUrls::contains).let {
-                throw InvalidTokenException("Invalid issuer (iss) claim: $it")
+            claims[ISS_CLAIM]?.toString().let {
+                if (it !in issuerUrls) throw InvalidTokenException("Invalid issuer (iss) claim: $it")
             }
         }
 

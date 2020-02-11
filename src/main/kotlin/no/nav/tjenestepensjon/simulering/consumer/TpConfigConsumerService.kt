@@ -8,18 +8,15 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
-class TpConfigConsumerService : TpConfigConsumer {
-    private var tpConfigUrl: String? = null
+class TpConfigConsumerService(
+        @Value("\${TP_CONFIG_URL}") val tpConfigUrl: String
+) : TpConfigConsumer {
     private val webClient = WebClientConfig.webClient()
-    @Value("\${TP_CONFIG_URL}")
-    fun setTpConfigUrl(tpConfigUrl: String?) {
-        this.tpConfigUrl = tpConfigUrl
-    }
 
     @Cacheable(value = [CacheConfig.TP_ORDNING_LEVERANDOR_CACHE])
-    override fun findTpLeverandor(tpOrdning: TPOrdning?) = webClient!!.get()
+    override fun findTpLeverandor(tpOrdning: TPOrdning): String = webClient.get()
             .uri("$tpConfigUrl/tpleverandoer/${tpOrdning.tpId}")
             .retrieve()
             .bodyToMono(String::class.java)
-            .block()
+            .block()!!
 }

@@ -24,6 +24,8 @@ class StillingsprosentCallable(
                 }
     }
 
+    operator fun invoke() = call()
+
     companion object {
         @JvmStatic
         @Suppress("JAVA_CLASS_ON_COMPANION")

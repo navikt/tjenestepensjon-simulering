@@ -7,46 +7,39 @@ import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.ClientResponse
 import java.net.URI
+import java.time.LocalDate.now
 import java.util.*
 
 @Component
 class TokenClient : TokenServiceConsumer {
-    private lateinit var username: String
-    private lateinit var password: String
-    private lateinit var stsUrl: String
-    private var oidcToken: Token = getTokenFromProvider(OIDC)
+    @Value("\${SERVICE_USER}")
+    lateinit var username: String
+
+    @Value("\${SERVICE_USER_PASSWORD}")
+    lateinit var password: String
+
+    @Value("\${STS_URL}")
+    lateinit var stsUrl: String
+
+    private var oidcToken: Token = TokenImpl(expiresIn = 0)
         get() =
-            if (field.isExpired)
+            if (field.isExpired == true)
                 getTokenFromProvider(OIDC).also { field = it }
             else field
 
-    private var samlToken = getTokenFromProvider(SAML)
+    private var samlToken: Token = TokenImpl(expiresIn = 0)
         get() =
-            if (field.isExpired)
+            if (field.isExpired == true)
                 getTokenFromProvider(SAML).also { field = it }
             else field
 
     private val webClient = WebClientConfig.webClient()
-
-    @Value("\${SERVICE_USER}")
-    fun setUsername(username: String) {
-        this.username = username
-    }
-
-    @Value("\${SERVICE_USER_PASSWORD}")
-    fun setPassword(password: String) {
-        this.password = password
-    }
-
-    @Value("\${STS_URL}")
-    fun setStsUrl(stsUrl: String) {
-        this.stsUrl = stsUrl
-    }
 
     @get:Synchronized
     override val oidcAccessToken: Token
@@ -67,7 +60,7 @@ class TokenClient : TokenServiceConsumer {
                 .onStatus({ httpStatus: HttpStatus -> httpStatus != HttpStatus.OK }) { clientResponse: ClientResponse -> throw RuntimeException("Error while retrieving token from provider, returned HttpStatus:" + clientResponse.statusCode().value()) }
                 .bodyToMono(TokenImpl::class.java)
                 .block()
-                .also(::validate)
+                .also(::validate)!!
     }
 
     private fun validate(token: Token) {

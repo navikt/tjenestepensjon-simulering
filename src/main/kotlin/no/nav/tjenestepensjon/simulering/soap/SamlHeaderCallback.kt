@@ -1,6 +1,8 @@
 package no.nav.tjenestepensjon.simulering.soap
 
-import no.nav.tjenestepensjon.simulering.config.ApplicationProperties.SAML_SECURITY_CONTEXT_URL
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import org.springframework.util.Assert
 import org.springframework.ws.WebServiceMessage
 import org.springframework.ws.client.core.WebServiceMessageCallback
@@ -12,7 +14,9 @@ import javax.xml.transform.TransformerConfigurationException
 import javax.xml.transform.TransformerException
 import javax.xml.transform.TransformerFactory
 
-class SamlHeaderCallback(private val token: String?) : WebServiceMessageCallback {
+@Component
+class SamlHeaderCallback(private val token: String?, private val samlConfig: SamlConfig) : WebServiceMessageCallback {
+
     private val transformer = try {
         TransformerFactory.newInstance().newTransformer()
     } catch (e: TransformerConfigurationException) {
@@ -25,7 +29,7 @@ class SamlHeaderCallback(private val token: String?) : WebServiceMessageCallback
         val soapMessage = message as SoapMessage
         transformer.transform(
                 StringSource(String(Base64.getDecoder().decode(token))),
-                soapMessage.soapHeader.addHeaderElement(QName(SAML_SECURITY_CONTEXT_URL, "Security")).result
+                soapMessage.soapHeader.addHeaderElement(QName(samlConfig.samlSecurityContextUrl, "Security")).result
         )
     }
 }

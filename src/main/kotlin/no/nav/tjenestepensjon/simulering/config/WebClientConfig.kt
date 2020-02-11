@@ -11,7 +11,7 @@ import reactor.netty.tcp.TcpClient
 object WebClientConfig {
     private const val CONNECT_TIMEOUT_MILLIS = 3000
     const val READ_TIMEOUT_MILLIS = 5000
-    fun webClient() = WebClient.builder()
+    fun webClient(): WebClient = WebClient.builder()
             .clientConnector(ReactorClientHttpConnector(HttpClient.from(tcpClient())))
             .build()
 

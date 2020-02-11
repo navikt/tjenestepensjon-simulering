@@ -1,43 +1,42 @@
 package no.nav.tjenestepensjon.simulering.config
 
-import AsyncExecutor.AsyncResponse
-import OutgoingResponse.SimulertPensjon
-import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.config.TokenProviderConfig.TokenProvider
-import org.hamcrest.Matchers
-import org.junit.Assert
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 
 internal class TokenProviderConfigTest {
+
     private val tokenProviderConfig: TokenProviderConfig = TokenProviderConfig()
+
     @Test
-    fun shouldCreateListFromDelimitedString() {
+    fun `Should create list from delimited string`() {
         tokenProviderConfig.setIssuerJwksMap("issuer1,http://jwsks1.com|issuer2,jwks2.com,proxyurl:80")
         val tokenProviders: List<TokenProvider> = tokenProviderConfig.createFromEnv()
-        Assert.assertThat(tokenProviders[0].getIssuer(), Matchers.`is`("issuer1"))
-        Assert.assertThat(tokenProviders[0].getJwksUrl(), Matchers.`is`("http://jwsks1.com"))
-        Assert.assertThat(tokenProviders[0].getProxyUrl(), Matchers.`is`(Matchers.nullValue()))
-        Assert.assertThat(tokenProviders[1].getIssuer(), Matchers.`is`("issuer2"))
-        Assert.assertThat(tokenProviders[1].getJwksUrl(), Matchers.`is`("jwks2.com"))
-        Assert.assertThat(tokenProviders[1].getProxyUrl(), Matchers.`is`("proxyurl:80"))
+        assertEquals("issuer1", tokenProviders[0].issuer)
+        assertEquals("http://jwsks1.com", tokenProviders[0].jwksUrl)
+        assertNull(tokenProviders[0].proxyUrl)
+        assertEquals("issuer2", tokenProviders[1].issuer)
+        assertEquals("jwks2.com", tokenProviders[1].jwksUrl)
+        assertEquals("proxyurl:80", tokenProviders[1].proxyUrl)
     }
 
     @Test
-    fun shouldFailIfMissingProperties() {
+    fun `Should fail if missing properties`() {
         tokenProviderConfig.setIssuerJwksMap("issuer1|issuer2,jwks2.com")
-        Assertions.assertThrows(AssertionError::class.java) { tokenProviderConfig.createFromEnv() }
+        assertThrows<AssertionError> { tokenProviderConfig.createFromEnv() }
     }
 
     @Test
-    fun shouldFailIfEmptyProperty() {
+    fun `Should fail if empty property`() {
         tokenProviderConfig.setIssuerJwksMap("issuer1,|issuer2,jwks2.com")
-        Assertions.assertThrows(AssertionError::class.java) { tokenProviderConfig.createFromEnv() }
+        assertThrows<AssertionError> { tokenProviderConfig.createFromEnv() }
     }
 
     @Test
-    fun shouldFailIfInvalidProxyConfig() {
+    fun `Should fail if invalid proxy config`() {
         tokenProviderConfig.setIssuerJwksMap("issuer2,jwks2.com,proxyurl")
-        Assertions.assertThrows(IllegalStateException::class.java) { tokenProviderConfig.createFromEnv() }
+        assertThrows<IllegalStateException> { tokenProviderConfig.createFromEnv() }
     }
 }

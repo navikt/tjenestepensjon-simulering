@@ -21,28 +21,28 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPR
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
 import org.springframework.stereotype.Component
-import java.util.*
-import java.util.function.Consumer
 
 @Component
 class AppMetrics(private val meterRegistry: MeterRegistry, tpLeverandorList: List<TpLeverandor>) {
-    private val metrics: MutableMap<String, Map<String, Meter>> = generateMetrics(tpLeverandorList)
-    private val gaugeValues: MutableMap<String, MutableMap<String, Number>> = HashMap()
+    private val gaugeValues = mutableMapOf<String, MutableMap<String, Number>>()
+    private val metrics: MutableMap<String, MutableMap<String, Meter>> = generateMetrics(tpLeverandorList)
 
     private fun generateMetrics(tpLeverandorList: List<TpLeverandor>) =
-            (tpLeverandorList.map { tpLeverandor -> tpLeverandor.name to metricsFor(tpLeverandor) }
-                    + (APP_NAME to mapOf(
-                    APP_TOTAL_STILLINGSPROSENT_CALLS to createCounter(APP_TOTAL_STILLINGSPROSENT_CALLS, "Totalt antall kall mot stillingsprosent"),
-                    APP_TOTAL_STILLINGSPROSENT_TIME to createCounter(APP_TOTAL_STILLINGSPROSENT_TIME, "Akkumulert responstid for alle kall mot stillingsprosent"),
-                    APP_TOTAL_SIMULERING_CALLS to createCounter(APP_TOTAL_SIMULERING_CALLS, "Totalt antall kall til endepunkt for simulering"),
-                    APP_TOTAL_SIMULERING_TIME to createCounter(APP_TOTAL_SIMULERING_TIME, "Akkumulert responstid for simulering"),
-                    APP_TOTAL_SIMULERING_OK to createCounter(APP_TOTAL_SIMULERING_OK, "Totalt antall fullstendige simuleringer"),
-                    APP_TOTAL_SIMULERING_UFUL to createCounter(APP_TOTAL_SIMULERING_UFUL, "Totalt antall ufullstendige simuleringer grunnet kommunikasjonsproblemer mot TP Leverandør"),
-                    APP_TOTAL_SIMULERING_FEIL to createCounter(APP_TOTAL_SIMULERING_FEIL, "Totalt antall som ikke kunne simuleres"),
-                    APP_TOTAL_SIMULERING_MANGEL to createCounter(APP_TOTAL_SIMULERING_MANGEL, "Totalt antall simuleringer med kode for mangelfull simulering")
-            ))).toMap().toMutableMap()
+            tpLeverandorList.associateBy(TpLeverandor::name).mapValues { (_, tpLeverandor) -> metricsFor(tpLeverandor) }.toMutableMap()
+                    .also {
+                        it[APP_NAME] = mutableMapOf(
+                                APP_TOTAL_STILLINGSPROSENT_CALLS to createCounter(APP_TOTAL_STILLINGSPROSENT_CALLS, "Totalt antall kall mot stillingsprosent"),
+                                APP_TOTAL_STILLINGSPROSENT_TIME to createCounter(APP_TOTAL_STILLINGSPROSENT_TIME, "Akkumulert responstid for alle kall mot stillingsprosent"),
+                                APP_TOTAL_SIMULERING_CALLS to createCounter(APP_TOTAL_SIMULERING_CALLS, "Totalt antall kall til endepunkt for simulering"),
+                                APP_TOTAL_SIMULERING_TIME to createCounter(APP_TOTAL_SIMULERING_TIME, "Akkumulert responstid for simulering"),
+                                APP_TOTAL_SIMULERING_OK to createCounter(APP_TOTAL_SIMULERING_OK, "Totalt antall fullstendige simuleringer"),
+                                APP_TOTAL_SIMULERING_UFUL to createCounter(APP_TOTAL_SIMULERING_UFUL, "Totalt antall ufullstendige simuleringer grunnet kommunikasjonsproblemer mot TP Leverandør"),
+                                APP_TOTAL_SIMULERING_FEIL to createCounter(APP_TOTAL_SIMULERING_FEIL, "Totalt antall som ikke kunne simuleres"),
+                                APP_TOTAL_SIMULERING_MANGEL to createCounter(APP_TOTAL_SIMULERING_MANGEL, "Totalt antall simuleringer med kode for mangelfull simulering")
+                        )
+                    }
 
-    private fun metricsFor(tpLeverandor: TpLeverandor) = mapOf(
+    private fun metricsFor(tpLeverandor: TpLeverandor) = mutableMapOf(
             TP_TOTAL_STILLINGSPROSENT_CALLS to createCounter(TP_TOTAL_STILLINGSPROSENT_CALLS + tpLeverandor.name, "Totalt antall kall mot stillingsprosent for aktuell tp-leverandør"),
             TP_TOTAL_STILLINGSPROSENT_TIME to createCounter(TP_TOTAL_STILLINGSPROSENT_TIME + tpLeverandor.name, "Akkumulert responstid for aktuell tp-leverandør"),
             TP_LATEST_STILLINGSPROSENT_TIME to createGauge(tpLeverandor.name, TP_LATEST_STILLINGSPROSENT_TIME),

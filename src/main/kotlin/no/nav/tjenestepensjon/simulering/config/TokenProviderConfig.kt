@@ -37,7 +37,7 @@ class TokenProviderConfig {
         }
     }
     private fun validateProxyUrl(proxyUrl: String) {
-        if (proxyUrl.count(':'::equals) != 2)
+        if (proxyUrl.count(':'::equals) != 1)
             throw IllegalStateException("Proxy configuration requires both host and port!")
     }
 

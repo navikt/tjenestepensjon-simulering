@@ -3,6 +3,7 @@ package no.nav.tjenestepensjon.simulering.rest
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
+import no.nav.tjenestepensjon.simulering.service.SimuleringService
 import no.nav.tjenestepensjon.simulering.util.getHeaderFromRequestContext
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -24,11 +25,7 @@ class SimuleringEndpoint(private val service: SimuleringService, private val met
         return ResponseEntity(response, HttpStatus.OK)
     }
 
-    interface SimuleringService {
-        fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest): SimulerOffentligTjenestepensjonResponse
-    }
-
-    fun addHeaderToRequestContext(key: String?, value: String?) {
+    fun addHeaderToRequestContext(key: String, value: String?) {
         if (value != null) {
             RequestContextHolder.currentRequestAttributes().setAttribute(key, value, RequestAttributes.SCOPE_REQUEST)
         }

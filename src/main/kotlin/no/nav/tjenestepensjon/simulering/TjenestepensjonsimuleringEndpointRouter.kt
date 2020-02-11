@@ -3,17 +3,17 @@ package no.nav.tjenestepensjon.simulering
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
-import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
+import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
 import no.nav.tjenestepensjon.simulering.rest.RestClient
 import no.nav.tjenestepensjon.simulering.soap.SoapClient
+import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentMap
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -43,13 +43,13 @@ class TjenestepensjonsimuleringEndpointRouter(
             request: SimulerPensjonRequest,
             tpOrdning: TPOrdning,
             tpLeverandor: TpLeverandor,
-            tpOrdningStillingsprosentMap: Map<TPOrdning, List<Stillingsprosent>>
+            tpOrdningStillingsprosentMap: TPOrdningStillingsprosentMap
     ): List<SimulertPensjon> {
         metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_SIMULERING_CALLS)
         val startTime = metrics.startTime()
         LOG.info("{} getting simulering from: {}", Thread.currentThread().name, tpLeverandor)
 
-        val simulertPensjonList: List<SimulertPensjon> = when (tpLeverandor.impl) {
+        val simulertPensjonList = when (tpLeverandor.impl) {
             SOAP -> soapClient
             REST -> restClient
         }.simulerPensjon(request, tpOrdning, tpLeverandor, tpOrdningStillingsprosentMap)

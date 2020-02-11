@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 data class Stillingsprosent @JsonCreator constructor(
         override var datoFom: LocalDate,
-        var datoTom: LocalDate,
+        var datoTom: LocalDate?,
         var stillingsprosent: Double,
         var aldersgrense: Int,
         var faktiskHovedlonn: String,

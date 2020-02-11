@@ -10,18 +10,18 @@ import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter
 import no.nav.tjenestepensjon.simulering.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
-import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.exceptions.*
+import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
+import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
+import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
+import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
-import no.nav.tjenestepensjon.simulering.rest.SimuleringEndpoint.SimuleringService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.Collections.singletonList
 import java.util.concurrent.ExecutionException
-import java.util.function.Consumer
 
 @Service
 class SimpleSimuleringService(

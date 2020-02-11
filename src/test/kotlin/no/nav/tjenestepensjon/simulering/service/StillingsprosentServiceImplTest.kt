@@ -1,169 +1,170 @@
 package no.nav.tjenestepensjon.simulering.service
 
-import AsyncExecutor.AsyncResponse
-import OutgoingResponse.SimulertPensjon
-import no.nav.ekstern.pensjon.tjenester.tjenestepensjonsimulering.meldinger.v1.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse
-import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.StillingsprosentCallable
+import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException
-import org.junit.jupiter.api.Assertions
+import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
+import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
+import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
+import no.nav.tjenestepensjon.simulering.testHelper.safeEq
+import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentCallableMap
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.function.Executable
-import org.mockito.ArgumentMatchers
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate
-import java.time.Month
-import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 internal class StillingsprosentServiceImplTest {
     @Mock
-    var metrics: AppMetrics? = null
+    lateinit var metrics: AppMetrics
+
     @Mock
-    var asyncExecutor: AsyncExecutor? = null
+    lateinit var asyncExecutor: AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable>
+
+    @Mock
+    lateinit var simuleringEndpointRouter: TjenestepensjonsimuleringEndpointRouter
+
     @InjectMocks
-    var stillingsprosentService: StillingsprosentServiceImpl? = null
+    lateinit var stillingsprosentService: StillingsprosentServiceImpl
+
+    private val fnr = FNR("01011234567")
+    private val tpOrdning1 = TPOrdning("1", "1")
+    private val tpOrdning2 = TPOrdning("2", "2")
+    private val tpOrdning3 = TPOrdning("3", "3")
+    private val jan2019 = LocalDate.of(2019, 1, 1)
+    private val feb2019 = LocalDate.of(2019, 2, 1)
+    private val mar2019 = LocalDate.of(2019, 3, 1)
+    private val apr2019 = LocalDate.of(2019, 4, 1)
+    private val may2019 = LocalDate.of(2019, 5, 1)
 
     @Test
-    fun shouldRetrieveFromTpRegisterAsync() {
-        Mockito.`when`(asyncExecutor.executeAsync(ArgumentMatchers.any(MutableMap::class.java))).thenReturn(Mockito.mock(AsyncResponse::class.java))
-        stillingsprosentService.getStillingsprosentListe("123", Map.of(TPOrdning("1", "1"), TpLeverandor("name", "url", SOAP)))
-        Mockito.verify<Any?>(asyncExecutor).executeAsync(ArgumentMatchers.any(MutableMap::class.java))
+    fun `Should retrieve from tp register async`() {
+        Mockito.`when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
+        stillingsprosentService.getStillingsprosentListe(fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", "url", SOAP)))
+        Mockito.verify<AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable>>(asyncExecutor).executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())
     }
 
     @Test
-    fun handlesMetrics() {
-        Mockito.`when`(asyncExecutor.executeAsync(ArgumentMatchers.any(MutableMap::class.java))).thenReturn(Mockito.mock(AsyncResponse::class.java))
-        stillingsprosentService.getStillingsprosentListe("123", Map.of(TPOrdning("1", "1"), TpLeverandor("name", "url", SOAP)))
-        Mockito.verify<Any?>(metrics).incrementCounter(ArgumentMatchers.eq(APP_NAME), ArgumentMatchers.eq(APP_TOTAL_STILLINGSPROSENT_CALLS))
-        Mockito.verify<Any?>(metrics).incrementCounter(ArgumentMatchers.eq(APP_NAME), ArgumentMatchers.eq(APP_TOTAL_STILLINGSPROSENT_TIME), ArgumentMatchers.any(Double::class.java))
+    fun `Handles metrics`() {
+        Mockito.`when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
+        stillingsprosentService.getStillingsprosentListe(fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", "url", SOAP)))
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_STILLINGSPROSENT_CALLS))
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_STILLINGSPROSENT_TIME), anyNonNull())
     }
 
-    @get:Throws(Exception::class)
-    @get:Test
-    val latestSingleForholdAndStillingsprosent: Unit
-        get() {
-            val map: MutableMap<TPOrdning, List<Stillingsprosent>> = HashMap<TPOrdning, List<Stillingsprosent>>()
-            val tpOrdning = TPOrdning("1", "1")
-            val pcts: List<Stillingsprosent> = java.util.List.of<Stillingsprosent>(createPct(jan2019, feb2019))
-            map[tpOrdning] = pcts
-            assertThat(stillingsprosentService.getLatestFromStillingsprosent(map), `is`(tpOrdning))
-        }
-
-    @get:Throws(Exception::class)
-    @get:Test
-    val latestSingleForholdAndThreeStillingsprosent: Unit
-        get() {
-            val map: MutableMap<TPOrdning, List<Stillingsprosent>> = HashMap<TPOrdning, List<Stillingsprosent>>()
-            val tpOrdning = TPOrdning("1", "1")
-            val pcts: List<Stillingsprosent> = java.util.List.of<Stillingsprosent>(
-                    createPct(jan2019, feb2019),
-                    createPct(feb2019, apr2019),
-                    createPct(jan2019, mar2019)
-            )
-            map[tpOrdning] = pcts
-            assertThat(stillingsprosentService.getLatestFromStillingsprosent(map), `is`(tpOrdning))
-        }
-
-    @get:Throws(Exception::class)
-    @get:Test
-    val latestSingleTwoForholdAndThreeStillingsprosent: Unit
-        get() {
-            val map: MutableMap<TPOrdning, List<Stillingsprosent>> = HashMap<TPOrdning, List<Stillingsprosent>>()
-            val tpOrdning = TPOrdning("1", "1")
-            val tpOrdning2 = TPOrdning("2", "2")
-            val pcts1: List<Stillingsprosent> = java.util.List.of<Stillingsprosent>(
-                    createPct(jan2019, feb2019),
-                    createPct(feb2019, apr2019),
-                    createPct(jan2019, mar2019)
-            )
-            map[tpOrdning] = pcts1
-            val pcts2: List<Stillingsprosent> = java.util.List.of<Stillingsprosent>(
-                    createPct(jan2019, feb2019),
-                    createPct(feb2019, may2019)
-            )
-            map[tpOrdning2] = pcts2
-            assertThat(stillingsprosentService.getLatestFromStillingsprosent(map), `is`(tpOrdning2))
-        }
-
+    @Throws(Exception::class)
     @Test
-    fun throwsExceptionIfLatestEndDateIsNotUnique() {
-        val map: MutableMap<TPOrdning, List<Stillingsprosent>> = HashMap<TPOrdning, List<Stillingsprosent>>()
+    fun `Latest single forhold and stillingsprosent`() {
         val tpOrdning = TPOrdning("1", "1")
-        val tpOrdning2 = TPOrdning("2", "2")
-        val pcts1: List<Stillingsprosent> = java.util.List.of<Stillingsprosent>(
-                createPct(jan2019, may2019)
+        val pcts = listOf(createPct(jan2019, feb2019))
+        val map = mapOf(tpOrdning to pcts)
+        assertEquals(tpOrdning, stillingsprosentService.getLatestFromStillingsprosent(map))
+    }
+
+    @Throws(Exception::class)
+    @Test
+    fun `Latest single forhold and three stillingsprosent`() {
+        val tpOrdning = TPOrdning("1", "1")
+        val pcts: List<Stillingsprosent> = listOf(
+                createPct(jan2019, feb2019),
+                createPct(feb2019, apr2019),
+                createPct(jan2019, mar2019)
         )
-        map[tpOrdning] = pcts1
-        val pcts2: List<Stillingsprosent> = java.util.List.of<Stillingsprosent>(
+        val map = mapOf(tpOrdning to pcts)
+        assertEquals(tpOrdning, stillingsprosentService.getLatestFromStillingsprosent(map))
+    }
+
+    @Throws(Exception::class)
+    @Test
+    fun `Latest single two forhold and three stillingsprosent`() {
+        val pcts1 = listOf(
+                createPct(jan2019, feb2019),
+                createPct(feb2019, apr2019),
+                createPct(jan2019, mar2019)
+        )
+        val pcts2 = listOf(
+                createPct(jan2019, feb2019),
                 createPct(feb2019, may2019)
         )
-        map[tpOrdning2] = pcts2
-        Assertions.assertThrows(DuplicateStillingsprosentEndDateException::class.java, Executable { stillingsprosentService.getLatestFromStillingsprosent(map) })
+        val map = mapOf(
+                tpOrdning1 to pcts1,
+                tpOrdning2 to pcts2
+        )
+        assertEquals(tpOrdning2, stillingsprosentService.getLatestFromStillingsprosent(map))
+    }
+
+    @Test
+    fun `Throws exception if latest end date is not unique`() {
+        val pcts1 = listOf(
+                createPct(jan2019, may2019)
+        )
+        val pcts2 = listOf(
+                createPct(feb2019, may2019)
+        )
+        val map = mapOf(
+                tpOrdning1 to pcts1,
+                tpOrdning2 to pcts2
+        )
+        assertThrows<DuplicateStillingsprosentEndDateException> { stillingsprosentService.getLatestFromStillingsprosent(map) }
     }
 
     @Test
     @Throws(Exception::class)
     fun nullIsGreaterThanDate() {
-        val map: MutableMap<TPOrdning, List<Stillingsprosent>> = HashMap<TPOrdning, List<Stillingsprosent>>()
-        val tpOrdning = TPOrdning("1", "1")
-        val tpOrdning2 = TPOrdning("2", "2")
-        val tpOrdning3 = TPOrdning("3", "3")
-        val pcts1: List<Stillingsprosent> = java.util.List.of<Stillingsprosent>(
+        val pcts1 = listOf(
                 createPct(jan2019, feb2019),
                 createPct(feb2019, apr2019),
                 createPct(apr2019, mar2019)
         )
-        map[tpOrdning] = pcts1
-        val pcts2: List<Stillingsprosent> = java.util.List.of<Stillingsprosent>(
+        val pcts2 = listOf(
                 createPct(jan2019, feb2019),
                 createPct(feb2019, may2019)
         )
-        map[tpOrdning2] = pcts2
-        val pcts3: List<Stillingsprosent> = java.util.List.of<Stillingsprosent>(
+        val pcts3 = listOf(
                 createPct(jan2019, feb2019),
                 createPct(feb2019, null)
         )
-        map[tpOrdning3] = pcts3
-        assertThat(stillingsprosentService.getLatestFromStillingsprosent(map), `is`(tpOrdning3))
+
+        val map = mapOf(
+                tpOrdning1 to pcts1,
+                tpOrdning2 to pcts2,
+                tpOrdning3 to pcts3
+        )
+        assertEquals(tpOrdning3, stillingsprosentService.getLatestFromStillingsprosent(map))
     }
 
     @Test
-    fun throwsExceptionWhenNoStillingsprosentIsFound() {
-        val map: MutableMap<TPOrdning, List<Stillingsprosent>> = HashMap<TPOrdning, List<Stillingsprosent>>()
-        val tpOrdning = TPOrdning("1", "1")
-        val tpOrdning2 = TPOrdning("2", "2")
-        val pcts1: List<Stillingsprosent> = emptyList<Stillingsprosent>()
-        map[tpOrdning] = pcts1
-        val pcts2: List<Stillingsprosent> = emptyList<Stillingsprosent>()
-        map[tpOrdning2] = pcts2
-        Assertions.assertThrows(MissingStillingsprosentException::class.java, Executable { stillingsprosentService.getLatestFromStillingsprosent(map) })
+    fun `Throws exception when no stillingsprosent is found`() {
+        val pcts1: List<Stillingsprosent> = emptyList()
+        val pcts2: List<Stillingsprosent> = emptyList()
+        val map = mapOf(
+                tpOrdning1 to pcts1,
+                tpOrdning2 to pcts2
+        )
+        assertThrows<MissingStillingsprosentException> { stillingsprosentService.getLatestFromStillingsprosent(map) }
     }
 
-    private fun createPct(fom: LocalDate, tom: LocalDate?): Stillingsprosent {
-        val s = Stillingsprosent()
-        s.setDatoFom(fom)
-        s.setDatoTom(tom)
-        return s
-    }
-
-    companion object {
-        private val jan2019 = LocalDate.of(2019, Month.JANUARY, 1)
-        private val feb2019 = LocalDate.of(2019, Month.FEBRUARY, 1)
-        private val mar2019 = LocalDate.of(2019, Month.MARCH, 1)
-        private val apr2019 = LocalDate.of(2019, Month.APRIL, 1)
-        private val may2019 = LocalDate.of(2019, Month.MAY, 1)
-    }
+    private fun createPct(fom: LocalDate, tom: LocalDate?) = Stillingsprosent(
+            datoFom = fom,
+            datoTom = tom,
+            stillingsprosent = 0.0,
+            aldersgrense = 0,
+            faktiskHovedlonn = "",
+            stillingsuavhengigTilleggslonn = ""
+    )
 }

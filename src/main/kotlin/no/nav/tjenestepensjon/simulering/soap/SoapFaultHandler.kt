@@ -12,7 +12,7 @@ import javax.xml.bind.JAXBElement
 import kotlin.reflect.full.cast
 
 @Component
-class SoapFaultHandler(private val jaxb2Marshaller: Jaxb2Marshaller) : FaultMessageResolver {
+class SoapFaultHandler constructor(private val jaxb2Marshaller: Jaxb2Marshaller) : FaultMessageResolver {
     override fun resolveFault(message: WebServiceMessage): Nothing =
             throw (message as SoapMessage).soapBody.fault.let { soapFault ->
                 try {

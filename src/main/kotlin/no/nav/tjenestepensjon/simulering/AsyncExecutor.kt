@@ -24,7 +24,7 @@ class AsyncExecutor<Result, T : Callable<Result>>(private val executorService: E
         return response
     }
 
-    class AsyncResponse<Key, Result> {
+    open class AsyncResponse<Key, Result> {
         val resultMap: MutableMap<Key, Result> = HashMap()
         val exceptions: MutableList<ExecutionException> = ArrayList()
     }

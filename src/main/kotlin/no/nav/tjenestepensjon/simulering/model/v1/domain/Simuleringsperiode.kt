@@ -2,6 +2,7 @@ package no.nav.tjenestepensjon.simulering.model.v1.domain
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import no.nav.tjenestepensjon.simulering.domain.Dateable
+import no.nav.tjenestepensjon.simulering.domain.DelytelseType
 import java.time.LocalDate
 
 data class Simuleringsperiode @JsonCreator constructor(
@@ -18,4 +19,7 @@ data class Simuleringsperiode @JsonCreator constructor(
         var delytelser: List<Delytelse>
 ) : Dateable {
     fun isGradert() = utg < 100
+
+    fun getDelytelseBelop(delytelseType: DelytelseType) =
+            delytelser.firstOrNull { delytelse: Delytelse -> delytelse.pensjonstype == delytelseType }?.belop
 }

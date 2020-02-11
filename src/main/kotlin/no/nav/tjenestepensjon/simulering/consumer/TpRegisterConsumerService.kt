@@ -2,13 +2,12 @@ package no.nav.tjenestepensjon.simulering.consumer
 
 import no.nav.tjenestepensjon.simulering.config.CacheConfig
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
-import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
+import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.stereotype.Service
 
