@@ -7,13 +7,11 @@ import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.ClientResponse
 import java.net.URI
-import java.time.LocalDate.now
 import java.util.*
 
 @Component
@@ -29,15 +27,15 @@ class TokenClient : TokenServiceConsumer {
 
     private var oidcToken: Token = TokenImpl(expiresIn = 0)
         get() =
-            if (field.isExpired == true)
+            if (field.isExpired != true) field
+            else
                 getTokenFromProvider(OIDC).also { field = it }
-            else field
 
     private var samlToken: Token = TokenImpl(expiresIn = 0)
         get() =
-            if (field.isExpired == true)
+            if (field.isExpired != true) field
+            else
                 getTokenFromProvider(SAML).also { field = it }
-            else field
 
     private val webClient = WebClientConfig.webClient()
 

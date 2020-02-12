@@ -17,7 +17,7 @@ import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.testHelper.safeEq
-import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentCallableMap
+import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentCallableMap
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

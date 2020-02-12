@@ -10,11 +10,10 @@ import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerOffentligTjenes
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.HentStillingsprosentListeResponse
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
-import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentMap
+import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Service
 import org.springframework.ws.client.core.WebServiceTemplate
@@ -36,9 +35,6 @@ class SoapClient(
 
     @Value("\${STILLINGSPROSENT_URL}")
     lateinit var hentStillingsprosentUrl: String
-
-    @Value("\${SECURITY_CONTEXT_URL}")
-    lateinit var samlSecurityContextUrl: String
 
     @Autowired
     lateinit var samlConfig: SamlConfig

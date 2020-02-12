@@ -4,8 +4,8 @@ import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEnd
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
-import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentMap
-import no.nav.tjenestepensjon.simulering.util.TPOrdningTpLeverandorMap
+import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
+import no.nav.tjenestepensjon.simulering.TPOrdningTpLeverandorMap
 
 interface StillingsprosentService {
     fun getStillingsprosentListe(fnr: FNR, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap): StillingsprosentResponse

@@ -4,13 +4,10 @@ import no.nav.tjenestepensjon.simulering.domain.DelytelseType.*
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Delytelse
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Simuleringsperiode
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import java.util.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
 
 internal class SimulertAP2011Test {
 

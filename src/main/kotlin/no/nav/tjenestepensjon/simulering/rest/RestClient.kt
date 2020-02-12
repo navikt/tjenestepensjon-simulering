@@ -3,13 +3,13 @@ package no.nav.tjenestepensjon.simulering.rest
 import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
 import no.nav.tjenestepensjon.simulering.consumer.TokenClient
-import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
+import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
-import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentMap
+import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.stereotype.Component

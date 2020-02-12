@@ -3,10 +3,9 @@ package no.nav.tjenestepensjon.simulering.config
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.Assertions.assertEquals
 
 
 internal class TpLeverandorConfigTest {

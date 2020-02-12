@@ -9,8 +9,8 @@ import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentExcep
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
-import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentMap
-import no.nav.tjenestepensjon.simulering.util.TPOrdningTpLeverandorMap
+import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
+import no.nav.tjenestepensjon.simulering.TPOrdningTpLeverandorMap
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 

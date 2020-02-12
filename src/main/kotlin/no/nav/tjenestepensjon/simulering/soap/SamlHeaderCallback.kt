@@ -1,8 +1,5 @@
 package no.nav.tjenestepensjon.simulering.soap
 
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import org.springframework.util.Assert
 import org.springframework.ws.WebServiceMessage
 import org.springframework.ws.client.core.WebServiceMessageCallback
@@ -14,7 +11,6 @@ import javax.xml.transform.TransformerConfigurationException
 import javax.xml.transform.TransformerException
 import javax.xml.transform.TransformerFactory
 
-@Component
 class SamlHeaderCallback(private val token: String?, private val samlConfig: SamlConfig) : WebServiceMessageCallback {
 
     private val transformer = try {

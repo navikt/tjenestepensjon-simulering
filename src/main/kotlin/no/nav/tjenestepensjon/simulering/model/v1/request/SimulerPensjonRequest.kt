@@ -1,18 +1,17 @@
 package no.nav.tjenestepensjon.simulering.model.v1.request
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Inntekt
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Pensjonsbeholdningperiode
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Simuleringsperiode
 
-data class SimulerPensjonRequest @JsonCreator constructor(
-        var fnr: FNR,
-        var sivilstandkode: String,
-        var sprak: String = "norsk",
-        var simuleringsperioder: List<Simuleringsperiode>,
-        var simulertAFPOffentlig: Int? = null,
-        var simulertAFPPrivat: SimulertAFPPrivat? = null,
-        var pensjonsbeholdningsperioder: List<Pensjonsbeholdningperiode> = emptyList(),
-        var inntekter: List<Inntekt>
+data class SimulerPensjonRequest(
+        val fnr: FNR,
+        val sivilstandkode: String,
+        val sprak: String = "norsk",
+        val simuleringsperioder: List<Simuleringsperiode>,
+        val simulertAFPOffentlig: Int? = null,
+        val simulertAFPPrivat: SimulertAFPPrivat? = null,
+        val pensjonsbeholdningsperioder: List<Pensjonsbeholdningperiode> = emptyList(),
+        val inntekter: List<Inntekt>
 )

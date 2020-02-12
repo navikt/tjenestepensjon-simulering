@@ -7,9 +7,9 @@ import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.bodyToMono
 
 @Service
 class TpRegisterConsumerService(private val tokenClient: TokenClient) : TpRegisterConsumer {
@@ -27,7 +27,7 @@ class TpRegisterConsumerService(private val tokenClient: TokenClient) : TpRegist
                 .uri("$tpRegisterUrl/person/$fnr/tpordninger")
                 .header(AUTHORIZATION, "Bearer " + tokenClient.oidcAccessToken.accessToken)
                 .retrieve()
-                .bodyToMono(object : ParameterizedTypeReference<List<TPOrdning>>() {})
+                .bodyToMono<List<TPOrdning>>()
                 .block()
                 .takeUnless(List<TPOrdning>::isEmpty)
                 ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person:$fnr")

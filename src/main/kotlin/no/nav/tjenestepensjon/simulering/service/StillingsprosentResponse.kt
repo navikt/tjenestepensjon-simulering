@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.service
 
-import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentMap
+import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
 import java.util.concurrent.ExecutionException
 
 open class StillingsprosentResponse(

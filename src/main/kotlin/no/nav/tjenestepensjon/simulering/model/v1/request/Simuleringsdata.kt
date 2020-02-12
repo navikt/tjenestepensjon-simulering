@@ -1,20 +1,19 @@
 package no.nav.tjenestepensjon.simulering.model.v1.request
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import no.nav.tjenestepensjon.simulering.domain.DelytelseType.*
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Simuleringsperiode
 
-data class Simuleringsdata @JsonCreator constructor(
-        var poengArTom1991: Int,
-        var poengArFom1992: Int,
-        var sluttpoengtall: Double,
-        var anvendtTrygdetid: Int,
-        var basisgp: Double?,
-        var basistp: Double?,
-        var basispt: Double?,
-        var forholdstall_uttak: Double,
-        var skjermingstillegg: Double?,
-        var uforegradVedOmregning: Int
+data class Simuleringsdata(
+        val poengArTom1991: Int,
+        val poengArFom1992: Int,
+        val sluttpoengtall: Double,
+        val anvendtTrygdetid: Int,
+        val basisgp: Double?,
+        val basistp: Double?,
+        val basispt: Double?,
+        val forholdstall_uttak: Double,
+        val skjermingstillegg: Double?,
+        val uforegradVedOmregning: Int
 ) {
     constructor(periode: Simuleringsperiode) : this(
             poengArTom1991 = periode.poengArTom1991,

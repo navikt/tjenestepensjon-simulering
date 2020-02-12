@@ -1,30 +1,29 @@
 package no.nav.tjenestepensjon.simulering.model.v1.request
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import no.nav.tjenestepensjon.simulering.model.v1.domain.*
-import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentMap
+import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.YEARS
 
-data class SimulerOffentligTjenestepensjonRequest @JsonCreator constructor(
-        var fnr: FNR,
-        var tpnr: String,
-        var tssEksternId: String,
-        var forsteUttakDato: LocalDate,
-        var uttaksgrad: Int? = null,
-        var heltUttakDato: LocalDate? = null,
-        var stillingsprosentOffHeltUttak: Int? = null,
-        var stillingsprosentOffGradertUttak: Int? = null,
-        var inntektForUttak: Int? = null,
-        var inntektUnderGradertUttak: Int? = null,
-        var inntektEtterHeltUttak: Int? = null,
-        var antallArInntektEtterHeltUttak: Int? = null,
-        var sivilstandKode: String,
-        var sprak: String = "norsk",
-        var simulertAFPOffentlig: Int? = null,
-        var simulertAFPPrivat: SimulertAFPPrivat? = null,
-        var simulertAP2011: SimulertAP2011,
-        var tpForholdListe: List<TpForhold> = emptyList()
+data class SimulerOffentligTjenestepensjonRequest(
+        val fnr: FNR,
+        val tpnr: String,
+        val tssEksternId: String,
+        val forsteUttakDato: LocalDate,
+        val uttaksgrad: Int? = null,
+        val heltUttakDato: LocalDate? = null,
+        val stillingsprosentOffHeltUttak: Int? = null,
+        val stillingsprosentOffGradertUttak: Int? = null,
+        val inntektForUttak: Int? = null,
+        val inntektUnderGradertUttak: Int? = null,
+        val inntektEtterHeltUttak: Int? = null,
+        val antallArInntektEtterHeltUttak: Int? = null,
+        val sivilstandKode: String,
+        val sprak: String = "norsk",
+        val simulertAFPOffentlig: Int? = null,
+        val simulertAFPPrivat: SimulertAFPPrivat? = null,
+        val simulertAP2011: SimulertAP2011,
+        val tpForholdListe: List<TpForhold> = emptyList()
 ) {
     constructor(
             simulerPensjonRequest: SimulerPensjonRequest,

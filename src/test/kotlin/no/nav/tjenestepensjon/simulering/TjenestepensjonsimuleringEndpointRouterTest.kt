@@ -111,16 +111,4 @@ internal class TjenestepensjonsimuleringEndpointRouterTest {
             assertEquals(stillingsprosenter[index], actual[index])
         }
     }
-
-    companion object {
-
-        private fun assertStillingsprosent(expected: Stillingsprosent, actual: Stillingsprosent) {
-            assertEquals(expected.stillingsprosent, actual.stillingsprosent)
-            assertEquals(expected.datoFom, actual.datoFom)
-            assertEquals(expected.datoTom, actual.datoTom)
-            assertEquals(expected.faktiskHovedlonn, actual.faktiskHovedlonn)
-            assertEquals(expected.stillingsuavhengigTilleggslonn, actual.stillingsuavhengigTilleggslonn)
-            assertEquals(expected.aldersgrense, actual.aldersgrense)
-        }
-    }
 }

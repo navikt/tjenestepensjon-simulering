@@ -1,13 +1,15 @@
 package no.nav.tjenestepensjon.simulering.model.v1.domain
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
 import java.time.LocalDate
 
-data class FNR @JsonCreator constructor(val fnr: String) {
+data class FNR(
+        @get:JsonValue val fnr: String
+) {
     private val individnr = fnr.substring(6, 9).toInt()
-    val day = fnr.substring(0, 2).toInt()
-    val month = fnr.substring(2, 4).toInt()
-    val year = findFourDigitBirthYear()
+    private val day = fnr.substring(0, 2).toInt()
+    private val month = fnr.substring(2, 4).toInt()
+    private val year = findFourDigitBirthYear()
     val birthDate: LocalDate = LocalDate.of(year, month, day)
 
 
@@ -27,6 +29,12 @@ data class FNR @JsonCreator constructor(val fnr: String) {
             else -> -1
         }
     }
+
+    fun datoAtAge(alder: Long, maned: Long, manedIsSluttManed: Boolean): LocalDate =
+            birthDate
+                    .plusMonths(maned)
+                    .plusYears(alder)
+                    .let { it.withDayOfMonth(if (manedIsSluttManed) it.lengthOfMonth() else 1) }
 
     override fun toString() = fnr
 }

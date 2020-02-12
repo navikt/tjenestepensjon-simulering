@@ -23,7 +23,10 @@ import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
 import org.springframework.stereotype.Component
 
 @Component
-class AppMetrics(private val meterRegistry: MeterRegistry, tpLeverandorList: List<TpLeverandor>) {
+class AppMetrics(
+        private val meterRegistry: MeterRegistry,
+        tpLeverandorList: List<TpLeverandor>
+) {
     private val gaugeValues = mutableMapOf<String, MutableMap<String, Number>>()
     private val metrics: MutableMap<String, MutableMap<String, Meter>> = generateMetrics(tpLeverandorList)
 

@@ -1,15 +1,14 @@
 package no.nav.tjenestepensjon.simulering.consumer
 
-import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
-import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExtendWith(MockitoExtension::class)
 internal class FindTpLeverandorCallableTest {

@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.model.v1.response
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
 
-data class SimulerOffentligTjenestepensjonResponse @JsonCreator constructor(
-        var simulertPensjonListe: List<SimulertPensjon> = emptyList()
+data class SimulerOffentligTjenestepensjonResponse(
+        @get:JsonValue var simulertPensjonListe: List<SimulertPensjon> = emptyList()
 )

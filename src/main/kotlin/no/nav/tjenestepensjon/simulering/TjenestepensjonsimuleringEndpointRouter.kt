@@ -13,7 +13,6 @@ import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
 import no.nav.tjenestepensjon.simulering.rest.RestClient
 import no.nav.tjenestepensjon.simulering.soap.SoapClient
-import no.nav.tjenestepensjon.simulering.util.TPOrdningStillingsprosentMap
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 

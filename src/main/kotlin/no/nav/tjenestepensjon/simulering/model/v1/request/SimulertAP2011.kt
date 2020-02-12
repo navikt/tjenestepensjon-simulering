@@ -1,10 +1,9 @@
 package no.nav.tjenestepensjon.simulering.model.v1.request
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Simuleringsperiode
 
-data class SimulertAP2011 @JsonCreator constructor(
+data class SimulertAP2011(
         val simulertForsteuttak: Simuleringsdata,
         val simulertHeltUttakEtter67Ar: Simuleringsdata? = null
 ) {
