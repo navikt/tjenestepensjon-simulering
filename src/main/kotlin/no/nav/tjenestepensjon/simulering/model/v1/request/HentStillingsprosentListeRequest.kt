@@ -9,10 +9,10 @@ data class HentStillingsprosentListeRequest(
         val tpnr: String,
         val simuleringsKode: String
 ) {
-    constructor(fnr: FNR, tpOrdning: TPOrdning): this(
-                fnr = fnr,
-                tpnr = tpOrdning.tpId,
-                tssEksternId = tpOrdning.tssId,
-                simuleringsKode = "AP"
-        )
+    constructor(fnr: FNR, tpOrdning: TPOrdning) : this(
+            fnr = fnr,
+            tpnr = tpOrdning.tpId,
+            tssEksternId = tpOrdning.tssId,
+            simuleringsKode = "AP"
+    )
 }

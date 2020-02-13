@@ -18,8 +18,7 @@ import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
-import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjonFeil
-import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjonOK
+import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
 import no.nav.tjenestepensjon.simulering.service.SimpleSimuleringService
 import no.nav.tjenestepensjon.simulering.service.StillingsprosentResponse
 import no.nav.tjenestepensjon.simulering.service.StillingsprosentService
@@ -95,8 +94,7 @@ internal class SimpleSimuleringServiceTest {
         val simulertPensjon = simuleringService.simulerOffentligTjenestepensjon(request)
                 .simulertPensjonListe.first()
 
-        assertTrue(simulertPensjon is SimulertPensjonFeil)
-        simulertPensjon as SimulertPensjonFeil
+        assertNotNull(simulertPensjon)
         assertEquals("FEIL", simulertPensjon.status)
         assertEquals("PARF", simulertPensjon.feilkode)
     }
@@ -120,8 +118,7 @@ internal class SimpleSimuleringServiceTest {
 
         val simulertPensjon = simuleringService.simulerOffentligTjenestepensjon(request).simulertPensjonListe.first()
 
-        assertNotNull(simulertPensjon is SimulertPensjonFeil)
-        simulertPensjon as SimulertPensjonFeil
+        assertNotNull(simulertPensjon)
         assertEquals("FEIL", simulertPensjon.status)
         assertEquals("IKKE", simulertPensjon.feilkode)
     }
@@ -148,7 +145,7 @@ internal class SimpleSimuleringServiceTest {
         val exceptions = listOf(ExecutionException(StillingsprosentCallableException("msg", Throwable(), TPOrdning("tssUtelatt", "tpUtelatt"))))
         val stillingsprosentResponse = StillingsprosentResponse(map, exceptions)
         Mockito.`when`(stillingsprosentService.getStillingsprosentListe(anyNonNull(), anyNonNull())).thenReturn(stillingsprosentResponse)
-        val s1 = SimulertPensjonOK(
+        val s1 = SimulertPensjon(
                 utbetalingsperioder = singletonList(Utbetalingsperiode(
                         grad = 0,
                         arligUtbetaling = 0.0,
@@ -168,10 +165,9 @@ internal class SimpleSimuleringServiceTest {
         val response = simuleringService.simulerOffentligTjenestepensjon(request)
         Mockito.verify<AppMetrics>(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL)
         val simulertPensjon = response.simulertPensjonListe.first()
-        assertTrue(simulertPensjon is SimulertPensjonOK)
-        simulertPensjon as SimulertPensjonOK
-        assertTrue("tpUtelatt" in simulertPensjon.utelatteTpnr)
-        assertTrue("tpInkluder" in simulertPensjon.inkluderteTpnr)
+        assertNotNull(simulertPensjon)
+        assertTrue("tpUtelatt" in simulertPensjon.utelatteTpnr ?: emptyList())
+        assertTrue("tpInkluder" in simulertPensjon.inkluderteTpnr ?: emptyList())
         assertEquals("UFUL", simulertPensjon.status)
     }
 
@@ -181,12 +177,12 @@ internal class SimpleSimuleringServiceTest {
         val stillingsprosentResponse = StillingsprosentResponse(map, listOf())
         Mockito.`when`(stillingsprosentService.getStillingsprosentListe(anyNonNull(), anyNonNull())).thenReturn(stillingsprosentResponse)
 
-        val s1 = SimulertPensjonOK(
+        val s1 = SimulertPensjon(
                 utbetalingsperioder = singletonList(null),
                 tpnr = "feil",
                 navnOrdning = "feil"
         )
-        val s2 = SimulertPensjonOK(
+        val s2 = SimulertPensjon(
                 utbetalingsperioder = singletonList(null),
                 tpnr = "feil",
                 navnOrdning = "feil"

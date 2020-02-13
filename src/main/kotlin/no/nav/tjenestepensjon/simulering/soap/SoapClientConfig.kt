@@ -15,7 +15,6 @@ class SoapClientConfig(
     fun jaxb2Marshaller() = Jaxb2Marshaller()
             .apply {
                 setPackagesToScan("no.nav.tjenestepensjon.simulering.model.v1")
-//                contextPath = "no.nav.ekstern.pensjon.tjenester.tjenestepensjon.simulering.v1"
             }
 
     @Bean

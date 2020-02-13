@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.model.v1.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import no.nav.tjenestepensjon.simulering.domain.Dateable
 import no.nav.tjenestepensjon.simulering.domain.DelytelseType
 import java.time.LocalDate
@@ -17,6 +18,7 @@ data class Simuleringsperiode(
         var uforegradVedOmregning: Int,
         var delytelser: List<Delytelse>
 ) : Dateable {
+    @JsonIgnore
     fun isGradert() = utg < 100
 
     fun getDelytelseBelop(delytelseType: DelytelseType) =

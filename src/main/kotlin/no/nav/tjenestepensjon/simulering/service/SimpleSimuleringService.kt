@@ -19,8 +19,6 @@ import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
-import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjonFeil
-import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjonOK
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.Collections.singletonList
@@ -65,7 +63,7 @@ class SimpleSimuleringService(
 
     private fun addResponseInfoWhenError(e: SimuleringException): List<SimulertPensjon> {
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_FEIL)
-        return singletonList(SimulertPensjonFeil(
+        return singletonList(SimulertPensjon(
                 feilkode = e.feilkode,
                 feilbeskrivelse = e.message,
                 status = "FEIL"
@@ -81,7 +79,7 @@ class SimpleSimuleringService(
         val inkluderteTpNr = stillingsprosentResponse.tpOrdningStillingsprosentMap.keys
                 .map(TPOrdning::tpId)
         return simulertPensjonList.onEach { simulertPensjon ->
-            if(simulertPensjon is SimulertPensjonOK) {
+            if(simulertPensjon.tpnr != null) {
                 simulertPensjon.utelatteTpnr = utelatteTpNr
                 simulertPensjon.inkluderteTpnr = inkluderteTpNr
                 if (utelatteTpNr.isNotEmpty())
@@ -94,7 +92,7 @@ class SimpleSimuleringService(
 
     private fun incrementMetrics(simulertPensjonList: List<SimulertPensjon>, utelatteTpNr: List<String?>) {
         val ufullstendig = utelatteTpNr.isNotEmpty()
-        val mangelfull = simulertPensjonList.filterIsInstance<SimulertPensjonOK>().flatMap(SimulertPensjonOK::utbetalingsperioder).any { it == null }
+        val mangelfull = simulertPensjonList.flatMap{ it.utbetalingsperioder ?: emptyList() }.any { it == null }
         if (ufullstendig)
             metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL)
         if (mangelfull)

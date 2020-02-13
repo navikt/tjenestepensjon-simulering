@@ -11,6 +11,7 @@ import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.HentStillingsprosentListeResponse
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
+import no.nav.tjenestepensjon.simulering.model.v1.soap.SOAPAdapter
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -45,7 +46,8 @@ class SoapClient(
             tpLeverandor: TpLeverandor
     ) =
             (webServiceTemplate.marshalSendAndReceive(
-                    HentStillingsprosentListeRequest(fnr, tpOrdning),
+                    HentStillingsprosentListeRequest(fnr, tpOrdning)
+                            .let(SOAPAdapter::marshal),
                     SOAPCallback(
                             hentStillingsprosentUrl,
                             tpLeverandor.url,
@@ -77,7 +79,7 @@ class SoapClient(
                                     tpOrdningStillingsprosentMap = tpOrdningStillingsprosentMap,
                                     forsteUttak = min()!!
                             )
-                    }.also { LOG.info("Mapped SimulerPensjonRequest: {} to SimulerOffentligTjenestepensjon: {}", request, it) },
+                    }.let(SOAPAdapter::marshal).also { LOG.info("Mapped SimulerPensjonRequest: {} to SimulerOffentligTjenestepensjon: {}", request, it) },
                     SOAPCallback(
                             simulerOffentlingTjenestepensjonUrl,
                             tpLeverandor.url,

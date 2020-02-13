@@ -2,14 +2,27 @@ package no.nav.tjenestepensjon.simulering.model.v1.domain
 
 import com.fasterxml.jackson.annotation.JsonValue
 import java.time.LocalDate
+import javax.xml.bind.annotation.XmlAccessType
+import javax.xml.bind.annotation.XmlAccessType.FIELD
+import javax.xml.bind.annotation.XmlAccessorType
+import javax.xml.bind.annotation.XmlTransient
+import javax.xml.bind.annotation.XmlType
+
+@XmlAccessorType(FIELD)
+@XmlType(name = "", propOrder = ["fnr"])
 
 data class FNR(
         @get:JsonValue val fnr: String
 ) {
+    @XmlTransient
     private val individnr = fnr.substring(6, 9).toInt()
+    @XmlTransient
     private val day = fnr.substring(0, 2).toInt()
+    @XmlTransient
     private val month = fnr.substring(2, 4).toInt()
+    @XmlTransient
     private val year = findFourDigitBirthYear()
+    @XmlTransient
     val birthDate: LocalDate = LocalDate.of(year, month, day)
 
 
