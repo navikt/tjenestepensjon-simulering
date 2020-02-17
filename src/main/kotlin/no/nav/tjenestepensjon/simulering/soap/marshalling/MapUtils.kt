@@ -7,7 +7,7 @@ import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 
 
-fun XMLGregorianCalendar.toLocalDate() =
+fun XMLGregorianCalendar.toLocalDate(): LocalDate =
         toGregorianCalendar().toZonedDateTime().toLocalDate()
 
 fun LocalDate.toXMLGregorianCalendar(): XMLGregorianCalendar =

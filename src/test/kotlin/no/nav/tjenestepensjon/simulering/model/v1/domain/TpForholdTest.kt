@@ -2,10 +2,8 @@ package no.nav.tjenestepensjon.simulering.model.v1.domain
 
 import no.nav.tjenestepensjon.simulering.model.v1.defaultStillingsprosentListe
 import no.nav.tjenestepensjon.simulering.model.v1.defaultTPOrdning
-import org.junit.jupiter.api.Test
-import java.time.LocalDate.now
-import java.util.Collections.singletonList
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 
 internal class TpForholdTest {

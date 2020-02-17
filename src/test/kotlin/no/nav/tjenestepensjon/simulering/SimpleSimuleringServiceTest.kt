@@ -32,7 +32,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate.now
-import java.util.Collections.singletonList
+
 import java.util.concurrent.ExecutionException
 
 @ExtendWith(MockitoExtension::class)
@@ -146,7 +146,7 @@ internal class SimpleSimuleringServiceTest {
         val stillingsprosentResponse = StillingsprosentResponse(map, exceptions)
         Mockito.`when`(stillingsprosentService.getStillingsprosentListe(anyNonNull(), anyNonNull())).thenReturn(stillingsprosentResponse)
         val s1 = SimulertPensjon(
-                utbetalingsperioder = singletonList(Utbetalingsperiode(
+                utbetalingsperioder = listOf(Utbetalingsperiode(
                         grad = 0,
                         arligUtbetaling = 0.0,
                         datoTom = now(),
@@ -178,12 +178,12 @@ internal class SimpleSimuleringServiceTest {
         Mockito.`when`(stillingsprosentService.getStillingsprosentListe(anyNonNull(), anyNonNull())).thenReturn(stillingsprosentResponse)
 
         val s1 = SimulertPensjon(
-                utbetalingsperioder = singletonList(null),
+                utbetalingsperioder = listOf(null),
                 tpnr = "feil",
                 navnOrdning = "feil"
         )
         val s2 = SimulertPensjon(
-                utbetalingsperioder = singletonList(null),
+                utbetalingsperioder = listOf(null),
                 tpnr = "feil",
                 navnOrdning = "feil"
         )

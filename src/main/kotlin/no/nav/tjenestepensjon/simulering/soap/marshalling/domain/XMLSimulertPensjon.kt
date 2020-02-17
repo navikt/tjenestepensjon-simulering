@@ -1,7 +1,6 @@
 package no.nav.tjenestepensjon.simulering.soap.marshalling.domain
 
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.v1.domain.TpForhold
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
 import no.nav.tjenestepensjon.simulering.soap.marshalling.Utvidelse.SimulertPensjonUtvidelse1
 import javax.xml.bind.annotation.XmlAccessType

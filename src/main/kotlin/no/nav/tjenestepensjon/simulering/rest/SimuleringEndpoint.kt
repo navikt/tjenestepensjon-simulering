@@ -1,12 +1,9 @@
 package no.nav.tjenestepensjon.simulering.rest
 
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.*
-import com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT
-import com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT
-import com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.tjenestepensjon.simulering.AppMetrics
@@ -14,7 +11,6 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
-import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
 import no.nav.tjenestepensjon.simulering.service.SimuleringService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean

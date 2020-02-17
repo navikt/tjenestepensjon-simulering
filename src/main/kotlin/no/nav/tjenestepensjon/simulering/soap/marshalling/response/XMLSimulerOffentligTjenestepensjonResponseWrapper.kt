@@ -1,9 +1,7 @@
 package no.nav.tjenestepensjon.simulering.soap.marshalling.response
 
 import no.nav.tjenestepensjon.simulering.soap.marshalling.Utvidelse
-import no.nav.tjenestepensjon.simulering.soap.marshalling.Utvidelse.HentStillingsprosentListeUtvidelse1
 import no.nav.tjenestepensjon.simulering.soap.marshalling.domain.XMLSimulertPensjon
-import no.nav.tjenestepensjon.simulering.soap.marshalling.domain.XMLStillingsprosent
 import javax.xml.bind.annotation.*
 
 @XmlAccessorType(XmlAccessType.FIELD)

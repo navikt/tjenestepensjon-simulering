@@ -21,7 +21,7 @@ import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjene
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.util.Collections.singletonList
+
 import java.util.concurrent.ExecutionException
 
 @Service
@@ -63,7 +63,7 @@ class SimpleSimuleringService(
 
     private fun addResponseInfoWhenError(e: SimuleringException): List<SimulertPensjon> {
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_FEIL)
-        return singletonList(SimulertPensjon(
+        return listOf(SimulertPensjon(
                 feilkode = e.feilkode,
                 feilbeskrivelse = e.message,
                 status = "FEIL"

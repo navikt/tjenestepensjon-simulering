@@ -10,14 +10,13 @@ import org.springframework.stereotype.Service
 import java.lang.Thread.sleep
 import java.time.Duration
 import java.time.temporal.ChronoUnit.SECONDS
-import java.util.Collections.singletonList
 import kotlin.system.measureTimeMillis
 
 @SpringBootTest(classes = [TestCache::class, CacheConfigTest.TestCacheConfig::class])
 internal class CacheConfigTest {
 
     class TestCacheConfig: CacheConfig(){
-        override val cacheList = singletonList(getCache(TEST_CACHE, TEST_CACHE_EXPIRES))
+        override val cacheList = listOf(getCache(TEST_CACHE, TEST_CACHE_EXPIRES))
     }
 
     @Service

@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.soap
 
+import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.Tjenestepensjonsimulering
 import no.nav.tjenestepensjon.simulering.consumer.TokenClient
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
@@ -8,9 +9,6 @@ import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.v1.request.HentStillingsprosentListeRequest
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerOffentligTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
-import no.nav.tjenestepensjon.simulering.model.v1.response.HentStillingsprosentListeResponse
-import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
-import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.soap.marshalling.SOAPAdapter
 import no.nav.tjenestepensjon.simulering.soap.marshalling.response.XMLHentStillingsprosentListeResponseWrapper
 import no.nav.tjenestepensjon.simulering.soap.marshalling.response.XMLSimulerOffentligTjenestepensjonResponseWrapper

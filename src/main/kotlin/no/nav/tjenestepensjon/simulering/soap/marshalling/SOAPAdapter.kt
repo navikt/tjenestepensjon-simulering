@@ -20,17 +20,17 @@ import java.time.temporal.ChronoUnit.MONTHS
 
 object SOAPAdapter {
 
-    fun SimulertAFPPrivat.toXML() = XMLSimulertAFPPrivat().also {
+    private fun SimulertAFPPrivat.toXML() = XMLSimulertAFPPrivat().also {
         it.afpOpptjeningTotalbelop = afpOpptjeningTotalbelop
         it.kompensasjonstillegg = kompensasjonstillegg
     }
 
-    fun SimulertAP2011.toXML() = XMLSimulertAP2011().also {
+    private fun SimulertAP2011.toXML() = XMLSimulertAP2011().also {
         it.simulertForsteuttak = simulertForsteuttak.toXML()
         it.simulertHeltUttakEtter67ar = simulertHeltUttakEtter67Ar?.toXML()
     }
 
-    fun Simuleringsdata.toXML() = XMLSimuleringsdata().also {
+    private fun Simuleringsdata.toXML() = XMLSimuleringsdata().also {
         it.anvendtTrygdetid = anvendtTrygdetid
         it.basisgp = basisgp
         it.basistp = basistp
@@ -43,13 +43,13 @@ object SOAPAdapter {
         it.uforegradVedOmregning = uforegradVedOmregning
     }
 
-    fun TpForhold.toXML() = XMLTpForhold().also {
+    private fun TpForhold.toXML() = XMLTpForhold().also {
         it.stillingsprosentListe = stillingsprosentListe.takeUnless(List<Stillingsprosent>::isEmpty)?.map { it.toXML() }
         it.tpnr = tpnr
         it.tssEksternId = tssEksternId
     }
 
-    fun Stillingsprosent.toXML() = XMLStillingsprosent().also {
+    private fun Stillingsprosent.toXML() = XMLStillingsprosent().also {
         it.aldersgrense = aldersgrense
         it.datoFom = datoFom.toXMLGregorianCalendar()
         it.datoTom = datoTom?.toXMLGregorianCalendar()

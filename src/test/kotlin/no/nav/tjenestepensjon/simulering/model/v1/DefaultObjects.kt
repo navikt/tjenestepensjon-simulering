@@ -7,7 +7,7 @@ import no.nav.tjenestepensjon.simulering.model.v1.response.HentStillingsprosentL
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
 import java.time.LocalDate
-import java.util.Collections.singletonList
+
 
 const val defaultFNRString = "01010101010"
 
@@ -38,7 +38,7 @@ val defaultSimulertPensjon = SimulertPensjon(
         utbetalingsperioder = defaultUtbetalingsperiodeListe
 )
 
-val defaultSimulertPensjonList = singletonList(defaultSimulertPensjon)
+val defaultSimulertPensjonList = listOf(defaultSimulertPensjon)
 
 val defaultStillingsprosent = Stillingsprosent(
         aldersgrense = 0,
@@ -73,7 +73,7 @@ val defaultSimuleringsperiode = Simuleringsperiode(
         forholdstall = 0.0,
         delingstall = 0.0,
         uforegradVedOmregning = 0,
-        delytelser = singletonList(defaultDelytelse)
+        delytelser = listOf(defaultDelytelse)
 )
 
 val defaultSimulertAFPPrivat = SimulertAFPPrivat(
@@ -97,11 +97,11 @@ val defaultSimulerPensjonRequest = SimulerPensjonRequest(
         fnr = defaultFNR,
         sivilstandkode = "bogus",
         sprak = "bogus",
-        simuleringsperioder = singletonList(defaultSimuleringsperiode),
+        simuleringsperioder = listOf(defaultSimuleringsperiode),
         simulertAFPOffentlig = 0,
         simulertAFPPrivat = defaultSimulertAFPPrivat,
-        pensjonsbeholdningsperioder = singletonList(defaultPensjonsbeholdningperiode),
-        inntekter = singletonList(defaultInntekt)
+        pensjonsbeholdningsperioder = listOf(defaultPensjonsbeholdningperiode),
+        inntekter = listOf(defaultInntekt)
 )
 
 val defaultSimuleringsdata = Simuleringsdata(
@@ -126,7 +126,7 @@ val defaultSimulertAP2011 = SimulertAP2011(
 val defaultTpForhold = TpForhold(
         tpnr = "bogus",
         tssEksternId = "bogus",
-        stillingsprosentListe = singletonList(defaultStillingsprosent)
+        stillingsprosentListe = listOf(defaultStillingsprosent)
 )
 
 val defaultSimulerOffentligTjenestepensjonRequest = SimulerOffentligTjenestepensjonRequest(
@@ -147,10 +147,10 @@ val defaultSimulerOffentligTjenestepensjonRequest = SimulerOffentligTjenestepens
         simulertAFPOffentlig = 0,
         simulertAFPPrivat = defaultSimulertAFPPrivat,
         simulertAP2011 = defaultSimulertAP2011,
-        tpForholdListe = singletonList(defaultTpForhold)
+        tpForholdListe = listOf(defaultTpForhold)
 )
 
-val defaultStillingsprosentListe: List<Stillingsprosent> = singletonList(defaultStillingsprosent)
+val defaultStillingsprosentListe: List<Stillingsprosent> = listOf(defaultStillingsprosent)
 
 val defaultHentStillingsprosentListeResponse = HentStillingsprosentListeResponse(defaultStillingsprosentListe)
 
