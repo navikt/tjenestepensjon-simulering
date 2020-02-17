@@ -1,0 +1,3 @@
+package no.nav.tjenestepensjon.simulering.model.v1.error
+
+class SimuleringKanIkkeGjennomfores : StelvioFault()
