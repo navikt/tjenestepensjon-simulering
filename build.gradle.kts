@@ -1,9 +1,15 @@
+val mainClass = "no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplicationKt"
 plugins {
+    application
     `maven-publish`
     kotlin("jvm") version "1.3.61"
     kotlin("plugin.spring") version "1.3.61"
     id("org.springframework.boot") version "2.2.4.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
+}
+
+application {
+    mainClassName = mainClass
 }
 
 group = "no.nav.tjenestepensjon"
@@ -58,6 +64,22 @@ tasks {
     }
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
+    }
+
+    jar{
+        baseName = "app"
+
+        manifest {
+            attributes["Main-Class"] = mainClass
+            attributes["Class-Path"] = configurations.runtimeClasspath.get().joinToString(separator = " ") { it.name }
+        }
+
+        doLast {
+            configurations.runtimeClasspath.get().forEach {
+                val file = File("$buildDir/libs/${it.name}")
+                if (!file.exists()) it.copyTo(file)
+            }
+        }
     }
 }
 
