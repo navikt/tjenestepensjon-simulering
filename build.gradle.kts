@@ -11,11 +11,7 @@ version = "0.0.1-SNAPSHOT"
 description = "tjenestepensjon-simulering"
 
 repositories {
-    mavenLocal()
-    maven("https://repo.adeo.no/repository/maven-releases/")
-    maven("https://repo.adeo.no/repository/maven-snapshots/")
-    maven("https://repo.adeo.no/repository/maven-central/")
-    maven("http://repo.maven.apache.org/maven2")
+    mavenCentral()
 }
 
 dependencies {
