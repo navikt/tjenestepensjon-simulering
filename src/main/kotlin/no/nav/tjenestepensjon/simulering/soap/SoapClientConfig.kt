@@ -14,7 +14,7 @@ class SoapClientConfig(
     @Bean
     fun jaxb2Marshaller() = Jaxb2Marshaller()
             .apply {
-                setPackagesToScan("no.nav.tjenestepensjon.simulering.model.v1")
+                setPackagesToScan("no.nav.tjenestepensjon.simulering.model.v1", "no.nav.tjenestepensjon.simulering.soap.marshalling")
             }
 
     @Bean

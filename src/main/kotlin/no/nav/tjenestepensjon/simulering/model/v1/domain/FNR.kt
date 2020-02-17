@@ -2,7 +2,6 @@ package no.nav.tjenestepensjon.simulering.model.v1.domain
 
 import com.fasterxml.jackson.annotation.JsonValue
 import java.time.LocalDate
-import javax.xml.bind.annotation.XmlAccessType
 import javax.xml.bind.annotation.XmlAccessType.FIELD
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlTransient

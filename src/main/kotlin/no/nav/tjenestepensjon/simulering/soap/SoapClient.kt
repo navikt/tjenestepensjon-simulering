@@ -11,7 +11,9 @@ import no.nav.tjenestepensjon.simulering.model.v1.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.HentStillingsprosentListeResponse
 import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
-import no.nav.tjenestepensjon.simulering.model.v1.soap.SOAPAdapter
+import no.nav.tjenestepensjon.simulering.soap.marshalling.SOAPAdapter
+import no.nav.tjenestepensjon.simulering.soap.marshalling.response.XMLHentStillingsprosentListeResponseWrapper
+import no.nav.tjenestepensjon.simulering.soap.marshalling.response.XMLSimulerOffentligTjenestepensjonResponseWrapper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -54,7 +56,7 @@ class SoapClient(
                             tokenClient.samlAccessToken.accessToken,
                             samlConfig
                     )
-            ) as HentStillingsprosentListeResponse).stillingsprosentListe
+            ) as XMLHentStillingsprosentListeResponseWrapper).let(SOAPAdapter::unmarshal).stillingsprosentListe
 
     override fun simulerPensjon(
             request: SimulerPensjonRequest,
@@ -86,7 +88,7 @@ class SoapClient(
                             tokenClient.samlAccessToken.accessToken!!,
                             samlConfig
                     )
-            ) as SimulerOffentligTjenestepensjonResponse).simulertPensjonListe
+            ) as XMLSimulerOffentligTjenestepensjonResponseWrapper).let { SOAPAdapter.unmarshal(it, request.fnr) }.simulertPensjonListe
 
     companion object {
         @JvmStatic

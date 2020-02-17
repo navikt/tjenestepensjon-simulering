@@ -1,11 +1,11 @@
-package no.nav.tjenestepensjon.simulering.model.v1.soap
+package no.nav.tjenestepensjon.simulering.soap.marshalling.request
 
 import javax.xml.bind.annotation.*
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = ["request"])
 @XmlRootElement(name = "hentStillingsprosentListe", namespace = "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1")
-class XMLHentStillingsprosentListeWrapper {
+class XMLHentStillingsprosentListeRequestWrapper {
     @XmlElement(required = true)
     lateinit var request: XMLHentStillingsprosentListeRequest
 

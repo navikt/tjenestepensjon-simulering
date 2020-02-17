@@ -27,13 +27,13 @@ class TokenClient : TokenServiceConsumer {
 
     private var oidcToken: Token = TokenImpl(expiresIn = 0)
         get() =
-            if (field.isExpired != true) field
+            if (field.isExpired != true && field.accessToken != null) field
             else
                 getTokenFromProvider(OIDC).also { field = it }
 
     private var samlToken: Token = TokenImpl(expiresIn = 0)
         get() =
-            if (field.isExpired != true) field
+            if (field.isExpired != true && field.accessToken != null) field
             else
                 getTokenFromProvider(SAML).also { field = it }
 

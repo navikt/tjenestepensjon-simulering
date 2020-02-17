@@ -1,10 +1,22 @@
-package no.nav.tjenestepensjon.simulering.model.v1.soap
+package no.nav.tjenestepensjon.simulering.soap.marshalling
 
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.v1.domain.TpForhold
+import no.nav.tjenestepensjon.simulering.model.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.model.v1.request.*
-import no.nav.tjenestepensjon.simulering.model.v1.soap.XMLSimulerOffentligTjenestePensjonWrapper.*
+import no.nav.tjenestepensjon.simulering.model.v1.response.HentStillingsprosentListeResponse
+import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
+import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
+import no.nav.tjenestepensjon.simulering.soap.marshalling.domain.*
+import no.nav.tjenestepensjon.simulering.soap.marshalling.request.XMLSimulerOffentligTjenestepensjonRequestWrapper.*
+import no.nav.tjenestepensjon.simulering.soap.marshalling.request.XMLHentStillingsprosentListeRequestWrapper
+import no.nav.tjenestepensjon.simulering.soap.marshalling.request.XMLSimulerOffentligTjenestepensjonRequestWrapper
+import no.nav.tjenestepensjon.simulering.soap.marshalling.response.XMLHentStillingsprosentListeResponseWrapper
+import no.nav.tjenestepensjon.simulering.soap.marshalling.response.XMLHentStillingsprosentListeResponseWrapper.XMLHentStillingsprosentListeResponse
+import no.nav.tjenestepensjon.simulering.soap.marshalling.response.XMLSimulerOffentligTjenestepensjonResponseWrapper
+import no.nav.tjenestepensjon.simulering.soap.marshalling.response.XMLSimulerOffentligTjenestepensjonResponseWrapper.XMLSimulerOffentligTjenestepensjonResponse
+import java.time.temporal.ChronoUnit.MONTHS
 
 object SOAPAdapter {
 
@@ -46,10 +58,31 @@ object SOAPAdapter {
         it.stillingsuavhengigTilleggslonn = stillingsuavhengigTilleggslonn
     }
 
+    private fun SimulertPensjon.toXML(fnr: FNR) = XMLSimulertPensjon().also {
+        it.tpnr = tpnr!!
+        it.navnOrdning = navnOrdning!!
+        it.leverandorUrl = leverandorUrl!!
+        it.inkludertOrdningListe = inkluderteOrdninger!!
+        it.utbetalingsperiodeListe = utbetalingsperioder!!.map { it?.toXML(fnr) }
+    }
 
-    fun marshal(p0: HentStillingsprosentListeRequest): XMLHentStillingsprosentListeWrapper = with(p0) {
-        XMLHentStillingsprosentListeWrapper().also { wrapper ->
-            wrapper.request = XMLHentStillingsprosentListeWrapper.XMLHentStillingsprosentListeRequest().also {
+    private fun Utbetalingsperiode.toXML(fnr: FNR) = XMLUtbetalingsperiode().also {
+        val fomMonths = MONTHS.between(datoFom, fnr.birthDate).toInt()
+        val tomMonths = MONTHS.between(datoTom, fnr.birthDate).toInt()
+        it.arligUtbetaling = arligUtbetaling
+        it.startAlder = fomMonths / 12
+        it.sluttAlder = tomMonths / 12
+        it.startManed = fomMonths % 12
+        it.sluttManed = tomMonths % 12
+        it.grad = grad
+        it.mangelfullSimuleringKode = mangelfullSimuleringkode
+        it.ytelseKode = ytelsekode
+    }
+
+
+    fun marshal(p0: HentStillingsprosentListeRequest): XMLHentStillingsprosentListeRequestWrapper = with(p0) {
+        XMLHentStillingsprosentListeRequestWrapper().also { wrapper ->
+            wrapper.request = XMLHentStillingsprosentListeRequestWrapper.XMLHentStillingsprosentListeRequest().also {
                 it.tssEksternId = tssEksternId
                 it.fnr = fnr.toString()
                 it.simuleringsKode = simuleringsKode
@@ -58,7 +91,7 @@ object SOAPAdapter {
         }
     }
 
-    fun unmarshal(p0: XMLHentStillingsprosentListeWrapper): HentStillingsprosentListeRequest = with(p0.request) {
+    fun unmarshal(p0: XMLHentStillingsprosentListeRequestWrapper): HentStillingsprosentListeRequest = with(p0.request) {
         HentStillingsprosentListeRequest(
                 tssEksternId = tssEksternId,
                 fnr = FNR(fnr),
@@ -67,8 +100,8 @@ object SOAPAdapter {
         )
     }
 
-    fun marshal(p0: SimulerOffentligTjenestepensjonRequest): XMLSimulerOffentligTjenestePensjonWrapper = with(p0) {
-        XMLSimulerOffentligTjenestePensjonWrapper().also { wrapper ->
+    fun marshal(p0: SimulerOffentligTjenestepensjonRequest): XMLSimulerOffentligTjenestepensjonRequestWrapper = with(p0) {
+        XMLSimulerOffentligTjenestepensjonRequestWrapper().also { wrapper ->
             wrapper.request = WrapperTwoElectricBoogaloo().also { wrapperTwo ->
                 wrapperTwo.simulerTjenestepensjon = XMLSimulerOffentligTjenestepensjonRequest().also {
                     it.fnr = fnr.fnr
@@ -94,7 +127,7 @@ object SOAPAdapter {
         }
     }
 
-    fun unmarshal(p0: XMLSimulerOffentligTjenestePensjonWrapper): SimulerOffentligTjenestepensjonRequest = with(p0.request.simulerTjenestepensjon) {
+    fun unmarshal(p0: XMLSimulerOffentligTjenestepensjonRequestWrapper): SimulerOffentligTjenestepensjonRequest = with(p0.request.simulerTjenestepensjon) {
         SimulerOffentligTjenestepensjonRequest(
                 fnr = FNR(fnr),
                 sprak = sprak,
@@ -117,4 +150,33 @@ object SOAPAdapter {
         )
     }
 
+
+
+    fun marshal(p0: HentStillingsprosentListeResponse): XMLHentStillingsprosentListeResponseWrapper = with(p0) {
+        XMLHentStillingsprosentListeResponseWrapper().also { wrapper ->
+            wrapper.response = XMLHentStillingsprosentListeResponse().also {
+                it.stillingsprosentListe = stillingsprosentListe.map { it.toXML() }
+            }
+        }
+    }
+
+    fun unmarshal(p0: XMLHentStillingsprosentListeResponseWrapper): HentStillingsprosentListeResponse = with(p0.response) {
+        HentStillingsprosentListeResponse(
+                stillingsprosentListe = stillingsprosentListe.map(XMLStillingsprosent::toStillingsprosent)
+        )
+    }
+
+    fun marshal(p0: SimulerOffentligTjenestepensjonResponse, fnr: FNR): XMLSimulerOffentligTjenestepensjonResponseWrapper = with(p0) {
+        XMLSimulerOffentligTjenestepensjonResponseWrapper().also { wrapper ->
+            wrapper.response = XMLSimulerOffentligTjenestepensjonResponse().also {
+                it.simulertPensjonListe = simulertPensjonListe.map { it.toXML(fnr) }
+            }
+        }
+    }
+
+    fun unmarshal(p0: XMLSimulerOffentligTjenestepensjonResponseWrapper, fnr: FNR): SimulerOffentligTjenestepensjonResponse = with(p0.response) {
+        SimulerOffentligTjenestepensjonResponse(
+                simulertPensjonListe = simulertPensjonListe.map { it.toSimulertPensjon(fnr) }
+        )
+    }
 }

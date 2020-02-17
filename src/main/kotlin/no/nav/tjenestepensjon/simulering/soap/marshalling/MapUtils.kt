@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.model.v1.soap
+package no.nav.tjenestepensjon.simulering.soap.marshalling
 
 import java.time.LocalDate
 import java.time.ZoneId

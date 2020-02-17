@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import no.nav.tjenestepensjon.simulering.domain.Dateable
 import java.time.LocalDate
 
-data class Utbetalingsperiode @JsonCreator constructor(
+data class Utbetalingsperiode(
         var grad: Int,
         var arligUtbetaling: Double,
         override var datoFom: LocalDate,

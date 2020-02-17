@@ -4,11 +4,21 @@ import no.nav.tjenestepensjon.simulering.consumer.TokenClient
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.model.v1.*
 import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.model.v1.request.HentStillingsprosentListeRequest
 import no.nav.tjenestepensjon.simulering.model.v1.response.HentStillingsprosentListeResponse
+import no.nav.tjenestepensjon.simulering.model.v1.response.SimulerOffentligTjenestepensjonResponse
+import no.nav.tjenestepensjon.simulering.model.v1.response.SimulertPensjon
+import no.nav.tjenestepensjon.simulering.soap.marshalling.SOAPAdapter
+import no.nav.tjenestepensjon.simulering.soap.marshalling.request.XMLHentStillingsprosentListeRequestWrapper
+import no.nav.tjenestepensjon.simulering.soap.marshalling.request.XMLSimulerOffentligTjenestepensjonRequestWrapper
+import no.nav.tjenestepensjon.simulering.soap.marshalling.response.XMLHentStillingsprosentListeResponseWrapper
+import no.nav.tjenestepensjon.simulering.soap.marshalling.response.XMLSimulerOffentligTjenestepensjonResponseWrapper
+import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers
@@ -18,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.ws.client.core.WebServiceTemplate
 import java.time.LocalDate
+import java.util.Collections.singletonList
 
 @SpringBootTest(classes = [TokenClient::class, WebServiceTemplate::class, SoapClient::class, SamlConfig::class])
 internal class SoapClientTest {
@@ -32,43 +43,35 @@ internal class SoapClientTest {
     lateinit var client: SoapClient
 
     @Test
-    @Throws(Exception::class)
-    fun stillingsprosenter_shall_return_list() {
-
-        val stillingsprosenter = prepareStillingsprosenter()
-
+    fun `Stillingsprosenter shall return list`() {
         Mockito.`when`(template.marshalSendAndReceive(
-                ArgumentMatchers.any<HentStillingsprosentListeRequest>(), ArgumentMatchers.any()))
-                .thenReturn(HentStillingsprosentListeResponse(stillingsprosenter))
+                anyNonNull<XMLHentStillingsprosentListeRequestWrapper>(), anyNonNull<SOAPCallback>()))
+                .thenReturn(SOAPAdapter.marshal(defaultHentStillingsprosentListeResponse))
 
-        Mockito.`when`(tokenClient.samlAccessToken).thenReturn(TokenImpl())
+        Mockito.`when`(tokenClient.samlAccessToken).thenReturn(TokenImpl(accessToken = "bogus"))
 
         val result = client.getStillingsprosenter(
-                FNR("01011234567"),
-                TPOrdning("tssid", "tpid"),
+                defaultFNR,
+                defaultTPOrdning,
                 TpLeverandor("name", "url", SOAP)
         )
-        stillingsprosenter.forEachIndexed { index, stillingsprosent -> assertEquals(stillingsprosent, result[index]) }
+        defaultStillingsprosentListe.forEachIndexed { index, stillingsprosent -> assertEquals(stillingsprosent, result[index]) }
     }
 
-    companion object {
-        private fun prepareStillingsprosenter() = listOf(
-                Stillingsprosent(
-                        stillingsprosent = 100.0,
-                        aldersgrense = 70,
-                        datoFom = LocalDate.of(2018, 1, 2),
-                        datoTom = LocalDate.of(2029, 12, 31),
-                        faktiskHovedlonn = "hovedlønn1",
-                        stillingsuavhengigTilleggslonn = "tilleggslønn1"
-                ),
-                Stillingsprosent(
-                        stillingsprosent = 12.5,
-                        aldersgrense = 67,
-                        datoFom = LocalDate.of(2019, 2, 3),
-                        datoTom = LocalDate.of(2035, 11, 30),
-                        faktiskHovedlonn = "hovedlønn2",
-                        stillingsuavhengigTilleggslonn = "tilleggslønn2"
-                )
+    @Test
+    fun `SimulerOffentligTjenestepensjon shall return list`() {
+        Mockito.`when`(template.marshalSendAndReceive(
+                anyNonNull<XMLSimulerOffentligTjenestepensjonRequestWrapper>(), anyNonNull<SOAPCallback>()))
+                .thenReturn(SOAPAdapter.marshal(defaultSimulerOffentligTjenestepensjonResponse, defaultFNR))
+
+        Mockito.`when`(tokenClient.samlAccessToken).thenReturn(TokenImpl(accessToken = "bogus"))
+
+        val result = client.simulerPensjon(
+                request = defaultSimulerPensjonRequest,
+                tpOrdning = defaultTPOrdning,
+                tpLeverandor = TpLeverandor("name", "url", SOAP),
+                tpOrdningStillingsprosentMap = mapOf(defaultTPOrdning to singletonList(defaultStillingsprosent))
         )
+        defaultSimulertPensjonList.forEachIndexed { index, simulertPensjon -> assertEquals(simulertPensjon, result[index]) }
     }
 }
