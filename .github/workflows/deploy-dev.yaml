@@ -41,17 +41,15 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.GITHUB_ACCESS_TOKEN }}
         run: |
           echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
+          echo "::set-env name=IMAGE::$(cat .docker_image):$(cat .docker_tag)"
       - name: Push Docker image
         run: "docker push $(cat .docker_image):$(cat .docker_tag)"
 
       # Deploy
       - name: Deploy to dev-fss
-        if: github.ref == 'refs/heads/master'
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v1
-          - uses: nais/deploy/actions/deploy@v1
-            env:
-              APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-              CLUSTER: dev-fss
-              RESOURCE: nais-dev.yaml
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais-dev.yaml
+          IMAGE: ${{ env.IMAGE }}
