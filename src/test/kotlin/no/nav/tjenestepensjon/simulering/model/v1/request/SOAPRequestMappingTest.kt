@@ -15,11 +15,17 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.oxm.jaxb.Jaxb2Marshaller
 import org.springframework.xml.transform.StringSource
 import java.io.StringWriter
+import java.time.ZoneOffset
+import java.util.*
 import javax.xml.transform.stream.StreamResult
 import kotlin.test.assertEquals
 
 @SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class])
 class SOAPRequestMappingTest {
+
+    init {
+        TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.of("+1")))
+    }
 
     @Autowired
     lateinit var marshaller: Jaxb2Marshaller
