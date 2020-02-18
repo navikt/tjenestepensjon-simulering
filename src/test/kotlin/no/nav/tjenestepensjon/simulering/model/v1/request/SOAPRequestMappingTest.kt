@@ -50,6 +50,8 @@ class SOAPRequestMappingTest {
                 result
         )
         val output = writer.toString()
+        println("result  :$output")
+        println("expected:$defaultSimulerOffentligTjenestepensjonRequestXML")
         assertEquals(defaultSimulerOffentligTjenestepensjonRequestXML, output)
     }
 
