@@ -1,12 +1,12 @@
-apiVersion: "nais.io/v1alpha1"
-kind: "Application"
+apiVersion: nais.io/v1alpha1
+kind: Application
 metadata:
   name: tjenestepensjon-simulering
   namespace: default
   labels:
     team: teampeon
 spec:
-  image: {{ image }}:{{ tag }}
+  image: {{ image }}
   port: 8080
   ingresses:
     - https://tjenestepensjon-simulering.nais.preprod.local
