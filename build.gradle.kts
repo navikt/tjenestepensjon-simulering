@@ -58,6 +58,7 @@ publishing {
 tasks {
     withType<Test>{
         useJUnitPlatform()
+        testLogging.showStandardStreams = true
     }
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
