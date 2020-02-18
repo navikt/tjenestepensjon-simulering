@@ -1,4 +1,4 @@
-val mainClass = "no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplicationKt"
+val mainClass = "no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication"
 plugins {
     application
     `maven-publish`
