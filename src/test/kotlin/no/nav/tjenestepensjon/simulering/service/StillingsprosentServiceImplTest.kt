@@ -6,15 +6,15 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSP
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse
-import no.nav.tjenestepensjon.simulering.StillingsprosentCallable
-import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter
+import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
+import no.nav.tjenestepensjon.simulering.v1.TjenestepensjonsimuleringEndpointRouterOld
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException
-import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
-import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.FNR
+import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.testHelper.safeEq
 import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentCallableMap
@@ -37,7 +37,7 @@ internal class StillingsprosentServiceImplTest {
     lateinit var asyncExecutor: AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable>
 
     @Mock
-    lateinit var simuleringEndpointRouter: TjenestepensjonsimuleringEndpointRouter
+    lateinit var simuleringEndpointRouter: TjenestepensjonsimuleringEndpointRouterOld
 
     @InjectMocks
     lateinit var stillingsprosentService: StillingsprosentServiceImpl

@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.util
 
-import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
+import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate

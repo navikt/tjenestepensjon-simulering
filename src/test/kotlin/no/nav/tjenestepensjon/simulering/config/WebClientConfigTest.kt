@@ -6,7 +6,7 @@ import io.netty.handler.timeout.ReadTimeoutException
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig.READ_TIMEOUT_MILLIS
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumerService
-import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest

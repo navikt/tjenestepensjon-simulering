@@ -2,13 +2,13 @@ package no.nav.tjenestepensjon.simulering.service
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.StillingsprosentCallable
-import no.nav.tjenestepensjon.simulering.TjenestepensjonsimuleringEndpointRouter
+import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
+import no.nav.tjenestepensjon.simulering.v1.TjenestepensjonsimuleringEndpointRouterOld
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException
 import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException
-import no.nav.tjenestepensjon.simulering.model.v1.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.v1.domain.Stillingsprosent
-import no.nav.tjenestepensjon.simulering.model.v1.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.FNR
+import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.TPOrdningTpLeverandorMap
 import org.slf4j.LoggerFactory
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component
 @Component
 class StillingsprosentServiceImpl(
         private val asyncExecutor: AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable>,
-        private val simuleringEndPointRouter: TjenestepensjonsimuleringEndpointRouter,
+        private val simuleringEndPointRouter: TjenestepensjonsimuleringEndpointRouterOld,
         private val metrics: AppMetrics) : StillingsprosentService
 {
 
@@ -36,10 +36,10 @@ class StillingsprosentServiceImpl(
             MissingStillingsprosentException::class)
     override fun getLatestFromStillingsprosent(map: TPOrdningStillingsprosentMap) =
             map.flatMap { (key, list) ->
-                list.map { value ->
-                    LOG.info("TPORDNING {} STILLINGSPROSENT {}", key, value)
-                    key to value
-                }
+                    list.map { value ->
+                        LOG.info("TPORDNING {} STILLINGSPROSENT {}", key, value)
+                        key to value
+                    }
             }.ifEmpty { throw MissingStillingsprosentException("Could not find any stillingsprosent") }
             .reduce(::getLatest).first
 
