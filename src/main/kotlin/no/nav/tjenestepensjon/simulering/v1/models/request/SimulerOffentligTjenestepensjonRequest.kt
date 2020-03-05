@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v1.models.request
 
 import no.nav.tjenestepensjon.simulering.v1.models.domain.*
-import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
+import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import java.time.LocalDate

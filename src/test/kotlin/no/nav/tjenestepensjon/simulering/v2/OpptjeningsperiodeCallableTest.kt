@@ -1,11 +1,11 @@
-package no.nav.tjenestepensjon.simulering.v1
+package no.nav.tjenestepensjon.simulering.v2
 
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor.EndpointImpl.REST
+import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
+import no.nav.tjenestepensjon.simulering.v2.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -19,7 +19,7 @@ import org.springframework.ws.client.WebServiceIOException
 import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
-internal class StillingsprosentCallableTest {
+internal class OpptjeningsperiodeCallableTest {
     @Mock
     private lateinit var simuleringEndPointRouter: TjenestepensjonsimuleringEndpointRouterOld
 
@@ -29,7 +29,7 @@ internal class StillingsprosentCallableTest {
     fun `Call shall return stillingsprosenter with soap`() {
         val stillingsprosenter: List<Stillingsprosent> = prepareStillingsprosenter()
         Mockito.`when`(simuleringEndPointRouter.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(stillingsprosenter)
-        val result: List<Stillingsprosent> = StillingsprosentCallable(fnr, tpOrdning, soapTpLeverandor, simuleringEndPointRouter)()
+        val result: List<Stillingsprosent> = OpptjeningsperiodeCallable(fnr, tpOrdning, soapTpLeverandor, simuleringEndPointRouter)()
         assertStillingsprosenter(stillingsprosenter, result)
     }
 
@@ -38,7 +38,7 @@ internal class StillingsprosentCallableTest {
     fun `Call shall return stillingsprosenter with rest`() {
         val stillingsprosenter: List<Stillingsprosent> = prepareStillingsprosenter()
         Mockito.`when`(simuleringEndPointRouter.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(stillingsprosenter)
-        val result: List<Stillingsprosent> = StillingsprosentCallable(fnr, tpOrdning, restTpLeverandor, simuleringEndPointRouter)()
+        val result: List<Stillingsprosent> = OpptjeningsperiodeCallable(fnr, tpOrdning, restTpLeverandor, simuleringEndPointRouter)()
         assertStillingsprosenter(stillingsprosenter, result)
     }
 
@@ -46,7 +46,7 @@ internal class StillingsprosentCallableTest {
     @Throws(Exception::class)
     fun `Exception shall be rethrown as StillingsprosentCallableException with soap`() {
         Mockito.`when`(simuleringEndPointRouter.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenThrow(WebServiceIOException("msg from cause"))
-        val exception = assertThrows<StillingsprosentCallableException> { StillingsprosentCallable(fnr, tpOrdning, soapTpLeverandor, simuleringEndPointRouter)() }
+        val exception = assertThrows<StillingsprosentCallableException> { OpptjeningsperiodeCallable(fnr, tpOrdning, soapTpLeverandor, simuleringEndPointRouter)() }
         assertEquals("Call to getStillingsprosenter failed with exception: org.springframework.ws.client.WebServiceIOException: msg from cause", exception.message)
         assertEquals(tpOrdning, exception.tpOrdning)
     }
@@ -55,7 +55,7 @@ internal class StillingsprosentCallableTest {
     @Throws(Exception::class)
     fun `Exception shall be rethrown as StillingsprosentCallableException with rest`() {
         Mockito.`when`(simuleringEndPointRouter.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenThrow(WebServiceIOException("msg from cause"))
-        val exception = assertThrows<StillingsprosentCallableException> { StillingsprosentCallable(fnr, tpOrdning, restTpLeverandor, simuleringEndPointRouter)() }
+        val exception = assertThrows<StillingsprosentCallableException> { OpptjeningsperiodeCallable(fnr, tpOrdning, restTpLeverandor, simuleringEndPointRouter)() }
         assertEquals("Call to getStillingsprosenter failed with exception: org.springframework.ws.client.WebServiceIOException: msg from cause", exception.message)
         assertEquals(tpOrdning, exception.tpOrdning)
     }

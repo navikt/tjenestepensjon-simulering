@@ -1,9 +1,9 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
-import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
+import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.Tjenestepensjonsimulering
 import no.nav.tjenestepensjon.simulering.consumer.TokenClient
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.v1.models.request.HentStillingsprosentListeRequest

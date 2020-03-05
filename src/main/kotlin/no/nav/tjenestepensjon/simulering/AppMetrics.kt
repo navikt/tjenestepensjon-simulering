@@ -19,7 +19,7 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
 import org.springframework.stereotype.Component
 
 @Component

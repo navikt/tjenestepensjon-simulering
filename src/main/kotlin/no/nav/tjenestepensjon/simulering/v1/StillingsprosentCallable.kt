@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v1
 
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent

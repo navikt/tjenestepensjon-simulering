@@ -4,8 +4,7 @@ import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
-import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
@@ -25,7 +24,7 @@ class TjenestepensjonsimuleringEndpointRouter(
         val startTime = metrics.startTime()
         LOG.info("{} getting stillingsprosenter from: {}", Thread.currentThread().name, tpLeverandor)
 
-        val stillingsprosentList: List<Opptjeningsperiode> = restClient.getStillingsprosenter(fnr, tpOrdning, tpLeverandor)
+        val stillingsprosentList: List<Opptjeningsperiode> = restClient.getOpptjeningsperiode(fnr, tpOrdning, tpLeverandor)
 
         val elapsed = metrics.elapsedSince(startTime)
         metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_STILLINGSPROSENT_TIME, elapsed.toDouble())
@@ -37,13 +36,13 @@ class TjenestepensjonsimuleringEndpointRouter(
             request: SimulerPensjonRequest,
             tpOrdning: TPOrdning,
             tpLeverandor: TpLeverandor,
-            tpOrdningStillingsprosentMap: TPOrdningStillingsprosentMap
+            tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
     ): SimulerOffentligTjenestepensjonResponse {
         metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_SIMULERING_CALLS)
         val startTime = metrics.startTime()
         LOG.info("{} getting simulering from: {}", Thread.currentThread().name, tpLeverandor)
 
-        val simulertPensjon = restClient.simulerPensjon(request, tpOrdning, tpLeverandor, tpOrdningStillingsprosentMap)
+        val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor, tpOrdningOpptjeningsperiodeMap)
 
         val elapsed = metrics.elapsedSince(startTime)
         metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_SIMULERING_TIME, elapsed.toDouble())

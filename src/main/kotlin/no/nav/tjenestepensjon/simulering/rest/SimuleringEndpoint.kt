@@ -14,6 +14,7 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringService
+import no.nav.tjenestepensjon.simulering.v1.unleash.UnleashService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -37,6 +38,9 @@ class SimuleringEndpoint(
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    lateinit var unleashService: UnleashService
 
     class LocalDateEpochSerializer : JsonSerializer<LocalDate>() {
         override fun serialize(value: LocalDate, gen: JsonGenerator, serializers: SerializerProvider) {
@@ -64,7 +68,7 @@ class SimuleringEndpoint(
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
         return try {
-            if (true) {
+            if (!unleashService.isNewModelEnabled()) {
                 val request = objectMapper.readValue(body, SimulerPensjonRequest::class.java)
                 service.simulerOffentligTjenestepensjon(request)
             } else {

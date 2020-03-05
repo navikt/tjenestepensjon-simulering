@@ -4,6 +4,6 @@ class Pensjonsbeholdningsperiode(
         val datoFom: String,
         val pensjonsbeholdning: Double,
         val garantipensjonsbeholdning: Double,
-        val garantitilleggsbeholdning: Double?
+        val garantitilleggsbeholdning: Double = 0.0
 
 )

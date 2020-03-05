@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.service
+package no.nav.tjenestepensjon.simulering.v1.service
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
@@ -9,8 +9,8 @@ import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentExcep
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
-import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
-import no.nav.tjenestepensjon.simulering.TPOrdningTpLeverandorMap
+import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
+import no.nav.tjenestepensjon.simulering.v1.TPOrdningTpLeverandorMap
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 

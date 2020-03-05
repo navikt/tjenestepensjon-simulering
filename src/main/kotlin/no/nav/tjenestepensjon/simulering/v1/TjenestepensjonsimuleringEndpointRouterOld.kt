@@ -4,10 +4,9 @@ import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
-import no.nav.tjenestepensjon.simulering.TPOrdningStillingsprosentMap
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.REST
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.REST
+import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning

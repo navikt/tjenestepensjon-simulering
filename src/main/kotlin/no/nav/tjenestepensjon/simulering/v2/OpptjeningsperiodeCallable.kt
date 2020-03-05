@@ -1,14 +1,14 @@
 package no.nav.tjenestepensjon.simulering.v2
 
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Callable
 
-class StillingsprosentCallable(
+class OpptjeningsperiodeCallable(
         private val fnr: FNR,
         private val tpOrdning: TPOrdning,
         private val tpLeverandor: TpLeverandor,

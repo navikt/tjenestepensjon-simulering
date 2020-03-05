@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.config
 
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.SOAP
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock

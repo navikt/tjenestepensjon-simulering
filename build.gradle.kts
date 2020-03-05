@@ -40,6 +40,8 @@ dependencies {
     implementation("org.springframework.security.oauth", "spring-security-oauth2", "2.3.6.RELEASE")
             .exclude(group = "org.codehaus.jackson")
     implementation("org.springframework.ws", "spring-ws-core", "3.0.8.RELEASE")
+    implementation("no.finn.unleash", "unleash-client-java", "3.3.0")
+            .exclude(group = "org.apache.logging.log4j", module = "log4j-api")
     testImplementation(kotlin("test-junit5"))
     testImplementation("com.github.tomakehurst", "wiremock-jre8", "2.23.2")
     testImplementation("org.mockito", "mockito-junit-jupiter", "2.23.4")

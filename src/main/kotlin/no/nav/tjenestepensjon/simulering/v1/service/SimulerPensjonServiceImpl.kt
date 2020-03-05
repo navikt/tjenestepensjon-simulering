@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.service
+package no.nav.tjenestepensjon.simulering.v1.service
 
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import org.slf4j.LoggerFactory
