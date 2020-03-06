@@ -44,13 +44,17 @@ class SimuleringEndpoint(private val service: SimuleringService, private val met
     }
 
     @PostMapping("/simulering")
-    fun simuler(@RequestBody request: SimulerPensjonRequest, @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?): ResponseEntity<SimulerOffentligTjenestepensjonResponse> {
-        addHeaderToRequestContext(NAV_CALL_ID, navCallId)
-        LOG.info("Processing nav-call-id: {}, request: {}", getHeaderFromRequestContext(NAV_CALL_ID), request.toString())
-        metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
-        val response = service.simulerOffentligTjenestepensjon(request)
-        LOG.info("Processing nav-call-id: {}, response: {}", getHeaderFromRequestContext(NAV_CALL_ID), response.toString())
-        return ResponseEntity(response, OK)
+    fun simuler(@RequestBody body: String, @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?): ResponseEntity<SimulerOffentligTjenestepensjonResponse> {
+
+        LOG.debug("Processing nav-call-id: {}, request: {}", getHeaderFromRequestContext(NAV_CALL_ID), body)
+//
+//        addHeaderToRequestContext(NAV_CALL_ID, navCallId)
+//        LOG.info("Processing nav-call-id: {}, request: {}", getHeaderFromRequestContext(NAV_CALL_ID), request.toString())
+//        metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
+//        val response = service.simulerOffentligTjenestepensjon(request)
+//        LOG.info("Processing nav-call-id: {}, response: {}", getHeaderFromRequestContext(NAV_CALL_ID), response.toString())
+//        return ResponseEntity(body, OK)
+        return ResponseEntity(OK)
     }
 
     fun addHeaderToRequestContext(key: String, value: String?) {
