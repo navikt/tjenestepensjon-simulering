@@ -12,7 +12,7 @@ import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
 import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException
-import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException
+import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR

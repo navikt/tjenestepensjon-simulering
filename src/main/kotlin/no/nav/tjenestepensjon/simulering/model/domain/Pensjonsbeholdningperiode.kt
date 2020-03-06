@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.v1.models.domain
+package no.nav.tjenestepensjon.simulering.model.domain
 
 import no.nav.tjenestepensjon.simulering.domain.Dateable
 import java.time.LocalDate

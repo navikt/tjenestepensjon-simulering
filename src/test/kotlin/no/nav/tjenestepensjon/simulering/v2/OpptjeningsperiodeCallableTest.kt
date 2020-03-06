@@ -1,13 +1,11 @@
 package no.nav.tjenestepensjon.simulering.v2
 
 import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor.EndpointImpl.REST
-import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.v2.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
+import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -21,35 +19,25 @@ import java.time.LocalDate
 @ExtendWith(MockitoExtension::class)
 internal class OpptjeningsperiodeCallableTest {
     @Mock
-    private lateinit var simuleringEndPointRouter: TjenestepensjonsimuleringEndpointRouterOld
+    private lateinit var simuleringEndPointRouter: TjenestepensjonsimuleringEndpointRouter
 
-
-    @Test
-    @Throws(Exception::class)
-    fun `Call shall return stillingsprosenter with soap`() {
-        val stillingsprosenter: List<Stillingsprosent> = prepareStillingsprosenter()
-        Mockito.`when`(simuleringEndPointRouter.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(stillingsprosenter)
-        val result: List<Stillingsprosent> = OpptjeningsperiodeCallable(fnr, tpOrdning, soapTpLeverandor, simuleringEndPointRouter)()
-        assertStillingsprosenter(stillingsprosenter, result)
-    }
 
     @Test
     @Throws(Exception::class)
     fun `Call shall return stillingsprosenter with rest`() {
-        val stillingsprosenter: List<Stillingsprosent> = prepareStillingsprosenter()
-        Mockito.`when`(simuleringEndPointRouter.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(stillingsprosenter)
-        val result: List<Stillingsprosent> = OpptjeningsperiodeCallable(fnr, tpOrdning, restTpLeverandor, simuleringEndPointRouter)()
+        val stillingsprosenter: List<Opptjeningsperiode> = prepareStillingsprosenter()
+        Mockito.`when`(simuleringEndPointRouter.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull()))
+                .thenReturn(stillingsprosenter)
+
+        val result: List<Opptjeningsperiode> = OpptjeningsperiodeCallable(
+                fnr,
+                tpOrdning,
+                restTpLeverandor,
+                simuleringEndPointRouter
+        )()
         assertStillingsprosenter(stillingsprosenter, result)
     }
 
-    @Test
-    @Throws(Exception::class)
-    fun `Exception shall be rethrown as StillingsprosentCallableException with soap`() {
-        Mockito.`when`(simuleringEndPointRouter.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenThrow(WebServiceIOException("msg from cause"))
-        val exception = assertThrows<StillingsprosentCallableException> { OpptjeningsperiodeCallable(fnr, tpOrdning, soapTpLeverandor, simuleringEndPointRouter)() }
-        assertEquals("Call to getStillingsprosenter failed with exception: org.springframework.ws.client.WebServiceIOException: msg from cause", exception.message)
-        assertEquals(tpOrdning, exception.tpOrdning)
-    }
 
     @Test
     @Throws(Exception::class)
@@ -63,11 +51,10 @@ internal class OpptjeningsperiodeCallableTest {
     private companion object {
         val fnr = FNR("01011234567")
         val tpOrdning = TPOrdning("tss1", "tp1")
-        val soapTpLeverandor = TpLeverandor("lev", "url1", SOAP)
-        val restTpLeverandor = TpLeverandor("lev", "url1", REST)
+        val restTpLeverandor = TpLeverandor("lev", "url1")
 
         fun prepareStillingsprosenter() = listOf(
-                Stillingsprosent(
+                Opptjeningsperiode(
                         stillingsprosent = 100.0,
                         aldersgrense = 70,
                         datoFom = LocalDate.of(2018, 1, 2),
@@ -76,7 +63,7 @@ internal class OpptjeningsperiodeCallableTest {
                         stillingsuavhengigTilleggslonn = "tilleggslønn1"
 
                 ),
-                Stillingsprosent(
+                Opptjeningsperiode(
                         stillingsprosent = 12.5,
                         aldersgrense = 67,
                         datoFom = LocalDate.of(2019, 2, 3),
@@ -86,7 +73,7 @@ internal class OpptjeningsperiodeCallableTest {
                 )
         )
 
-        fun assertStillingsprosenter(expected: List<Stillingsprosent>, actual: List<Stillingsprosent>) {
+        fun assertStillingsprosenter(expected: List<Opptjeningsperiode>, actual: List<Opptjeningsperiode>) {
             assertEquals(expected.size, actual.size)
             for (index in expected.indices) {
                 assertEquals(expected[index], actual[index])

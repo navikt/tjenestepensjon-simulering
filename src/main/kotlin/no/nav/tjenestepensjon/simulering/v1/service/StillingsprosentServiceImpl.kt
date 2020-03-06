@@ -5,7 +5,7 @@ import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
 import no.nav.tjenestepensjon.simulering.v1.TjenestepensjonsimuleringEndpointRouterOld
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException
-import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException
+import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning

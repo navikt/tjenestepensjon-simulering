@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.v1.models.request
 
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Inntekt
-import no.nav.tjenestepensjon.simulering.v1.models.domain.Pensjonsbeholdningperiode
+import no.nav.tjenestepensjon.simulering.model.domain.Pensjonsbeholdningperiode
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Simuleringsperiode
 
 data class SimulerPensjonRequest(

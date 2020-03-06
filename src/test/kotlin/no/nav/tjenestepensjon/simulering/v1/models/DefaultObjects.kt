@@ -2,6 +2,7 @@ package no.nav.tjenestepensjon.simulering.v1.models
 
 import no.nav.tjenestepensjon.simulering.domain.DelytelseType.BASISTP
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
+import no.nav.tjenestepensjon.simulering.model.domain.Pensjonsbeholdningperiode
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.v1.models.domain.*
 import no.nav.tjenestepensjon.simulering.v1.models.request.*

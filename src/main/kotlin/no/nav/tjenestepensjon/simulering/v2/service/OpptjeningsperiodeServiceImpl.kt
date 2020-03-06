@@ -3,7 +3,7 @@ package no.nav.tjenestepensjon.simulering.v2.service
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException
-import no.nav.tjenestepensjon.simulering.exceptions.MissingStillingsprosentException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.MissingOpptjeningsperiodeException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.v2.OpptjeningsperiodeCallable
@@ -33,14 +33,14 @@ class OpptjeningsperiodeServiceImpl(
     }
 
     @Throws(DuplicateStillingsprosentEndDateException::class,
-            MissingStillingsprosentException::class)
+            MissingOpptjeningsperiodeException::class)
     override fun getLatestFromOpptjeningsperiode(map: TPOrdningOpptjeningsperiodeMap) =
             map.flatMap { (key, list) ->
                     list.map { value ->
                         LOG.info("TPORDNING {} STILLINGSPROSENT {}", key, value)
                         key to value
                     }
-            }.ifEmpty { throw MissingStillingsprosentException("Could not find any stillingsprosent") }
+            }.ifEmpty { throw MissingOpptjeningsperiodeException("Could not find any stillingsprosent") }
             .reduce(::getLatest).first
 
     @Throws(DuplicateStillingsprosentEndDateException::class)

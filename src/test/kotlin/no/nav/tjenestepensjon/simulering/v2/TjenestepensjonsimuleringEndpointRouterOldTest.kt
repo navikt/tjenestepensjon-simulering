@@ -6,7 +6,6 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
 import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
@@ -59,7 +58,7 @@ internal class TjenestepensjonsimuleringEndpointRouterOldTest {
             fodselsdato = "",
             sisteTpnr = "",
             inntektListe = emptyList(),
-            sivilstandCode = REPA,
+            sivilstandKode = REPA,
             simuleringsperiodeListe = emptyList(),
             simuleringsdataListe = emptyList(),
             tpForholdListe = emptyList()
@@ -73,7 +72,7 @@ internal class TjenestepensjonsimuleringEndpointRouterOldTest {
     private lateinit var simuleringEndpointRouter: TjenestepensjonsimuleringEndpointRouter
 
     private val tpOrdning = TPOrdning("tss1", "tp1")
-    private val tpRestLeverandor = TpLeverandor("lev", "url1", REST)
+    private val tpRestLeverandor = TpLeverandor("lev", "url1")
 
 
     @Test
