@@ -20,9 +20,10 @@ jobs:
         run: mvn clean install
       # Release
       - name: Create tag
-          NAME: tjenestepensjon-simulering
+        env:
+          APP_NAME: tjenestepensjon-simulering
         run: |
-          echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"$NAME" > .docker_image
+          echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"$APP_NAME" > .docker_image
           echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
           echo "::set-env name=IMAGE::$(cat .docker_image):$(cat .docker_tag)"
       - name: Publish
