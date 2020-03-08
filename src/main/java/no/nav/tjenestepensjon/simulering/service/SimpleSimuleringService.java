@@ -66,8 +66,11 @@ public class SimpleSimuleringService implements SimuleringEndpoint.SimuleringSer
         OutgoingResponse response = new OutgoingResponse();
         StillingsprosentResponse stillingsprosentResponse = null;
         try {
+            LOG.debug("Getting tp-ordninger...");
             List<TPOrdning> tpOrdningList = tpRegisterConsumer.getTpOrdningerForPerson(request.getFnr());
+            LOG.debug("Getting tp-leverandoer...");
             Map<TPOrdning, TpLeverandor> tpOrdningAndLeverandorMap = getTpLeverandorer(tpOrdningList);
+            LOG.debug("Get stillingsprosent...");
             stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.getFnr(), tpOrdningAndLeverandorMap);
 
             if (stillingsprosentResponse.getTpOrdningStillingsprosentMap().size() == 0) {
