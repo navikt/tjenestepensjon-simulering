@@ -31,6 +31,7 @@ public class SimuleringEndpoint {
 
     @RequestMapping(value = "/simulering", method = RequestMethod.POST)
     public ResponseEntity<OutgoingResponse> simuler(@RequestBody IncomingRequest request, @RequestHeader(value = "nav-call-id", required = false) String navCallId) {
+        LOG.debug(request.toString());
         addHeaderToRequestContext("nav-call-id", navCallId);
         LOG.info("Processing nav-call-id: {}, request: {}", getHeaderFromRequestContext("nav-call-id"), request.toString());
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS);
