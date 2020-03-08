@@ -34,7 +34,7 @@ public class SimuleringEndpointSecurityTest {
     static void beforeAll() {
         wireMockServer = new WireMockServer();
         wireMockServer.start();
-        wireMockServer.stubFor(WireMock.get(WireMock.urlPathEqualTo("/person/null/tpordninger"))
+        wireMockServer.stubFor(WireMock.get(WireMock.urlPathEqualTo("/person/tpordninger"))
                 .willReturn(WireMock.okJson("[{\"tssId\":\"1234\",\"tpId\":\"4321\"}]")));
         wireMockServer.stubFor(WireMock.get(WireMock.urlPathEqualTo("/tpleverandoer/4321"))
                 .willReturn(WireMock.okJson("{\"KLP\"}")));

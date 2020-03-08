@@ -36,7 +36,8 @@ public class TpRegisterConsumerService implements TpRegisterConsumer {
     @Cacheable(value = TP_ORDNING_PERSON_CACHE)
     public List<TPOrdning> getTpOrdningerForPerson(String fnr) throws NoTpOrdningerFoundException {
         List<TPOrdning> tpOrdningerFromTpRegisteret = webClient.get()
-                .uri(tpRegisterUrl + "/person/" + fnr + "/tpordninger")
+                .uri(tpRegisterUrl + "/person/tpordninger")
+                .header("fnr", fnr)
                 .header(AUTHORIZATION, "Bearer " + tokenClient.getOidcAccessToken().getAccessToken())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<TPOrdning>>() {
