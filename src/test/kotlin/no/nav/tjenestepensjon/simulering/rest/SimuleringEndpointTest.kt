@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.v2.rest
+package no.nav.tjenestepensjon.simulering.rest
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
@@ -23,7 +23,7 @@ class SimuleringEndpointTest {
     fun secureEndpointOkWithValidToken() {
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/simulering")
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest) // why 401?
+        ).andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
 
     companion object {
