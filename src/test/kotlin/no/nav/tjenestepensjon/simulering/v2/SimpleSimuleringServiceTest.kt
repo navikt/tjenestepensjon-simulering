@@ -16,6 +16,7 @@ import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v2.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.v2.exceptions.DuplicateOpptjeningsperiodeEndDateException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.MissingOpptjeningsperiodeException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpOpptjeningsPeriodeFoundException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import no.nav.tjenestepensjon.simulering.v2.models.domain.SivilstandCodeEnum
@@ -142,11 +143,9 @@ internal class SimpleSimuleringServiceTest {
         Mockito.`when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull()))
                 .thenReturn(OpptjeningsperiodeResponse(emptyMap(), emptyList()))
 
-        val exception = assertThrows<NoTpOrdningerFoundException> { simuleringService.simulerOffentligTjenestepensjon(request) }
+        val exception = assertThrows<NoTpOpptjeningsPeriodeFoundException> { simuleringService.simulerOffentligTjenestepensjon(request) }
 
-        assertEquals(exception::class, NoTpOrdningerFoundException::class) //todo might need to create a new exception
-
-        assertEquals("Could not get opptjeningsperiode from any TP-Providers", exception.message) //todo fix response
+        assertEquals(exception::class, NoTpOpptjeningsPeriodeFoundException::class)
     }
 
     @Test

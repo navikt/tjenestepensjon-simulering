@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.rest
+package no.nav.tjenestepensjon.simulering.v2.rest
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -21,11 +20,10 @@ class SimuleringEndpointTest {
 
     @Test
     @Throws(Exception::class)
-    fun `Endepunkt kalles uten requestbody`() {
+    fun secureEndpointOkWithValidToken() {
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/simulering")
-                .header(AUTHORIZATION, "Bearer ${TokenProviderStub.accessToken}")
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+        ).andExpect(MockMvcResultMatchers.status().isBadRequest) // why 401?
     }
 
     companion object {

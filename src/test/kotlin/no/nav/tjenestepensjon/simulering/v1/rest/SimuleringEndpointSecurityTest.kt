@@ -1,9 +1,11 @@
-package no.nav.tjenestepensjon.simulering.rest
+package no.nav.tjenestepensjon.simulering.v1.rest
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
 import no.nav.tjenestepensjon.simulering.config.TokenProviderStub
+import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerOffentligTjenestepensjonRequestJson
+import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerPensjonRequestJson
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -60,7 +62,7 @@ class SimuleringEndpointSecurityTest {
                     |"sivilstandkode":"",
                     |"inntekter":[],
                     |"simuleringsperioder":[]
-                    |}""".trimMargin().replace("\n",""))
+                    |}""".trimMargin().replace("\n", ""))
                 .header(AUTHORIZATION, "Bearer ${TokenProviderStub.accessToken}")
         ).andExpect(MockMvcResultMatchers.status().isOk)
     }

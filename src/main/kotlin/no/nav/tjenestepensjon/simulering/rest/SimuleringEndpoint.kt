@@ -14,7 +14,6 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringService
-import no.nav.tjenestepensjon.simulering.v1.unleash.UnleashService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -39,9 +38,6 @@ class SimuleringEndpoint(
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    @Autowired
-    lateinit var unleashService: UnleashService
-
     class LocalDateEpochSerializer : JsonSerializer<LocalDate>() {
         override fun serialize(value: LocalDate, gen: JsonGenerator, serializers: SerializerProvider) {
             gen.writeString(value.toString())
@@ -64,20 +60,18 @@ class SimuleringEndpoint(
             @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
     ): ResponseEntity<Any> {
         addHeaderToRequestContext(NAV_CALL_ID, navCallId)
-        LOG.info("Processing nav-call-id: {}, request: {}", getHeaderFromRequestContext(NAV_CALL_ID), body.toString())
+        LOG.info("Processing nav-call-id: {}, request: {}", getHeaderFromRequestContext(NAV_CALL_ID), body)
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
-
-
-
-
         return try {
-            if (!unleashService.isNewModelEnabled()) {
-                val request = objectMapper.readValue(body, SimulerPensjonRequest::class.java)
-                service.simulerOffentligTjenestepensjon(request)
-            } else {
-                val request = objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
-                service2.simulerOffentligTjenestepensjon(request)
+            try {
+                service.simulerOffentligTjenestepensjon(
+                        objectMapper.readValue(body, SimulerPensjonRequest::class.java)
+                )
+            } catch (e: Throwable) {
+                service2.simulerOffentligTjenestepensjon(
+                        objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
+                )
             }.let {
                 LOG.info("Processing nav-call-id: {}, response: {}", getHeaderFromRequestContext(NAV_CALL_ID), it)
                 ResponseEntity(it, OK)
@@ -86,11 +80,11 @@ class SimuleringEndpoint(
             when (e) {
                 is JsonParseException -> "Unable to parse body to request." to HttpStatus.BAD_REQUEST
                 is JsonMappingException -> "Unable to mapping body to request." to HttpStatus.BAD_REQUEST
-                is SimuleringException -> "" to HttpStatus.INTERNAL_SERVER_ERROR
+                is SimuleringException -> e.message to HttpStatus.INTERNAL_SERVER_ERROR
                 else -> e.message to HttpStatus.INTERNAL_SERVER_ERROR
             }.run {
                 LOG.error(first, body)
-                ResponseEntity(e, second)
+                ResponseEntity(first.toString(), second)
             }
         }
     }

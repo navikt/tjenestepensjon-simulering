@@ -14,6 +14,7 @@ import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallabl
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v2.TjenestepensjonsimuleringEndpointRouter
+import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpOpptjeningsPeriodeFoundException
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import org.slf4j.LoggerFactory
@@ -39,7 +40,7 @@ class SimpleSimuleringService(
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
 
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
-                .ifEmpty { throw NoTpOrdningerFoundException("Could not get opptjeningsperiode from any TP-Providers") }
+                .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
                 .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
                 .let { tpOrdning ->
                     simuleringEndPointRouter.simulerPensjon(
