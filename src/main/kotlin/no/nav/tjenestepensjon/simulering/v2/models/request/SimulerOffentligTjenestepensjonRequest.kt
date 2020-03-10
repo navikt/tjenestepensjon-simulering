@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2.models.request
 
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
+import no.nav.tjenestepensjon.simulering.model.domain.Pensjonsbeholdningsperiode
 import no.nav.tjenestepensjon.simulering.v2.models.domain.SivilstandCodeEnum
 
 data class SimulerPensjonRequest(
@@ -10,7 +11,7 @@ data class SimulerPensjonRequest(
         var sprak: String? = null,
         var simulertAFPOffentlig: SimulertAFPOffentlig? = null,
         var simulertAFPPrivat: SimulertAFPPrivat? = null,
-        var sivilstandKode: SivilstandCodeEnum,
+        var sivilstandkode: SivilstandCodeEnum,
         var inntektListe: List<Inntekt>,
         var pensjonsbeholdningsperiodeListe: List<Pensjonsbeholdningsperiode> = emptyList(),
         var simuleringsperiodeListe: List<Simuleringsperiode>,

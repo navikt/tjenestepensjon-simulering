@@ -35,6 +35,7 @@ class RESTRequestMappingTest {
     @Test
     fun `Test deserializing of HentStillingsprosentListeRequest`() {
         val result = objectMapper.readValue(defaultHentStillingsprosentListeRequestJson, HentStillingsprosentListeRequest::class.java)
+
         assertEquals(defaultHentStillingsprosentListeRequest, result)
     }
 
@@ -47,6 +48,6 @@ class RESTRequestMappingTest {
     @Test
     fun `Test deserializing of SimulerOffentligTjenestepensjonRequest`() {
         val result = objectMapper.readValue(defaultSimulerOffentligTjenestepensjonRequestJson, SimulerOffentligTjenestepensjonRequest::class.java)
-        assertEquals(defaultSimulerOffentligTjenestepensjonRequest, result)
+        assertEquals(objectMapper.writeValueAsString(defaultSimulerOffentligTjenestepensjonRequest), objectMapper.writeValueAsString(result))
     }
 }

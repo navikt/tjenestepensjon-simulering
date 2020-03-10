@@ -1,9 +1,9 @@
 package no.nav.tjenestepensjon.simulering.v2
 
-import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -24,9 +24,9 @@ internal class OpptjeningsperiodeCallableTest {
 
     @Test
     @Throws(Exception::class)
-    fun `Call shall return stillingsprosenter with rest`() {
+    fun `Call shall return Opptjeningsperiode with rest`() {
         val stillingsprosenter: List<Opptjeningsperiode> = prepareStillingsprosenter()
-        Mockito.`when`(simuleringEndPointRouter.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull()))
+        Mockito.`when`(simuleringEndPointRouter.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull(), anyNonNull()))
                 .thenReturn(stillingsprosenter)
 
         val result: List<Opptjeningsperiode> = OpptjeningsperiodeCallable(
@@ -42,8 +42,8 @@ internal class OpptjeningsperiodeCallableTest {
     @Test
     @Throws(Exception::class)
     fun `Exception shall be rethrown as StillingsprosentCallableException with rest`() {
-        Mockito.`when`(simuleringEndPointRouter.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenThrow(WebServiceIOException("msg from cause"))
-        val exception = assertThrows<StillingsprosentCallableException> { OpptjeningsperiodeCallable(fnr, tpOrdning, restTpLeverandor, simuleringEndPointRouter)() }
+        Mockito.`when`(simuleringEndPointRouter.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull(), anyNonNull())).thenThrow(WebServiceIOException("msg from cause"))
+        val exception = assertThrows<OpptjeningsperiodeCallableException> { OpptjeningsperiodeCallable(fnr, tpOrdning, restTpLeverandor, simuleringEndPointRouter)() }
         assertEquals("Call to getStillingsprosenter failed with exception: org.springframework.ws.client.WebServiceIOException: msg from cause", exception.message)
         assertEquals(tpOrdning, exception.tpOrdning)
     }
@@ -51,7 +51,7 @@ internal class OpptjeningsperiodeCallableTest {
     private companion object {
         val fnr = FNR("01011234567")
         val tpOrdning = TPOrdning("tss1", "tp1")
-        val restTpLeverandor = TpLeverandor("lev", "url1")
+        val restTpLeverandor = TpLeverandor("lev", "url1", null)
 
         fun prepareStillingsprosenter() = listOf(
                 Opptjeningsperiode(

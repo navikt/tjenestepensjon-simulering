@@ -6,35 +6,36 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse
-import no.nav.tjenestepensjon.simulering.v2.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
-import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException
-import no.nav.tjenestepensjon.simulering.v2.exceptions.MissingOpptjeningsperiodeException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
-import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
-import no.nav.tjenestepensjon.simulering.v2.models.domain.Utbetalingsperiode
-import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
+import no.nav.tjenestepensjon.simulering.v2.consumer.FindTpLeverandorCallable
+import no.nav.tjenestepensjon.simulering.v2.exceptions.DuplicateOpptjeningsperiodeEndDateException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.MissingOpptjeningsperiodeException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import no.nav.tjenestepensjon.simulering.v2.models.domain.SivilstandCodeEnum
+import no.nav.tjenestepensjon.simulering.v2.models.domain.Utbetalingsperiode
+import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v2.service.OpptjeningsperiodeResponse
 import no.nav.tjenestepensjon.simulering.v2.service.OpptjeningsperiodeService
 import no.nav.tjenestepensjon.simulering.v2.service.SimpleSimuleringService
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate.now
-
 import java.util.concurrent.ExecutionException
 
 @ExtendWith(MockitoExtension::class)
@@ -72,7 +73,7 @@ internal class SimpleSimuleringServiceTest {
                 fnr = FNR("01011234567"),
                 fodselsdato = "1968-01-01",
                 sisteTpnr = "12345",
-                sivilstandKode = SivilstandCodeEnum.GIFT,
+                sivilstandkode = SivilstandCodeEnum.GIFT,
                 inntektListe = emptyList(),
                 simuleringsperiodeListe = emptyList(),
                 simuleringsdataListe = emptyList(),
@@ -81,10 +82,10 @@ internal class SimpleSimuleringServiceTest {
     }
 
     @Test
-    @Throws(Exception::class)
+    @Throws(DuplicateOpptjeningsperiodeEndDateException::class)
     fun shouldReturnStatusAndFeilkodeWhenDuplicateOpptjeningsperiodeEndDate() {
         val tpOrdning = TPOrdning("1", "1")
-        val tpLeverandor = TpLeverandor("lev2", "url1")
+        val tpLeverandor = TpLeverandor("lev2", "url1", null)
 
         Mockito.`when`(tpRegisterConsumer.getTpOrdningerForPerson(anyNonNull())).thenReturn(listOf(tpOrdning))
 
@@ -101,18 +102,19 @@ internal class SimpleSimuleringServiceTest {
 
         Mockito.`when`(asyncExecutor.executeAsync<TPOrdning>(anyNonNull())).thenReturn(asyncResponse)
         Mockito.`when`(opptjeningsperiodeService.getLatestFromOpptjeningsperiode(anyNonNull()))
-                .thenThrow(DuplicateStillingsprosentEndDateException("exception")) //todo set versioning
+                .thenThrow(DuplicateOpptjeningsperiodeEndDateException("exception")) //todo set versioning
 
-        val simulertPensjon = simuleringService.simulerOffentligTjenestepensjon(request)
+        val exception = assertThrows<DuplicateOpptjeningsperiodeEndDateException> { simuleringService.simulerOffentligTjenestepensjon(request) }
 
-        assertNotNull(simulertPensjon) //todo fix response
+        assertEquals(exception::class, DuplicateOpptjeningsperiodeEndDateException::class)
+        assertEquals("PARF", exception.feilkode)
     }
 
     @Test
-    @Throws(Exception::class)
+    @Throws(MissingOpptjeningsperiodeException::class)
     fun shouldReturnStatusAndFeilkodeWhenMissingStillingsprosent() {
         val tpOrdning = TPOrdning("1", "1")
-        val tpLeverandor = TpLeverandor("lev2", "url1")
+        val tpLeverandor = TpLeverandor("lev2", "url1", null)
 
         Mockito.`when`(tpRegisterConsumer.getTpOrdningerForPerson(anyNonNull())).thenReturn(listOf(tpOrdning))
 
@@ -127,36 +129,45 @@ internal class SimpleSimuleringServiceTest {
         Mockito.`when`(opptjeningsperiodeService.getLatestFromOpptjeningsperiode(anyNonNull()))
                 .thenThrow(MissingOpptjeningsperiodeException("exception"))
 
-        val simulertPensjon = simuleringService.simulerOffentligTjenestepensjon(request)
+        val exception = assertThrows<MissingOpptjeningsperiodeException> { simuleringService.simulerOffentligTjenestepensjon(request) }
 
-        assertNotNull(simulertPensjon) //todo fix response
+        assertEquals(exception::class, MissingOpptjeningsperiodeException::class)
+        assertEquals("IKKE", exception.feilkode)
     }
 
     @Test
-    fun `Should add response info when no stillingsprosent available`() {
+    @Throws(NoTpOrdningerFoundException::class)
+    fun `Should add response info when no opptjeningsperiode available`() {
         Mockito.`when`(asyncExecutor.executeAsync<TPOrdning>(anyNonNull())).thenReturn(AsyncResponse())
         Mockito.`when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull()))
                 .thenReturn(OpptjeningsperiodeResponse(emptyMap(), emptyList()))
-        val response = simuleringService.simulerOffentligTjenestepensjon(request)
 
-        assertEquals("FEIL", response.leverandorUrl) //todo fix response
+        val exception = assertThrows<NoTpOrdningerFoundException> { simuleringService.simulerOffentligTjenestepensjon(request) }
+
+        assertEquals(exception::class, NoTpOrdningerFoundException::class) //todo might need to create a new exception
+
+        assertEquals("Could not get opptjeningsperiode from any TP-Providers", exception.message) //todo fix response
     }
 
     @Test
-    @Throws(Exception::class)
-    fun shouldAddResponseInfoWhenNoTpOrdningFound() {
+    @Throws(NoTpOrdningerFoundException::class)
+    fun `should add response info when no tp ordning found`() {
         Mockito.`when`(tpRegisterConsumer.getTpOrdningerForPerson(anyNonNull())).thenThrow(NoTpOrdningerFoundException("exception"))
-        val response = simuleringService.simulerOffentligTjenestepensjon(request)
 
-        assertEquals("FEIL", response.leverandorUrl) //todo fix response
+        val exception = assertThrows<NoTpOrdningerFoundException> { simuleringService.simulerOffentligTjenestepensjon(request) }
+
+        assertEquals(exception::class, NoTpOrdningerFoundException::class)
     }
 
     @Test
-    fun `Should add response info when simulering returns ok status`() {
+    fun `Should return response object`() {
         val map = mapOf(TPOrdning("tssInkluder", "tpInkluder") to emptyList<Opptjeningsperiode>())
-        val exceptions = listOf(ExecutionException(StillingsprosentCallableException("msg", Throwable(), TPOrdning("tssUtelatt", "tpUtelatt"))))
+        val exceptions = listOf(ExecutionException(OpptjeningsperiodeCallableException("msg", Throwable(), TPOrdning("tssUtelatt", "tpUtelatt"))))
         val opptjeningsperiodeResponse = OpptjeningsperiodeResponse(map, exceptions)
-        Mockito.`when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull())).thenReturn(opptjeningsperiodeResponse)
+
+        Mockito.`when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull()))
+                .thenReturn(opptjeningsperiodeResponse)
+
         val s1 = SimulerOffentligTjenestepensjonResponse(
                 tpnr = "feil",
                 navnOrdning = "feil",
@@ -169,43 +180,47 @@ internal class SimpleSimuleringServiceTest {
                 ))
         )
         val tpOrdning = TPOrdning("fake", "faker")
-        val tpLeverandor = TpLeverandor("fake", "faker")
-        Mockito.`when`(asyncExecutor.executeAsync<TPOrdning>(anyNonNull())).thenReturn(AsyncResponse<TPOrdning, TpLeverandor>().apply { this.resultMap[tpOrdning] = tpLeverandor })
+        val tpLeverandor = TpLeverandor("fake", "faker", null)
+        Mockito.`when`(asyncExecutor.executeAsync<TPOrdning>(anyNonNull()))
+                .thenReturn(AsyncResponse<TPOrdning, TpLeverandor>().apply { this.resultMap[tpOrdning] = tpLeverandor })
         Mockito.`when`(simuleringEnpointRouter.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull()))
                 .thenReturn(s1)
         Mockito.`when`(opptjeningsperiodeService.getLatestFromOpptjeningsperiode(anyNonNull()))
                 .thenReturn(tpOrdning)
 
         val response = simuleringService.simulerOffentligTjenestepensjon(request)
+
         Mockito.verify<AppMetrics>(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL)
-        val simulertPensjon = response
-        assertNotNull(simulertPensjon)
-        assertEquals("UFUL", simulertPensjon.leverandorUrl) //todo fix response
+
+        assertNotNull(response)
     }
 
     @Test
     fun `Should increment metrics`() {
         val map = mapOf(TPOrdning("tssInkluder", "tpInkluder") to emptyList<Opptjeningsperiode>())
         val opptjeningsperiodeResponse = OpptjeningsperiodeResponse(map, listOf())
-        Mockito.`when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull())).thenReturn(opptjeningsperiodeResponse)
+
+        Mockito.`when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull()))
+                .thenReturn(opptjeningsperiodeResponse)
 
         val s1 = SimulerOffentligTjenestepensjonResponse(
-                utbetalingsperiodeListe = listOf(null),
+                utbetalingsperiodeListe = listOf(),
                 tpnr = "",
                 navnOrdning = ""
         )
 
         val tpOrdning = TPOrdning("fake", "faker")
-        val tpLeverandor = TpLeverandor("fake", "faker")
+        val tpLeverandor = TpLeverandor("fake", "faker", null)
+
         Mockito.`when`(asyncExecutor.executeAsync<TPOrdning>(anyNonNull())).thenReturn(AsyncResponse<TPOrdning, TpLeverandor>().apply { this.resultMap[tpOrdning] = tpLeverandor })
         Mockito.`when`(opptjeningsperiodeService.getLatestFromOpptjeningsperiode(anyNonNull()))
                 .thenReturn(tpOrdning)
         Mockito.`when`(simuleringEnpointRouter.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull()))
                 .thenReturn(s1)
+        assertNotNull(
+                simuleringService.simulerOffentligTjenestepensjon(request)
+        )
 
-        val response = simuleringService.simulerOffentligTjenestepensjon(request)
         Mockito.verify<AppMetrics>(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_MANGEL)
-
-        assertNull(response.leverandorUrl)  //todo fix response
     }
 }

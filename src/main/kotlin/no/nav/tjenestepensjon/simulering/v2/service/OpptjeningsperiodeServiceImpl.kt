@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.v2.service
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.DuplicateOpptjeningsperiodeEndDateException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.MissingOpptjeningsperiodeException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
@@ -32,7 +32,7 @@ class OpptjeningsperiodeServiceImpl(
         return OpptjeningsperiodeResponse(asyncResponse.resultMap, asyncResponse.exceptions)
     }
 
-    @Throws(DuplicateStillingsprosentEndDateException::class,
+    @Throws(DuplicateOpptjeningsperiodeEndDateException::class,
             MissingOpptjeningsperiodeException::class)
     override fun getLatestFromOpptjeningsperiode(map: TPOrdningOpptjeningsperiodeMap) =
             map.flatMap { (key, list) ->
@@ -43,9 +43,9 @@ class OpptjeningsperiodeServiceImpl(
             }.ifEmpty { throw MissingOpptjeningsperiodeException("Could not find any stillingsprosent") }
             .reduce(::getLatest).first
 
-    @Throws(DuplicateStillingsprosentEndDateException::class)
+    @Throws(DuplicateOpptjeningsperiodeEndDateException::class)
     private fun getLatest(latest: Pair<TPOrdning, Opptjeningsperiode>, other: Pair<TPOrdning, Opptjeningsperiode>) = when {
-            latest.second.datoTom == other.second.datoTom -> throw DuplicateStillingsprosentEndDateException("Could not decide latest stillingprosent due to multiple stillingsprosent having the same end date")
+            latest.second.datoTom == other.second.datoTom -> throw DuplicateOpptjeningsperiodeEndDateException("Could not decide latest stillingprosent due to multiple stillingsprosent having the same end date")
             other.second.datoTom == null -> other
             latest.second.datoTom == null || latest.second.datoTom!! > other.second.datoTom -> latest
             latest.second.datoTom!! < other.second.datoTom -> other

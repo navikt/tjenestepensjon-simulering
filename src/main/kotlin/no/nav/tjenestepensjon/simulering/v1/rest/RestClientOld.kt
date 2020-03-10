@@ -3,7 +3,7 @@ package no.nav.tjenestepensjon.simulering.v1.rest
 import no.nav.tjenestepensjon.simulering.v1.Tjenestepensjonsimulering
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
 import no.nav.tjenestepensjon.simulering.consumer.TokenClient
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning

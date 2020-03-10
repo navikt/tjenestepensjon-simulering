@@ -2,8 +2,8 @@ package no.nav.tjenestepensjon.simulering.v1.soap
 
 import no.nav.tjenestepensjon.simulering.consumer.TokenClient
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.SOAPAdapter
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLHentStillingsprosentListeRequestWrapper
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLSimulerOffentligTjenestepensjonRequestWrapper

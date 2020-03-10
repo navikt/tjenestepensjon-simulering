@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.consumer
 
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
 import org.junit.jupiter.api.Assertions.assertEquals

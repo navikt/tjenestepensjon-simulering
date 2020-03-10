@@ -3,9 +3,9 @@ package no.nav.tjenestepensjon.simulering.v2.rest
 import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
 import no.nav.tjenestepensjon.simulering.consumer.TokenClient
-import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse

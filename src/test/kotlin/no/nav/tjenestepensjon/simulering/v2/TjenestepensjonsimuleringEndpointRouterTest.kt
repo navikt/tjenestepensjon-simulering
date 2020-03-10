@@ -5,9 +5,9 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
-import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.testHelper.safeEq
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
@@ -25,7 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
-internal class TjenestepensjonsimuleringEndpointRouterOldTest {
+internal class TjenestepensjonsimuleringEndpointRouterTest {
 
     private val fnr = FNR("01011234567")
 
@@ -58,7 +58,7 @@ internal class TjenestepensjonsimuleringEndpointRouterOldTest {
             fodselsdato = "",
             sisteTpnr = "",
             inntektListe = emptyList(),
-            sivilstandKode = REPA,
+            sivilstandkode = REPA,
             simuleringsperiodeListe = emptyList(),
             simuleringsdataListe = emptyList(),
             tpForholdListe = emptyList()
@@ -72,13 +72,13 @@ internal class TjenestepensjonsimuleringEndpointRouterOldTest {
     private lateinit var simuleringEndpointRouter: TjenestepensjonsimuleringEndpointRouter
 
     private val tpOrdning = TPOrdning("tss1", "tp1")
-    private val tpRestLeverandor = TpLeverandor("lev", "url1")
+    private val tpRestLeverandor = TpLeverandor("lev", "url1", null)
 
 
     @Test
     fun `Call shall return opptjeningsperiodeList with rest`() {
         Mockito.`when`(restClient.getOpptjeningsperiode(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(opptjeningsperiodeList)
-        val result: List<Opptjeningsperiode> = simuleringEndpointRouter.getStillingsprosenter(
+        val result: List<Opptjeningsperiode> = simuleringEndpointRouter.getOpptjeningsperiodeListe(
                 fnr,
                 tpOrdning,
                 tpRestLeverandor

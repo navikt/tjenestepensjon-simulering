@@ -9,10 +9,10 @@ import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.v2.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
-import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
-import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v2.TjenestepensjonsimuleringEndpointRouter
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
@@ -62,8 +62,8 @@ class SimpleSimuleringService(
     ) {
         val utelatteTpNr = opptjeningsperiodeResponse.exceptions
                 .map(ExecutionException::cause)
-                .filterIsInstance<StillingsprosentCallableException>()
-                .map(StillingsprosentCallableException::tpOrdning)
+                .filterIsInstance<OpptjeningsperiodeCallableException>()
+                .map(OpptjeningsperiodeCallableException::tpOrdning)
                 .map(TPOrdning::tpId)
 
         val ufullstendig = utelatteTpNr.isNotEmpty()

@@ -1,14 +1,14 @@
 package no.nav.tjenestepensjon.simulering.config
 
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import java.util.concurrent.ThreadPoolExecutor
-import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExtendWith(MockitoExtension::class)
 internal class ExecutorServiceConfigTest {

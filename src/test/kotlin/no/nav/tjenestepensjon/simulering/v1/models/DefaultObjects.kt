@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.v1.models
 
 import no.nav.tjenestepensjon.simulering.domain.DelytelseType.BASISTP
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.Pensjonsbeholdningperiode
+import no.nav.tjenestepensjon.simulering.model.domain.Pensjonsbeholdningsperiode
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.v1.models.domain.*
 import no.nav.tjenestepensjon.simulering.v1.models.request.*
@@ -84,11 +84,11 @@ val defaultSimulertAFPPrivat = SimulertAFPPrivat(
         kompensasjonstillegg = 0.0
 )
 
-val defaultPensjonsbeholdningperiode = Pensjonsbeholdningperiode(
+val defaultPensjonsbeholdningperiode = Pensjonsbeholdningsperiode(
         datoFom = defaultDatoFom,
         pensjonsbeholdning = 0,
         garantipensjonsbeholdning = 0,
-        garantilleggsbeholdning = 0
+        garantitilleggsbeholdning = 0
 )
 
 val defaultInntekt = Inntekt(
@@ -172,7 +172,7 @@ const val defaultHentStillingsprosentListeRequestJson = """{"tssEksternId":"bogu
 const val defaultSimuleringsperiodeJson = """{"datoFom":"$defaultFomDateString","utg":0,"stillingsprosentOffentlig":0,"poengArTom1991":0,"poengArFom1992":0,"sluttpoengtall":0.0,"anvendtTrygdetid":0,"forholdstall":0.0,"delingstall":0.0,"uforegradVedOmregning":0,"delytelser":[$defaultDelytelseJson]}"""
 const val defaultSimulertAFPPrivatJson = """{"afpOpptjeningTotalbelop":0,"kompensasjonstillegg":0.0}"""
 const val defaultInntektJson = """{"datoFom":"$defaultFomDateString","inntekt":0.0}"""
-const val defaultPensjonsbeholdningsperiodeJson = """{"datoFom":"$defaultFomDateString","pensjonsbeholdning":0,"garantipensjonsbeholdning":0,"garantilleggsbeholdning":0}"""
+const val defaultPensjonsbeholdningsperiodeJson = """{"datoFom":"$defaultFomDateString","pensjonsbeholdning":0,"garantipensjonsbeholdning":0,"garantitilleggsbeholdning":0}"""
 const val defaultSimulerPensjonRequestJson = """{"fnr":"$defaultFNRString","sivilstandkode":"bogus","sprak":"bogus","simuleringsperioder":[$defaultSimuleringsperiodeJson],"simulertAFPOffentlig":0,"simulertAFPPrivat":$defaultSimulertAFPPrivatJson,"pensjonsbeholdningsperioder":[$defaultPensjonsbeholdningsperiodeJson],"inntekter":[$defaultInntektJson]}"""
 const val defaultSimuleringsdataJson = """{"poengArTom1991":0,"poengArFom1992":0,"sluttpoengtall":0.0,"anvendtTrygdetid":0,"basisgp":0.0,"basistp":0.0,"basispt":0.0,"forholdstall_uttak":0.0,"skjermingstillegg":0.0,"uforegradVedOmregning":0}"""
 const val defaultSimulertAP2011Json = """{"simulertForsteuttak":$defaultSimuleringsdataJson,"simulertHeltUttakEtter67Ar":$defaultSimuleringsdataJson}"""

@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.service
 
-import no.nav.tjenestepensjon.simulering.exceptions.DuplicateStillingsprosentEndDateException
+import no.nav.tjenestepensjon.simulering.v1.exceptions.DuplicateStillingsprosentEndDateException
 import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning

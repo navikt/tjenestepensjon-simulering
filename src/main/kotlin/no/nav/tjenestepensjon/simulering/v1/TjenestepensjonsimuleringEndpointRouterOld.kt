@@ -4,9 +4,10 @@ import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.REST
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.exceptions.MissingEndpointServiceException
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
@@ -31,6 +32,7 @@ class TjenestepensjonsimuleringEndpointRouterOld(
         val stillingsprosentList: List<Stillingsprosent> = when (tpLeverandor.impl) {
             SOAP -> soapClient
             REST -> restClient
+            else -> throw MissingEndpointServiceException("Missing end-point service")
         }.getStillingsprosenter(fnr, tpOrdning, tpLeverandor)
 
         val elapsed = metrics.elapsedSince(startTime)
@@ -52,6 +54,7 @@ class TjenestepensjonsimuleringEndpointRouterOld(
         val simulertPensjonList = when (tpLeverandor.impl) {
             SOAP -> soapClient
             REST -> restClient
+            else -> throw MissingEndpointServiceException("Missing end-point service")
         }.simulerPensjon(request, tpOrdning, tpLeverandor, tpOrdningStillingsprosentMap)
 
         val elapsed = metrics.elapsedSince(startTime)

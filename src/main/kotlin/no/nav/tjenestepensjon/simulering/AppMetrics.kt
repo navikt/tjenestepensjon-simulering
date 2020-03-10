@@ -19,7 +19,7 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import org.springframework.stereotype.Component
 
 @Component
@@ -94,11 +94,11 @@ class AppMetrics(
 
     object Metrics {
         const val APP_NAME = "tjenestepensjon_simulering"
-        const val TP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_tp_leverandor_calls_"
-        const val TP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_tp_leverandor_time_"
-        const val TP_LATEST_STILLINGSPROSENT_TIME = APP_NAME + "_tp_leverandor_time_latest_"
-        const val APP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_app_stillingsprosent_calls"
-        const val APP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_app_stillingsprosent_time"
+        const val TP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_tp_leverandor_calls_" // todo versioning here!
+        const val TP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_tp_leverandor_time_" // todo versioning here
+        const val TP_LATEST_STILLINGSPROSENT_TIME = APP_NAME + "_tp_leverandor_time_latest_" // todo versioning here
+        const val APP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_app_stillingsprosent_calls" // todo versioning here
+        const val APP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_app_stillingsprosent_time" // todo versioning here
         const val APP_TOTAL_SIMULERING_CALLS = APP_NAME + "_app_simulering_calls"
         const val APP_TOTAL_SIMULERING_TIME = APP_NAME + "_app_simulering_time"
         const val APP_TOTAL_SIMULERING_OK = APP_NAME + "_app_simulering_ok"

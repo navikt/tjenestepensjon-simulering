@@ -1,9 +1,9 @@
 package no.nav.tjenestepensjon.simulering.v1
 
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.REST
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor.EndpointImpl.SOAP
-import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.v1.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning

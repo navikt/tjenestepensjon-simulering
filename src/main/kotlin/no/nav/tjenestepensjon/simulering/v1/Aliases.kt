@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1
 
-import no.nav.tjenestepensjon.simulering.v1.models.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 

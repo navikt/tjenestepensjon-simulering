@@ -1,9 +1,9 @@
 package no.nav.tjenestepensjon.simulering.v2
 
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
-import no.nav.tjenestepensjon.simulering.v2.models.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.exceptions.StillingsprosentCallableException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Callable
@@ -15,10 +15,10 @@ class OpptjeningsperiodeCallable(
         private val endpointRouter: TjenestepensjonsimuleringEndpointRouter
 ) : Callable<List<Opptjeningsperiode>> {
     override fun call() = try {
-        endpointRouter.getStillingsprosenter(fnr, tpOrdning, tpLeverandor)
+        endpointRouter.getOpptjeningsperiodeListe(fnr, tpOrdning, tpLeverandor)
     } catch (e: Throwable) {
         e.printStackTrace()
-        throw StillingsprosentCallableException("Call to getStillingsprosenter failed with exception: $e", e, tpOrdning)
+        throw OpptjeningsperiodeCallableException("Call to getStillingsprosenter failed with exception: $e", e, tpOrdning)
                 .also { ex ->
                     LOG.warn("Rethrowing as: {}", ex.toString())
                 }

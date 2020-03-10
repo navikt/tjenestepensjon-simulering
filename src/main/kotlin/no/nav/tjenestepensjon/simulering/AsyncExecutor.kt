@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import java.util.*
 import java.util.concurrent.Callable
@@ -8,7 +9,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
 @Component
-class AsyncExecutor<Result, T : Callable<Result>>(private val executorService: ExecutorService) {
+class AsyncExecutor<Result, T : Callable<Result>>(@Qualifier("taskExecutor") private val executorService: ExecutorService) {
     fun <Key> executeAsync(callableMap: Map<Key, T>): AsyncResponse<Key, Result> {
         val futureMap: Map<Key, Future<Result>> = callableMap.mapValues { (_, t) -> executorService.submit(t) }
         val response = AsyncResponse<Key, Result>()

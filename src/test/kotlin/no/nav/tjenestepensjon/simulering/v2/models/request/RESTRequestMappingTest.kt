@@ -15,38 +15,14 @@ class RESTRequestMappingTest {
     lateinit var objectMapper: ObjectMapper
 
     @Test
-    fun `Test serializing of HentStillingsprosentListeRequest`() {
-        val result = objectMapper.writeValueAsString(defaultHentStillingsprosentListeRequest)
-        assertEquals(defaultHentStillingsprosentListeRequestJson, result)
-    }
-
-    @Test
-    fun `Test serializing of SimulerPensjonsRequest`() {
-        val result = objectMapper.writeValueAsString(defaultSimulerPensjonRequest)
-        assertEquals(defaultSimulerPensjonRequestJson, result)
-    }
-
-    @Test
     fun `Test serializing of SimulerOffentligTjenestepensjonRequest`() {
-        val result = objectMapper.writeValueAsString(defaultSimulerOffentligTjenestepensjonRequest)
+        val result = objectMapper.writeValueAsString(defaultSimulertPensjonRequest)
         assertEquals(defaultSimulerOffentligTjenestepensjonRequestJson, result)
     }
 
     @Test
-    fun `Test deserializing of HentStillingsprosentListeRequest`() {
-        val result = objectMapper.readValue(defaultHentStillingsprosentListeRequestJson, HentStillingsprosentListeRequest::class.java)
-        assertEquals(defaultHentStillingsprosentListeRequest, result)
-    }
-
-    @Test
-    fun `Test deserializing of SimulerPensjonsRequest`() {
-        val result = objectMapper.readValue(defaultSimulerPensjonRequestJson, SimulerPensjonRequest::class.java)
-        assertEquals(defaultSimulerPensjonRequest, result)
-    }
-
-    @Test
     fun `Test deserializing of SimulerOffentligTjenestepensjonRequest`() {
-        val result = objectMapper.readValue(defaultSimulerOffentligTjenestepensjonRequestJson, SimulerOffentligTjenestepensjonRequest::class.java)
-        assertEquals(defaultSimulerOffentligTjenestepensjonRequest, result)
+        val result = objectMapper.readValue(defaultSimulerOffentligTjenestepensjonRequestJson, SimulerPensjonRequest::class.java)
+         assertEquals(objectMapper.writeValueAsString(defaultSimulertPensjonRequest), objectMapper.writeValueAsString(result))
     }
 }

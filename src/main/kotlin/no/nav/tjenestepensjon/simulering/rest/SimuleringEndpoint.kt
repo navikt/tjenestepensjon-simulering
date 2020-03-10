@@ -67,6 +67,10 @@ class SimuleringEndpoint(
         LOG.info("Processing nav-call-id: {}, request: {}", getHeaderFromRequestContext(NAV_CALL_ID), body.toString())
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
+
+
+
+
         return try {
             if (!unleashService.isNewModelEnabled()) {
                 val request = objectMapper.readValue(body, SimulerPensjonRequest::class.java)

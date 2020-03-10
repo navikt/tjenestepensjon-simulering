@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.exceptions
+package no.nav.tjenestepensjon.simulering.v1.exceptions
 
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 
