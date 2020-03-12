@@ -69,6 +69,7 @@ class SimuleringEndpoint(
                         objectMapper.readValue(body, SimulerPensjonRequest::class.java)
                 )
             } catch (e: Throwable) {
+                LOG.debug("Caught error in version 1, try version 2.", e)
                 service2.simulerOffentligTjenestepensjon(
                         objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
                 )
