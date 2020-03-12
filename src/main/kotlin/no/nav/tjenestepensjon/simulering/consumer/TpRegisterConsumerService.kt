@@ -24,8 +24,9 @@ class TpRegisterConsumerService(private val tokenClient: TokenClient) : TpRegist
     @Throws(NoTpOrdningerFoundException::class)
     override fun getTpOrdningerForPerson(fnr: FNR): List<TPOrdning> {
         return webClient.get()
-                .uri("$tpRegisterUrl/person/$fnr/tpordninger")
+                .uri("$tpRegisterUrl/person/tpordninger")
                 .header(AUTHORIZATION, "Bearer " + tokenClient.oidcAccessToken.accessToken)
+                .header("fnr", fnr.toString())
                 .retrieve()
                 .bodyToMono<List<TPOrdning>>()
                 .block()

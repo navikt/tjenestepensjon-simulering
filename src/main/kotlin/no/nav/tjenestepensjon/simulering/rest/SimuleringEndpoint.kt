@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST
 import org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.time.LocalDate
 
 @RestController
@@ -68,8 +69,10 @@ class SimuleringEndpoint(
                 service.simulerOffentligTjenestepensjon(
                         objectMapper.readValue(body, SimulerPensjonRequest::class.java)
                 )
+            } catch (e: WebClientResponseException) {
+                LOG.debug("Caught WebClientResponseException in version 1, try version 2.", e)
             } catch (e: Throwable) {
-                LOG.debug("Caught error in version 1, try version 2.", e)
+                LOG.debug("Caught exception in version 1, try version 2.", e)
                 service2.simulerOffentligTjenestepensjon(
                         objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
                 )
