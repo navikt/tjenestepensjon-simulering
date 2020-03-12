@@ -71,7 +71,7 @@ class SimuleringEndpoint(
                 )
             } catch (e: WebClientResponseException) {
                 LOG.debug("Caught WebClientResponseException in version 1, try version 2.", e)
-                ResponseEntity(e.message, HttpStatus.INTERNAL_SERVER_ERROR)
+                e.message to HttpStatus.INTERNAL_SERVER_ERROR
             } catch (e: Throwable) {
                 LOG.debug("Caught exception in version 1, try version 2.", e)
                 service2.simulerOffentligTjenestepensjon(
