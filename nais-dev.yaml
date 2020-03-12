@@ -12,8 +12,14 @@ spec:
     - https://tjenestepensjon-simulering.nais.preprod.local
   liveness:
     path: isAlive
+    initialDelay: 30
+    periodSeconds: 1
+    failureThreshold: 60
   readiness:
     path: isReady
+    initialDelay: 30
+    periodSeconds: 1
+    failureThreshold: 60
   vault:
     enabled: true
   replicas:
