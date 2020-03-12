@@ -3,7 +3,7 @@ name: NAIS Deploy
 on:
   push:
     branches:
-      - pl_885_tjenestepensjonSimulering_new_model
+      - feature/pl_885_tjenestepensjonSimulering_new_model
 
 jobs:
   deploy-to-dev:
