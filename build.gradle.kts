@@ -39,6 +39,11 @@ dependencies {
     implementation("org.springframework.security", "spring-security-jwt", "1.0.10.RELEASE")
     implementation("org.springframework.security.oauth", "spring-security-oauth2", "2.3.6.RELEASE")
             .exclude(group = "org.codehaus.jackson")
+    implementation("com.nimbusds", "nimbus-jose-jwt", "8.3")
+    implementation("io.jsonwebtoken", "jjwt-impl", "0.10.2")
+    implementation("io.jsonwebtoken", "jjwt-api", "0.10.5")
+    implementation("io.jsonwebtoken", "jjwt-jackson", "0.10.7")
+
     implementation("org.springframework.ws", "spring-ws-core", "3.0.8.RELEASE")
     testImplementation(kotlin("test-junit5"))
     testImplementation("com.github.tomakehurst", "wiremock-jre8", "2.23.2")
