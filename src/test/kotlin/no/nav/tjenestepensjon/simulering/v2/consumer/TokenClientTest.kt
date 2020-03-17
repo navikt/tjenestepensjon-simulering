@@ -13,7 +13,7 @@ internal class TokenClientTest() {
     @Test
     fun `Test marshalling of HentStillingsprosentListeRequest`(){
 
-        tokenclient.generateToken()
+//        tokenclient.generateToken()
 
     }
 }
