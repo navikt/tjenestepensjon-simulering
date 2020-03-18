@@ -9,7 +9,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 
-internal class TokenClientTest {
+internal class MaskinportenTokenTest {
     private val tokenClient: TokenClient = TokenClient().apply {
         username = "username"
         password = "password"

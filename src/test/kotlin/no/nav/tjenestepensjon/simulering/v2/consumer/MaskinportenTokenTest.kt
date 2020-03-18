@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest(classes = [TokenClient::class])
-internal class TokenClientTest() {
+@SpringBootTest(classes = [MaskinportenTokenConfig::class])
+internal class MaskinportenTokenTest() {
 
     @Autowired
-    lateinit var tokenclient: TokenClient
+    lateinit var tokenclient: MaskinportenTokenConfig
 
     @Test
     fun `Test marshalling of HentStillingsprosentListeRequest`(){

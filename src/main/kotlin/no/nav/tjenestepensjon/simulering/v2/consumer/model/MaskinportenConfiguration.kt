@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class IdPortenOidcConfiguration(
+data class MaskinportenConfiguration(
         @JsonProperty(value = "issuer", required = true) val issuer: String,
         @JsonProperty(value = "token_endpoint", required = true) val tokenEndpoint: String
 )
