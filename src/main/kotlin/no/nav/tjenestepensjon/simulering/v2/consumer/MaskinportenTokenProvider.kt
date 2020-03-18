@@ -29,13 +29,13 @@ class MaskinportenTokenProvider {
     @Value("\${IDPORTEN_scope}")
     lateinit var idPortenScope: String
 
-    @Value("\${jwksPublic}")
+    @Value("\${jwk_public}")
     lateinit var jwksPublic: String
 
-    @Value("\${clientId}")
+    @Value("\${client_id}")
     lateinit var clientId: String
 
-    @Value("\${privateKeyBase64}")
+    @Value("\${private_key_base64}")
     lateinit var privateKeyBase64: String
 
     @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_API_KEY}")
