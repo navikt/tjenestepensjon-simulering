@@ -29,7 +29,7 @@ lateinit var objectMapper: ObjectMapper
 @Component
 class MaskinportenTokenConfig {
 
-    @Value("\${IDPORTEN}")
+    @Value("\${IDPORTEN_scope}")
     lateinit var idPortenScope: String
 
     @Value("\${jwksPublic}")
@@ -47,13 +47,10 @@ class MaskinportenTokenConfig {
     @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_TOKEN}")
     lateinit var maskinportenTokenEndpoint: String
 
-    @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_API_KEY}")
-    var idPortenConfigurationApiGwEndpoint: String = "apikey"
+    @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_CONFIGURATION}")
+    lateinit var idPortenConfigurationApiGwEndpoint: String
 
-    @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_TOKEN}")
-    lateinit var maskinportenConfigurationEndpoint: String
-
-    @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_TOKEN}")
+    @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_CONFIGURATION_API_KEY}")
     lateinit var maskinportenConfigurationApiKey: String
 
     private val webClient = WebClientConfig.webClient()
