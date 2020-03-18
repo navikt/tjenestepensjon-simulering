@@ -1,8 +1,9 @@
-package no.nav.tjenestepensjon.simulering.consumer
+package no.nav.tjenestepensjon.simulering.v1.consumer
 
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
-import no.nav.tjenestepensjon.simulering.consumer.TokenClient.TokenType.OIDC
-import no.nav.tjenestepensjon.simulering.consumer.TokenClient.TokenType.SAML
+import no.nav.tjenestepensjon.simulering.consumer.TokenServiceConsumer
+import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld.TokenType.OIDC
+import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld.TokenType.SAML
 import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import org.slf4j.LoggerFactory
@@ -15,7 +16,7 @@ import java.net.URI
 import java.util.*
 
 @Component
-class TokenClient : TokenServiceConsumer {
+class TokenClientOld : TokenServiceConsumer {
     @Value("\${SERVICE_USER}")
     lateinit var username: String
 

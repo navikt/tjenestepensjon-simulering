@@ -13,21 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
-import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.BodyInserters
+import org.springframework.stereotype.Service
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.time.Clock
 import java.util.*
 
-const val SCOPE = "scope"
+@Service
+class MaskinportenTokenProvider {
 
-@Autowired
-lateinit var objectMapper: ObjectMapper
-
-@Component
-class MaskinportenTokenConfig {
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @Value("\${IDPORTEN_scope}")
     lateinit var idPortenScope: String
@@ -55,18 +52,6 @@ class MaskinportenTokenConfig {
 
     private val webClient = WebClientConfig.webClient()
 
-    fun generateToken(): String {
-        LOG.info(jwksPublic)
-        val jwsToken = generatePrivateJWT()
-        try {
-            return getTokenFromDIFI(jwsToken)
-        } catch (e: Exception) {
-            LOG.error("An Error occured wile trying to generate token: $e")
-            // TODO exception handling?
-            throw e
-        }
-    }
-
     fun getKeys(keys: String) = objectMapper.readValue<Keys>(keys)
 
     internal fun base64ToPrivateKey(privateBase64: String): PrivateKey? {
@@ -81,15 +66,11 @@ class MaskinportenTokenConfig {
         LOG.info("Getting Apps own private key and generating JWT token")
         LOG.info("Generating JWS token")
 
-        val keys = getKeys(jwksPublic).keys
+        val key = getKeys(jwksPublic).keys.single()
         return Jws(
                 Jwts.builder()
-                        .setHeaderParams(
-                                mapOf(
-                                        JwsHeader.KEY_ID to keys.map { it.kid }.single(),
-                                        JwsHeader.ALGORITHM to keys.map { it.alg }.single()
-                                )
-                        )
+                        .setHeaderParam(JwsHeader.KEY_ID, key.kid)
+                        .setHeaderParam(JwsHeader.ALGORITHM, key.alg)
                         .setAudience(getMaskinportenAuthrozationServerConfiguration())
                         .setIssuer(clientId)
                         .setIssuedAt(Date(Clock.systemUTC().millis()))
@@ -123,16 +104,20 @@ class MaskinportenTokenConfig {
         }
     }
 
-    fun getTokenFromDIFI(jwsToken: Jws): String {
-        LOG.info("Making a Formdata request Url-encoded: to - ${maskinportenTokenEndpoint}")
-
-        val token = jwsToken.token
-        val body = BodyInserters.fromObject("""grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$token""")
-
+    fun generateToken(): String {
+        LOG.info(jwksPublic)
+        val jwsToken = try {
+            generatePrivateJWT().token
+        } catch (e: Throwable) {
+            LOG.error("An Error occured wile trying to generate token: $e")
+            TODO("exception handling?")
+            throw e
+        }
+        LOG.info("Making a Formdata request Url-encoded: to - $maskinportenTokenEndpoint")
         return try {
             webClient.post()
                     .uri(maskinportenTokenEndpoint)
-                    .body(body)
+                    .bodyValue("grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$jwsToken")
                     .header("x-nav-apiKey", maskinportenTokenApiKey)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<IdPortenAccessTokenResponse>() {})
@@ -147,5 +132,7 @@ class MaskinportenTokenConfig {
         @JvmStatic
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val LOG = LoggerFactory.getLogger(javaClass.enclosingClass)
+
+        const val SCOPE = "scope"
     }
 }

@@ -39,22 +39,6 @@ class SimuleringEndpoint(
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    class LocalDateEpochSerializer : JsonSerializer<LocalDate>() {
-        override fun serialize(value: LocalDate, gen: JsonGenerator, serializers: SerializerProvider) {
-            gen.writeString(value.toString())
-        }
-    }
-
-    @Bean
-    fun objectMapper(): ObjectMapper {
-        return ObjectMapper()
-                .registerModule(KotlinModule())
-                .registerModule(
-                        JavaTimeModule()
-                                .addSerializer(LocalDate::class.java, LocalDateEpochSerializer())
-                )
-    }
-
     @PostMapping("/simulering")
     fun simuler(
             @RequestBody body: String,

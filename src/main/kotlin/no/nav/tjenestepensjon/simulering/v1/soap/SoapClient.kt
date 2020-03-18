@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.v1.soap
 
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.Tjenestepensjonsimulering
-import no.nav.tjenestepensjon.simulering.consumer.TokenClient
+import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
@@ -24,7 +24,7 @@ import org.springframework.ws.client.core.support.WebServiceGatewaySupport
 @Controller
 class SoapClient(
         webServiceTemplate: WebServiceTemplate,
-        private val tokenClient: TokenClient
+        private val tokenClientOld: TokenClientOld
 ) : WebServiceGatewaySupport(), Tjenestepensjonsimulering {
 
     init {
@@ -51,7 +51,7 @@ class SoapClient(
                     SOAPCallback(
                             hentStillingsprosentUrl,
                             tpLeverandor.url,
-                            tokenClient.samlAccessToken.accessToken,
+                            tokenClientOld.samlAccessToken.accessToken,
                             samlConfig
                     )
             ) as XMLHentStillingsprosentListeResponseWrapper).let(SOAPAdapter::unmarshal).stillingsprosentListe
@@ -83,7 +83,7 @@ class SoapClient(
                     SOAPCallback(
                             simulerOffentlingTjenestepensjonUrl,
                             tpLeverandor.url,
-                            tokenClient.samlAccessToken.accessToken!!,
+                            tokenClientOld.samlAccessToken.accessToken!!,
                             samlConfig
                     )
             ) as XMLSimulerOffentligTjenestepensjonResponseWrapper).let { SOAPAdapter.unmarshal(it, request.fnr) }.simulertPensjonListe

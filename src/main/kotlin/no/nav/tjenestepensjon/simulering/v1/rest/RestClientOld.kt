@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.v1.rest
 
 import no.nav.tjenestepensjon.simulering.v1.Tjenestepensjonsimulering
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
-import no.nav.tjenestepensjon.simulering.consumer.TokenClient
+import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
@@ -15,7 +15,7 @@ import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.stereotype.Component
 
 @Component
-class RestClientOld(private val tokenClient: TokenClient) : Tjenestepensjonsimulering {
+class RestClientOld(private val tokenClientOld: TokenClientOld) : Tjenestepensjonsimulering {
     private val webClient = WebClientConfig.webClient()
     override fun getStillingsprosenter(
             fnr: FNR,
@@ -24,7 +24,7 @@ class RestClientOld(private val tokenClient: TokenClient) : Tjenestepensjonsimul
     ): List<Stillingsprosent> =
             webClient.get()
                     .uri(tpLeverandor.url)
-                    .header(AUTHORIZATION, "Bearer " + tokenClient.oidcAccessToken)
+                    .header(AUTHORIZATION, "Bearer " + tokenClientOld.oidcAccessToken)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<List<Stillingsprosent>>() {})
                     .block() ?: emptyList()
@@ -37,7 +37,7 @@ class RestClientOld(private val tokenClient: TokenClient) : Tjenestepensjonsimul
     ): List<SimulertPensjon> =
             webClient.get()
                     .uri(tpLeverandor.url)
-                    .header(AUTHORIZATION, "Bearer " + tokenClient.oidcAccessToken)
+                    .header(AUTHORIZATION, "Bearer " + tokenClientOld.oidcAccessToken)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<List<SimulertPensjon>>() {})
                     .block() ?: emptyList()

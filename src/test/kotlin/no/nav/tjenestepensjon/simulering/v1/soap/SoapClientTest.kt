@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
-import no.nav.tjenestepensjon.simulering.consumer.TokenClient
+import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
@@ -18,14 +18,14 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.ws.client.core.WebServiceTemplate
 
 
-@SpringBootTest(classes = [TokenClient::class, WebServiceTemplate::class, SoapClient::class, SamlConfig::class])
+@SpringBootTest(classes = [TokenClientOld::class, WebServiceTemplate::class, SoapClient::class, SamlConfig::class])
 internal class SoapClientTest {
 
     @MockBean
     lateinit var template: WebServiceTemplate
 
     @MockBean
-    lateinit var tokenClient: TokenClient
+    lateinit var tokenClientOld: TokenClientOld
 
     @Autowired
     lateinit var client: SoapClient
@@ -36,7 +36,7 @@ internal class SoapClientTest {
                 anyNonNull<XMLHentStillingsprosentListeRequestWrapper>(), anyNonNull<SOAPCallback>()))
                 .thenReturn(SOAPAdapter.marshal(defaultHentStillingsprosentListeResponse))
 
-        Mockito.`when`(tokenClient.samlAccessToken).thenReturn(TokenImpl(accessToken = "bogus"))
+        Mockito.`when`(tokenClientOld.samlAccessToken).thenReturn(TokenImpl(accessToken = "bogus"))
 
         val result = client.getStillingsprosenter(
                 defaultFNR,
@@ -52,7 +52,7 @@ internal class SoapClientTest {
                 anyNonNull<XMLSimulerOffentligTjenestepensjonRequestWrapper>(), anyNonNull<SOAPCallback>()))
                 .thenReturn(SOAPAdapter.marshal(defaultSimulerOffentligTjenestepensjonResponse, defaultFNR))
 
-        Mockito.`when`(tokenClient.samlAccessToken).thenReturn(TokenImpl(accessToken = "bogus"))
+        Mockito.`when`(tokenClientOld.samlAccessToken).thenReturn(TokenImpl(accessToken = "bogus"))
 
         val result = client.simulerPensjon(
                 request = defaultSimulerPensjonRequest,

@@ -1,26 +1,28 @@
 package no.nav.tjenestepensjon.simulering.v2.rest
 
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
-import no.nav.tjenestepensjon.simulering.consumer.TokenClient
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
-import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenConfig
+import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 
-@Component
+@Service
 class RestClient(
-        private val tokenClient: TokenClient,
-        private val maskinportenToken: MaskinportenTokenConfig
 ) {
+    @Autowired
+    private lateinit var tokenClient: TokenClient
 
     private val webClient = WebClientConfig.webClient()
+
     fun getOpptjeningsperiode(
             fnr: FNR,
             tpOrdning: TPOrdning,
@@ -41,11 +43,11 @@ class RestClient(
     ): SimulerOffentligTjenestepensjonResponse =
             webClient.get()
                     .uri(tpLeverandor.url)
-                    .header(AUTHORIZATION, "Bearer " + maskinportenToken.generateToken())
+                    .header(AUTHORIZATION, "Bearer " + tokenClient.maskinportToken)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<SimulerOffentligTjenestepensjonResponse>() {})
                     .block() ?: SimulerOffentligTjenestepensjonResponse(
-                        tpnr = request.sisteTpnr,
-                        navnOrdning = tpOrdning.tpId
-                    )
+                    tpnr = request.sisteTpnr,
+                    navnOrdning = tpOrdning.tpId
+            )
 }
