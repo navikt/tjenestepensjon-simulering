@@ -11,7 +11,6 @@ import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringService
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
-import no.nav.tjenestepensjon.simulering.v2.exceptions.MaskinportenException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
