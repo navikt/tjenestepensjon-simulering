@@ -49,10 +49,11 @@ class SimuleringEndpoint(
                         objectMapper.readValue(body, SimulerPensjonRequest::class.java)
                 )
             } catch (e: WebClientResponseException) {
-                LOG.debug("Caught WebClientResponseException in version 1, returns HttpStatus.INTERNAL_SERVER_ERROR.", e)
+                LOG.debug("Caught WebClientResponseException in version 1, returns 500 error code.", e)
                 e.message to HttpStatus.INTERNAL_SERVER_ERROR
             } catch (e: Throwable) {
-                LOG.debug("Caught exception in version 1, try version 2.", e)
+                LOG.debug("Caught exception in version 1.", e)
+                LOG.info("Try version 2, with request.")
                 service2.simulerOffentligTjenestepensjon(
                         objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
                 )
