@@ -52,7 +52,7 @@ class SimpleSimuleringService(
 
         val tpLev = TpLeverandor(
                 "name",
-                "url",
+                "https://partner-gw-test2.klp.no/api/pensjonsimulering",
                 null
         )
 
