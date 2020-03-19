@@ -8,6 +8,9 @@ import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.JacksonSerializer
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
 import no.nav.tjenestepensjon.simulering.v2.consumer.model.*
+import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.MaskinportenException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -97,13 +100,14 @@ class MaskinportenTokenProvider {
                     .block()
         } catch (e: Exception) {
             LOG.error("Error getting config from idporten: ${idPortenConfigurationApiGwEndpoint}", e)
-            throw IllegalStateException(e)
+            throw ConnectToIdPortenException(e.message)
         }.let {
             LOG.info("Got config for idporten")
             it.issuer
         }
     }
 
+    @Throws(MaskinportenException::class)
     fun generateToken(): String {
         LOG.info(jwksPublic)
         val jwsToken = try {
@@ -113,6 +117,7 @@ class MaskinportenTokenProvider {
             TODO("exception handling?")
             throw e
         }
+
         LOG.info("Making a Formdata request Url-encoded: to - $maskinportenTokenEndpoint")
         return try {
             webClient.post()
@@ -123,8 +128,8 @@ class MaskinportenTokenProvider {
                     .bodyToMono(object : ParameterizedTypeReference<IdPortenAccessTokenResponse>() {})
                     .block()
         } catch (e: Throwable) {
-            LOG.error("IdPorten: Unexpected error while fetching access token",e)
-            throw e
+            LOG.error("Maskinporten: Unexpected error while fetching access token",e)
+            throw ConnectToMaskinPortenException(e.message)
         }.let { AccessToken(it.accessToken).token }
     }
 

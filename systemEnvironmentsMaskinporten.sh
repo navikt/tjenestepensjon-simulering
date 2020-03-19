@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo testetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstesttestetstest
-
 export client_id=$(cat /var/run/secrets/nais.io/vault/jwks/client_id)
 export jwk_public=$(cat /var/run/secrets/nais.io/vault/jwks/jwk_public)
 export jwk_private=$(cat /var/run/secrets/nais.io/vault/jwks/jwk_private)

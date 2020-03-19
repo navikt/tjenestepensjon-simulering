@@ -1,22 +1,19 @@
 package no.nav.tjenestepensjon.simulering.rest
 
-import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringService
+import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.MaskinportenException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
@@ -27,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST
 import org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import java.time.LocalDate
 
 @RestController
 class SimuleringEndpoint(
@@ -69,6 +65,8 @@ class SimuleringEndpoint(
             when (e) {
                 is JsonParseException -> "Unable to parse body to request." to HttpStatus.BAD_REQUEST
                 is JsonMappingException -> "Unable to mapping body to request." to HttpStatus.BAD_REQUEST
+                is ConnectToIdPortenException -> "Unable to to connect with idPorten." to HttpStatus.INTERNAL_SERVER_ERROR
+                is ConnectToMaskinPortenException -> "Unable to to get token from maskinporten." to HttpStatus.INTERNAL_SERVER_ERROR
                 is SimuleringException -> e.message to HttpStatus.INTERNAL_SERVER_ERROR
                 else -> e.message to HttpStatus.INTERNAL_SERVER_ERROR
             }.run {
