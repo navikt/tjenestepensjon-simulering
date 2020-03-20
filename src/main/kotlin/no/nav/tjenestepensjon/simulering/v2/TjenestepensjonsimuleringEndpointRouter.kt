@@ -32,7 +32,23 @@ class TjenestepensjonsimuleringEndpointRouter(
         return stillingsprosentList
     }
 
+
     fun simulerPensjon(
+            request: SimulerPensjonRequest,
+            tpOrdning: TPOrdning,
+            tpLeverandor: TpLeverandor,
+            tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
+    ): SimulerOffentligTjenestepensjonResponse {
+        val startTime = metrics.startTime()
+        LOG.info("{} getting simulering from: {}", Thread.currentThread().name, tpLeverandor)
+
+        val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor, tpOrdningOpptjeningsperiodeMap)
+
+        return simulertPensjon
+    }
+
+
+    fun simulerPensjon2(
             request: SimulerPensjonRequest,
             tpOrdning: TPOrdning,
             tpLeverandor: TpLeverandor,
