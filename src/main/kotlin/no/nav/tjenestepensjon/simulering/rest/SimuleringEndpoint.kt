@@ -52,8 +52,8 @@ class SimuleringEndpoint(
                 LOG.debug("Caught WebClientResponseException in version 1, returns 500 error code.", e)
                 e.message to HttpStatus.INTERNAL_SERVER_ERROR
             } catch (e: Throwable) {
-                LOG.debug("Caught exception in version 1.", e)
-                LOG.info("Try version 2, with request.")
+                LOG.info("Caught exception in version 1.", e)
+                LOG.info("Caught exception in version 1 Try version 2.")
                 service2.simulerOffentligTjenestepensjon(
                         objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
                 )
@@ -62,6 +62,7 @@ class SimuleringEndpoint(
                 ResponseEntity(it, OK)
             }
         } catch (e: Throwable) {
+            LOG.error("Unable to handle request", e)
             when (e) {
                 is JsonParseException -> "Unable to parse body to request." to HttpStatus.BAD_REQUEST
                 is JsonMappingException -> "Unable to mapping body to request." to HttpStatus.BAD_REQUEST
