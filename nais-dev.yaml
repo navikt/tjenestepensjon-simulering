@@ -27,7 +27,8 @@ spec:
         mountPath: /var/run/secrets/nais.io/vault
       - kvPath: /maskinporten/data/dev/creds/tjenestepensjon-simulering
         mountPath: /var/run/secrets/nais.io/vault/jwks
-  webproxy: true
+  spec:
+    webproxy: true
   replicas:
     min: 1
     max: 1
