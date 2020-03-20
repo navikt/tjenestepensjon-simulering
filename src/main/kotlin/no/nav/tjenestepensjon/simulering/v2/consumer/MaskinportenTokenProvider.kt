@@ -114,7 +114,7 @@ class MaskinportenTokenProvider {
             generatePrivateJWT().token
         } catch (e: Throwable) {
             LOG.error("An Error occured wile trying to generate token: $e")
-            TODO("exception handling?")
+            //TODO("exception handling?")
             throw e
         }
 
