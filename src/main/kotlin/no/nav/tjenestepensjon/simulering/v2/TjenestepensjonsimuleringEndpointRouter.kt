@@ -44,6 +44,8 @@ class TjenestepensjonsimuleringEndpointRouter(
 
         val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor, tpOrdningOpptjeningsperiodeMap)
 
+        LOG.info("{} Simulering ferdig: {}", startTime, simulertPensjon)
+
         return simulertPensjon
     }
 
