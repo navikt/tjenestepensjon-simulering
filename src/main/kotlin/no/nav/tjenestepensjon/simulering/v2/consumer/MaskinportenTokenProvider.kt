@@ -99,6 +99,7 @@ class MaskinportenTokenProvider {
                     .bodyToMono(object : ParameterizedTypeReference<MaskinportenConfiguration>() {})
                     .block()
         } catch (e: Exception) {
+            LOG.error("idPortenConfigurationApiGwEndpoint: $idPortenConfigurationApiGwEndpoint, maskinportenConfigurationApiKey: $maskinportenConfigurationApiKey")
             LOG.error("Error getting config from idporten: ${idPortenConfigurationApiGwEndpoint}", e)
             throw ConnectToIdPortenException(e.message)
         }.let {
