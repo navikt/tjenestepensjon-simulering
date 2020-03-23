@@ -26,7 +26,7 @@ internal class MaskinportenTokenProviderTest() {
 
     @Test
     fun `Test marshalling of HentStillingsprosentListeRequest`(){
-        tokenclient.generateToken()
+//        tokenclient.generateToken()
     }
 
     companion object {
