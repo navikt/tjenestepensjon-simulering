@@ -49,7 +49,7 @@ class SimuleringEndpoint(
                         objectMapper.readValue(body, SimulerPensjonRequest::class.java)
                 )
             } catch (e: WebClientResponseException) {
-                LOG.debug("Caught WebClientResponseException in version 1, returns 500 error code.", e)
+                LOG.error("Caught WebClientResponseException in version 1, returns 500 error code.", e)
                 e.message to HttpStatus.INTERNAL_SERVER_ERROR
             } catch (e: Throwable) {
                 LOG.info("Caught exception in version 1.", e)

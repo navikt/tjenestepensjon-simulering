@@ -89,19 +89,19 @@ internal class TjenestepensjonsimuleringEndpointRouterTest {
         assertOpptjeningsperiodeList(result)
     }
 
-//    @Test
-//    fun `Call shall return SimulerOffentligTjenestepensjonResponse with rest`() {
-//        Mockito.`when`(restClient.getResponse(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(responseMockData)
-//        val result: SimulerOffentligTjenestepensjonResponse = simuleringEndpointRouter.simulerPensjon(
-//                simulerPensjonRequest,
-//                tpOrdning,
-//                tpRestLeverandor,
-//                emptyMap()
-//        )
-//        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_SIMULERING_CALLS))
-//        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_SIMULERING_TIME), anyNonNull())
-//        assertEquals(result, responseMockData)
-//    }
+    @Test
+    fun `Call shall return SimulerOffentligTjenestepensjonResponse with rest`() {
+        Mockito.`when`(restClient.getResponse(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(responseMockData)
+        val result: SimulerOffentligTjenestepensjonResponse = simuleringEndpointRouter.simulerPensjon(
+                simulerPensjonRequest,
+                tpOrdning,
+                tpRestLeverandor,
+                emptyMap()
+        )
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_SIMULERING_CALLS))
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_SIMULERING_TIME), anyNonNull())
+        assertEquals(result, responseMockData)
+    }
 
     private fun assertOpptjeningsperiodeList(actual: List<Opptjeningsperiode>) {
         assertEquals(opptjeningsperiodeList.size, actual.size)

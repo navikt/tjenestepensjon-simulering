@@ -10,6 +10,11 @@ object TokenProviderStub {
                 .willReturn(WireMock.okJson(jwksJson)))
         wireMockServer.stubFor(WireMock.get(WireMock.urlPathEqualTo("/rest/v1/sts/token"))
                 .willReturn(WireMock.okJson("""{"access_token":"$accessToken","expires_in":"3600","token_type":"Bearer"}""")))
+
+
+        wireMockServer.stubFor(WireMock.get(WireMock.urlPathEqualTo("https://DIFI_ENDPOINTS_MASKINPORTEN_CONFIGURATION"))
+                .willReturn(WireMock.okJson("""{"access_token":"$accessToken","expires_in":"3600","token_type":"Bearer"}""")))
+
     }
 
     //JWT generated with https://jwt.io
