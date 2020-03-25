@@ -35,39 +35,39 @@ class SimpleSimuleringService(
 ) : SimuleringService {
 
 
+//    override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest): SimulerOffentligTjenestepensjonResponse {
+//        val opptjeningsperiode = Opptjeningsperiode(
+//                datoFom = LocalDate.now(),
+//                datoTom = null,
+//                stillingsprosent = 0.0,
+//                aldersgrense = null,
+//                faktiskHovedlonn = null,
+//                stillingsuavhengigTilleggslonn = null
+//        )
+//
+//        val tpOrdning = TPOrdning(
+//                "",
+//                ""
+//        )
+//
+//        val tpLev = TpLeverandor(
+//                "name",
+//                "https://partner-gw-test2.klp.no/api/pensjonsimulering",
+//                null
+//        )
+//
+//        val opptjeningsperiodeResponse = mapOf(tpOrdning to listOf(opptjeningsperiode))
+//
+//        return simuleringEndPointRouter.simulerPensjon(
+//                request = request,
+//                tpOrdning = tpOrdning,
+//                tpLeverandor = tpLev,
+//                tpOrdningOpptjeningsperiodeMap = opptjeningsperiodeResponse
+//        )
+//    }
+
+
     override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest): SimulerOffentligTjenestepensjonResponse {
-        val opptjeningsperiode = Opptjeningsperiode(
-                datoFom = LocalDate.now(),
-                datoTom = null,
-                stillingsprosent = 0.0,
-                aldersgrense = null,
-                faktiskHovedlonn = null,
-                stillingsuavhengigTilleggslonn = null
-        )
-
-        val tpOrdning = TPOrdning(
-                "",
-                ""
-        )
-
-        val tpLev = TpLeverandor(
-                "name",
-                "https://partner-gw-test2.klp.no/api/pensjonsimulering",
-                null
-        )
-
-        val opptjeningsperiodeResponse = mapOf(tpOrdning to listOf(opptjeningsperiode))
-
-        return simuleringEndPointRouter.simulerPensjon(
-                request = request,
-                tpOrdning = tpOrdning,
-                tpLeverandor = tpLev,
-                tpOrdningOpptjeningsperiodeMap = opptjeningsperiodeResponse
-        )
-    }
-
-
-    fun simulerOffentligTjenestepensjon2(request: SimulerPensjonRequest): SimulerOffentligTjenestepensjonResponse {
 
         val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(request.fnr)
                 .let(::getTpLeverandorer)

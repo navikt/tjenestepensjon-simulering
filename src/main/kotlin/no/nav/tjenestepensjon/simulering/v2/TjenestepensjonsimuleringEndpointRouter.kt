@@ -33,24 +33,24 @@ class TjenestepensjonsimuleringEndpointRouter(
     }
 
 
+//    fun simulerPensjon(
+//            request: SimulerPensjonRequest,
+//            tpOrdning: TPOrdning,
+//            tpLeverandor: TpLeverandor,
+//            tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
+//    ): SimulerOffentligTjenestepensjonResponse {
+//        val startTime = metrics.startTime()
+//        LOG.info("{} getting simulering from: {}", Thread.currentThread().name, tpLeverandor)
+//
+//        val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor, tpOrdningOpptjeningsperiodeMap)
+//
+//        LOG.info("{} Simulering ferdig: {}", startTime, simulertPensjon)
+//
+//        return simulertPensjon
+//    }
+
+
     fun simulerPensjon(
-            request: SimulerPensjonRequest,
-            tpOrdning: TPOrdning,
-            tpLeverandor: TpLeverandor,
-            tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
-    ): SimulerOffentligTjenestepensjonResponse {
-        val startTime = metrics.startTime()
-        LOG.info("{} getting simulering from: {}", Thread.currentThread().name, tpLeverandor)
-
-        val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor, tpOrdningOpptjeningsperiodeMap)
-
-        LOG.info("{} Simulering ferdig: {}", startTime, simulertPensjon)
-
-        return simulertPensjon
-    }
-
-
-    fun simulerPensjon2(
             request: SimulerPensjonRequest,
             tpOrdning: TPOrdning,
             tpLeverandor: TpLeverandor,

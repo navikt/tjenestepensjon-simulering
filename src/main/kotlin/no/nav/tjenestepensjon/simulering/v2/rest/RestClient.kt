@@ -12,7 +12,6 @@ import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjen
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders.AUTHORIZATION
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 
 @Service
