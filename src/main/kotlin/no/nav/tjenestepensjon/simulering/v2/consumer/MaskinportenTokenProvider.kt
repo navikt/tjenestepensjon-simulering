@@ -27,6 +27,7 @@ import java.security.PrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.time.Clock
 import java.util.*
+import java.net.ProxySelector
 
 @Service
 class MaskinportenTokenProvider {
@@ -96,10 +97,12 @@ class MaskinportenTokenProvider {
         LOG.info("Getting own certificate and generating keypair and certificate")
         return try {
 
+            LOG.info("Setting proxy for httpClient: ${ProxySelector.getDefault().toString()}")
+
             val httpClient = HttpClient.create()
                     .tcpConfiguration { tcpClient -> tcpClient.proxy { proxy -> proxy
                             .type(ProxyProvider.Proxy.HTTP)
-                            .host("webproxy.nais:8088") } }
+                            .host(ProxySelector.getDefault().toString()) } }
             val connector = ReactorClientHttpConnector(httpClient)
             val client = WebClient.builder().clientConnector(connector).build()
 
