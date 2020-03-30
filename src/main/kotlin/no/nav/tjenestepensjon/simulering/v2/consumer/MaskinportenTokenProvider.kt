@@ -16,7 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.WebClient
+import reactor.netty.http.client.HttpClient
+import reactor.netty.tcp.ProxyProvider
+import reactor.netty.tcp.TcpClient
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
@@ -90,8 +95,16 @@ class MaskinportenTokenProvider {
     fun getMaskinportenAuthrozationServerConfiguration(): String {
         LOG.info("Getting own certificate and generating keypair and certificate")
         return try {
+
+            val httpClient = HttpClient.create()
+                    .tcpConfiguration { tcpClient -> tcpClient.proxy { proxy -> proxy
+                            .type(ProxyProvider.Proxy.HTTP)
+                            .host("webproxy.nais:8088") } }
+            val connector = ReactorClientHttpConnector(httpClient)
+            val client = WebClient.builder().clientConnector(connector).build()
+
             LOG.info("Getting well-known configuration from id-porten at: ${idPortenConfigurationApiGwEndpoint}")
-            webClient.get()
+            client.get()
                     .uri(idPortenConfigurationApiGwEndpoint)
                     .header("x-nav-apiKey", maskinportenConfigurationApiKey)
                     .accept(MediaType.APPLICATION_JSON)
