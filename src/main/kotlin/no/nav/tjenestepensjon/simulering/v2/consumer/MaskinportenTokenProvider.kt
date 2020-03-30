@@ -96,13 +96,10 @@ class MaskinportenTokenProvider {
     fun getMaskinportenAuthrozationServerConfiguration(): String {
         LOG.info("Getting own certificate and generating keypair and certificate")
         return try {
-
-            LOG.info("Setting proxy for httpClient: ${ProxySelector.getDefault().toString()}")
-
             val httpClient = HttpClient.create()
                     .tcpConfiguration { tcpClient -> tcpClient.proxy { proxy -> proxy
                             .type(ProxyProvider.Proxy.HTTP)
-                            .host(ProxySelector.getDefault().toString()) } }
+                            .host("http://webproxy.nais:8088") } }
             val connector = ReactorClientHttpConnector(httpClient)
             val client = WebClient.builder().clientConnector(connector).build()
 
