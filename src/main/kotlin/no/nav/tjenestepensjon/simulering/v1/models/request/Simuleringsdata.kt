@@ -24,8 +24,8 @@ data class Simuleringsdata(
             anvendtTrygdetid = periode.anvendtTrygdetid,
             uforegradVedOmregning = periode.uforegradVedOmregning,
             basisgp = periode.getDelytelseBelop(DelytelseType.basisgp),
-            basispt = periode.getDelytelseBelop(BASISPT),
-            basistp = periode.getDelytelseBelop(BASISTP),
-            skjermingstillegg = periode.getDelytelseBelop(SKJERMINGSTILLEGG)
+            basispt = periode.getDelytelseBelop(DelytelseType.basispt),
+            basistp = periode.getDelytelseBelop(DelytelseType.basistp),
+            skjermingstillegg = periode.getDelytelseBelop(DelytelseType.skjermingstilleg)
     )
 }

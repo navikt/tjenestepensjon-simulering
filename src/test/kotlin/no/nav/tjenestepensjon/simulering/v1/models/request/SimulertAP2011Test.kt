@@ -30,9 +30,9 @@ internal class SimulertAP2011Test {
                 stillingsprosentOffentlig = ForsteUttak.STILLINGSPROSENT_OFFENTLIG,
                 delytelser = listOf(
                         Delytelse(DelytelseType.basisgp, ForsteUttak.BASISGP_),
-                        Delytelse(BASISPT, ForsteUttak.BASISPT_),
-                        Delytelse(BASISTP, ForsteUttak.BASISTP_),
-                        Delytelse(SKJERMINGSTILLEGG, ForsteUttak.SKJERMINGSTILLEGG_)
+                        Delytelse(basispt, ForsteUttak.BASISPT_),
+                        Delytelse(basistp, ForsteUttak.BASISTP_),
+                        Delytelse(DelytelseType.skjermingstilleg, ForsteUttak.SKJERMINGSTILLEGG_)
                 )
         )
 
@@ -49,9 +49,9 @@ internal class SimulertAP2011Test {
                 stillingsprosentOffentlig = HeltUttak.STILLINGSPROSENT_OFFENTLIG,
                 delytelser = listOf(
                         Delytelse(DelytelseType.basisgp, HeltUttak.BASISGP_),
-                        Delytelse(BASISPT, HeltUttak.BASISPT_),
-                        Delytelse(BASISTP, HeltUttak.BASISTP_),
-                        Delytelse(SKJERMINGSTILLEGG, HeltUttak.SKJERMINGSTILLEGG_)
+                        Delytelse(basispt, HeltUttak.BASISPT_),
+                        Delytelse(basistp, HeltUttak.BASISTP_),
+                        Delytelse(DelytelseType.skjermingstilleg, HeltUttak.SKJERMINGSTILLEGG_)
                 )
         )
     }
