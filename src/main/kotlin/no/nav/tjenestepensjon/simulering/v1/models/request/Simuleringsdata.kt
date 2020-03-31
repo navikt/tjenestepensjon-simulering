@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.models.request
 
+import no.nav.tjenestepensjon.simulering.domain.DelytelseType
 import no.nav.tjenestepensjon.simulering.domain.DelytelseType.*
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Simuleringsperiode
 
@@ -22,7 +23,7 @@ data class Simuleringsdata(
             forholdstall_uttak = periode.forholdstall,
             anvendtTrygdetid = periode.anvendtTrygdetid,
             uforegradVedOmregning = periode.uforegradVedOmregning,
-            basisgp = periode.getDelytelseBelop(BASISGP),
+            basisgp = periode.getDelytelseBelop(DelytelseType.basisgp),
             basispt = periode.getDelytelseBelop(BASISPT),
             basistp = periode.getDelytelseBelop(BASISTP),
             skjermingstillegg = periode.getDelytelseBelop(SKJERMINGSTILLEGG)
