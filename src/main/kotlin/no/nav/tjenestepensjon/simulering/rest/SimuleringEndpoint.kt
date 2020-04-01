@@ -34,7 +34,24 @@ class SimuleringEndpoint(
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
+
     @PostMapping("/simulering")
+    fun simulerOld(
+            @RequestBody request: SimulerPensjonRequest,
+            @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
+    ): ResponseEntity<Any>
+    {
+        addHeaderToRequestContext(NAV_CALL_ID, navCallId)
+        LOG.info("Processing nav-call-id: {}, request: {}", getHeaderFromRequestContext(NAV_CALL_ID), request.toString())
+        metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
+        val response = service.simulerOffentligTjenestepensjon(request)
+        LOG.info("Processing nav-call-id: {}, response: {}", getHeaderFromRequestContext(NAV_CALL_ID), response.toString())
+        return ResponseEntity(response, OK)
+    }
+
+
+
+    @PostMapping("/simulering2")
     fun simuler(
             @RequestBody body: String,
             @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
