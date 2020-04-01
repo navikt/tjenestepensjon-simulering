@@ -53,8 +53,13 @@ class SimuleringEndpoint(
                 e.message to HttpStatus.INTERNAL_SERVER_ERROR
             } catch (e: Throwable) {
                 LOG.info("Caught exception in version 1,  trying version 2.", e)
+
+
+                val test = """{"tpnr":null,"fnr":"01015438580","sivilstandkode":"GIFT","sprak":null,"simuleringsperioder":[{"datoFom":"2026-06-30","utg":100,"stillingsprosentOffentlig":null,"poengArTom1991":17,"poengArFom1992":22,"sluttpoengtall":3.26,"anvendtTrygdetid":40,"forholdstall":0.769,"delingstall":null,"uforegradVedOmregning":null,"delytelser":[{"pensjonstype":"basisgp","belop":99858.0},{"pensjonstype":"basistp","belop":137458.03203},{"pensjonstype":"basispt","belop":-35182.020621469186},{"pensjonstype":"inntektspensjon","belop":21127.0},{"pensjonstype":"garantipensjon","belop":9261.0},{"pensjonstype":"garantitillegg","belop":-90017.0}]}],"simulertAFPOffentlig":null,"simulertAFPPrivat":null,"tpForhold":null,"pensjonsbeholdningperioder":[{"pensjonsbeholdning":2305038.088209813,"garantipensjonsbeholdning":1010392.4323326237,"garantitilleggsbeholdning":-982091.7088591022,"datoFom":"2026-06-30"}],"inntekter":[{"datoFom":"2019-01-01","inntekt":500000.0},{"datoFom":"2026-06-30","inntekt":0.0},{"datoFom":"2026-06-30","inntekt":0.0}]}"""
+
+
                 service2.simulerOffentligTjenestepensjon(
-                        objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
+                        objectMapper.readValue(test, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
                 )
             }.let {
                 LOG.info("Processing nav-call-id: {}, response: {}", getHeaderFromRequestContext(NAV_CALL_ID), it)
