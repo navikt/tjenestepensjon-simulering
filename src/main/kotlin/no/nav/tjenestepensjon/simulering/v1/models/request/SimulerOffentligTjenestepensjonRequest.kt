@@ -21,7 +21,7 @@ data class SimulerOffentligTjenestepensjonRequest(
         val inntektEtterHeltUttak: Int? = null,
         val antallArInntektEtterHeltUttak: Int? = null,
         val sivilstandKode: String,
-        val sprak: String? = "norsk",
+        val sprak: String = "norsk",
         val simulertAFPOffentlig: Int? = null,
         val simulertAFPPrivat: SimulertAFPPrivat? = null,
         val simulertAP2011: SimulertAP2011,

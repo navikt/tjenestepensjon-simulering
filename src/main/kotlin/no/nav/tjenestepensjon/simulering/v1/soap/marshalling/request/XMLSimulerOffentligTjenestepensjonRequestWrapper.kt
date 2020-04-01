@@ -72,7 +72,7 @@ class XMLSimulerOffentligTjenestepensjonRequestWrapper {
         @XmlElement(required = true)
         lateinit var sivilstandKode: String
         @XmlElement(required = true)
-        var sprak: String? = "norsk"
+        var sprak: String = "norsk"
         @XmlElement(required = false)
         var simulertAFPOffentlig: Int? = null
         @XmlElement(required = false)
