@@ -1,6 +1,5 @@
 package no.nav.tjenestepensjon.simulering.v1.models.request
 
-import no.nav.tjenestepensjon.simulering.domain.DelytelseType
 import no.nav.tjenestepensjon.simulering.domain.DelytelseType.*
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Delytelse
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
@@ -29,10 +28,10 @@ internal class SimulertAP2011Test {
                 uforegradVedOmregning = ForsteUttak.UFERGRAD_VED_OMREGNING,
                 stillingsprosentOffentlig = ForsteUttak.STILLINGSPROSENT_OFFENTLIG,
                 delytelser = listOf(
-                        Delytelse(BASISGP, ForsteUttak.BASISGP_),
-                        Delytelse(BASISPT, ForsteUttak.BASISPT_),
-                        Delytelse(BASISTP, ForsteUttak.BASISTP_),
-                        Delytelse(SKJERMINGSTILLEGG, ForsteUttak.SKJERMINGSTILLEGG_)
+                        Delytelse(basisgp, ForsteUttak.BASISGP_),
+                        Delytelse(basispt, ForsteUttak.BASISPT_),
+                        Delytelse(basistp, ForsteUttak.BASISTP_),
+                        Delytelse(skjermingstilleg, ForsteUttak.SKJERMINGSTILLEGG_)
                 )
         )
 
@@ -48,10 +47,10 @@ internal class SimulertAP2011Test {
                 uforegradVedOmregning = HeltUttak.UFERGRAD_VED_OMREGNING,
                 stillingsprosentOffentlig = HeltUttak.STILLINGSPROSENT_OFFENTLIG,
                 delytelser = listOf(
-                        Delytelse(BASISGP, HeltUttak.BASISGP_),
-                        Delytelse(BASISPT, HeltUttak.BASISPT_),
-                        Delytelse(BASISTP, HeltUttak.BASISTP_),
-                        Delytelse(SKJERMINGSTILLEGG, HeltUttak.SKJERMINGSTILLEGG_)
+                        Delytelse(basisgp, HeltUttak.BASISGP_),
+                        Delytelse(basispt, HeltUttak.BASISPT_),
+                        Delytelse(basistp, HeltUttak.BASISTP_),
+                        Delytelse(skjermingstilleg, HeltUttak.SKJERMINGSTILLEGG_)
                 )
         )
     }

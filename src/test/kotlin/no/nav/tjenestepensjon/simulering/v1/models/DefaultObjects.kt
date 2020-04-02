@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.models
 
-import no.nav.tjenestepensjon.simulering.domain.DelytelseType.BASISTP
+import no.nav.tjenestepensjon.simulering.domain.DelytelseType.basistp
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.Pensjonsbeholdningsperiode
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
@@ -61,7 +61,7 @@ val defaultHentStillingsprosentListeRequest = HentStillingsprosentListeRequest(
 )
 
 val defaultDelytelse = Delytelse(
-        pensjonstype = BASISTP,
+        pensjonstype = basistp,
         belop = 0.0
 )
 
@@ -167,7 +167,7 @@ const val defaultTomDateString = "1901-01-31"
 const val defaultSimulertPensjonJson = """{"tpnr":"bogus","navnOrdning":"bogus","inkluderteOrdninger":["bogus"],"leverandorUrl":"bogus","inkluderteTpnr":null,"utelatteTpnr":null,"utbetalingsperioder":[{"grad":0,"arligUtbetaling":0.0,"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","ytelsekode":"bogus","mangelfullSimuleringkode":"bogus"},null],"status":null,"feilkode":null,"feilbeskrivelse":null}"""
 const val defaultSimulerOffentligTjenestepensjonResponseJson = """{"simulertPensjonListe":[$defaultSimulertPensjonJson]}"""
 const val defaultHentStillingsprosentListeResponseJson = """[{"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","stillingsprosent":0.0,"aldersgrense":0,"faktiskHovedlonn":"bogus","stillingsuavhengigTilleggslonn":"bogus"}]"""
-const val defaultDelytelseJson = """{"pensjonstype":"BASISTP","belop":0.0}"""
+const val defaultDelytelseJson = """{"pensjonstype":"basistp","belop":0.0}"""
 const val defaultHentStillingsprosentListeRequestJson = """{"tssEksternId":"bogus","fnr":"$defaultFNRString","tpnr":"bogus","simuleringsKode":"bogus"}"""
 const val defaultSimuleringsperiodeJson = """{"datoFom":"$defaultFomDateString","utg":0,"stillingsprosentOffentlig":0,"poengArTom1991":0,"poengArFom1992":0,"sluttpoengtall":0.0,"anvendtTrygdetid":0,"forholdstall":0.0,"delingstall":0.0,"uforegradVedOmregning":0,"delytelser":[$defaultDelytelseJson]}"""
 const val defaultSimulertAFPPrivatJson = """{"afpOpptjeningTotalbelop":0,"kompensasjonstillegg":0.0}"""
