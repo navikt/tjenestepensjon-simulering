@@ -100,7 +100,7 @@ class MaskinportenTokenProvider {
 
             webClient.get()
                     .uri("http://peproxy")
-                    .header("target", idPortenConfigurationApiGwEndpoint)
+                    .header("target-url", idPortenConfigurationApiGwEndpoint)
                     .header("x-nav-apiKey", maskinportenConfigurationApiKey)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
@@ -130,7 +130,7 @@ class MaskinportenTokenProvider {
         return try {
             webClient.post()
                     .uri("http://peproxy")
-                    .header("target", maskinportenTokenEndpoint)
+                    .header("target-url", maskinportenTokenEndpoint)
                     .bodyValue("grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$jwsToken")
                     .header("x-nav-apiKey", maskinportenTokenApiKey)
                     .retrieve()
