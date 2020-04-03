@@ -98,15 +98,9 @@ class MaskinportenTokenProvider {
         return try {
             LOG.info("Getting well-known configuration from id-porten at: ${idPortenConfigurationApiGwEndpoint}")
 
-            val httpClient = HttpClient.create()
-                    .tcpConfiguration { tcpClient -> tcpClient.proxy { proxy -> proxy
-                            .type(ProxyProvider.Proxy.HTTP)
-                            .host("http://peproxy") } }
-            val connector = ReactorClientHttpConnector(httpClient)
-            val client = WebClient.builder().clientConnector(connector).build()
-
-            client.get()
-                    .uri(idPortenConfigurationApiGwEndpoint)
+            webClient.get()
+                    .uri("http://peproxy")
+                    .header("target", idPortenConfigurationApiGwEndpoint)
                     .header("x-nav-apiKey", maskinportenConfigurationApiKey)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
