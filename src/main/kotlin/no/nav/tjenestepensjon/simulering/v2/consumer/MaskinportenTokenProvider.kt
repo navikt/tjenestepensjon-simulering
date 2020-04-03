@@ -129,7 +129,8 @@ class MaskinportenTokenProvider {
         LOG.info("Making a Formdata request Url-encoded: to - $maskinportenTokenEndpoint")
         return try {
             webClient.post()
-                    .uri(maskinportenTokenEndpoint)
+                    .uri("http://peproxy")
+                    .header("target", maskinportenTokenEndpoint)
                     .bodyValue("grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$jwsToken")
                     .header("x-nav-apiKey", maskinportenTokenApiKey)
                     .retrieve()
