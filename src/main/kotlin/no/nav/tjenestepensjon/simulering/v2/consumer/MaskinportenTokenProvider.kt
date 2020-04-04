@@ -16,18 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.tcp.ProxyProvider
-import reactor.netty.tcp.TcpClient
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.time.Clock
 import java.util.*
-import java.net.ProxySelector
 
 @Service
 class MaskinportenTokenProvider {
