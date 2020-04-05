@@ -122,7 +122,7 @@ class MaskinportenTokenProvider {
 
         LOG.info("Making a Formdata request Url-encoded: to - $maskinportenTokenEndpoint")
         return try {
-            webClient.post()
+            webClient.get()
                     .uri("http://peproxy")
                     .header("target-url", maskinportenTokenEndpoint)
                     .header("assertion", jwsToken)
