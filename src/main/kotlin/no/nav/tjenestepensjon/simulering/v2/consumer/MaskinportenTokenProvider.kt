@@ -124,9 +124,10 @@ class MaskinportenTokenProvider {
         return try {
             webClient.post()
                     .uri("http://peproxy")
-                    .bodyValue("""grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$jwsToken""")
+                    .header("target-url", maskinportenTokenEndpoint)
                     .header("x-nav-apiKey", maskinportenTokenApiKey)
                     .header("content-type", "application/x-www-form-urlencoded")
+                    .bodyValue("""grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$jwsToken""")
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<IdPortenAccessTokenResponse>() {})
                     .block()
