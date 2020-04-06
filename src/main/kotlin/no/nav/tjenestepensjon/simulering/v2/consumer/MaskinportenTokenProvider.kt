@@ -122,12 +122,11 @@ class MaskinportenTokenProvider {
 
         LOG.info("Making a Formdata request Url-encoded: to - $maskinportenTokenEndpoint")
         return try {
-            webClient.get()
+            webClient.post()
                     .uri("http://peproxy")
-                    .header("target-url", maskinportenTokenEndpoint)
-                    .header("assertion", jwsToken)
-                    .header("grant_type","=urn:ietf:params:oauth:grant-type:jwt-bearer")
+                    .bodyValue("""grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$jwsToken""")
                     .header("x-nav-apiKey", maskinportenTokenApiKey)
+                    .header("content-type", "application/x-www-form-urlencoded")
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<IdPortenAccessTokenResponse>() {})
                     .block()
