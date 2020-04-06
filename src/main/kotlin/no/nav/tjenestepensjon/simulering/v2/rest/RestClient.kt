@@ -22,15 +22,19 @@ class RestClient(
     private lateinit var tokenClient: TokenClient
 
     private val webClient = WebClientConfig.webClient()
+//
+//    //@Value("\${PEPROXY_HTTPHEADERS_TARGET_AUTHORIZATION}")
+//    lateinit var peproxyHttpheadersTargetAuthorization: String
+//
+//    //@Value("\${PEPROXY_HTTPHEADERS_TARGET_URL}")
+//    lateinit var peproxyHttpheadersTargetUrl: String
+//
+//    //@Value("\${PEPROXY_URL}")
+//    lateinit var peproxyUrl: String
 
-    @Value("\${PEPROXY_HTTPHEADERS_TARGET_AUTHORIZATION}")
-    lateinit var peproxyHttpheadersTargetAuthorization: String
-
-    @Value("\${PEPROXY_HTTPHEADERS_TARGET_URL}")
-    lateinit var peproxyHttpheadersTargetUrl: String
-
-    @Value("\${PEPROXY_URL}")
-    lateinit var peproxyUrl: String
+    var peproxyHttpheadersTargetAuthorization: String = "target-authorization"
+    var peproxyHttpheadersTargetUrl: String = "target-url"
+    var peproxyUrl: String = "http://peproxy"
 
     fun getOpptjeningsperiode(
             fnr: FNR,

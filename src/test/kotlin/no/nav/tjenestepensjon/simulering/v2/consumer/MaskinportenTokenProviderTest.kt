@@ -25,8 +25,12 @@ internal class MaskinportenTokenProviderTest() {
     lateinit var tokenclient: MaskinportenTokenProvider
 
     @Test
-    fun `Test marshalling of HentStillingsprosentListeRequest`(){
+    fun `Test marshalling of HentStillingsprosentListeRequest`() {
 //        tokenclient.generateToken()
+
+//        val map: Map<String, List<String>> = mapOf("grant_type" to listOf("urn:ietf:params:oauth:grant-type:jwt-bearer"), "assertion" to listOf("jwsToken.token"))
+//
+//        System.out.println("Parameters ${map()}")
     }
 
     companion object {
