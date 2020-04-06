@@ -33,40 +33,40 @@ class TjenestepensjonsimuleringEndpointRouter(
     }
 
 
-    fun simulerPensjon(
-            request: SimulerPensjonRequest,
-            tpOrdning: TPOrdning,
-            tpLeverandor: TpLeverandor,
-            tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
-    ): SimulerOffentligTjenestepensjonResponse {
-        val startTime = metrics.startTime()
-        LOG.info("{} getting simulering from: {}", Thread.currentThread().name, tpLeverandor)
-
-        val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor, tpOrdningOpptjeningsperiodeMap)
-
-        LOG.info("{} Simulering ferdig: {}", startTime, simulertPensjon)
-
-        return simulertPensjon
-    }
-
-
 //    fun simulerPensjon(
 //            request: SimulerPensjonRequest,
 //            tpOrdning: TPOrdning,
 //            tpLeverandor: TpLeverandor,
 //            tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
 //    ): SimulerOffentligTjenestepensjonResponse {
-//        metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_SIMULERING_CALLS)
 //        val startTime = metrics.startTime()
 //        LOG.info("{} getting simulering from: {}", Thread.currentThread().name, tpLeverandor)
 //
 //        val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor, tpOrdningOpptjeningsperiodeMap)
 //
-//        val elapsed = metrics.elapsedSince(startTime)
-//        metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_SIMULERING_TIME, elapsed.toDouble())
-//        LOG.info("Retrieved simulation from: {} in: {} ms", tpLeverandor, elapsed)
+//        LOG.info("{} Simulering ferdig: {}", startTime, simulertPensjon)
+//
 //        return simulertPensjon
 //    }
+
+
+    fun simulerPensjon(
+            request: SimulerPensjonRequest,
+            tpOrdning: TPOrdning,
+            tpLeverandor: TpLeverandor,
+            tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
+    ): SimulerOffentligTjenestepensjonResponse {
+        metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_SIMULERING_CALLS)
+        val startTime = metrics.startTime()
+        LOG.info("{} getting simulering from: {}", Thread.currentThread().name, tpLeverandor)
+
+        val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor, tpOrdningOpptjeningsperiodeMap)
+
+        val elapsed = metrics.elapsedSince(startTime)
+        metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_SIMULERING_TIME, elapsed.toDouble())
+        LOG.info("Retrieved simulation from: {} in: {} ms", tpLeverandor, elapsed)
+        return simulertPensjon
+    }
 
     companion object {
         @JvmStatic
