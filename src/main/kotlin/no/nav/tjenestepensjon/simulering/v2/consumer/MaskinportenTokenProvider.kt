@@ -42,7 +42,7 @@ class MaskinportenTokenProvider {
     lateinit var privateKeyBase64: String
 
     @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_API_KEY}")
-    var maskinportenTokenApiKey: String = "apikey"
+    lateinit var maskinportenTokenApiKey: String
 
     @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_TOKEN}")
     lateinit var maskinportenTokenEndpoint: String
@@ -52,6 +52,9 @@ class MaskinportenTokenProvider {
 
     @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_CONFIGURATION_API_KEY}")
     lateinit var maskinportenConfigurationApiKey: String
+
+    @Value("\${PEPROXY_URL}")
+    lateinit var peproxyUrl: String
 
     private val webClient = WebClientConfig.webClient()
 

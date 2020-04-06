@@ -16,25 +16,20 @@ import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.stereotype.Service
 
 @Service
-class RestClient(
-) {
+class RestClient {
     @Autowired
     private lateinit var tokenClient: TokenClient
 
     private val webClient = WebClientConfig.webClient()
-//
-//    //@Value("\${PEPROXY_HTTPHEADERS_TARGET_AUTHORIZATION}")
-//    lateinit var peproxyHttpheadersTargetAuthorization: String
-//
-//    //@Value("\${PEPROXY_HTTPHEADERS_TARGET_URL}")
-//    lateinit var peproxyHttpheadersTargetUrl: String
-//
-//    //@Value("\${PEPROXY_URL}")
-//    lateinit var peproxyUrl: String
 
-    var peproxyHttpheadersTargetAuthorization: String = "target-authorization"
-    var peproxyHttpheadersTargetUrl: String = "target-url"
-    var peproxyUrl: String = "http://peproxy"
+    @Value("\${PEPROXY_HTTPHEADERS_TARGET_AUTHORIZATION}")
+    lateinit var peproxyHttpheadersTargetAuthorization: String
+
+    @Value("\${PEPROXY_HTTPHEADERS_TARGET_URL}")
+    lateinit var peproxyHttpheadersTargetUrl: String
+
+    @Value("\${PEPROXY_URL}")
+    lateinit var peproxyUrl: String
 
     fun getOpptjeningsperiode(
             fnr: FNR,
