@@ -10,6 +10,7 @@ import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.stereotype.Service
@@ -21,6 +22,15 @@ class RestClient(
     private lateinit var tokenClient: TokenClient
 
     private val webClient = WebClientConfig.webClient()
+
+    @Value("\${PEPROXY_HTTPHEADERS_TARGET_AUTHORIZATION}")
+    lateinit var peproxyHttpheadersTargetAuthorization: String
+
+    @Value("\${PEPROXY_HTTPHEADERS_TARGET_URL}")
+    lateinit var peproxyHttpheadersTargetUrl: String
+
+    @Value("\${PEPROXY_URL}")
+    lateinit var peproxyUrl: String
 
     fun getOpptjeningsperiode(
             fnr: FNR,
@@ -41,8 +51,9 @@ class RestClient(
             tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
     ): SimulerOffentligTjenestepensjonResponse =
             webClient.get()
-                    .uri(tpLeverandor.url)
-                    .header(AUTHORIZATION, "Bearer " + tokenClient.maskinportToken)
+                    .uri(peproxyUrl)
+                    .header(peproxyHttpheadersTargetUrl, tpLeverandor.url)
+                    .header(peproxyHttpheadersTargetAuthorization, "Bearer " + tokenClient.maskinportToken)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<SimulerOffentligTjenestepensjonResponse>() {})
                     .block() ?: SimulerOffentligTjenestepensjonResponse(
