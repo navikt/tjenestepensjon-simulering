@@ -61,7 +61,7 @@ class SimuleringEndpoint(
                 ResponseEntity(it, OK)
             }
         } catch (e: Throwable) {
-            LOG.error("Unable to handle request", e.cause, e.message, e.localizedMessage, e.suppressed)
+            LOG.error("Unable to handle request : {} : {} : {} : {}", e.cause, e.message, e.localizedMessage, e.suppressed)
             when (e) {
                 is JsonParseException -> "Unable to parse body to request." to HttpStatus.BAD_REQUEST
                 is JsonMappingException -> "Unable to mapping body to request." to HttpStatus.BAD_REQUEST
