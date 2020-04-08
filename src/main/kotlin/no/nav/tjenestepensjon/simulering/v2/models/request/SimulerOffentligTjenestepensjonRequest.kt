@@ -16,5 +16,5 @@ data class SimulerPensjonRequest(
         var pensjonsbeholdningsperiodeListe: List<Pensjonsbeholdningsperiode> = emptyList(),
         var simuleringsperiodeListe: List<Simuleringsperiode>,
         var simuleringsdataListe: List<Simuleringsdata>,
-        var tpForholdListe: List<TpForhold>
+        var tpForholdListe: List<TpForhold>? = emptyList()
 )
