@@ -18,7 +18,7 @@ class OpptjeningsperiodeCallable(
         endpointRouter.getOpptjeningsperiodeListe(fnr, tpOrdning, tpLeverandor)
     } catch (e: Throwable) {
         e.printStackTrace()
-        throw OpptjeningsperiodeCallableException("Call to getStillingsprosenter failed with exception: $e", e, tpOrdning)
+        throw OpptjeningsperiodeCallableException("Call to getOpptjeningsperiode failed with exception: $e", e, tpOrdning)
                 .also { ex ->
                     LOG.warn("Rethrowing as: {}", ex.toString())
                 }
