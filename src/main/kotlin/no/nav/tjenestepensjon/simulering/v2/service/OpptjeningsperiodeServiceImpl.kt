@@ -27,7 +27,7 @@ class OpptjeningsperiodeServiceImpl(
         val startTime = metrics.startTime()
         val asyncResponse = asyncExecutor.executeAsync(callableMap)
         val elapsed = metrics.elapsedSince(startTime)
-        LOG.info("Retrieved all stillingsprosenter in: {} ms", elapsed)
+        LOG.info("Retrieved all opptjeningsperiodeList in: {} ms", elapsed)
         metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME, elapsed.toDouble())
         return OpptjeningsperiodeResponse(asyncResponse.resultMap, asyncResponse.exceptions)
     }

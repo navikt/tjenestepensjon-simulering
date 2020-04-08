@@ -37,8 +37,9 @@ class RestClient {
             tpLeverandor: TpLeverandor
     ): List<Opptjeningsperiode> =
             webClient.get()
-                    .uri(tpLeverandor.url)
-                    .header(AUTHORIZATION, "Bearer " + tokenClient.oidcAccessToken)
+                    .uri(peproxyUrl)
+                    .header(peproxyHttpheadersTargetUrl, tpLeverandor.url)
+                    .header(peproxyHttpheadersTargetAuthorization, "Bearer " + tokenClient.oidcAccessToken)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<List<Opptjeningsperiode>>() {})
                     .block() ?: emptyList()
