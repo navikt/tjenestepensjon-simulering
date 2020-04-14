@@ -74,6 +74,12 @@ class SimpleSimuleringService(
 
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
 
+        LOG.error("////////////////////////////////////////////")
+        LOG.error("tpOrdningAndLeverandorMap: {}", tpOrdningAndLeverandorMap)
+        LOG.error("opptjeningsperiodeResponse: {}", opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap)
+        LOG.error("opptjeningsperiodeResponseExceptions: {}", opptjeningsperiodeResponse.exceptions)
+        LOG.error("////////////////////////////////////////////")
+
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
                 .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
