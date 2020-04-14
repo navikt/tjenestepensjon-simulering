@@ -8,6 +8,6 @@ class Opptjeningsperiode(
         val datoTom: LocalDate?,
         val stillingsprosent: Double,
         val aldersgrense: Int?,
-        val faktiskHovedlonn: String?,
-        val stillingsuavhengigTilleggslonn: String?
+        val faktiskHovedlonn: Int?,
+        val stillingsuavhengigTilleggslonn: Int?
 ): Dateable

@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_FEIL
@@ -20,6 +21,7 @@ import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulertPensjon
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 import java.util.concurrent.ExecutionException
@@ -34,12 +36,22 @@ class SimpleSimuleringServiceOld(
         private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
         private val metrics: AppMetrics
 ) : SimuleringService {
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest) =
             SimulerOffentligTjenestepensjonResponse(
                     simulertPensjonListe = try {
                         val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(request.fnr)
                                 .let(::getTpLeverandorer)
                         val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.fnr, tpOrdningAndLeverandorMap)
+
+                        LOG.error("/////////////////v1///////////////////////////")
+                        LOG.error("tpOrdningAndLeverandorMap: {}", objectMapper.writeValueAsString(tpOrdningAndLeverandorMap))
+                        LOG.error("opptjeningsperiodeResponse: {}", objectMapper.writeValueAsString(stillingsprosentResponse))
+                        LOG.error("/////////////////v1///////////////////////////")
+
                         stillingsprosentResponse.tpOrdningStillingsprosentMap
                                 .ifEmpty { throw NoTpOrdningerFoundException("Could not get stillingsprosent from any TP-Providers") }
                                 .let(stillingsprosentService::getLatestFromStillingsprosent)

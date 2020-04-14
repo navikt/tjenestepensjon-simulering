@@ -35,16 +35,16 @@ internal class TjenestepensjonsimuleringEndpointRouterTest {
                     aldersgrense = 70,
                     datoFom = LocalDate.of(2018, 1, 2),
                     datoTom = LocalDate.of(2029, 12, 31),
-                    faktiskHovedlonn = "hovedlønn1",
-                    stillingsuavhengigTilleggslonn = "tilleggslønn1"
+                    faktiskHovedlonn = 0,
+                    stillingsuavhengigTilleggslonn = 0
             ),
             Opptjeningsperiode(
                     stillingsprosent = 12.5,
                     aldersgrense = 67,
                     datoFom = LocalDate.of(2019, 2, 3),
                     datoTom = LocalDate.of(2035, 11, 30),
-                    faktiskHovedlonn = "hovedlønn2",
-                    stillingsuavhengigTilleggslonn = "tilleggslønn2"
+                    faktiskHovedlonn = 0,
+                    stillingsuavhengigTilleggslonn = 0
             )
     )
 

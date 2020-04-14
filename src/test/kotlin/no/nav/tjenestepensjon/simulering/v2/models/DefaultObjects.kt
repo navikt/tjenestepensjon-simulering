@@ -45,8 +45,8 @@ val defaultOpptjeningsperiode = Opptjeningsperiode(
         datoFom = defaultDatoFom,
         datoTom = defaultDatoTom,
         stillingsprosent = 0.0,
-        stillingsuavhengigTilleggslonn = "bogus",
-        faktiskHovedlonn = "bogus"
+        stillingsuavhengigTilleggslonn = 0,
+        faktiskHovedlonn = 0
 )
 
 val defaultSimuleringsperiode = Simuleringsperiode(
@@ -124,7 +124,7 @@ const val defaultTomDateString = "1901-01-31"
 const val defaultSimulerOffentligTjenestepensjonResponseJson = """{"tpnr":"bogus","navnOrdning":"bogus","inkluderteOrdningeListe":["bogus"],"leverandorUrl":"bogus","utbetalingsperiodeListe":[{"grad":0,"arligUtbetaling":0.0,"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","ytelsekode":"bogus"},null]}"""
 
 
-const val defaultOppjeningsperiodeJson = """{"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","stillingsprosent":0.0,"aldersgrense":0,"faktiskHovedlonn":"bogus","stillingsuavhengigTilleggslonn":"bogus"}"""
+const val defaultOppjeningsperiodeJson = """{"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","stillingsprosent":0.0,"aldersgrense":0,"faktiskHovedlonn":0,"stillingsuavhengigTilleggslonn":0}"""
 const val defaultOppjeningsperiodeListeJson = """[$defaultOppjeningsperiodeJson]"""
 const val defaultSimulertAFPPrivatJson = """{"afpOpptjeningTotalbelop":0,"kompensasjonstillegg":0.0}"""
 const val defaultSimulertAFPOffentligJson = """{"simulertAFPOffentligBrutto":0,"tpi":0}"""
