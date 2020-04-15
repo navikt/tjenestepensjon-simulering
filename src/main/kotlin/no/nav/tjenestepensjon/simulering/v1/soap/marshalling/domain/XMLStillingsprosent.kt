@@ -31,6 +31,7 @@ class XMLStillingsprosent {
     lateinit var faktiskHovedlonn: String
     @XmlElement(required = true)
     lateinit var stillingsuavhengigTilleggslonn: String
+    @XmlElement(required = false)
     var utvidelse: Utvidelse.StillingsprosentUtvidelse1? = null
 
     fun toStillingsprosent() = Stillingsprosent(
@@ -39,6 +40,7 @@ class XMLStillingsprosent {
             stillingsprosent = stillingsprosent,
             aldersgrense = aldersgrense,
             faktiskHovedlonn = faktiskHovedlonn,
-            stillingsuavhengigTilleggslonn = stillingsuavhengigTilleggslonn
+            stillingsuavhengigTilleggslonn = stillingsuavhengigTilleggslonn,
+            utvidelse = null
     )
 }

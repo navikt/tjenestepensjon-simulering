@@ -49,7 +49,8 @@ val defaultStillingsprosent = Stillingsprosent(
         datoTom = defaultDatoTom,
         stillingsprosent = 0.0,
         stillingsuavhengigTilleggslonn = "bogus",
-        faktiskHovedlonn = "bogus"
+        faktiskHovedlonn = "bogus",
+        utvidelse = null
 )
 
 

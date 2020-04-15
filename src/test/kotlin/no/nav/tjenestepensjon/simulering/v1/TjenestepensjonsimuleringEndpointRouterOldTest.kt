@@ -5,18 +5,18 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
+import no.nav.tjenestepensjon.simulering.model.domain.FNR
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
-import no.nav.tjenestepensjon.simulering.model.domain.FNR
+import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
+import no.nav.tjenestepensjon.simulering.testHelper.safeEq
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulertPensjon
 import no.nav.tjenestepensjon.simulering.v1.rest.RestClientOld
 import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
-import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
-import no.nav.tjenestepensjon.simulering.testHelper.safeEq
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -38,7 +38,8 @@ internal class TjenestepensjonsimuleringEndpointRouterOldTest {
                     datoFom = LocalDate.of(2018, 1, 2),
                     datoTom = LocalDate.of(2029, 12, 31),
                     faktiskHovedlonn = "hovedlønn1",
-                    stillingsuavhengigTilleggslonn = "tilleggslønn1"
+                    stillingsuavhengigTilleggslonn = "tilleggslønn1",
+                    utvidelse = null
             ),
             Stillingsprosent(
                     stillingsprosent = 12.5,
@@ -46,7 +47,8 @@ internal class TjenestepensjonsimuleringEndpointRouterOldTest {
                     datoFom = LocalDate.of(2019, 2, 3),
                     datoTom = LocalDate.of(2035, 11, 30),
                     faktiskHovedlonn = "hovedlønn2",
-                    stillingsuavhengigTilleggslonn = "tilleggslønn2"
+                    stillingsuavhengigTilleggslonn = "tilleggslønn2",
+                    utvidelse = null
             )
     )
     private val simulerPensjonRequest = SimulerPensjonRequest(

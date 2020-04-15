@@ -6,18 +6,18 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSP
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse
-import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
-import no.nav.tjenestepensjon.simulering.v1.TjenestepensjonsimuleringEndpointRouterOld
+import no.nav.tjenestepensjon.simulering.model.domain.FNR
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
-import no.nav.tjenestepensjon.simulering.v1.exceptions.DuplicateStillingsprosentEndDateException
-import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
-import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.testHelper.safeEq
+import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentCallableMap
+import no.nav.tjenestepensjon.simulering.v1.TjenestepensjonsimuleringEndpointRouterOld
+import no.nav.tjenestepensjon.simulering.v1.exceptions.DuplicateStillingsprosentEndDateException
+import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
+import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -165,6 +165,7 @@ internal class StillingsprosentServiceImplTest {
             stillingsprosent = 0.0,
             aldersgrense = 0,
             faktiskHovedlonn = "",
-            stillingsuavhengigTilleggslonn = ""
+            stillingsuavhengigTilleggslonn = "",
+            utvidelse = null
     )
 }
