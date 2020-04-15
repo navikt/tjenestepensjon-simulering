@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
+import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
 import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
@@ -18,7 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.ws.client.core.WebServiceTemplate
 
 
-@SpringBootTest(classes = [TokenClientOld::class, WebServiceTemplate::class, SoapClient::class, SamlConfig::class])
+@SpringBootTest(classes = [TokenClientOld::class, WebServiceTemplate::class, SoapClient::class, SamlConfig::class, ObjectMapperConfig::class])
 internal class SoapClientTest {
 
     @MockBean

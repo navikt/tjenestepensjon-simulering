@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.Tjenestepensjonsimulering
 import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
@@ -30,6 +31,9 @@ class SoapClient(
     init {
         this.webServiceTemplate = webServiceTemplate
     }
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @Value("\${TJENESTEPENSJON_URL}")
     lateinit var simulerOffentlingTjenestepensjonUrl: String
@@ -79,7 +83,7 @@ class SoapClient(
                                     tpOrdningStillingsprosentMap = tpOrdningStillingsprosentMap,
                                     forsteUttak = min()!!
                             )
-                    }.let(SOAPAdapter::marshal).also { LOG.info("Mapped SimulerPensjonRequest: {} to SimulerOffentligTjenestepensjon: {}", request, it) },
+                    }.let(SOAPAdapter::marshal).also { LOG.info("Mapped SimulerPensjonRequest: {} to SimulerOffentligTjenestepensjon: {}", request, objectMapper.writeValueAsString(it)) },
                     SOAPCallback(
                             simulerOffentlingTjenestepensjonUrl,
                             tpLeverandor.url,
