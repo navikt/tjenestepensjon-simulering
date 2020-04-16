@@ -8,12 +8,12 @@ import javax.xml.datatype.XMLGregorianCalendar
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = [
+    "stillingsprosent",
     "datoFom",
     "datoTom",
-    "stillingsprosent",
-    "aldersgrense",
     "faktiskHovedlonn",
     "stillingsuavhengigTilleggslonn",
+    "aldersgrense",
     "utvidelse"
 ])
 class XMLStillingsprosent {
