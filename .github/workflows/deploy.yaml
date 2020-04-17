@@ -38,7 +38,7 @@ jobs:
       - name: Login to Github Package Registry
         env:
           DOCKER_USERNAME: x-access-token
-          DOCKER_PASSWORD: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
           echo "::set-env name=IMAGE::$(cat .docker_image):$(cat .docker_tag)"

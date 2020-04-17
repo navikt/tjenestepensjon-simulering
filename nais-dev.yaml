@@ -4,7 +4,7 @@ metadata:
   name: tjenestepensjon-simulering
   namespace: default
   labels:
-    team: teampeon
+    team: pensjonsamhandling
 spec:
   image: {{ image }}
   port: 8080
@@ -23,8 +23,6 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: /kv/preprod/fss/tjenestepensjon-simulering/default
-        mountPath: /var/run/secrets/nais.io/vault
       - kvPath: /maskinporten/data/dev/creds/tjenestepensjon-simulering
         mountPath: /var/run/secrets/nais.io/vault/jwks
   webproxy: true
