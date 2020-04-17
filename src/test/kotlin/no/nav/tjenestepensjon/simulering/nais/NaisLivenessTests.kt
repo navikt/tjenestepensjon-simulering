@@ -10,7 +10,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class])
-//@SpringBootTest(classes = [NaisLiveness::class, ResourceServerConfig::class, TokenStoreConfig::class, ClaimSetVerifierConfig::class, TokenProviderConfig::class])
 @AutoConfigureMockMvc
 class NaisLivenessTests {
     @Autowired

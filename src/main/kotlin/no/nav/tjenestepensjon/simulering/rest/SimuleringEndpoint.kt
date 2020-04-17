@@ -40,7 +40,7 @@ class SimuleringEndpoint(
             @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
     ): ResponseEntity<Any> {
         addHeaderToRequestContext(NAV_CALL_ID, navCallId)
-        LOG.info("Processing nav-call-id: {}, request: {}", getHeaderFromRequestContext(NAV_CALL_ID), body)
+        LOG.info("Processing nav-call-id: {}", getHeaderFromRequestContext(NAV_CALL_ID))
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
         return try {

@@ -1,6 +1,5 @@
 package no.nav.tjenestepensjon.simulering.v1.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_FEIL
@@ -8,22 +7,20 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_OK
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.v1.TjenestepensjonsimuleringEndpointRouterOld
-import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
-import no.nav.tjenestepensjon.simulering.v1.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v1.TjenestepensjonsimuleringEndpointRouterOld
+import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
+import no.nav.tjenestepensjon.simulering.v1.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulertPensjon
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-
 import java.util.concurrent.ExecutionException
 
 @Service
@@ -37,20 +34,12 @@ class SimpleSimuleringServiceOld(
         private val metrics: AppMetrics
 ) : SimuleringService {
 
-    @Autowired
-    lateinit var objectMapper: ObjectMapper
-
     override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest) =
             SimulerOffentligTjenestepensjonResponse(
                     simulertPensjonListe = try {
                         val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(request.fnr)
                                 .let(::getTpLeverandorer)
                         val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.fnr, tpOrdningAndLeverandorMap)
-
-                        LOG.error("/////////////////v1///////////////////////////")
-                        LOG.error("tpOrdningAndLeverandorMap: {}", objectMapper.writeValueAsString(tpOrdningAndLeverandorMap))
-                        LOG.error("opptjeningsperiodeResponse: {}", objectMapper.writeValueAsString(stillingsprosentResponse))
-                        LOG.error("/////////////////v1///////////////////////////")
 
                         stillingsprosentResponse.tpOrdningStillingsprosentMap
                                 .ifEmpty { throw NoTpOrdningerFoundException("Could not get stillingsprosent from any TP-Providers") }

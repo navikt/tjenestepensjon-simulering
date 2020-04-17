@@ -60,12 +60,36 @@ class MaskinportenTokenProvider {
 
     fun getKeys(keys: String) = objectMapper.readValue<Keys>(keys)
 
-    internal fun base64ToPrivateKey(privateBase64: String): PrivateKey? {
-        LOG.info("From base64 key to PrivateKey")
-        val keyBytes: ByteArray = Base64.getDecoder().decode(privateBase64)
-        val keySpec = PKCS8EncodedKeySpec(keyBytes)
-        val fact: KeyFactory = KeyFactory.getInstance("RSA")
-        return fact.generatePrivate(keySpec)
+    val header_target_url = "target-url"
+    val header_x_nav_apiKey="x-nav-apiKey"
+    val header_content_type="content-type"
+
+
+    @Throws(MaskinportenException::class)
+    fun generateToken(): String {
+        LOG.info(jwksPublic)
+        val jwsToken = try {
+            generatePrivateJWT().token
+        } catch (e: Throwable) {
+            LOG.error("An Error occured wile trying to generate token: $e")
+            throw e
+        }
+
+        LOG.info("Making a Formdata request Url-encoded: to - $maskinportenTokenEndpoint")
+        return try {
+            webClient.post()
+                    .uri(peproxyUrl)
+                    .header(header_target_url, maskinportenTokenEndpoint)
+                    .header(header_x_nav_apiKey, maskinportenTokenApiKey)
+                    .header(header_content_type, "application/x-www-form-urlencoded")
+                    .bodyValue("""grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$jwsToken""")
+                    .retrieve()
+                    .bodyToMono(object : ParameterizedTypeReference<IdPortenAccessTokenResponse>() {})
+                    .block()
+        } catch (e: Throwable) {
+            LOG.error("Maskinporten: Unexpected error while fetching access token",e)
+            throw ConnectToMaskinPortenException(e.message)
+        }.let { AccessToken(it.accessToken).token }
     }
 
     fun generatePrivateJWT(): Jws {
@@ -84,11 +108,10 @@ class MaskinportenTokenProvider {
                         .setExpiration(Date(Clock.systemUTC().millis() + 120000))
                         .claim(SCOPE, idPortenScope)
                         .serializeToJsonWith(JacksonSerializer<Map<String, Any?>>(objectMapper))
-                        .signWith(base64ToPrivateKey(privateKeyBase64) as PrivateKey, SignatureAlgorithm.RS256)
+                        .signWith(base64ToPrivateKey() as PrivateKey, SignatureAlgorithm.RS256)
                         .compact()
         )
     }
-
 
     fun getMaskinportenAuthrozationServerConfiguration(): String {
         LOG.info("Getting own certificate and generating keypair and certificate")
@@ -96,9 +119,9 @@ class MaskinportenTokenProvider {
             LOG.info("Getting well-known configuration from id-porten at: ${idPortenConfigurationApiGwEndpoint}")
 
             webClient.get()
-                    .uri("http://peproxy")
-                    .header("target-url", idPortenConfigurationApiGwEndpoint)
-                    .header("x-nav-apiKey", maskinportenConfigurationApiKey)
+                    .uri(peproxyUrl)
+                    .header(header_target_url, idPortenConfigurationApiGwEndpoint)
+                    .header(header_x_nav_apiKey, maskinportenConfigurationApiKey)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<MaskinportenConfiguration>() {})
@@ -113,31 +136,12 @@ class MaskinportenTokenProvider {
         }
     }
 
-    @Throws(MaskinportenException::class)
-    fun generateToken(): String {
-        LOG.info(jwksPublic)
-        val jwsToken = try {
-            generatePrivateJWT().token
-        } catch (e: Throwable) {
-            LOG.error("An Error occured wile trying to generate token: $e")
-            throw e
-        }
-
-        LOG.info("Making a Formdata request Url-encoded: to - $maskinportenTokenEndpoint")
-        return try {
-            webClient.post()
-                    .uri("http://peproxy")
-                    .header("target-url", maskinportenTokenEndpoint)
-                    .header("x-nav-apiKey", maskinportenTokenApiKey)
-                    .header("content-type", "application/x-www-form-urlencoded")
-                    .bodyValue("""grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$jwsToken""")
-                    .retrieve()
-                    .bodyToMono(object : ParameterizedTypeReference<IdPortenAccessTokenResponse>() {})
-                    .block()
-        } catch (e: Throwable) {
-            LOG.error("Maskinporten: Unexpected error while fetching access token",e)
-            throw ConnectToMaskinPortenException(e.message)
-        }.let { AccessToken(it.accessToken).token }
+    internal fun base64ToPrivateKey(): PrivateKey? {
+        LOG.info("From base64 key to PrivateKey")
+        val keyBytes: ByteArray = Base64.getDecoder().decode(privateKeyBase64)
+        val keySpec = PKCS8EncodedKeySpec(keyBytes)
+        val fact: KeyFactory = KeyFactory.getInstance("RSA")
+        return fact.generatePrivate(keySpec)
     }
 
     companion object {

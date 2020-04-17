@@ -7,5 +7,5 @@ class Simuleringsperiode(
         override var datoFom: LocalDate,
         var folketrygdUttaksgrad: Int,
         var stillingsprosentOffentlig: Int,
-        var simulerAFPOffentligEtterfulgtAvAlderListe: Boolean
+        var simulerAFPOffentligEtterfulgtAvAlder: Boolean
 ) : Dateable

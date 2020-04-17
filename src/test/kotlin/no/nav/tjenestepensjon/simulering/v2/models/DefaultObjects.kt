@@ -20,7 +20,7 @@ val defaultDatoTom: LocalDate = LocalDate.of(1901, 1, 31)
 
 
 val defaultUtbetalingsperiode = Utbetalingsperiode(
-        grad = 0,
+        uttaksgrad = 0,
         arligUtbetaling = 0.0,
         datoFom = defaultDatoFom,
         datoTom = defaultDatoTom,
@@ -53,7 +53,7 @@ val defaultSimuleringsperiode = Simuleringsperiode(
         datoFom = defaultDatoFom,
         stillingsprosentOffentlig = 0,
         folketrygdUttaksgrad = 0,
-        simulerAFPOffentligEtterfulgtAvAlderListe = true
+        simulerAFPOffentligEtterfulgtAvAlder = true
 )
 
 val defaultSimulertAFPPrivat = SimulertAFPPrivat(
@@ -121,7 +121,7 @@ val defaultTPOrdning = TPOrdning("bogus", "bogus")
 const val defaultFomDateString = "1901-01-01"
 const val defaultTomDateString = "1901-01-31"
 
-const val defaultSimulerOffentligTjenestepensjonResponseJson = """{"tpnr":"bogus","navnOrdning":"bogus","inkluderteOrdningeListe":["bogus"],"leverandorUrl":"bogus","utbetalingsperiodeListe":[{"grad":0,"arligUtbetaling":0.0,"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","ytelsekode":"bogus"},null]}"""
+const val defaultSimulerOffentligTjenestepensjonResponseJson = """{"tpnr":"bogus","navnOrdning":"bogus","inkluderteOrdningeListe":["bogus"],"leverandorUrl":"bogus","utbetalingsperiodeListe":[{"uttaksgrad":0,"arligUtbetaling":0.0,"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","ytelsekode":"bogus"},null]}"""
 
 
 const val defaultOppjeningsperiodeJson = """{"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","stillingsprosent":0.0,"aldersgrense":0,"faktiskHovedlonn":0,"stillingsuavhengigTilleggslonn":0}"""
@@ -133,6 +133,6 @@ const val defaultInntektJson = """{"datoFom":"$defaultFomDateString","inntekt":0
 const val defaultSimuleringsDataJson = """{"datoFom":"1901-01-01","andvendtTrygdetid":0,"poengArTom1991":0,"poengArFom1992":0,"uforegradVedOmregning":0,"basisgp":0.0,"basispt":0.0,"basistp":0.0,"delingstallUttak":0.0,"forholdstallUttak":0.0,"sluttpoengtall":0.0}"""
 const val defaultPensjonsbeholdningsperiodeJson = """{"datoFom":"1901-01-01","pensjonsbeholdning":0,"garantipensjonsbeholdning":0,"garantitilleggsbeholdning":0}"""
 const val defaultTpForholdJson = """{"tpnr":"bogus","opptjeningsperiodeListe":$defaultOppjeningsperiodeListeJson}"""
-const val defaultSimuleringsperiodeJson = """{"datoFom":"1901-01-01","folketrygdUttaksgrad":0,"stillingsprosentOffentlig":0,"simulerAFPOffentligEtterfulgtAvAlderListe":true}"""
+const val defaultSimuleringsperiodeJson = """{"datoFom":"1901-01-01","folketrygdUttaksgrad":0,"stillingsprosentOffentlig":0,"simulerAFPOffentligEtterfulgtAvAlder":true}"""
 
 const val defaultSimulerOffentligTjenestepensjonRequestJson = """{"fnr":"01010101010","fodselsdato":"19010101","sisteTpnr":"bogus","sprak":"bogus","simulertAFPOffentlig":$defaultSimulertAFPOffentligJson,"simulertAFPPrivat":$defaultSimulertAFPPrivatJson,"sivilstandkode":"GIFT","inntektListe":[$defaultInntektJson],"pensjonsbeholdningsperiodeListe":[$defaultPensjonsbeholdningsperiodeJson],"simuleringsperiodeListe":[$defaultSimuleringsperiodeJson],"simuleringsdataListe":[$defaultSimuleringsDataJson],"tpForholdListe":[$defaultTpForholdJson]}"""
