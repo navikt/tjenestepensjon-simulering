@@ -1,18 +1,20 @@
 package no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain
 
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
+import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.Utvidelse
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.toLocalDate
 import javax.xml.bind.annotation.*
 import javax.xml.datatype.XMLGregorianCalendar
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = [
+    "stillingsprosent",
     "datoFom",
     "datoTom",
-    "stillingsprosent",
-    "aldersgrense",
     "faktiskHovedlonn",
-    "stillingsuavhengigTilleggslonn"
+    "stillingsuavhengigTilleggslonn",
+    "aldersgrense",
+    "utvidelse"
 ])
 class XMLStillingsprosent {
     @XmlElement(required = true)
@@ -29,6 +31,8 @@ class XMLStillingsprosent {
     lateinit var faktiskHovedlonn: String
     @XmlElement(required = true)
     lateinit var stillingsuavhengigTilleggslonn: String
+    @XmlElement(required = false)
+    var utvidelse: Utvidelse.StillingsprosentUtvidelse1? = null
 
     fun toStillingsprosent() = Stillingsprosent(
             datoFom = datoFom.toLocalDate(),
@@ -36,6 +40,7 @@ class XMLStillingsprosent {
             stillingsprosent = stillingsprosent,
             aldersgrense = aldersgrense,
             faktiskHovedlonn = faktiskHovedlonn,
-            stillingsuavhengigTilleggslonn = stillingsuavhengigTilleggslonn
+            stillingsuavhengigTilleggslonn = stillingsuavhengigTilleggslonn,
+            utvidelse = null
     )
 }

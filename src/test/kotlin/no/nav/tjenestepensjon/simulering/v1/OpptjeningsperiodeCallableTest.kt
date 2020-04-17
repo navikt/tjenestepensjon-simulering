@@ -8,6 +8,7 @@ import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
+import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.Utvidelse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -73,8 +74,8 @@ internal class OpptjeningsperiodeCallableTest {
                         datoFom = LocalDate.of(2018, 1, 2),
                         datoTom = LocalDate.of(2029, 12, 31),
                         faktiskHovedlonn = "hovedlønn1",
-                        stillingsuavhengigTilleggslonn = "tilleggslønn1"
-
+                        stillingsuavhengigTilleggslonn = "tilleggslønn1",
+                        utvidelse = null
                 ),
                 Stillingsprosent(
                         stillingsprosent = 12.5,
@@ -82,7 +83,8 @@ internal class OpptjeningsperiodeCallableTest {
                         datoFom = LocalDate.of(2019, 2, 3),
                         datoTom = LocalDate.of(2035, 11, 30),
                         faktiskHovedlonn = "hovedlønn2",
-                        stillingsuavhengigTilleggslonn = "tilleggslønn2"
+                        stillingsuavhengigTilleggslonn = "tilleggslønn2",
+                        utvidelse = null
                 )
         )
 
