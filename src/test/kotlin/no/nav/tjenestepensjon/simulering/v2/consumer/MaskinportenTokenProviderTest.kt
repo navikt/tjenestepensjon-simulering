@@ -1,44 +1,57 @@
 package no.nav.tjenestepensjon.simulering.v2.consumer
 
-import com.github.tomakehurst.wiremock.WireMockServer
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.jsonwebtoken.JwsHeader
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.io.JacksonSerializer
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
 import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
-import no.nav.tjenestepensjon.simulering.config.TokenProviderStub
-import org.junit.jupiter.api.AfterAll
+import no.nav.tjenestepensjon.simulering.v2.consumer.model.Jws
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.web.servlet.MockMvc
+import java.security.PrivateKey
+import java.time.Clock
+import java.util.*
 
 @SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class, ObjectMapperConfig::class])
 @AutoConfigureMockMvc
-internal class MaskinportenTokenProviderTest() {
+internal class MaskinportenTokenProviderTest {
+
+    @Value("\${jwk_public}")
+    lateinit var jwksPublic: String
 
     @Autowired
-    private lateinit var mockMvc: MockMvc
+    lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
 
     @Autowired
-    lateinit var tokenclient: MaskinportenTokenProvider
+    lateinit var objectMapper: ObjectMapper
 
     @Test
-    fun `Test marshalling of HentStillingsprosentListeRequest`() {
-//        tokenclient.generateToken()
-
-//        val map: Map<String, List<String>> = mapOf("grant_type" to listOf("urn:ietf:params:oauth:grant-type:jwt-bearer"), "assertion" to listOf("jwsToken.token"))
-//
-//        System.out.println("Parameters ${map()}")
+    fun `Checking if private key can be converted to privatekey`() {
+        maskinportenTokenProvider.base64ToPrivateKey()
     }
 
-    companion object {
-        private var wireMockServer = WireMockServer()
-                .apply { start() }
-                .also(TokenProviderStub::configureTokenProviderStub)
+    @Test
+    fun `Creating a jwts grant`(): Jws {
+        val key = maskinportenTokenProvider.getKeys(jwksPublic).keys.single()
 
-        @JvmStatic
-        @AfterAll
-        fun afterAll() {
-            wireMockServer.stop()
-        }
+        return Jws(
+                Jwts.builder()
+                        .setHeaderParam(JwsHeader.KEY_ID, key.kid)
+                        .setHeaderParam(JwsHeader.ALGORITHM, key.alg)
+                        .setAudience("audiance")
+                        .setIssuer("clientId")
+                        .setIssuedAt(Date(Clock.systemUTC().millis()))
+                        .setId(UUID.randomUUID().toString())
+                        .setExpiration(Date(Clock.systemUTC().millis() + 120000))
+                        .claim(MaskinportenTokenProvider.SCOPE, "test:scope")
+                        .serializeToJsonWith(JacksonSerializer<Map<String, Any?>>(objectMapper))
+                        .signWith("base64ToPrivateKey" as PrivateKey, SignatureAlgorithm.RS256)
+                        .compact()
+        )
     }
 }

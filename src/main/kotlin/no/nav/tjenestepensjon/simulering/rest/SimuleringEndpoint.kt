@@ -13,8 +13,7 @@ import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenExceptio
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatus.OK
+import org.springframework.http.HttpStatus.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -50,7 +49,7 @@ class SimuleringEndpoint(
                 )
             } catch (e: WebClientResponseException) {
                 LOG.error("Caught WebClientResponseException in version 1, returns 500 error code.", e)
-                e.message to HttpStatus.INTERNAL_SERVER_ERROR
+                e.message to INTERNAL_SERVER_ERROR
             } catch (e: Throwable) {
                 LOG.info("Caught exception in version 1,  trying version 2.", e)
                 service2.simulerOffentligTjenestepensjon(
@@ -63,12 +62,12 @@ class SimuleringEndpoint(
         } catch (e: Throwable) {
             LOG.error("Unable to handle request", e)
             when (e) {
-                is JsonParseException -> "Unable to parse body to request." to HttpStatus.BAD_REQUEST
-                is JsonMappingException -> "Unable to mapping body to request." to HttpStatus.BAD_REQUEST
-                is ConnectToIdPortenException -> "Unable to to connect with idPorten." to HttpStatus.INTERNAL_SERVER_ERROR
-                is ConnectToMaskinPortenException -> "Unable to to get token from maskinporten." to HttpStatus.INTERNAL_SERVER_ERROR
-                is SimuleringException -> e.message to HttpStatus.INTERNAL_SERVER_ERROR
-                else -> e.message to HttpStatus.INTERNAL_SERVER_ERROR
+                is JsonParseException -> "Unable to parse body to request." to BAD_REQUEST
+                is JsonMappingException -> "Unable to mapping body to request." to BAD_REQUEST
+                is ConnectToIdPortenException -> "Unable to to connect with idPorten." to INTERNAL_SERVER_ERROR
+                is ConnectToMaskinPortenException -> "Unable to to get token from maskinporten." to INTERNAL_SERVER_ERROR
+                is SimuleringException -> e.message to INTERNAL_SERVER_ERROR
+                else -> e.message to INTERNAL_SERVER_ERROR
             }.run {
                 LOG.error(first, body)
                 ResponseEntity(first.toString(), second)
