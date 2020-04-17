@@ -56,7 +56,8 @@ class SimuleringEndpoint(
                         objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
                 )
             }.let {
-                LOG.info("Processing nav-call-id: {}, response: {}", getHeaderFromRequestContext(NAV_CALL_ID), it)
+                LOG.info("Processing nav-call-id: {})")
+                LOG.debug("Response: {}", getHeaderFromRequestContext(NAV_CALL_ID), it)
                 ResponseEntity(it, OK)
             }
         } catch (e: Throwable) {
