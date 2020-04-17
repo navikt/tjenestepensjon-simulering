@@ -37,7 +37,7 @@ class StillingsprosentServiceImpl(
     override fun getLatestFromStillingsprosent(map: TPOrdningStillingsprosentMap) =
             map.flatMap { (key, list) ->
                     list.map { value ->
-                        LOG.info("TPORDNING {} STILLINGSPROSENT {}", key, value)
+                        LOG.debug("TPORDNING {} STILLINGSPROSENT {}", key, value)
                         key to value
                     }
             }.ifEmpty { throw MissingStillingsprosentException("Could not find any stillingsprosent") }
