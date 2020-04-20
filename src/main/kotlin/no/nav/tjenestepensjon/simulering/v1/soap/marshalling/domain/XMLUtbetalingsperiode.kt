@@ -27,7 +27,7 @@ class XMLUtbetalingsperiode {
     var grad: Int = 0
     var arligUtbetaling: Double = 0.0
     lateinit var ytelseKode: String
-    lateinit var mangelfullSimuleringKode: String
+    var mangelfullSimuleringKode: String = ""
     lateinit var utvidelse: UtbetalingsperiodeUtvidelse1
 
     fun toUtbetalingsperiode(fnr: FNR) = Utbetalingsperiode(
