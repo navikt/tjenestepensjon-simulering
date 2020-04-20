@@ -1,7 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.models.request
 
 import no.nav.tjenestepensjon.simulering.domain.DelytelseType
-import no.nav.tjenestepensjon.simulering.domain.DelytelseType.*
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Simuleringsperiode
 
 data class Simuleringsdata(
@@ -26,6 +25,6 @@ data class Simuleringsdata(
             basisgp = periode.getDelytelseBelop(DelytelseType.basisgp),
             basispt = periode.getDelytelseBelop(DelytelseType.basispt),
             basistp = periode.getDelytelseBelop(DelytelseType.basistp),
-            skjermingstillegg = periode.getDelytelseBelop(DelytelseType.skjermingstilleg)
+            skjermingstillegg = periode.getDelytelseBelop(DelytelseType.skjermingstillegg)
     )
 }
