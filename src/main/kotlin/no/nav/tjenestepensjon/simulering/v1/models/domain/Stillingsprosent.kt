@@ -9,7 +9,7 @@ data class Stillingsprosent(
         var datoTom: LocalDate?,
         var stillingsprosent: Double,
         var aldersgrense: Int,
-        var faktiskHovedlonn: String,
+        var faktiskHovedlonn: String?,
         var stillingsuavhengigTilleggslonn: String?,
         var utvidelse: Utvidelse.StillingsprosentUtvidelse1?
 ): Dateable

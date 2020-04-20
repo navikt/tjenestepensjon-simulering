@@ -27,8 +27,8 @@ class XMLStillingsprosent {
     var stillingsprosent: Double = 0.0
     @XmlElement(required = true)
     var aldersgrense: Int = 0
-    @XmlElement(required = true)
-    lateinit var faktiskHovedlonn: String
+    @XmlElement(required = false)
+    var faktiskHovedlonn: String? = null
     @XmlElement(required = false)
     var stillingsuavhengigTilleggslonn: String? = null
     @XmlElement(required = false)
