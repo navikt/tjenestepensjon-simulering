@@ -31,7 +31,7 @@ internal class SimulertAP2011Test {
                         Delytelse(basisgp, ForsteUttak.BASISGP_),
                         Delytelse(basispt, ForsteUttak.BASISPT_),
                         Delytelse(basistp, ForsteUttak.BASISTP_),
-                        Delytelse(skjermingstilleg, ForsteUttak.SKJERMINGSTILLEGG_)
+                        Delytelse(skjermingstillegg, ForsteUttak.SKJERMINGSTILLEGG_)
                 )
         )
 
@@ -50,7 +50,7 @@ internal class SimulertAP2011Test {
                         Delytelse(basisgp, HeltUttak.BASISGP_),
                         Delytelse(basispt, HeltUttak.BASISPT_),
                         Delytelse(basistp, HeltUttak.BASISTP_),
-                        Delytelse(skjermingstilleg, HeltUttak.SKJERMINGSTILLEGG_)
+                        Delytelse(skjermingstillegg, HeltUttak.SKJERMINGSTILLEGG_)
                 )
         )
     }
