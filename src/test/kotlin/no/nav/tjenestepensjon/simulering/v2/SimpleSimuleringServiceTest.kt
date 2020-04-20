@@ -1,44 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2
 
-import no.nav.tjenestepensjon.simulering.AppMetrics
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_MANGEL
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
-import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse
-import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
-import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
-import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
-import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
-import no.nav.tjenestepensjon.simulering.v2.consumer.FindTpLeverandorCallable
-import no.nav.tjenestepensjon.simulering.v2.exceptions.DuplicateOpptjeningsperiodeEndDateException
-import no.nav.tjenestepensjon.simulering.v2.exceptions.MissingOpptjeningsperiodeException
-import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpOpptjeningsPeriodeFoundException
-import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
-import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
-import no.nav.tjenestepensjon.simulering.v2.models.domain.SivilstandCodeEnum
-import no.nav.tjenestepensjon.simulering.v2.models.domain.Utbetalingsperiode
-import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
-import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
-import no.nav.tjenestepensjon.simulering.v2.service.OpptjeningsperiodeResponse
-import no.nav.tjenestepensjon.simulering.v2.service.OpptjeningsperiodeService
-import no.nav.tjenestepensjon.simulering.v2.service.SimpleSimuleringService
-import org.junit.Ignore
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
-import java.time.LocalDate.now
-import java.util.concurrent.ExecutionException
 
 @ExtendWith(MockitoExtension::class)
 internal class SimpleSimuleringServiceTest {

@@ -13,6 +13,7 @@ import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v2.TjenestepensjonsimuleringEndpointRouter
 import no.nav.tjenestepensjon.simulering.v2.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpOpptjeningsPeriodeFoundException
+import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpParticipantFoundInMapForVersion2
 import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
@@ -38,14 +39,23 @@ class SimpleSimuleringService(
 
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
 
+        val version2Map = mapOf(
+                ("KLP" to TpLeverandor("KLP","https://partner-gw-test2.klp.no/api/pensjonsimulering", null, true)),
+                ("SPK" to TpLeverandor("SPK","https://partner-gw-test2.klp.no/api/pensjonsimulering", null, false))
+        )
+
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
                 .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
                 .let { tpOrdning ->
+                    if (version2Map.containsKey(tpOrdningAndLeverandorMap.getValue(tpOrdning).name)) {
+                        throw NoTpParticipantFoundInMapForVersion2("Unable to find Tp participant in version 2 ")
+                    }
+
                     simuleringEndPointRouter.simulerPensjon(
                             request = request,
                             tpOrdning = tpOrdning,
-                            tpLeverandor = tpOrdningAndLeverandorMap.getValue(tpOrdning),
+                            tpLeverandor = version2Map.getValue(tpOrdningAndLeverandorMap.getValue(tpOrdning).name),
                             tpOrdningOpptjeningsperiodeMap = opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                     )
                 }.also { response ->

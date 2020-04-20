@@ -52,7 +52,7 @@ class RestClient {
             webClient.get()
                     .uri(peproxyUrl)
                     .header(peproxyHttpheadersTargetUrl, tpLeverandor.url)
-                    .header(peproxyHttpheadersTargetAuthorization, "Bearer " + tokenClient.maskinportToken)
+                    .header(peproxyHttpheadersTargetAuthorization, "Bearer " + if (tpLeverandor.maskinportenIntegrasjon!!) tokenClient.maskinportToken else tokenClient.oidcAccessToken)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<SimulerOffentligTjenestepensjonResponse>() {})
                     .block() ?: SimulerOffentligTjenestepensjonResponse(
