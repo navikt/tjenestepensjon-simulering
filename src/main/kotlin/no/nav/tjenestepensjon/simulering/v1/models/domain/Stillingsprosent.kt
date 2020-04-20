@@ -10,6 +10,6 @@ data class Stillingsprosent(
         var stillingsprosent: Double,
         var aldersgrense: Int,
         var faktiskHovedlonn: String,
-        var stillingsuavhengigTilleggslonn: String,
+        var stillingsuavhengigTilleggslonn: String?,
         var utvidelse: Utvidelse.StillingsprosentUtvidelse1?
 ): Dateable
