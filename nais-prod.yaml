@@ -17,6 +17,8 @@ spec:
   vault:
     enabled: true
     paths:
+     - kvPath: /kv/prod/fss/tjenestepensjon-simulering/default
+       mountPath: /var/run/secrets/nais.io/vault
      - kvPath: /maskinporten/data/prod/creds/tjenestepensjon-simulering
        mountPath: /var/run/secrets/nais.io/vault/jwks
   spec:
