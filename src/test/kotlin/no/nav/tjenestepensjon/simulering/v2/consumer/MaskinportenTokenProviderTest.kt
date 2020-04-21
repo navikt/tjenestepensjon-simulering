@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import java.security.PrivateKey
 import java.time.Clock
 import java.util.*
 
@@ -31,12 +30,12 @@ internal class MaskinportenTokenProviderTest {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    //@Test
+    @Test
     fun `Checking if private key can be converted to privatekey`() {
         maskinportenTokenProvider.base64ToPrivateKey()
     }
 
-    //@Test
+    @Test
     fun `Creating a jwts grant`() {
         val key = maskinportenTokenProvider.getKeys(jwksPublic).keys.single()
 
