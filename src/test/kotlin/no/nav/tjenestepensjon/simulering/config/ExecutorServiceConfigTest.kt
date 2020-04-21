@@ -14,15 +14,15 @@ import java.util.concurrent.ThreadPoolExecutor
 internal class ExecutorServiceConfigTest {
 
     @Mock
-    private lateinit var tpLeverandorConfig: TpLeverandorConfig
+    private lateinit var tpLeverandorConfigOld: TpLeverandorConfigOld
 
     private val executorServiceConfig: ExecutorServiceConfig = ExecutorServiceConfig()
 
     @Test
     fun `Create one thread per provider`() {
-        Mockito.`when`(tpLeverandorConfig.tpLeverandorList())
+        Mockito.`when`(tpLeverandorConfigOld.tpLeverandorList())
                 .thenReturn(listOf(TpLeverandor("lev1", "url1", SOAP), TpLeverandor("lev2", "url2", SOAP)))
-        val executorService = executorServiceConfig.taskExecutor(tpLeverandorConfig) as ThreadPoolExecutor
+        val executorService = executorServiceConfig.taskExecutor(tpLeverandorConfigOld) as ThreadPoolExecutor
         assertEquals(2, executorService.corePoolSize)
     }
 }

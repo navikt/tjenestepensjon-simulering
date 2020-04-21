@@ -8,6 +8,6 @@ import java.util.concurrent.Executors
 @Configuration
 class ExecutorServiceConfig {
     @Bean
-    fun taskExecutor(tpLeverandorConfig: TpLeverandorConfig): ExecutorService =
-            Executors.newFixedThreadPool(tpLeverandorConfig.tpLeverandorList().size)
+    fun taskExecutor(tpLeverandorConfigOld: TpLeverandorConfigOld): ExecutorService =
+            Executors.newFixedThreadPool(tpLeverandorConfigOld.tpLeverandorList().size)
 }

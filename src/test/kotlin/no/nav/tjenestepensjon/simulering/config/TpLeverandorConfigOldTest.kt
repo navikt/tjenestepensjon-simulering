@@ -6,14 +6,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 
-internal class TpLeverandorConfigTest {
+internal class TpLeverandorConfigOldTest {
 
-    private val tpLeverandorConfig: TpLeverandorConfig = TpLeverandorConfig()
+    private val tpLeverandorConfigOld: TpLeverandorConfigOld = TpLeverandorConfigOld()
 
     @Test
     fun `Should create list from delimited string`() {
-        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com,SOAP|anotherLeverandor,http://www.another.com,REST")
-        val tpLeverandorList: List<TpLeverandor> = tpLeverandorConfig.tpLeverandorList()
+        tpLeverandorConfigOld.setLeverandorUrlMap("leverandor,http://www.leverandor.com,SOAP|anotherLeverandor,http://www.another.com,REST")
+        val tpLeverandorList: List<TpLeverandor> = tpLeverandorConfigOld.tpLeverandorList()
         val leverandor = tpLeverandorList.firstOrNull { l: TpLeverandor -> l.name.equals("leverandor", true) }
         val another = tpLeverandorList.firstOrNull { l: TpLeverandor -> l.name.equals("anotherLeverandor", true) }
         assertEquals("leverandor", leverandor?.name)
@@ -24,7 +24,7 @@ internal class TpLeverandorConfigTest {
 
     @Test
     fun `Fails when missing provider details`() {
-        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com")
-        assertThrows<AssertionError> { tpLeverandorConfig.tpLeverandorList() }
+        tpLeverandorConfigOld.setLeverandorUrlMap("leverandor,http://www.leverandor.com")
+        assertThrows<AssertionError> { tpLeverandorConfigOld.tpLeverandorList() }
     }
 }

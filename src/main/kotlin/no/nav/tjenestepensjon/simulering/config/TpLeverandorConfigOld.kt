@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class TpLeverandorConfig {
+class TpLeverandorConfigOld {
 
     private lateinit var leverandorUrlMap: String
     @Value("\${TP_LEVERANDOR_URL_MAP}")

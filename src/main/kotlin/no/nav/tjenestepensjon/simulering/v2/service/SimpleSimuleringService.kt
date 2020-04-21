@@ -6,11 +6,13 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_OK
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
+import no.nav.tjenestepensjon.simulering.config.TpLeverandorConfigOld
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v2.TjenestepensjonsimuleringEndpointRouter
+import no.nav.tjenestepensjon.simulering.v2.config.TpLeverandorConfig
 import no.nav.tjenestepensjon.simulering.v2.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpOpptjeningsPeriodeFoundException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpParticipantFoundInMapForVersion2
@@ -29,7 +31,8 @@ class SimpleSimuleringService(
         private val tpLeverandorList: List<TpLeverandor>,
         private val tpRegisterConsumer: TpRegisterConsumer,
         private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
-        private val metrics: AppMetrics
+        private val metrics: AppMetrics,
+        private val tpLeverandorConfig: TpLeverandorConfig
 ) : SimuleringService {
 
     override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest): SimulerOffentligTjenestepensjonResponse {
@@ -43,6 +46,9 @@ class SimpleSimuleringService(
                 ("KLP" to TpLeverandor("KLP","https://partner-gw-test2.klp.no/api/pensjonsimulering", null, true)),
                 ("SPK" to TpLeverandor("SPK","https://partner-gw-test2.klp.no/api/pensjonsimulering", null, false))
         )
+        val test = tpLeverandorConfig.tpLeverandorList2()
+
+        LOG.error("TEst: {}", test)
 
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
