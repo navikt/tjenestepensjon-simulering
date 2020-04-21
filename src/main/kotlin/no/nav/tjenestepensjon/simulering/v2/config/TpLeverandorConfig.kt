@@ -10,6 +10,8 @@ class TpLeverandorConfig {
 
     private lateinit var leverandorUrlMap: String
 
+    private val maskinportenIntegrasjon = "maskinportenIntegrasjon"
+
     @Value("\${TP_LEVERANDOR_URL_MAP}")
     fun setLeverandorUrlMap(leverandorUrlMap: String) {
         this.leverandorUrlMap = leverandorUrlMap
@@ -17,6 +19,7 @@ class TpLeverandorConfig {
 
     @Bean
     fun tpLeverandorList2() = createListFromEnv(leverandorUrlMap)
+
 
     /**
      * Parse env variable to generate a list of TpLeverandor.
@@ -33,7 +36,7 @@ class TpLeverandorConfig {
         val details = provider.split(',')
         if (details.size == 2) { // not having maskinporten integrasion
             return TpLeverandor(details[0], details[1], null)
-        } else if(details.size == 3 && details[2].equals("maskinportenIntegrasjon")) {
+        } else if(details.size == 3 && details[2].equals(maskinportenIntegrasjon)) {
             return TpLeverandor(details[0], details[1], null, true)
         }
 
