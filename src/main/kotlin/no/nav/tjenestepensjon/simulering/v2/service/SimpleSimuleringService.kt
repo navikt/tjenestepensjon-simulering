@@ -42,26 +42,20 @@ class SimpleSimuleringService(
 
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
 
-        val version2Map = mapOf(
-                ("KLP" to TpLeverandor("KLP","https://partner-gw-test2.klp.no/api/pensjonsimulering", null, true)),
-                ("SPK" to TpLeverandor("SPK","https://partner-gw-test2.klp.no/api/pensjonsimulering", null, false))
-        )
         val test = tpLeverandorConfig.tpLeverandorList2()
 
-        LOG.error("TEst: {}", test)
+        LOG.error("tpLeverandorList2: {}", tpLeverandorList2)
 
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
                 .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
                 .let { tpOrdning ->
-                    if (version2Map.containsKey(tpOrdningAndLeverandorMap.getValue(tpOrdning).name)) {
-                        throw NoTpParticipantFoundInMapForVersion2("Unable to find Tp participant in version 2 ")
-                    }
+                    val tpLeverandor = test.firstOrNull { it.name.equals(tpOrdningAndLeverandorMap.getValue(tpOrdning).name) }
 
                     simuleringEndPointRouter.simulerPensjon(
                             request = request,
                             tpOrdning = tpOrdning,
-                            tpLeverandor = version2Map.getValue(tpOrdningAndLeverandorMap.getValue(tpOrdning).name),
+                            tpLeverandor = tpLeverandor ?: throw NoTpParticipantFoundInMapForVersion2("Unable to find Tp participant in version 2 "),
                             tpOrdningOpptjeningsperiodeMap = opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                     )
                 }.also { response ->

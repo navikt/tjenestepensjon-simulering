@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration
 class TpLeverandorConfigOld {
 
     private lateinit var leverandorUrlMap: String
-    @Value("\${TP_LEVERANDOR_URL_MAP}")
+    @Value("\${TP_LEVERANDOR_URL_MAP_OLD}")
     fun setLeverandorUrlMap(leverandorUrlMap: String) {
         this.leverandorUrlMap = leverandorUrlMap
     }
