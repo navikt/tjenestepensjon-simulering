@@ -6,7 +6,6 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_OK
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.config.TpLeverandorConfigOld
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
@@ -42,15 +41,15 @@ class SimpleSimuleringService(
 
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
 
-        val test = tpLeverandorConfig.tpLeverandorList2()
+        val tpLeverandorListV2 = tpLeverandorConfig.tpLeverandorList2()
 
-        LOG.error("tpLeverandorList2: {}", tpLeverandorList2)
+        LOG.error("tpLeverandorList2: {}", tpLeverandorListV2)
 
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
                 .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
                 .let { tpOrdning ->
-                    val tpLeverandor = test.firstOrNull { it.name.equals(tpOrdningAndLeverandorMap.getValue(tpOrdning).name) }
+                    val tpLeverandor = tpLeverandorListV2.firstOrNull { it.name.equals(tpOrdningAndLeverandorMap.getValue(tpOrdning).name) }
 
                     simuleringEndPointRouter.simulerPensjon(
                             request = request,
