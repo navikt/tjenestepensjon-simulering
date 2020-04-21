@@ -33,10 +33,10 @@ class TpLeverandorConfig {
         val details = provider.split(',')
         if (details.size == 2) { // not having maskinporten integrasion
             return TpLeverandor(details[0], details[1], null)
-        } else if(details.size == 3) {
+        } else if(details.size == 3 && details[2].equals("maskinportenIntegrasjon")) {
             return TpLeverandor(details[0], details[1], null, true)
         }
 
-        throw AssertionError("provider does not contain the correct synta: ${provider}")
+        throw AssertionError("provider does not contain the correct syntax: ${provider}")
     }
 }

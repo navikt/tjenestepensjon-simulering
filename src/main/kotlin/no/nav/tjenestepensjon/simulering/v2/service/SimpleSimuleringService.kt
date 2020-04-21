@@ -43,8 +43,6 @@ class SimpleSimuleringService(
 
         val tpLeverandorListV2 = tpLeverandorConfig.tpLeverandorList2()
 
-        LOG.error("tpLeverandorList2: {}", tpLeverandorListV2)
-
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
                 .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
