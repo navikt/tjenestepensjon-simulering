@@ -11,6 +11,8 @@ import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringService
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
+import no.nav.tjenestepensjon.simulering.v2.models.domain.Utbetalingsperiode
+import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus.*
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST
 import org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import java.time.LocalDate
 
 @RestController
 class SimuleringEndpoint(
@@ -52,6 +55,26 @@ class SimuleringEndpoint(
                 e.message to INTERNAL_SERVER_ERROR
             } catch (e: Throwable) {
                 LOG.info("Caught exception in version 1,  trying version 2.", e)
+
+                ResponseEntity(
+                        SimulerOffentligTjenestepensjonResponse(
+                                tpnr = "bogus",
+                                navnOrdning = "bogus",
+                                inkluderteOrdningeListe = listOf("bogus"),
+                                leverandorUrl = "bogus",
+                                utbetalingsperiodeListe = listOf(
+                                        Utbetalingsperiode(
+                                                uttaksgrad = 0,
+                                                arligUtbetaling = 0.0,
+                                                datoFom = LocalDate.of(1901, 1, 1),
+                                                datoTom = LocalDate.of(1901, 1, 31),
+                                                ytelsekode = "bogus"
+                                        ),
+                                        null
+                                )
+                        )
+                        , OK)
+
                 service2.simulerOffentligTjenestepensjon(
                         objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
                 )
