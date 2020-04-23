@@ -56,7 +56,7 @@ class SimuleringEndpoint(
             } catch (e: Throwable) {
                 LOG.info("Caught exception in version 1,  trying version 2.", e)
 
-                ResponseEntity(
+                return ResponseEntity(
                         SimulerOffentligTjenestepensjonResponse(
                                 tpnr = "bogus",
                                 navnOrdning = "bogus",
@@ -74,12 +74,6 @@ class SimuleringEndpoint(
                                 )
                         )
                         , OK)
-
-                service2.simulerOffentligTjenestepensjon(
-                        objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
-                )
-            }.let {
-                LOG.info("Processing nav-call-id: {})")
                 LOG.debug("Response: {}", getHeaderFromRequestContext(NAV_CALL_ID), it)
                 ResponseEntity(it, OK)
             }
