@@ -43,19 +43,10 @@ class SimuleringEndpoint(
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
         return try {
-            try {
-                service.simulerOffentligTjenestepensjon(
-                        objectMapper.readValue(body, SimulerPensjonRequest::class.java)
-                )
-            } catch (e: WebClientResponseException) {
-                LOG.error("Caught WebClientResponseException in version 1, returns 500 error code.", e)
-                e.message to INTERNAL_SERVER_ERROR
-            } catch (e: Throwable) {
-                LOG.info("Caught exception in version 1,  trying version 2.", e)
-                service2.simulerOffentligTjenestepensjon(
-                        objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
-                )
-            }.let {
+            service2.simulerOffentligTjenestepensjon(
+                    objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
+            )
+            .let {
                 LOG.info("Processing nav-call-id: {})")
                 LOG.debug("Response: {}", getHeaderFromRequestContext(NAV_CALL_ID), it)
                 ResponseEntity(it, OK)

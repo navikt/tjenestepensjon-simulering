@@ -10,12 +10,14 @@ import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
 import no.nav.tjenestepensjon.simulering.v2.TjenestepensjonsimuleringEndpointRouter
 import no.nav.tjenestepensjon.simulering.v2.config.TpLeverandorConfig
 import no.nav.tjenestepensjon.simulering.v2.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpOpptjeningsPeriodeFoundException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpParticipantFoundInMapForVersion2
 import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
+import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import org.slf4j.LoggerFactory
@@ -35,33 +37,14 @@ class SimpleSimuleringService(
 ) : SimuleringService {
 
     override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest): SimulerOffentligTjenestepensjonResponse {
+        val test: Map<TPOrdning, List<Opptjeningsperiode>> = mapOf()
+        return simuleringEndPointRouter.simulerPensjon(
+                request = request,
+                tpOrdning = TPOrdning("bogus", "bogus"),
+                tpLeverandor = TpLeverandor("KLP", "https://partner-gw-test2.klp.no/api/pensjonsimulering", null, true),
+                tpOrdningOpptjeningsperiodeMap = test
+        )
 
-        val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(request.fnr)
-                .let(::getTpLeverandorer)
-
-        val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
-
-        /* this temporally because we need to use the v1 to get tpordning list to get opptjeningsperiode, this is until opptjeningsperiode have been implimented*/
-        val tpLeverandorList = tpLeverandorConfig.tpLeverandorList()
-
-        return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
-                .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
-                .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
-                .let { tpOrdning ->
-                    val tpLeverandor = tpLeverandorList.firstOrNull { it.name.equals(tpOrdningAndLeverandorMap.getValue(tpOrdning).name) }
-
-                    simuleringEndPointRouter.simulerPensjon(
-                            request = request,
-                            tpOrdning = tpOrdning,
-                            tpLeverandor = tpLeverandor ?: throw NoTpParticipantFoundInMapForVersion2("Unable to find Tp participant in version 2 "),
-                            tpOrdningOpptjeningsperiodeMap = opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
-                    )
-                }.also { response ->
-                    addResponseInfoWhenSimulert(
-                            response,
-                            opptjeningsperiodeResponse
-                    )
-                }
     }
 
     private fun addResponseInfoWhenSimulert(
