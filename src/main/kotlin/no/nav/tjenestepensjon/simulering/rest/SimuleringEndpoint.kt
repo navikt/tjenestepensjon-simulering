@@ -55,25 +55,24 @@ class SimuleringEndpoint(
                 e.message to INTERNAL_SERVER_ERROR
             } catch (e: Throwable) {
                 LOG.info("Caught exception in version 1,  trying version 2.", e)
-
-                return ResponseEntity(
-                        SimulerOffentligTjenestepensjonResponse(
-                                tpnr = "bogus",
-                                navnOrdning = "bogus",
-                                inkluderteOrdningeListe = listOf("bogus"),
-                                leverandorUrl = "bogus",
-                                utbetalingsperiodeListe = listOf(
-                                        Utbetalingsperiode(
-                                                uttaksgrad = 0,
-                                                arligUtbetaling = 0.0,
-                                                datoFom = LocalDate.of(1901, 1, 1),
-                                                datoTom = LocalDate.of(1901, 1, 31),
-                                                ytelsekode = "bogus"
-                                        ),
-                                        null
-                                )
+                SimulerOffentligTjenestepensjonResponse(
+                        tpnr = "bogus",
+                        navnOrdning = "bogus",
+                        inkluderteOrdningeListe = listOf("bogus"),
+                        leverandorUrl = "bogus",
+                        utbetalingsperiodeListe = listOf(
+                                Utbetalingsperiode(
+                                        uttaksgrad = 0,
+                                        arligUtbetaling = 0.0,
+                                        datoFom = LocalDate.of(1901, 1, 1),
+                                        datoTom = LocalDate.of(1901, 1, 31),
+                                        ytelsekode = "bogus"
+                                ),
+                                null
                         )
-                        , OK)
+                )
+            }.let {
+                LOG.info("Processing nav-call-id: {})")
                 LOG.debug("Response: {}", getHeaderFromRequestContext(NAV_CALL_ID), it)
                 ResponseEntity(it, OK)
             }
