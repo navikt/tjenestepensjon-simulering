@@ -3,7 +3,7 @@ package no.nav.tjenestepensjon.simulering.v1
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_TIME
 import no.nav.tjenestepensjon.simulering.exceptions.MissingEndpointServiceException
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
@@ -25,7 +25,7 @@ class TjenestepensjonsimuleringEndpointRouterOld(
         private val metrics: AppMetrics
 ) {
     fun getStillingsprosenter(fnr: FNR, tpOrdning: TPOrdning, tpLeverandor: TpLeverandor): List<Stillingsprosent> {
-        metrics.incrementCounter(tpLeverandor.name, AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS)
+        metrics.incrementCounter(tpLeverandor.name, AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_CALLS)
         val startTime = metrics.startTime()
         LOG.info("{} getting stillingsprosenter from: {}", Thread.currentThread().name, tpLeverandor)
 
@@ -36,7 +36,7 @@ class TjenestepensjonsimuleringEndpointRouterOld(
         }.getStillingsprosenter(fnr, tpOrdning, tpLeverandor)
 
         val elapsed = metrics.elapsedSince(startTime)
-        metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_STILLINGSPROSENT_TIME, elapsed.toDouble())
+        metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_OPPTJENINGSPERIODE_TIME, elapsed.toDouble())
         LOG.info("Retrieved stillingsprosenter from: {} in: {} ms", tpLeverandor, elapsed)
         return stillingsprosentList
     }

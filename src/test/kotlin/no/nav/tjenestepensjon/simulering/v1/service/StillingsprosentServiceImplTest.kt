@@ -2,8 +2,8 @@ package no.nav.tjenestepensjon.simulering.v1.service
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_CALLS
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_TIME
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
@@ -63,8 +63,8 @@ internal class StillingsprosentServiceImplTest {
     fun `Handles metrics`() {
         Mockito.`when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
         stillingsprosentService.getStillingsprosentListe(fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", "url", SOAP)))
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_STILLINGSPROSENT_CALLS))
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_STILLINGSPROSENT_TIME), anyNonNull())
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_OPPTJENINGSPERIODE_CALLS))
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_OPPTJENINGSPERIODE_TIME), anyNonNull())
     }
 
     @Throws(Exception::class)

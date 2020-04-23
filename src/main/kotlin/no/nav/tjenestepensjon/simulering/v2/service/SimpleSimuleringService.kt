@@ -41,13 +41,14 @@ class SimpleSimuleringService(
 
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
 
-        val tpLeverandorListV2 = tpLeverandorConfig.tpLeverandorList2()
+        /* this temporally because we need to use the v1 to get tpordning list to get opptjeningsperiode, this is until opptjeningsperiode have been implimented*/
+        val tpLeverandorList = tpLeverandorConfig.tpLeverandorList()
 
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
                 .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
                 .let { tpOrdning ->
-                    val tpLeverandor = tpLeverandorListV2.firstOrNull { it.name.equals(tpOrdningAndLeverandorMap.getValue(tpOrdning).name) }
+                    val tpLeverandor = tpLeverandorList.firstOrNull { it.name.equals(tpOrdningAndLeverandorMap.getValue(tpOrdning).name) }
 
                     simuleringEndPointRouter.simulerPensjon(
                             request = request,

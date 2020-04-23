@@ -3,8 +3,8 @@ package no.nav.tjenestepensjon.simulering.v1
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_CALLS
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_TIME
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
@@ -76,8 +76,8 @@ internal class TjenestepensjonsimuleringEndpointRouterOldTest {
     fun `Call shall return stillingsprosenter with soap`() {
         Mockito.`when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(stillingsprosenter)
         val result: List<Stillingsprosent> = simuleringEndpointRouter.getStillingsprosenter(fnr, tpOrdning, tpSoapLeverandor)
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpSoapLeverandor.name), safeEq(TP_TOTAL_STILLINGSPROSENT_CALLS))
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpSoapLeverandor.name), safeEq(TP_TOTAL_STILLINGSPROSENT_TIME), anyNonNull())
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpSoapLeverandor.name), safeEq(TP_TOTAL_OPPTJENINGSPERIODE_CALLS))
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpSoapLeverandor.name), safeEq(TP_TOTAL_OPPTJENINGSPERIODE_TIME), anyNonNull())
         assertStillingsprosenter(result)
     }
 
@@ -85,8 +85,8 @@ internal class TjenestepensjonsimuleringEndpointRouterOldTest {
     fun `Call shall return stillingsprosenter with rest`() {
         Mockito.`when`(restClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(stillingsprosenter)
         val result: List<Stillingsprosent> = simuleringEndpointRouter.getStillingsprosenter(fnr, tpOrdning, tpRestLeverandor)
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_STILLINGSPROSENT_CALLS))
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_STILLINGSPROSENT_TIME), anyNonNull())
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_OPPTJENINGSPERIODE_CALLS))
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_OPPTJENINGSPERIODE_TIME), anyNonNull())
         assertStillingsprosenter(result)
     }
 

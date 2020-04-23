@@ -11,14 +11,14 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_OK
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_CALLS
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_LATEST_SIMULERING_TIME
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_LATEST_STILLINGSPROSENT_TIME
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_LATEST_OPPTJENINGSPERIODE_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_CALLS
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_TIME
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import org.springframework.stereotype.Component
 
@@ -34,8 +34,8 @@ class AppMetrics(
             tpLeverandorList.associateBy(TpLeverandor::name).mapValues { (_, tpLeverandor) -> metricsFor(tpLeverandor) }.toMutableMap()
                     .also {
                         it[APP_NAME] = mutableMapOf(
-                                APP_TOTAL_STILLINGSPROSENT_CALLS to createCounter(APP_TOTAL_STILLINGSPROSENT_CALLS, "Totalt antall kall mot stillingsprosent"),
-                                APP_TOTAL_STILLINGSPROSENT_TIME to createCounter(APP_TOTAL_STILLINGSPROSENT_TIME, "Akkumulert responstid for alle kall mot stillingsprosent"),
+                                APP_TOTAL_OPPTJENINGSPERIODE_CALLS to createCounter(APP_TOTAL_OPPTJENINGSPERIODE_CALLS, "Totalt antall kall mot opptjeningsperiode"),
+                                APP_TOTAL_OPPTJENINGSPERIODE_TIME to createCounter(APP_TOTAL_OPPTJENINGSPERIODE_TIME, "Akkumulert responstid for alle kall mot opptjeningsperiode"),
                                 APP_TOTAL_SIMULERING_CALLS to createCounter(APP_TOTAL_SIMULERING_CALLS, "Totalt antall kall til endepunkt for simulering"),
                                 APP_TOTAL_SIMULERING_TIME to createCounter(APP_TOTAL_SIMULERING_TIME, "Akkumulert responstid for simulering"),
                                 APP_TOTAL_SIMULERING_OK to createCounter(APP_TOTAL_SIMULERING_OK, "Totalt antall fullstendige simuleringer"),
@@ -46,9 +46,9 @@ class AppMetrics(
                     }
 
     private fun metricsFor(tpLeverandor: TpLeverandor) = mutableMapOf(
-            TP_TOTAL_STILLINGSPROSENT_CALLS to createCounter(TP_TOTAL_STILLINGSPROSENT_CALLS + tpLeverandor.name, "Totalt antall kall mot stillingsprosent for aktuell tp-leverandør"),
-            TP_TOTAL_STILLINGSPROSENT_TIME to createCounter(TP_TOTAL_STILLINGSPROSENT_TIME + tpLeverandor.name, "Akkumulert responstid for aktuell tp-leverandør"),
-            TP_LATEST_STILLINGSPROSENT_TIME to createGauge(tpLeverandor.name, TP_LATEST_STILLINGSPROSENT_TIME),
+            TP_TOTAL_OPPTJENINGSPERIODE_CALLS to createCounter(TP_TOTAL_OPPTJENINGSPERIODE_CALLS + tpLeverandor.name, "Totalt antall kall mot opptjeningsperiode for aktuell tp-leverandør"),
+            TP_TOTAL_OPPTJENINGSPERIODE_TIME to createCounter(TP_TOTAL_OPPTJENINGSPERIODE_TIME + tpLeverandor.name, "Akkumulert responstid for aktuell tp-leverandør"),
+            TP_LATEST_OPPTJENINGSPERIODE_TIME to createGauge(tpLeverandor.name, TP_LATEST_OPPTJENINGSPERIODE_TIME),
             TP_TOTAL_SIMULERING_CALLS to createCounter(TP_TOTAL_SIMULERING_CALLS + tpLeverandor.name, "Totalt antall kall til simulering hos aktuell tp-leverandør"),
             TP_TOTAL_SIMULERING_TIME to createCounter(TP_TOTAL_SIMULERING_TIME + tpLeverandor.name, "Akkumulert responstid for simulering hos aktuell tp-leverandør"),
             TP_LATEST_SIMULERING_TIME to createGauge(tpLeverandor.name, TP_LATEST_SIMULERING_TIME)
@@ -68,8 +68,8 @@ class AppMetrics(
     }
 
     fun incrementCounter(prefix: String, metric: String, amount: Double) {
-        if (TP_TOTAL_STILLINGSPROSENT_TIME.equals(metric, ignoreCase = true)) {
-            gaugeValues[prefix]!![TP_LATEST_STILLINGSPROSENT_TIME] = amount
+        if (TP_TOTAL_OPPTJENINGSPERIODE_TIME.equals(metric, ignoreCase = true)) {
+            gaugeValues[prefix]!![TP_LATEST_OPPTJENINGSPERIODE_TIME] = amount
         } else if (TP_TOTAL_SIMULERING_TIME.equals(metric, ignoreCase = true)) {
             gaugeValues[prefix]!![TP_LATEST_SIMULERING_TIME] = amount
         }
@@ -94,11 +94,11 @@ class AppMetrics(
 
     object Metrics {
         const val APP_NAME = "tjenestepensjon_simulering"
-        const val TP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_tp_leverandor_calls_" // todo versioning here!
-        const val TP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_tp_leverandor_time_" // todo versioning here
-        const val TP_LATEST_STILLINGSPROSENT_TIME = APP_NAME + "_tp_leverandor_time_latest_" // todo versioning here
-        const val APP_TOTAL_STILLINGSPROSENT_CALLS = APP_NAME + "_app_stillingsprosent_calls" // todo versioning here
-        const val APP_TOTAL_STILLINGSPROSENT_TIME = APP_NAME + "_app_stillingsprosent_time" // todo versioning here
+        const val TP_TOTAL_OPPTJENINGSPERIODE_CALLS = APP_NAME + "_tp_leverandor_calls_"
+        const val TP_TOTAL_OPPTJENINGSPERIODE_TIME = APP_NAME + "_tp_leverandor_time_"
+        const val TP_LATEST_OPPTJENINGSPERIODE_TIME = APP_NAME + "_tp_leverandor_time_latest_"
+        const val APP_TOTAL_OPPTJENINGSPERIODE_CALLS = APP_NAME + "_app_opptjeningsperiode_calls"
+        const val APP_TOTAL_OPPTJENINGSPERIODE_TIME = APP_NAME + "_app_opptjeningsperiode_time"
         const val APP_TOTAL_SIMULERING_CALLS = APP_NAME + "_app_simulering_calls"
         const val APP_TOTAL_SIMULERING_TIME = APP_NAME + "_app_simulering_time"
         const val APP_TOTAL_SIMULERING_OK = APP_NAME + "_app_simulering_ok"

@@ -13,7 +13,7 @@ internal class TpLeverandorConfigOldTest {
     @Test
     fun `Should create list from delimited string`() {
         tpLeverandorConfigOld.setLeverandorUrlMap("leverandor,http://www.leverandor.com,SOAP|anotherLeverandor,http://www.another.com,REST")
-        val tpLeverandorList: List<TpLeverandor> = tpLeverandorConfigOld.tpLeverandorList()
+        val tpLeverandorList: List<TpLeverandor> = tpLeverandorConfigOld.tpLeverandorListOld()
         val leverandor = tpLeverandorList.firstOrNull { l: TpLeverandor -> l.name.equals("leverandor", true) }
         val another = tpLeverandorList.firstOrNull { l: TpLeverandor -> l.name.equals("anotherLeverandor", true) }
         assertEquals("leverandor", leverandor?.name)
@@ -25,6 +25,6 @@ internal class TpLeverandorConfigOldTest {
     @Test
     fun `Fails when missing provider details`() {
         tpLeverandorConfigOld.setLeverandorUrlMap("leverandor,http://www.leverandor.com")
-        assertThrows<AssertionError> { tpLeverandorConfigOld.tpLeverandorList() }
+        assertThrows<AssertionError> { tpLeverandorConfigOld.tpLeverandorListOld() }
     }
 }

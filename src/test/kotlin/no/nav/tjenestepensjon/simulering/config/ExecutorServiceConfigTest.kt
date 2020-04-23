@@ -20,7 +20,7 @@ internal class ExecutorServiceConfigTest {
 
     @Test
     fun `Create one thread per provider`() {
-        Mockito.`when`(tpLeverandorConfigOld.tpLeverandorList())
+        Mockito.`when`(tpLeverandorConfigOld.tpLeverandorListOld())
                 .thenReturn(listOf(TpLeverandor("lev1", "url1", SOAP), TpLeverandor("lev2", "url2", SOAP)))
         val executorService = executorServiceConfig.taskExecutor(tpLeverandorConfigOld) as ThreadPoolExecutor
         assertEquals(2, executorService.corePoolSize)

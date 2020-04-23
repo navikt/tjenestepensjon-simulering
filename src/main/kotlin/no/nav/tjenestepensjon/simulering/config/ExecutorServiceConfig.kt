@@ -9,5 +9,5 @@ import java.util.concurrent.Executors
 class ExecutorServiceConfig {
     @Bean
     fun taskExecutor(tpLeverandorConfigOld: TpLeverandorConfigOld): ExecutorService =
-            Executors.newFixedThreadPool(tpLeverandorConfigOld.tpLeverandorList().size)
+            Executors.newFixedThreadPool(tpLeverandorConfigOld.tpLeverandorListOld().size)
 }

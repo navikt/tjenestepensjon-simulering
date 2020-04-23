@@ -23,12 +23,12 @@ class StillingsprosentServiceImpl(
 
     override fun getStillingsprosentListe(fnr: FNR, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap): StillingsprosentResponse {
         val callableMap = toCallableMap(fnr, tpOrdningAndLeverandorMap)
-        metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS)
+        metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_CALLS)
         val startTime = metrics.startTime()
         val asyncResponse = asyncExecutor.executeAsync(callableMap)
         val elapsed = metrics.elapsedSince(startTime)
         LOG.info("Retrieved all stillingsprosenter in: {} ms", elapsed)
-        metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME, elapsed.toDouble())
+        metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_TIME, elapsed.toDouble())
         return StillingsprosentResponse(asyncResponse.resultMap, asyncResponse.exceptions)
     }
 

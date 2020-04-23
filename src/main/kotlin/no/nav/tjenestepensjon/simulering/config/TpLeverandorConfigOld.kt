@@ -16,7 +16,7 @@ class TpLeverandorConfigOld {
     }
 
     @Bean
-    fun tpLeverandorList() = createListFromEnv(leverandorUrlMap)
+    fun tpLeverandorListOld() = createListFromEnv(leverandorUrlMap)
 
     /**
      * Parse env variable to generate a list of TpLeverandor.

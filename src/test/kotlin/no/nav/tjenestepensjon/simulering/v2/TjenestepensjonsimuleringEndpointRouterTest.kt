@@ -1,10 +1,8 @@
 package no.nav.tjenestepensjon.simulering.v2
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_CALLS
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_TIME
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_CALLS
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_STILLINGSPROSENT_TIME
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_CALLS
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_TIME
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
@@ -84,8 +82,8 @@ internal class TjenestepensjonsimuleringEndpointRouterTest {
                 tpRestLeverandor
         )
 
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_STILLINGSPROSENT_CALLS))
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_STILLINGSPROSENT_TIME), anyNonNull())
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_OPPTJENINGSPERIODE_CALLS))
+        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_OPPTJENINGSPERIODE_TIME), anyNonNull())
         assertOpptjeningsperiodeList(result)
     }
 

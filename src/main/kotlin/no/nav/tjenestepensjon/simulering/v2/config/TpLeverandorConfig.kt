@@ -18,7 +18,7 @@ class TpLeverandorConfig {
     }
 
     @Bean
-    fun tpLeverandorList2() = createListFromEnv(leverandorUrlMap)
+    fun tpLeverandorList() = createListFromEnv(leverandorUrlMap)
 
 
     /**
