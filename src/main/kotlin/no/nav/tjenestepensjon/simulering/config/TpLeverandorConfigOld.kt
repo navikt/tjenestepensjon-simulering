@@ -15,7 +15,7 @@ class TpLeverandorConfigOld {
         this.leverandorUrlMap = leverandorUrlMap
     }
 
-    @Bean
+    @Bean("tpLeverandorOld")
     fun tpLeverandorListOld() = createListFromEnv(leverandorUrlMap)
 
     /**

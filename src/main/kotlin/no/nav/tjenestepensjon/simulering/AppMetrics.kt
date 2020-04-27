@@ -20,12 +20,13 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_SIMULERING_
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_TIME
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 
 @Component
 class AppMetrics(
         private val meterRegistry: MeterRegistry,
-        tpLeverandorList: List<TpLeverandor>
+        @Qualifier("tpLeverandorOld") tpLeverandorList: List<TpLeverandor>
 ) {
     private val gaugeValues = mutableMapOf<String, MutableMap<String, Number>>()
     private val metrics: MutableMap<String, MutableMap<String, Meter>> = generateMetrics(tpLeverandorList)

@@ -19,6 +19,7 @@ import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallabl
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.util.concurrent.ExecutionException
 
@@ -27,7 +28,7 @@ class SimpleSimuleringService(
         private val simuleringEndPointRouter: TjenestepensjonsimuleringEndpointRouter,
         private val opptjeningsperiodeService: OpptjeningsperiodeService,
         private val tpConfigConsumer: TpConfigConsumer,
-        private val tpLeverandorList: List<TpLeverandor>,
+        @Qualifier("tpLeverandorOld") private val tpLeverandorList: List<TpLeverandor>,
         private val tpRegisterConsumer: TpRegisterConsumer,
         private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
         private val metrics: AppMetrics,
@@ -35,10 +36,8 @@ class SimpleSimuleringService(
 ) : SimuleringService {
 
     override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest): SimulerOffentligTjenestepensjonResponse {
-
         val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(request.fnr)
                 .let(::getTpLeverandorer)
-
 
         LOG.error("tpOrdningAndLeverandorMap i v2: {}", tpOrdningAndLeverandorMap)
 
