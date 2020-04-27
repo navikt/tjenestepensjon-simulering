@@ -39,6 +39,9 @@ class SimpleSimuleringService(
         val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(request.fnr)
                 .let(::getTpLeverandorer)
 
+
+        LOG.error("tpOrdningAndLeverandorMap i v2: {}", tpOrdningAndLeverandorMap)
+
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
 
         /* this temporally because we need to use the v1 to get tpordning list to get opptjeningsperiode, this is until opptjeningsperiode have been implimented*/
