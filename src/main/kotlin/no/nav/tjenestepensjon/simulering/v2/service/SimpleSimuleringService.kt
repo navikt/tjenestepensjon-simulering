@@ -40,7 +40,7 @@ class SimpleSimuleringService(
                 .let(::getTpLeverandorer)
 
 
-        LOG.error("tpOrdningAndLeverandorMap i v2: {}", tpOrdningAndLeverandorMap)
+        LOG.debug("tpOrdningAndLeverandorMap i v2: {}", tpOrdningAndLeverandorMap)
 
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
 
