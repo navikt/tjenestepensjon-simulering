@@ -60,7 +60,7 @@ class MaskinportenTokenProvider {
 
     fun getKeys(keys: String) = objectMapper.readValue<Keys>(keys)
 
-    val header_target_url = "target-url"
+    val header_target_url = "target"
     val header_x_nav_apiKey="x-nav-apiKey"
     val header_content_type="content-type"
 
