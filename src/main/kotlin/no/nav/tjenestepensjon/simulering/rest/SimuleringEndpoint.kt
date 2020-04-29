@@ -43,23 +43,11 @@ class SimuleringEndpoint(
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
         return try {
-            try {
-                service.simulerOffentligTjenestepensjon(
-                        objectMapper.readValue(body, SimulerPensjonRequest::class.java)
-                )
-            } catch (e: WebClientResponseException) {
-                LOG.error("Caught WebClientResponseException in version 1, returns 500 error code.", e)
-                e.message to INTERNAL_SERVER_ERROR
-            } catch (e: Throwable) {
-                LOG.info("Caught exception in version 1,  trying version 2.")
-                service2.simulerOffentligTjenestepensjon(
-                        objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
-                )
-            }.let {
-                LOG.info("Processing nav-call-id: {})")
-                LOG.debug("Response: {}", getHeaderFromRequestContext(NAV_CALL_ID), it)
-                ResponseEntity(it, OK)
-            }
+            ResponseEntity(
+                    service2.simulerOffentligTjenestepensjon(
+                            objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java)
+                    ),
+                    OK)
         } catch (e: Throwable) {
             LOG.error("Unable to handle request", e)
             when (e) {
@@ -86,6 +74,7 @@ class SimuleringEndpoint(
 
     companion object {
         const val NAV_CALL_ID = "nav-call-id"
+
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val LOG = LoggerFactory.getLogger(javaClass.declaringClass)
     }

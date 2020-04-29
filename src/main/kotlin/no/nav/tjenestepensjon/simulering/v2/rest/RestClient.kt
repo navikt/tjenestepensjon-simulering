@@ -49,9 +49,10 @@ class RestClient {
             tpLeverandor: TpLeverandor,
             tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
     ): SimulerOffentligTjenestepensjonResponse =
-            webClient.get()
+            webClient.post()
                     .uri(peproxyUrl)
                     .header(peproxyHttpheadersTargetUrl, tpLeverandor.url)
+                    .header("x-application-id", "NAV")
                     .header(peproxyHttpheadersTargetAuthorization, "Bearer " + if (tpLeverandor.maskinportenIntegrasjon!!) tokenClient.maskinportToken else tokenClient.oidcAccessToken)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<SimulerOffentligTjenestepensjonResponse>() {})
