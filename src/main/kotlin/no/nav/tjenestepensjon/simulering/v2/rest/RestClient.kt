@@ -54,6 +54,7 @@ class RestClient {
                     .header(peproxyHttpheadersTargetUrl, tpLeverandor.url)
                     .header("x-application-id", "NAV")
                     .header(peproxyHttpheadersTargetAuthorization, "Bearer " + if (tpLeverandor.maskinportenIntegrasjon!!) tokenClient.maskinportToken else tokenClient.oidcAccessToken)
+                    .bodyValue(request)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<SimulerOffentligTjenestepensjonResponse>() {})
                     .block() ?: SimulerOffentligTjenestepensjonResponse(
