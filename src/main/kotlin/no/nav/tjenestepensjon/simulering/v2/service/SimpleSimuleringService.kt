@@ -10,6 +10,7 @@ import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
 import no.nav.tjenestepensjon.simulering.v2.TjenestepensjonsimuleringEndpointRouter
 import no.nav.tjenestepensjon.simulering.v2.config.TpLeverandorConfig
 import no.nav.tjenestepensjon.simulering.v2.consumer.FindTpLeverandorCallable
@@ -17,6 +18,7 @@ import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpOpptjeningsPeriodeFou
 import no.nav.tjenestepensjon.simulering.v2.exceptions.NoTpParticipantFoundInMapForVersion2
 import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
+import no.nav.tjenestepensjon.simulering.v2.models.request.TpForhold
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -46,8 +48,11 @@ class SimpleSimuleringService(
         /* this temporally because we need to use the v1 to get tpordning list to get opptjeningsperiode, this is until opptjeningsperiode have been implimented*/
         val tpLeverandorList = tpLeverandorConfig.tpLeverandorList()
 
+        this.buildTpForhold(opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap)
+
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
+                .also{request.tpForholdListe = this.buildTpForhold(it)}
                 .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
                 .let { tpOrdning ->
                     val tpLeverandor = tpLeverandorList.firstOrNull { it.name.equals(tpOrdningAndLeverandorMap.getValue(tpOrdning).name) }
@@ -55,8 +60,7 @@ class SimpleSimuleringService(
                     simuleringEndPointRouter.simulerPensjon(
                             request = request,
                             tpOrdning = tpOrdning,
-                            tpLeverandor = tpLeverandor ?: throw NoTpParticipantFoundInMapForVersion2("Unable to find Tp participant in version 2 "),
-                            tpOrdningOpptjeningsperiodeMap = opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
+                            tpLeverandor = tpLeverandor ?: throw NoTpParticipantFoundInMapForVersion2("Unable to find Tp participant in version 2 ")
                     )
                 }.also { response ->
                     addResponseInfoWhenSimulert(
@@ -65,6 +69,14 @@ class SimpleSimuleringService(
                     )
                 }
     }
+
+    private fun buildTpForhold(tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap) = tpOrdningOpptjeningsperiodeMap
+        .map{ entry ->
+            TpForhold(
+                    entry.key.tpId,
+                    entry.value
+            )
+        }
 
     private fun addResponseInfoWhenSimulert(
             response: SimulerOffentligTjenestepensjonResponse,

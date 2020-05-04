@@ -19,12 +19,12 @@ class TjenestepensjonsimuleringEndpointRouter(
         private val restClient: RestClient,
         private val metrics: AppMetrics
 ) {
-    fun getOpptjeningsperiodeListe(fnr: FNR, tpOrdning: TPOrdning, tpLeverandor: TpLeverandor): List<Opptjeningsperiode> {
+    fun getOpptjeningsperiodeListe(tpLeverandor: TpLeverandor): List<Opptjeningsperiode> {
         metrics.incrementCounter(tpLeverandor.name, AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_CALLS)
         val startTime = metrics.startTime()
         LOG.info("{} getting opptjeningsperiodeListe from: {}", Thread.currentThread().name, tpLeverandor)
 
-        val stillingsprosentList: List<Opptjeningsperiode> = restClient.getOpptjeningsperiode(fnr, tpOrdning, tpLeverandor)
+        val stillingsprosentList: List<Opptjeningsperiode> = restClient.getOpptjeningsperiode(tpLeverandor)
 
         val elapsed = metrics.elapsedSince(startTime)
         metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_OPPTJENINGSPERIODE_TIME, elapsed.toDouble())
@@ -35,14 +35,13 @@ class TjenestepensjonsimuleringEndpointRouter(
     fun simulerPensjon(
             request: SimulerPensjonRequest,
             tpOrdning: TPOrdning,
-            tpLeverandor: TpLeverandor,
-            tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
+            tpLeverandor: TpLeverandor
     ): SimulerOffentligTjenestepensjonResponse {
         metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_SIMULERING_CALLS)
         val startTime = metrics.startTime()
         LOG.info("{} getting simulering from: {}", Thread.currentThread().name, tpLeverandor)
 
-        val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor, tpOrdningOpptjeningsperiodeMap)
+        val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor)
 
         val elapsed = metrics.elapsedSince(startTime)
         metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_SIMULERING_TIME, elapsed.toDouble())

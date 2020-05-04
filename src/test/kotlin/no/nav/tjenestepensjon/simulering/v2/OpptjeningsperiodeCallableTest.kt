@@ -26,7 +26,7 @@ internal class OpptjeningsperiodeCallableTest {
     @Throws(Exception::class)
     fun `Call shall return Opptjeningsperiode with rest`() {
         val stillingsprosenter: List<Opptjeningsperiode> = prepareStillingsprosenter()
-        Mockito.`when`(simuleringEndPointRouter.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull(), anyNonNull()))
+        Mockito.`when`(simuleringEndPointRouter.getOpptjeningsperiodeListe(anyNonNull()))
                 .thenReturn(stillingsprosenter)
 
         val result: List<Opptjeningsperiode> = OpptjeningsperiodeCallable(
@@ -42,7 +42,7 @@ internal class OpptjeningsperiodeCallableTest {
     @Test
     @Throws(Exception::class)
     fun `Exception shall be rethrown as StillingsprosentCallableException with rest`() {
-        Mockito.`when`(simuleringEndPointRouter.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull(), anyNonNull())).thenThrow(WebServiceIOException("msg from cause"))
+        Mockito.`when`(simuleringEndPointRouter.getOpptjeningsperiodeListe(anyNonNull())).thenThrow(WebServiceIOException("msg from cause"))
         val exception = assertThrows<OpptjeningsperiodeCallableException> { OpptjeningsperiodeCallable(fnr, tpOrdning, restTpLeverandor, simuleringEndPointRouter)() }
         assertEquals("Call to getOpptjeningsperiode failed with exception: org.springframework.ws.client.WebServiceIOException: msg from cause", exception.message)
         assertEquals(tpOrdning, exception.tpOrdning)

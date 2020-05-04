@@ -15,7 +15,7 @@ class OpptjeningsperiodeCallable(
         private val endpointRouter: TjenestepensjonsimuleringEndpointRouter
 ) : Callable<List<Opptjeningsperiode>> {
     override fun call() = try {
-        endpointRouter.getOpptjeningsperiodeListe(fnr, tpOrdning, tpLeverandor)
+        endpointRouter.getOpptjeningsperiodeListe(tpLeverandor)
     } catch (e: Throwable) {
         e.printStackTrace()
         throw OpptjeningsperiodeCallableException("Call to getOpptjeningsperiode failed with exception: $e", e, tpOrdning)

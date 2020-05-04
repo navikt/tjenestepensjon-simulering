@@ -31,11 +31,7 @@ class RestClient {
     @Value("\${PEPROXY_URL}")
     lateinit var peproxyUrl: String
 
-    fun getOpptjeningsperiode(
-            fnr: FNR,
-            tpOrdning: TPOrdning,
-            tpLeverandor: TpLeverandor
-    ): List<Opptjeningsperiode> =
+    fun getOpptjeningsperiode(tpLeverandor: TpLeverandor): List<Opptjeningsperiode> =
             webClient.get()
                     .uri(tpLeverandor.url)
                     .header(AUTHORIZATION, "Bearer " + tokenClient.oidcAccessToken)
@@ -46,13 +42,14 @@ class RestClient {
     fun getResponse(
             request: SimulerPensjonRequest,
             tpOrdning: TPOrdning,
-            tpLeverandor: TpLeverandor,
-            tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap
+            tpLeverandor: TpLeverandor
     ): SimulerOffentligTjenestepensjonResponse =
-            webClient.get()
+            webClient.post()
                     .uri(peproxyUrl)
                     .header(peproxyHttpheadersTargetUrl, tpLeverandor.url)
+                    .header("x-application-id", "NAV")
                     .header(peproxyHttpheadersTargetAuthorization, "Bearer " + if (tpLeverandor.maskinportenIntegrasjon!!) tokenClient.maskinportToken else tokenClient.oidcAccessToken)
+                    .bodyValue(request)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<SimulerOffentligTjenestepensjonResponse>() {})
                     .block() ?: SimulerOffentligTjenestepensjonResponse(

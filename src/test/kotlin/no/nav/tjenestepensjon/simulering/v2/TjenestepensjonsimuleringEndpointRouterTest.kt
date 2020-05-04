@@ -75,12 +75,8 @@ internal class TjenestepensjonsimuleringEndpointRouterTest {
 
     @Test
     fun `Call shall return opptjeningsperiodeList with rest`() {
-        Mockito.`when`(restClient.getOpptjeningsperiode(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(opptjeningsperiodeList)
-        val result: List<Opptjeningsperiode> = simuleringEndpointRouter.getOpptjeningsperiodeListe(
-                fnr,
-                tpOrdning,
-                tpRestLeverandor
-        )
+        Mockito.`when`(restClient.getOpptjeningsperiode(anyNonNull())).thenReturn(opptjeningsperiodeList)
+        val result: List<Opptjeningsperiode> = simuleringEndpointRouter.getOpptjeningsperiodeListe(tpRestLeverandor)
 
         Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_OPPTJENINGSPERIODE_CALLS))
         Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(tpRestLeverandor.name), safeEq(TP_TOTAL_OPPTJENINGSPERIODE_TIME), anyNonNull())
