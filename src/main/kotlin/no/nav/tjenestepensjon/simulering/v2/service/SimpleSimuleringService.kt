@@ -48,8 +48,6 @@ class SimpleSimuleringService(
         /* this temporally because we need to use the v1 to get tpordning list to get opptjeningsperiode, this is until opptjeningsperiode have been implimented*/
         val tpLeverandorList = tpLeverandorConfig.tpLeverandorList()
 
-        this.buildTpForhold(opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap)
-
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
                 .also{request.tpForholdListe = this.buildTpForhold(it)}
