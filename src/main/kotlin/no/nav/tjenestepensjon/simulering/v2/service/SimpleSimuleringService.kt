@@ -51,6 +51,7 @@ class SimpleSimuleringService(
         return opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
                 .also{request.tpForholdListe = this.buildTpForhold(it)}
+                .also{request.sisteTpnr = "3010"} //TODO: Remove this SPK Hack
                 .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
                 .let { tpOrdning ->
                     val tpLeverandor = tpLeverandorList.firstOrNull { it.name.equals(tpOrdningAndLeverandorMap.getValue(tpOrdning).name) }
