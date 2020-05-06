@@ -52,6 +52,7 @@ class SimpleSimuleringService(
                 .ifEmpty { throw NoTpOpptjeningsPeriodeFoundException("Could not get opptjeningsperiode from any TP-Providers") }
                 .also{request.tpForholdListe = this.buildTpForhold(it)}
                 .let(opptjeningsperiodeService::getLatestFromOpptjeningsperiode)
+                .also { request.sisteTpnr = it.tpId }
                 .let { tpOrdning ->
                     val tpLeverandor = tpLeverandorList.firstOrNull { it.name.equals(tpOrdningAndLeverandorMap.getValue(tpOrdning).name) }
 
