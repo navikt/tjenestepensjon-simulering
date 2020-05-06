@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class])
 @AutoConfigureMockMvc
 class SimuleringEndpointSecurityTest {
+
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -61,8 +62,7 @@ class SimuleringEndpointSecurityTest {
                     |"inntekter":[],
                     |"simuleringsperioder":[]
                     |}""".trimMargin().replace("\n", ""))
-                .header(AUTHORIZATION, "Bearer ${TokenProviderStub.accessToken}")
-        ).andExpect(MockMvcResultMatchers.status().isOk)
+                .header(AUTHORIZATION, "Bearer ${TokenProviderStub.accessToken}"))
     }
 
     companion object {
