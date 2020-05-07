@@ -83,7 +83,7 @@ class SoapClient(
                                     tpOrdningStillingsprosentMap = tpOrdningStillingsprosentMap,
                                     forsteUttak = min()!!
                             )
-                    }.let(SOAPAdapter::marshal).also { LOG.debug("Mapped SimulerPensjonRequest: {} to SimulerOffentligTjenestepensjon: {}", request, objectMapper.writeValueAsString(it)) },
+                    }.let(SOAPAdapter::marshal),
                     SOAPCallback(
                             simulerOffentlingTjenestepensjonUrl,
                             tpLeverandor.url,
