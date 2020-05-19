@@ -36,14 +36,10 @@ class SimpleSimuleringService(
         private val metrics: AppMetrics,
         private val tpLeverandorConfig: TpLeverandorConfig
 ) : SimuleringService {
-
+    .n.t.s.v.s.OpptjeningsperiodeServiceImpl
     override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest): SimulerOffentligTjenestepensjonResponse {
-        LOG.error("before tpOrdningAndLeverandorMap" )
-
         val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(request.fnr)
                 .let(::getTpLeverandorer)
-
-        LOG.error("after tpOrdningAndLeverandorMap")
 
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
 
