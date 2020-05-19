@@ -7,6 +7,6 @@ data class Utbetalingsperiode(
         var uttaksgrad: Int,
         var arligUtbetaling: Double,
         override var datoFom: LocalDate,
-        var datoTom: LocalDate,
+        var datoTom: LocalDate?,
         var ytelsekode: String
 ) : Dateable
