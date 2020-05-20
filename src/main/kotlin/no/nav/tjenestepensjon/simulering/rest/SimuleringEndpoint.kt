@@ -57,7 +57,7 @@ class SimuleringEndpoint(
                 )
             }.let {
                 LOG.info("Processing nav-call-id: {}", getHeaderFromRequestContext(NAV_CALL_ID))
-                LOG.debug("--Temp Response2: {}", it)
+                LOG.debug("--Temp Response2: {} --", it)
                 ResponseEntity(it, OK)
             }
         } catch (e: Throwable) {
