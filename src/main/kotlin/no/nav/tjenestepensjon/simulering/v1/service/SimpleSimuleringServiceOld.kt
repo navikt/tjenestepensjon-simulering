@@ -6,58 +6,35 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_MANGEL
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_OK
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
-import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
-import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
-import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.v1.TjenestepensjonsimuleringEndpointRouterOld
-import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.v1.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulertPensjon
+import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.util.concurrent.ExecutionException
 
 @Service
 class SimpleSimuleringServiceOld(
-        private val simuleringEndPointRouter: TjenestepensjonsimuleringEndpointRouterOld,
-        private val stillingsprosentService: StillingsprosentService,
-        private val tpConfigConsumer: TpConfigConsumer,
-        @Qualifier("tpLeverandorOld") private val tpLeverandorList: List<TpLeverandor>,
-        private val tpRegisterConsumer: TpRegisterConsumer,
-        private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
+        private val soapClient: SoapClient,
         private val metrics: AppMetrics
 ) : SimuleringService {
-
-    override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest) =
+    override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest,
+                                                 stillingsprosentResponse: StillingsprosentResponse,
+                                                 tpOrdning: TPOrdning,
+                                                 tpLeverandor: TpLeverandor) =
             SimulerOffentligTjenestepensjonResponse(
                     simulertPensjonListe = try {
-                        val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(request.fnr)
-                                .let(::getTpLeverandorer)
-                        val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(request.fnr, tpOrdningAndLeverandorMap)
-
-                        stillingsprosentResponse.tpOrdningStillingsprosentMap
-                                .ifEmpty { throw NoTpOrdningerFoundException("Could not get stillingsprosent from any TP-Providers") }
-                                .let(stillingsprosentService::getLatestFromStillingsprosent)
-                                .let { tpOrdning ->
-                                    simuleringEndPointRouter.simulerPensjon(
+                                soapClient.simulerPensjon(
                                             request = request,
                                             tpOrdning = tpOrdning,
-                                            tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!,
-                                            tpOrdningStillingsprosentMap = stillingsprosentResponse.tpOrdningStillingsprosentMap
-                                    )
-                                }.let { simulertPensjonList ->
-                                    addResponseInfoWhenSimulert(
-                                            simulertPensjonList,
-                                            stillingsprosentResponse
-                                    )
-                                }
+                                            tpLeverandor = tpLeverandor,
+                                            tpOrdningStillingsprosentMap = stillingsprosentResponse.tpOrdningStillingsprosentMap)
+                                        .let { addResponseInfoWhenSimulert(it, stillingsprosentResponse) }
                     } catch (e: SimuleringException) {
                         addResponseInfoWhenError(e)
                     }
@@ -103,13 +80,6 @@ class SimpleSimuleringServiceOld(
         if (!ufullstendig && !mangelfull)
             metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_OK)
     }
-
-    private fun getTpLeverandorer(tpOrdningList: List<TPOrdning>) =
-            asyncExecutor.executeAsync(
-                    tpOrdningList.map { tpOrdning ->
-                        tpOrdning to FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorList)
-                    }.toMap()
-            ).resultMap
 
     companion object {
         @JvmStatic

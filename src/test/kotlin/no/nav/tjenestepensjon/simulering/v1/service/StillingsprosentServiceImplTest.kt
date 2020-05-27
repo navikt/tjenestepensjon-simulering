@@ -14,10 +14,10 @@ import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.testHelper.safeEq
 import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentCallableMap
-import no.nav.tjenestepensjon.simulering.v1.TjenestepensjonsimuleringEndpointRouterOld
 import no.nav.tjenestepensjon.simulering.v1.exceptions.DuplicateStillingsprosentEndDateException
 import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
+import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -37,7 +37,7 @@ internal class StillingsprosentServiceImplTest {
     lateinit var asyncExecutor: AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable>
 
     @Mock
-    lateinit var simuleringEndpointRouter: TjenestepensjonsimuleringEndpointRouterOld
+    lateinit var soapClient: SoapClient
 
     @InjectMocks
     lateinit var stillingsprosentService: StillingsprosentServiceImpl
@@ -55,14 +55,14 @@ internal class StillingsprosentServiceImplTest {
     @Test
     fun `Should retrieve from tp register async`() {
         Mockito.`when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
-        stillingsprosentService.getStillingsprosentListe(fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", "url", SOAP)))
+        stillingsprosentService.getStillingsprosentListe(fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", SOAP, "sim", "stilling")))
         Mockito.verify<AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable>>(asyncExecutor).executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())
     }
 
     @Test
     fun `Handles metrics`() {
         Mockito.`when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
-        stillingsprosentService.getStillingsprosentListe(fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", "url", SOAP)))
+        stillingsprosentService.getStillingsprosentListe(fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", SOAP, "sim", "stilling")))
         Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_OPPTJENINGSPERIODE_CALLS))
         Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_OPPTJENINGSPERIODE_TIME), anyNonNull())
     }
