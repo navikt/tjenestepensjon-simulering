@@ -11,7 +11,7 @@ class TpLeverandorConfigTest {
 
     @Test
     fun `Should create list from delimited string`() {
-        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com|anotherLeverandor,http://www.another.com,maskinportenIntegrasjon")
+        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com,REST|anotherLeverandor,http://www.another.com,REST,maskinportenIntegrasjon")
         val tpLeverandorList: List<TpLeverandor> = tpLeverandorConfig.tpLeverandorList()
         val leverandor = tpLeverandorList.firstOrNull { l: TpLeverandor -> l.name.equals("leverandor", true) }
         val another = tpLeverandorList.firstOrNull { l: TpLeverandor -> l.name.equals("anotherLeverandor", true) }
@@ -23,13 +23,13 @@ class TpLeverandorConfigTest {
 
     @Test
     fun `Fails when missing provider details`() {
-        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com, test")
+        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com")
         org.junit.jupiter.api.assertThrows<AssertionError> { tpLeverandorConfig.tpLeverandorList() }
     }
 
     @Test
     fun `Does not fails when missing provider details`() {
-        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com,maskinportenIntegrasjon|leverandor,http://www.leverandor.com")
+        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com,SOAP,maskinportenIntegrasjon|leverandor,http://www.leverandor.com,REST")
         tpLeverandorConfig.tpLeverandorList()
     }
 

@@ -34,12 +34,17 @@ class TpLeverandorConfig {
 
     private fun parseProvider(provider: String): TpLeverandor {
         val details = provider.split(',')
-        if (details.size == 2) { // not having maskinporten integrasion
-            return TpLeverandor(details[0], details[1], null)
-        } else if(details.size == 3 && details[2].equals(maskinportenIntegrasjon)) {
-            return TpLeverandor(details[0], details[1], null, true)
+        if (details.size == 3) { // not having maskinporten integrasion
+            return TpLeverandor(details[0], details[1], implType(details[2]))
+        } else if(details.size == 4 && details[3].equals(maskinportenIntegrasjon)) {
+            return TpLeverandor(details[0], details[1], implType(details[2]), true)
         }
 
         throw AssertionError("provider does not contain the correct syntax: ${provider}")
+    }
+
+    private fun implType(type: String): TpLeverandor.EndpointImpl {
+        return if (type.equals("REST")) TpLeverandor.EndpointImpl.REST
+        else TpLeverandor.EndpointImpl.SOAP
     }
 }
