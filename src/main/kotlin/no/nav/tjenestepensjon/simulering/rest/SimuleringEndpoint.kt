@@ -15,6 +15,7 @@ import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
+import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringService
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
@@ -58,19 +59,25 @@ class SimuleringEndpoint(
         LOG.info("Processing nav-call-id: {}", getHeaderFromRequestContext(NAV_CALL_ID))
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
-        return try {
-            val fnr = FNR(JSONObject(body).get("fnr").toString())
-            val latestTpLeverandor = getLatestTpLeverandor(fnr)
+        val fnr = FNR(JSONObject(body).get("fnr").toString())
+        val latestTpLeverandor = try {
+            getLatestTpLeverandor(fnr)
+        } catch (e: MissingStillingsprosentException) {
+            LOG.error("Failed to get any stillingsprosenter")
+            throw NoTpOrdningerFoundException("")
+        }
 
-            if (latestTpLeverandor.impl == TpLeverandor.EndpointImpl.SOAP) {
-                val response = service.simulerOffentligTjenestepensjon(objectMapper.readValue(body, SimulerPensjonRequest::class.java))
+        return try {
+            if (restCompatable(latestTpLeverandor)) {
+                val response = service2.simulerOffentligTjenestepensjon(objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java))
+                metrics.incementRestCounter(latestTpLeverandor.name, "OK")
                 ResponseEntity(response, OK)
             } else {
-                val response = service2.simulerOffentligTjenestepensjon(objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java))
+                val response = service.simulerOffentligTjenestepensjon(objectMapper.readValue(body, SimulerPensjonRequest::class.java))
                 ResponseEntity(response, OK)
             }
         } catch (e: Throwable) {
-            LOG.error("Unable to handle request", e)
+            LOG.error("Unable to handle request", e.message)
             when (e) {
                 is JsonParseException -> "Unable to parse body to request." to BAD_REQUEST
                 is JsonMappingException -> "Unable to mapping body to request." to BAD_REQUEST
@@ -92,6 +99,10 @@ class SimuleringEndpoint(
 
     fun getHeaderFromRequestContext(key: String) =
             currentRequestAttributes().getAttribute(key, SCOPE_REQUEST)?.toString()
+
+    private fun restCompatable(tpLeverandor: TpLeverandor): Boolean {
+        return (tpLeverandor.impl == TpLeverandor.EndpointImpl.REST)
+    }
 
     @Throws(NoTpOrdningerFoundException::class)
     private fun getLatestTpLeverandor(fnr: FNR): TpLeverandor {
