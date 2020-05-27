@@ -3,7 +3,7 @@ name: NAIS Deploy
 on:
   push:
     branches:
-      - master
+      - feature/PL-1613
 
 jobs:
   build-and-deploy:
