@@ -36,12 +36,9 @@ class SimpleSimuleringService(
         private val metrics: AppMetrics,
         private val tpLeverandorConfig: TpLeverandorConfig
 ) : SimuleringService {
-
     override fun simulerOffentligTjenestepensjon(request: SimulerPensjonRequest): SimulerOffentligTjenestepensjonResponse {
         val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(request.fnr)
                 .let(::getTpLeverandorer)
-
-        LOG.error("tpOrdningAndLeverandorMap i v2: {}", tpOrdningAndLeverandorMap)
 
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(request.fnr, tpOrdningAndLeverandorMap)
 

@@ -48,7 +48,6 @@ class OpptjeningsperiodeServiceImpl(
     override fun getLatestFromOpptjeningsperiode(map: TPOrdningOpptjeningsperiodeMap) =
             map.flatMap { (key, list) ->
                 list.map { value ->
-                    LOG.info("TPORDNING {} STILLINGSPROSENT {}", key, value)
                     key to value
                 }
             }.ifEmpty { throw MissingOpptjeningsperiodeException("Could not find any stillingsprosent") }

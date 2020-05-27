@@ -39,7 +39,7 @@ class TjenestepensjonsimuleringEndpointRouter(
     ): SimulerOffentligTjenestepensjonResponse {
         metrics.incrementCounter(tpLeverandor.name, TP_TOTAL_SIMULERING_CALLS)
         val startTime = metrics.startTime()
-        LOG.info("{} getting simulering from: {}", Thread.currentThread().name, tpLeverandor)
+        LOG.info("{} getting simulering from: {}, with tpId: {}", Thread.currentThread().name, tpLeverandor, tpOrdning.tpId)
 
         val simulertPensjon = restClient.getResponse(request, tpOrdning, tpLeverandor)
 

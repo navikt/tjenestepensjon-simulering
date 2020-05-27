@@ -87,6 +87,7 @@ class SimuleringEndpoint(
                 is SimuleringException -> e.message to INTERNAL_SERVER_ERROR
                 else -> e.message to INTERNAL_SERVER_ERROR
             }.run {
+                LOG.error("httpResponse: {}, cause: {}", first, e.message)
                 ResponseEntity(first.toString(), second)
             }
         }
