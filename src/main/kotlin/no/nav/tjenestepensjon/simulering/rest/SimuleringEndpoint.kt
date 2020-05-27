@@ -64,7 +64,7 @@ class SimuleringEndpoint(
             getLatestTpLeverandor(fnr)
         } catch (e: MissingStillingsprosentException) {
             LOG.error("Failed to get any stillingsprosenter")
-            throw NoTpOrdningerFoundException("")
+            return ResponseEntity("Failed to get any stillingsprosenter", INTERNAL_SERVER_ERROR)
         }
 
         return try {
