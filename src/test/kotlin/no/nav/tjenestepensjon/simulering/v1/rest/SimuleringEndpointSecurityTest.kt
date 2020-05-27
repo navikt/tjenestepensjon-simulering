@@ -4,8 +4,10 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
 import no.nav.tjenestepensjon.simulering.config.TokenProviderStub
+import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -14,10 +16,12 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class])
 @AutoConfigureMockMvc
 class SimuleringEndpointSecurityTest {
+
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -50,7 +54,7 @@ class SimuleringEndpointSecurityTest {
     }
 
     @Test
-    @Throws(Exception::class)
+    @Throws(MissingStillingsprosentException::class)
     fun secureEndpointOkWithValidToken() {
         mockMvc.perform(MockMvcRequestBuilders.post("/simulering")
                 .contentType(APPLICATION_JSON)
@@ -61,8 +65,7 @@ class SimuleringEndpointSecurityTest {
                     |"inntekter":[],
                     |"simuleringsperioder":[]
                     |}""".trimMargin().replace("\n", ""))
-                .header(AUTHORIZATION, "Bearer ${TokenProviderStub.accessToken}")
-        ).andExpect(MockMvcResultMatchers.status().isOk)
+                .header(AUTHORIZATION, "Bearer ${TokenProviderStub.accessToken}"))
     }
 
     companion object {

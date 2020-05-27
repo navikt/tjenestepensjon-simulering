@@ -30,6 +30,7 @@ class AppMetrics(
 ) {
     private val gaugeValues = mutableMapOf<String, MutableMap<String, Number>>()
     private val metrics: MutableMap<String, MutableMap<String, Meter>> = generateMetrics(tpLeverandorList)
+    private val restMetrics = HashMap<String, Counter>()
 
     private fun generateMetrics(tpLeverandorList: List<TpLeverandor>) =
             tpLeverandorList.associateBy(TpLeverandor::name).mapValues { (_, tpLeverandor) -> metricsFor(tpLeverandor) }.toMutableMap()
@@ -66,6 +67,15 @@ class AppMetrics(
 
     fun incrementCounter(prefix: String, metric: String) {
         getCounter(prefix, metric)!!.increment()
+    }
+
+    fun incementRestCounter(tpLeverandorName: String, status: String) {
+        restMetrics.getOrPut(tpLeverandorName) {
+            Counter.builder("${APP_NAME}_rest_request")
+                    .tag("name", tpLeverandorName)
+                    .tag("status", status)
+                    .register(meterRegistry)
+        }.increment()
     }
 
     fun incrementCounter(prefix: String, metric: String, amount: Double) {

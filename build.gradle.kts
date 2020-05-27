@@ -43,6 +43,7 @@ dependencies {
     implementation("io.jsonwebtoken", "jjwt-impl", "0.10.2")
     implementation("io.jsonwebtoken", "jjwt-api", "0.10.5")
     implementation("io.jsonwebtoken", "jjwt-jackson", "0.10.7")
+    implementation("org.json", "json", "20190722")
 
     implementation("org.springframework.ws", "spring-ws-core", "3.0.8.RELEASE")
     testImplementation(kotlin("test-junit5"))

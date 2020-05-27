@@ -5,7 +5,6 @@ import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.JacksonSerializer
-import junit.framework.Assert.assertNotNull
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
 import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
 import no.nav.tjenestepensjon.simulering.v2.consumer.model.Jws
@@ -16,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.Clock
 import java.util.*
+import kotlin.test.assertNotNull
 
 @SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class, ObjectMapperConfig::class])
 @AutoConfigureMockMvc
