@@ -1,12 +1,10 @@
 package no.nav.tjenestepensjon.simulering.v2.service
 
-import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
-import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
+import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentResponse
 import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
-import no.nav.tjenestepensjon.simulering.v2.TPOrdningTpLeverandorMap
 import no.nav.tjenestepensjon.simulering.v2.exceptions.DuplicateOpptjeningsperiodeEndDateException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.MissingOpptjeningsperiodeException
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
@@ -14,32 +12,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class OpptjeningsperiodeServiceImpl(
-        private val stillingsprosentService: StillingsprosentService
-) : OpptjeningsperiodeService {
+class OpptjeningsperiodeServiceImpl() : OpptjeningsperiodeService {
 
-    // Opptjeningsperiode is not implemented yet, so we use the old stillingsprosent and convert it to opptjeningsperiode
-    override fun getOpptjeningsperiodeListe(fnr: FNR, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap) =
-            stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap).let {
-                OpptjeningsperiodeResponse(
-                        mapStillingsprosentToOpptjeningsperiodeMap(it.tpOrdningStillingsprosentMap),
-                        it.exceptions
-                )
-            }
-
-
-// This is commented out until opptjeningsperiode have been created in new system
-//    override fun getOpptjeningsperiodeListe(fnr: FNR, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap): OpptjeningsperiodeResponse {
-//        val callableMap = toCallableMap(fnr, tpOrdningAndLeverandorMap)
-//        metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_CALLS)
-//        val startTime = metrics.startTime()
-//        val asyncResponse = asyncExecutor.executeAsync(callableMap)
-//        val elapsed = metrics.elapsedSince(startTime)
-//        LOG.info("Retrieved all opptjeningsperiodeList in: {} ms", elapsed)
-//        metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_TIME, elapsed.toDouble())
-//        return OpptjeningsperiodeResponse(asyncResponse.resultMap, asyncResponse.exceptions)
-//    }
-
+    override fun getOpptjeningsperiodeListe(stillingsprosentResponse: StillingsprosentResponse) =
+            OpptjeningsperiodeResponse(
+                    mapStillingsprosentToOpptjeningsperiodeMap(stillingsprosentResponse.tpOrdningStillingsprosentMap),
+                    stillingsprosentResponse.exceptions
+            )
 
     @Throws(
             DuplicateOpptjeningsperiodeEndDateException::class,
@@ -79,11 +58,6 @@ class OpptjeningsperiodeServiceImpl(
             )
         }
     }
-
-//    private fun toCallableMap(fnr: FNR, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap) =
-//            tpOrdningAndLeverandorMap.map { (tpOrdning, tpLeverandor) ->
-//                tpOrdning to OpptjeningsperiodeCallable(fnr, tpOrdning, tpLeverandor, simuleringEndPointRouter)
-//            }.toMap()
 
     companion object {
         @JvmStatic
