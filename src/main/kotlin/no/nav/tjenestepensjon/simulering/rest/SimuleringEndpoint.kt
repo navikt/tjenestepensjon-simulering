@@ -13,6 +13,7 @@ import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringService
@@ -64,7 +65,8 @@ class SimuleringEndpoint(
             val tpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
             val tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
 
-            if (restCompatable(tpLeverandor)) {
+            if (tpLeverandor.impl == REST) {
+                LOG.debug("Request simulation from ${tpLeverandor.name} using REST")
                 val response = service2.simulerOffentligTjenestepensjon(
                         objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java),
                         stillingsprosentResponse,
@@ -74,6 +76,7 @@ class SimuleringEndpoint(
                 metrics.incementRestCounter(tpLeverandor.name, "OK")
                 ResponseEntity(response, OK)
             } else {
+                LOG.debug("Request simulation from ${tpLeverandor.name} using SOAP")
                 val response = service.simulerOffentligTjenestepensjon(
                         objectMapper.readValue(body, SimulerPensjonRequest::class.java),
                         stillingsprosentResponse,
@@ -106,10 +109,6 @@ class SimuleringEndpoint(
 
     fun getHeaderFromRequestContext(key: String) =
             currentRequestAttributes().getAttribute(key, SCOPE_REQUEST)?.toString()
-
-    private fun restCompatable(tpLeverandor: TpLeverandor): Boolean {
-        return (tpLeverandor.impl == TpLeverandor.EndpointImpl.REST)
-    }
 
     private fun getTpLeverandorer(tpOrdningList: List<TPOrdning>) =
             asyncExecutor.executeAsync(
