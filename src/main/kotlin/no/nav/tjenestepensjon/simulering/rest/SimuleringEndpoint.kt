@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
@@ -49,6 +51,8 @@ class SimuleringEndpoint(
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
+    lateinit var tpLeverandor: TpLeverandor
+
     @PostMapping("/simulering")
     fun simuler(
             @RequestBody body: String,
@@ -63,7 +67,9 @@ class SimuleringEndpoint(
             val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(fnr).let(::getTpLeverandorer)
             val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
             val tpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
-            val tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
+
+            metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_OK)
+            tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
 
             if (tpLeverandor.impl == REST) {
                 LOG.debug("Request simulation from ${tpLeverandor.name} using REST")
@@ -97,6 +103,15 @@ class SimuleringEndpoint(
                 else -> e.message to INTERNAL_SERVER_ERROR
             }.run {
                 LOG.error("httpResponse: {}, cause: {}", first, e.message)
+
+                if (::tpLeverandor.isInitialized) {
+                    if (tpLeverandor.impl == REST) {
+                        metrics.incementRestCounter(tpLeverandor.name, "ERROR")
+                    }
+                } else {
+                    metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_ERROR)
+                }
+
                 ResponseEntity(first.toString(), second)
             }
         }

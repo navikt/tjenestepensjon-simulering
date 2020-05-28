@@ -13,6 +13,8 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_OK
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_LATEST_OPPTJENINGSPERIODE_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_LATEST_SIMULERING_TIME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.TP_TOTAL_OPPTJENINGSPERIODE_CALLS
@@ -43,7 +45,9 @@ class AppMetrics(
                                 APP_TOTAL_SIMULERING_OK to createCounter(APP_TOTAL_SIMULERING_OK, "Totalt antall fullstendige simuleringer"),
                                 APP_TOTAL_SIMULERING_UFUL to createCounter(APP_TOTAL_SIMULERING_UFUL, "Totalt antall ufullstendige simuleringer grunnet kommunikasjonsproblemer mot TP Leverandør"),
                                 APP_TOTAL_SIMULERING_FEIL to createCounter(APP_TOTAL_SIMULERING_FEIL, "Totalt antall som ikke kunne simuleres"),
-                                APP_TOTAL_SIMULERING_MANGEL to createCounter(APP_TOTAL_SIMULERING_MANGEL, "Totalt antall simuleringer med kode for mangelfull simulering")
+                                APP_TOTAL_SIMULERING_MANGEL to createCounter(APP_TOTAL_SIMULERING_MANGEL, "Totalt antall simuleringer med kode for mangelfull simulering"),
+                                APP_TOTAL_STILLINGSPROSENT_OK to createCounter(APP_TOTAL_STILLINGSPROSENT_OK, "Total ok innhentinger av stillingsprosent"),
+                                APP_TOTAL_STILLINGSPROSENT_ERROR to createCounter(APP_TOTAL_STILLINGSPROSENT_ERROR, "Total feil ved ingen tilgjengelige stillingsprosenter")
                         )
                     }
 
@@ -119,5 +123,7 @@ class AppMetrics(
         const val TP_TOTAL_SIMULERING_CALLS = APP_NAME + "_tp_simulering_calls_"
         const val TP_TOTAL_SIMULERING_TIME = APP_NAME + "_tp_simulering_time_"
         const val TP_LATEST_SIMULERING_TIME = APP_NAME + "_tp_simulering_time_latest_"
+        const val APP_TOTAL_STILLINGSPROSENT_OK = APP_NAME + "_stillingsprosent_ok"
+        const val APP_TOTAL_STILLINGSPROSENT_ERROR = APP_NAME + "_stillingsprosent_error"
     }
 }
