@@ -69,10 +69,12 @@ class SimuleringEndpoint(
 
         return try {
             if (restCompatable(latestTpLeverandor)) {
+                LOG.error("Request by ussing ver2")
                 val response = service2.simulerOffentligTjenestepensjon(objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java))
                 metrics.incementRestCounter(latestTpLeverandor.name, "OK")
                 ResponseEntity(response, OK)
             } else {
+                LOG.error("Request by ussing ver2")
                 val response = service.simulerOffentligTjenestepensjon(objectMapper.readValue(body, SimulerPensjonRequest::class.java))
                 ResponseEntity(response, OK)
             }
