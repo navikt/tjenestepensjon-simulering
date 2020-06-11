@@ -1,15 +1,15 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
 import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
-import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
+import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
+import no.nav.tjenestepensjon.simulering.v1.models.*
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.SOAPAdapter
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLHentStillingsprosentListeRequestWrapper
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLSimulerOffentligTjenestepensjonRequestWrapper
-import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
-import no.nav.tjenestepensjon.simulering.v1.models.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -42,7 +42,7 @@ internal class SoapClientTest {
         val result = client.getStillingsprosenter(
                 defaultFNR,
                 defaultTPOrdning,
-                TpLeverandor("name", "url", SOAP)
+                TpLeverandor("name", SOAP, "sim", "stilling")
         )
         defaultStillingsprosentListe.forEachIndexed { index, stillingsprosent -> assertEquals(stillingsprosent, result[index]) }
     }
@@ -58,7 +58,7 @@ internal class SoapClientTest {
         val result = client.simulerPensjon(
                 request = defaultSimulerPensjonRequest,
                 tpOrdning = defaultTPOrdning,
-                tpLeverandor = TpLeverandor("name", "url", SOAP),
+                tpLeverandor = TpLeverandor("name", SOAP, "sim", "stilling"),
                 tpOrdningStillingsprosentMap = mapOf(defaultTPOrdning to listOf(defaultStillingsprosent))
         )
         defaultSimulertPensjonList.forEachIndexed { index, simulertPensjon -> assertEquals(simulertPensjon, result[index]) }

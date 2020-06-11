@@ -1,6 +1,7 @@
-package no.nav.tjenestepensjon.simulering.v2.config
+package no.nav.tjenestepensjon.simulering.config
 
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -9,9 +10,6 @@ import org.springframework.context.annotation.Configuration
 class TpLeverandorConfig {
 
     private lateinit var leverandorUrlMap: String
-
-    private val maskinportenIntegrasjon = "maskinportenIntegrasjon"
-
     @Value("\${TP_LEVERANDOR_URL_MAP}")
     fun setLeverandorUrlMap(leverandorUrlMap: String) {
         this.leverandorUrlMap = leverandorUrlMap
@@ -19,7 +17,6 @@ class TpLeverandorConfig {
 
     @Bean("tpLeverandor")
     fun tpLeverandorList() = createListFromEnv(leverandorUrlMap)
-
 
     /**
      * Parse env variable to generate a list of TpLeverandor.
@@ -34,17 +31,7 @@ class TpLeverandorConfig {
 
     private fun parseProvider(provider: String): TpLeverandor {
         val details = provider.split(',')
-        if (details.size == 3) { // not having maskinporten integrasion
-            return TpLeverandor(details[0], details[1], implType(details[2]))
-        } else if(details.size == 4 && details[3].equals(maskinportenIntegrasjon)) {
-            return TpLeverandor(details[0], details[1], implType(details[2]), true)
-        }
-
-        throw AssertionError("provider does not contain the correct syntax: ${provider}")
-    }
-
-    private fun implType(type: String): TpLeverandor.EndpointImpl {
-        return if (type.equals("REST")) TpLeverandor.EndpointImpl.REST
-        else TpLeverandor.EndpointImpl.SOAP
+        assert(details.size == 4)
+        return TpLeverandor(details[0], EndpointImpl.valueOf(details[1]), details[2], details[3])
     }
 }

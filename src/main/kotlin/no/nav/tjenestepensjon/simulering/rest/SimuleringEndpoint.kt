@@ -6,16 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
-import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
-import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringService
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
@@ -50,6 +51,8 @@ class SimuleringEndpoint(
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
+    lateinit var tpLeverandor: TpLeverandor
+
     @PostMapping("/simulering")
     fun simuler(
             @RequestBody body: String,
@@ -59,23 +62,33 @@ class SimuleringEndpoint(
         LOG.info("Processing nav-call-id: {}", getHeaderFromRequestContext(NAV_CALL_ID))
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
-        val fnr = FNR(JSONObject(body).get("fnr").toString())
-        val latestTpLeverandor = try {
-            getLatestTpLeverandor(fnr)
-        } catch (e: MissingStillingsprosentException) {
-            LOG.error("Failed to get any stillingsprosenter")
-            return ResponseEntity("Failed to get any stillingsprosenter", INTERNAL_SERVER_ERROR)
-        }
-
         return try {
-            if (restCompatable(latestTpLeverandor)) {
-                LOG.error("Request by ussing ver2")
-                val response = service2.simulerOffentligTjenestepensjon(objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java))
-                metrics.incementRestCounter(latestTpLeverandor.name, "OK")
+            val fnr = FNR(JSONObject(body).get("fnr").toString())
+            val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(fnr).let(::getTpLeverandorer)
+            val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
+            val tpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
+
+            metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_OK)
+            tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
+
+            if (tpLeverandor.impl == REST) {
+                LOG.debug("Request simulation from ${tpLeverandor.name} using REST")
+                val response = service2.simulerOffentligTjenestepensjon(
+                        objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java),
+                        stillingsprosentResponse,
+                        tpOrdning,
+                        tpLeverandor
+                )
+                metrics.incementRestCounter(tpLeverandor.name, "OK")
                 ResponseEntity(response, OK)
             } else {
-                LOG.error("Request by ussing ver2")
-                val response = service.simulerOffentligTjenestepensjon(objectMapper.readValue(body, SimulerPensjonRequest::class.java))
+                LOG.debug("Request simulation from ${tpLeverandor.name} using SOAP")
+                val response = service.simulerOffentligTjenestepensjon(
+                        objectMapper.readValue(body, SimulerPensjonRequest::class.java),
+                        stillingsprosentResponse,
+                        tpOrdning,
+                        tpLeverandor
+                )
                 ResponseEntity(response, OK)
             }
         } catch (e: Throwable) {
@@ -90,6 +103,15 @@ class SimuleringEndpoint(
                 else -> e.message to INTERNAL_SERVER_ERROR
             }.run {
                 LOG.error("httpResponse: {}, cause: {}", first, e.message)
+
+                if (::tpLeverandor.isInitialized) {
+                    if (tpLeverandor.impl == REST) {
+                        metrics.incementRestCounter(tpLeverandor.name, "ERROR")
+                    }
+                } else {
+                    metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_ERROR)
+                }
+
                 ResponseEntity(first.toString(), second)
             }
         }
@@ -102,23 +124,6 @@ class SimuleringEndpoint(
 
     fun getHeaderFromRequestContext(key: String) =
             currentRequestAttributes().getAttribute(key, SCOPE_REQUEST)?.toString()
-
-    private fun restCompatable(tpLeverandor: TpLeverandor): Boolean {
-        return (tpLeverandor.impl == TpLeverandor.EndpointImpl.REST)
-    }
-
-    @Throws(NoTpOrdningerFoundException::class)
-    private fun getLatestTpLeverandor(fnr: FNR): TpLeverandor {
-        val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(fnr).let(::getTpLeverandorer)
-        val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
-        val latestTpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
-
-        try {
-            return tpOrdningAndLeverandorMap[latestTpOrdning]!!
-        } catch (e: NullPointerException) {
-            throw NoTpOrdningerFoundException("No Tp-ordning found for person:$fnr")
-        }
-    }
 
     private fun getTpLeverandorer(tpOrdningList: List<TPOrdning>) =
             asyncExecutor.executeAsync(

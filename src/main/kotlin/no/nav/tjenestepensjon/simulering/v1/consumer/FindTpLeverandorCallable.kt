@@ -9,7 +9,7 @@ import java.util.concurrent.Callable
 class FindTpLeverandorCallable(
         private val tpOrdning: TPOrdning,
         private val tpConfigConsumer: TpConfigConsumer,
-        @Qualifier("tpLeverandorOld") private val tpLeverandorList: List<TpLeverandor>
+        @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>
 ) : Callable<TpLeverandor> {
     @Throws(Exception::class)
     override fun call(): TpLeverandor {

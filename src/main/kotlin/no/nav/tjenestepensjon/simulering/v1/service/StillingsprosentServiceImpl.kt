@@ -2,22 +2,22 @@ package no.nav.tjenestepensjon.simulering.v1.service
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
-import no.nav.tjenestepensjon.simulering.v1.TjenestepensjonsimuleringEndpointRouterOld
-import no.nav.tjenestepensjon.simulering.v1.exceptions.DuplicateStillingsprosentEndDateException
-import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningTpLeverandorMap
+import no.nav.tjenestepensjon.simulering.v1.exceptions.DuplicateStillingsprosentEndDateException
+import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
+import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
+import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
 class StillingsprosentServiceImpl(
         private val asyncExecutor: AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable>,
-        private val simuleringEndPointRouter: TjenestepensjonsimuleringEndpointRouterOld,
+        private val soapClient: SoapClient,
         private val metrics: AppMetrics) : StillingsprosentService
 {
 
@@ -53,7 +53,7 @@ class StillingsprosentServiceImpl(
 
     private fun toCallableMap(fnr: FNR, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap) =
             tpOrdningAndLeverandorMap.map { (tpOrdning, tpLeverandor) ->
-                tpOrdning to StillingsprosentCallable(fnr, tpOrdning, tpLeverandor, simuleringEndPointRouter)
+                tpOrdning to StillingsprosentCallable(fnr, tpOrdning, tpLeverandor, soapClient)
             }.toMap()
 
     companion object {

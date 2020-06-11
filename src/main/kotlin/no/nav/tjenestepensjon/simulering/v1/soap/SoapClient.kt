@@ -1,12 +1,12 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.tjenestepensjon.simulering.model.domain.FNR
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.Tjenestepensjonsimulering
 import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.v1.models.request.HentStillingsprosentListeRequest
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerOffentligTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
@@ -54,7 +54,7 @@ class SoapClient(
                             .let(SOAPAdapter::marshal),
                     SOAPCallback(
                             hentStillingsprosentUrl,
-                            tpLeverandor.url,
+                            tpLeverandor.stillingsprosentUrl,
                             tokenClientOld.samlAccessToken.accessToken,
                             samlConfig
                     )
@@ -86,7 +86,7 @@ class SoapClient(
                     }.let(SOAPAdapter::marshal),
                     SOAPCallback(
                             simulerOffentlingTjenestepensjonUrl,
-                            tpLeverandor.url,
+                            tpLeverandor.simuleringUrl,
                             tokenClientOld.samlAccessToken.accessToken!!,
                             samlConfig
                     )

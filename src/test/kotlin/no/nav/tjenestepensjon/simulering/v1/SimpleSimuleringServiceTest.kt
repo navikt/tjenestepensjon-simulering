@@ -4,19 +4,11 @@ import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_MANGEL
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
-import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse
-import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
-import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
-import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
-import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
-import no.nav.tjenestepensjon.simulering.v1.exceptions.DuplicateStillingsprosentEndDateException
-import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import no.nav.tjenestepensjon.simulering.v1.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Utbetalingsperiode
@@ -24,7 +16,7 @@ import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulertPensjon
 import no.nav.tjenestepensjon.simulering.v1.service.SimpleSimuleringServiceOld
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentResponse
-import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
+import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -40,25 +32,10 @@ import java.util.concurrent.ExecutionException
 internal class SimpleSimuleringServiceTest {
 
     @Mock
-    private lateinit var tpRegisterConsumer: TpRegisterConsumer
-
-    @Mock
-    private lateinit var asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>
-
-    @Mock
-    private lateinit var stillingsprosentService: StillingsprosentService
-
-    @Mock
-    private lateinit var simuleringEnpointRouter: TjenestepensjonsimuleringEndpointRouterOld
+    private lateinit var soapClient: SoapClient
 
     @Mock
     private lateinit var metrics: AppMetrics
-
-    @Mock
-    private lateinit var tpConfigConsumer: TpConfigConsumer
-
-    @Mock
-    private lateinit var tpLeverandorList: List<TpLeverandor>
 
     @InjectMocks
     private lateinit var simuleringService: SimpleSimuleringServiceOld
@@ -76,82 +53,10 @@ internal class SimpleSimuleringServiceTest {
     }
 
     @Test
-    @Throws(Exception::class)
-    fun shouldReturnStatusAndFeilkodeWhenDuplicateStillingsprosentEndDate() {
-        val tpOrdning = TPOrdning("1", "1")
-        val tpLeverandor = TpLeverandor("lev1", "url1", SOAP)
-
-        Mockito.`when`(tpRegisterConsumer.getTpOrdningerForPerson(anyNonNull())).thenReturn(listOf(tpOrdning))
-
-        Mockito.`when`(
-                stillingsprosentService.getStillingsprosentListe(anyNonNull(), anyNonNull())
-        ).thenReturn(
-                StillingsprosentResponse(
-                        mapOf(tpOrdning to emptyList<Stillingsprosent>()), emptyList()
-                )
-        )
-
-        val asyncResponse = AsyncResponse<TPOrdning, TpLeverandor>().apply {
-            resultMap[tpOrdning] = tpLeverandor
-        }
-
-        Mockito.`when`(asyncExecutor.executeAsync<TPOrdning>(anyNonNull())).thenReturn(asyncResponse)
-        Mockito.`when`(stillingsprosentService.getLatestFromStillingsprosent(anyNonNull())).thenThrow(DuplicateStillingsprosentEndDateException("exception"))
-
-        val simulertPensjon = simuleringService.simulerOffentligTjenestepensjon(request)
-                .simulertPensjonListe.first()
-
-        assertNotNull(simulertPensjon)
-        assertEquals("FEIL", simulertPensjon.status)
-        assertEquals("PARF", simulertPensjon.feilkode)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun shouldReturnStatusAndFeilkodeWhenMissingStillingsprosent() {
-        val tpOrdning = TPOrdning("1", "1")
-        val tpLeverandor = TpLeverandor("lev1", "url1", SOAP)
-
-        Mockito.`when`(tpRegisterConsumer.getTpOrdningerForPerson(anyNonNull())).thenReturn(listOf(tpOrdning))
-
-        Mockito.`when`(stillingsprosentService.getStillingsprosentListe(anyNonNull(), anyNonNull())).thenReturn(StillingsprosentResponse(mapOf(tpOrdning to emptyList()), emptyList()))
-
-        val asyncResponse = AsyncResponse<TPOrdning, TpLeverandor>().apply {
-            resultMap[tpOrdning] = tpLeverandor
-        }
-
-        Mockito.`when`(asyncExecutor.executeAsync<TPOrdning>(anyNonNull())).thenReturn(asyncResponse)
-        Mockito.`when`(stillingsprosentService.getLatestFromStillingsprosent(anyNonNull())).thenThrow(MissingStillingsprosentException("exception"))
-
-        val simulertPensjon = simuleringService.simulerOffentligTjenestepensjon(request).simulertPensjonListe.first()
-
-        assertNotNull(simulertPensjon)
-        assertEquals("FEIL", simulertPensjon.status)
-        assertEquals("IKKE", simulertPensjon.feilkode)
-    }
-
-    @Test
-    fun `Should add response info when no stillingsprosent available`() {
-        Mockito.`when`(asyncExecutor.executeAsync<TPOrdning>(anyNonNull())).thenReturn(AsyncResponse())
-        Mockito.`when`(stillingsprosentService.getStillingsprosentListe(anyNonNull(), anyNonNull())).thenReturn(StillingsprosentResponse(emptyMap(), emptyList()))
-        val response = simuleringService.simulerOffentligTjenestepensjon(request)
-        assertEquals("FEIL", response.simulertPensjonListe.first().status)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun shouldAddResponseInfoWhenNoTpOrdningFound() {
-        Mockito.`when`(tpRegisterConsumer.getTpOrdningerForPerson(anyNonNull())).thenThrow(NoTpOrdningerFoundException("exception"))
-        val response = simuleringService.simulerOffentligTjenestepensjon(request)
-        assertEquals("FEIL", response.simulertPensjonListe.first().status)
-    }
-
-    @Test
     fun `Should add response info when simulering returns ok status`() {
         val map = mapOf(TPOrdning("tssInkluder", "tpInkluder") to emptyList<Stillingsprosent>())
         val exceptions = listOf(ExecutionException(StillingsprosentCallableException("msg", Throwable(), TPOrdning("tssUtelatt", "tpUtelatt"))))
         val stillingsprosentResponse = StillingsprosentResponse(map, exceptions)
-        Mockito.`when`(stillingsprosentService.getStillingsprosentListe(anyNonNull(), anyNonNull())).thenReturn(stillingsprosentResponse)
         val s1 = SimulertPensjon(
                 utbetalingsperioder = listOf(Utbetalingsperiode(
                         grad = 0,
@@ -165,11 +70,9 @@ internal class SimpleSimuleringServiceTest {
                 navnOrdning = "feil"
         )
         val tpOrdning = TPOrdning("fake", "faker")
-        val tpLeverandor = TpLeverandor("fake", "faker", SOAP)
-        Mockito.`when`(asyncExecutor.executeAsync<TPOrdning>(anyNonNull())).thenReturn(AsyncResponse<TPOrdning, TpLeverandor>().apply { this.resultMap[tpOrdning] = tpLeverandor })
-        Mockito.`when`(simuleringEnpointRouter.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(listOf(s1))
-        Mockito.`when`(stillingsprosentService.getLatestFromStillingsprosent(anyNonNull())).thenReturn(tpOrdning)
-        val response = simuleringService.simulerOffentligTjenestepensjon(request)
+        val tpLeverandor = TpLeverandor("fake", SOAP, "faker", "faker")
+        Mockito.`when`(soapClient.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(listOf(s1))
+        val response = simuleringService.simulerOffentligTjenestepensjon(request, stillingsprosentResponse, tpOrdning, tpLeverandor)
         Mockito.verify<AppMetrics>(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL)
         val simulertPensjon = response.simulertPensjonListe.first()
         assertNotNull(simulertPensjon)
@@ -182,7 +85,6 @@ internal class SimpleSimuleringServiceTest {
     fun `Should increment metrics`() {
         val map = mapOf(TPOrdning("tssInkluder", "tpInkluder") to emptyList<Stillingsprosent>())
         val stillingsprosentResponse = StillingsprosentResponse(map, listOf())
-        Mockito.`when`(stillingsprosentService.getStillingsprosentListe(anyNonNull(), anyNonNull())).thenReturn(stillingsprosentResponse)
 
         val s1 = SimulertPensjon(
                 utbetalingsperioder = listOf(null),
@@ -195,11 +97,9 @@ internal class SimpleSimuleringServiceTest {
                 navnOrdning = "feil"
         )
         val tpOrdning = TPOrdning("fake", "faker")
-        val tpLeverandor = TpLeverandor("fake", "faker", SOAP)
-        Mockito.`when`(asyncExecutor.executeAsync<TPOrdning>(anyNonNull())).thenReturn(AsyncResponse<TPOrdning, TpLeverandor>().apply { this.resultMap[tpOrdning] = tpLeverandor })
-        Mockito.`when`(stillingsprosentService.getLatestFromStillingsprosent(anyNonNull())).thenReturn(tpOrdning)
-        Mockito.`when`(simuleringEnpointRouter.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(listOf(s1, s2))
-        val response = simuleringService.simulerOffentligTjenestepensjon(request)
+        val tpLeverandor = TpLeverandor("fake", SOAP, "faker", "faker")
+        Mockito.`when`(soapClient.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(listOf(s1, s2))
+        val response = simuleringService.simulerOffentligTjenestepensjon(request, stillingsprosentResponse, tpOrdning, tpLeverandor)
         Mockito.verify<AppMetrics>(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_MANGEL)
         assertNull(response.simulertPensjonListe.first().status)
     }
