@@ -42,7 +42,7 @@ class SimuleringEndpoint(
         private val tpRegisterConsumer: TpRegisterConsumer,
         private val tpConfigConsumer: TpConfigConsumer,
         private val stillingsprosentService: StillingsprosentService,
-        @Qualifier("tpLeverandorOld") private val tpLeverandorList: List<TpLeverandor>,
+        @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>,
         private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
         private val metrics: AppMetrics
 ) {
