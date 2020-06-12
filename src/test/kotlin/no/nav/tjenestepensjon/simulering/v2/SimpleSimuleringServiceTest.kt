@@ -1,9 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_MANGEL
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
@@ -94,8 +91,6 @@ internal class SimpleSimuleringServiceTest {
                 tpLeverandor
         )
 
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL)
-
         assertNotNull(response)
     }
 
@@ -126,7 +121,5 @@ internal class SimpleSimuleringServiceTest {
                         tpLeverandor
                 )
         )
-
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_MANGEL)
     }
 }

@@ -73,7 +73,7 @@ class AppMetrics(
         getCounter(prefix, metric)!!.increment()
     }
 
-    fun incementRestCounter(tpLeverandorName: String, status: String) {
+    fun incrementRestCounter(tpLeverandorName: String, status: String) {
         restMetrics.getOrPut(tpLeverandorName) {
             Counter.builder("${APP_NAME}_rest_request")
                     .tag("name", tpLeverandorName)

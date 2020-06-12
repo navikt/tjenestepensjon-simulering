@@ -79,7 +79,7 @@ class SimuleringEndpoint(
                         tpOrdning,
                         tpLeverandor
                 )
-                metrics.incementRestCounter(tpLeverandor.name, "OK")
+                metrics.incrementRestCounter(tpLeverandor.name, "OK")
                 ResponseEntity(response, OK)
             } else {
                 LOG.debug("Request simulation from ${tpLeverandor.name} using SOAP")
@@ -106,7 +106,7 @@ class SimuleringEndpoint(
 
                 if (::tpLeverandor.isInitialized) {
                     if (tpLeverandor.impl == REST) {
-                        metrics.incementRestCounter(tpLeverandor.name, "ERROR")
+                        metrics.incrementRestCounter(tpLeverandor.name, "ERROR")
                     }
                 } else {
                     metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_ERROR)
