@@ -1,10 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2.service
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_MANGEL
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_OK
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentResponse
@@ -55,15 +51,8 @@ class SimpleSimuleringService(
                 .map(OpptjeningsperiodeCallableException::tpOrdning)
                 .map(TPOrdning::tpId)
 
-        val ufullstendig = utelatteTpNr.isNotEmpty()
-        val mangelfull = response.utbetalingsperiodeListe.isNullOrEmpty()
-
-        if (ufullstendig)
-            metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL)
-        if (mangelfull)
-            metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_MANGEL)
-        if (!ufullstendig && !mangelfull)
-            metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_OK)
+        //val ufullstendig = utelatteTpNr.isNotEmpty()
+        //val mangelfull = response.utbetalingsperiodeListe.isNullOrEmpty()
     }
 
     companion object {
