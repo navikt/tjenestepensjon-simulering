@@ -67,7 +67,7 @@ class SimuleringEndpointSecurityTest {
     companion object {
         private var wireMockServer = WireMockServer().apply {
             start()
-            stubFor(WireMock.get(WireMock.urlPathEqualTo("/person/tpordninger"))
+            stubFor(WireMock.get(WireMock.urlPathEqualTo("/person/tpordninger/intern"))
                     .willReturn(WireMock.okJson("""[{"tssId":"1234","tpId":"4321"}]""")))
             stubFor(WireMock.get(WireMock.urlPathEqualTo("/tpleverandoer/4321"))
                     .willReturn(WireMock.okJson("""{"KLP"}""")))

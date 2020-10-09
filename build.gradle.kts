@@ -1,20 +1,15 @@
-val mainClass = "no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication"
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+group = "no.nav.tjenestepensjon"
+version = "0.0.1-SNAPSHOT"
+description = "tjenestepensjon-simulering"
+
 plugins {
-    application
-    `maven-publish`
     kotlin("jvm") version "1.3.61"
     kotlin("plugin.spring") version "1.3.61"
     id("org.springframework.boot") version "2.2.4.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
 }
-
-application {
-    mainClassName = mainClass
-}
-
-group = "no.nav.tjenestepensjon"
-version = "0.0.1-SNAPSHOT"
-description = "tjenestepensjon-simulering"
 
 repositories {
     mavenCentral()
@@ -52,41 +47,12 @@ dependencies {
     testImplementation("org.springframework.boot", "spring-boot-starter-test", "2.2.4.RELEASE")
 }
 
-
-publishing {
-    publications {
-        register("mavenJava", MavenPublication::class) {
-            from(components["java"])
-        }
-    }
-}
-
 tasks {
-    withType<Test>{
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+    test {
         useJUnitPlatform()
-        testLogging.showStandardStreams = true
-    }
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
-    jar{
-        baseName = "app"
-
-        manifest {
-            attributes["Main-Class"] = mainClass
-            attributes["Class-Path"] = configurations.runtimeClasspath.get().joinToString(separator = " ") { it.name }
-        }
-
-        doLast {
-            configurations.runtimeClasspath.get().forEach {
-                val file = File("$buildDir/libs/${it.name}")
-                if (!file.exists()) it.copyTo(file)
-            }
-        }
     }
 }
 
