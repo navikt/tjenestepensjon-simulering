@@ -14,7 +14,7 @@ import java.time.LocalDate
 class ObjectMapperConfig {
 
     @Bean
-    fun objectMapper() = ObjectMapper()
+    fun objectMapper(): ObjectMapper = ObjectMapper()
             .registerModule(KotlinModule())
             .registerModule(
                     JavaTimeModule()

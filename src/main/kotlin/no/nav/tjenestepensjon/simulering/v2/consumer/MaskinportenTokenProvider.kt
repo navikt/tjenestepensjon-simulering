@@ -10,7 +10,6 @@ import no.nav.tjenestepensjon.simulering.config.WebClientConfig
 import no.nav.tjenestepensjon.simulering.v2.consumer.model.*
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
-import no.nav.tjenestepensjon.simulering.v2.exceptions.MaskinportenException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -29,8 +28,11 @@ class MaskinportenTokenProvider {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    @Value("\${IDPORTEN_scope}")
-    lateinit var idPortenScope: String
+    @Value("\${PENSJONSIMULERING_SCOPE}")
+    lateinit var pensjonsimuleringScope: String
+
+    @Value("\${TPREGISTERET_SCOPE}")
+    lateinit var tpregisteretScope: String
 
     @Value("\${jwk_public}")
     lateinit var jwksPublic: String
@@ -48,7 +50,7 @@ class MaskinportenTokenProvider {
     lateinit var maskinportenTokenEndpoint: String
 
     @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_CONFIGURATION}")
-    lateinit var idPortenConfigurationApiGwEndpoint: String
+    lateinit var maskinportenConfigurationApiGwEndpoint: String
 
     @Value("\${DIFI_ENDPOINTS_MASKINPORTEN_CONFIGURATION_API_KEY}")
     lateinit var maskinportenConfigurationApiKey: String
@@ -60,16 +62,13 @@ class MaskinportenTokenProvider {
 
     fun getKeys(keys: String) = objectMapper.readValue<Keys>(keys)
 
-    val header_target_url = "target"
-    val header_x_nav_apiKey="x-nav-apiKey"
-    val header_content_type="content-type"
+    fun generatePensjonsimuleringToken() = generateToken(pensjonsimuleringScope)
+    fun generateTpregisteretToken() = generateToken(tpregisteretScope)
 
-
-    @Throws(MaskinportenException::class)
-    fun generateToken(): String {
+    fun generateToken(scope: String): String {
         LOG.info(jwksPublic)
         val jwsToken = try {
-            generatePrivateJWT().token
+            generatePrivateJWT(scope).token
         } catch (e: Throwable) {
             LOG.error("An Error occured wile trying to generate token: $e")
             throw e
@@ -92,7 +91,7 @@ class MaskinportenTokenProvider {
         }.let { AccessToken(it.accessToken).token }
     }
 
-    fun generatePrivateJWT(): Jws {
+    fun generatePrivateJWT(scope: String): Jws {
         LOG.info("Getting Apps own private key and generating JWT token")
         LOG.info("Generating JWS token")
 
@@ -106,7 +105,7 @@ class MaskinportenTokenProvider {
                         .setIssuedAt(Date(Clock.systemUTC().millis()))
                         .setId(UUID.randomUUID().toString())
                         .setExpiration(Date(Clock.systemUTC().millis() + 120000))
-                        .claim(SCOPE, idPortenScope)
+                        .claim(SCOPE, scope)
                         .serializeToJsonWith(JacksonSerializer<Map<String, Any?>>(objectMapper))
                         .signWith(base64ToPrivateKey() as PrivateKey, SignatureAlgorithm.RS256)
                         .compact()
@@ -116,19 +115,19 @@ class MaskinportenTokenProvider {
     fun getMaskinportenAuthrozationServerConfiguration(): String {
         LOG.info("Getting own certificate and generating keypair and certificate")
         return try {
-            LOG.info("Getting well-known configuration from id-porten at: ${idPortenConfigurationApiGwEndpoint}")
+            LOG.info("Getting well-known configuration from maskinporten at: $maskinportenConfigurationApiGwEndpoint")
 
             webClient.get()
                     .uri(peproxyUrl)
-                    .header(header_target_url, idPortenConfigurationApiGwEndpoint)
+                    .header(header_target_url, maskinportenConfigurationApiGwEndpoint)
                     .header(header_x_nav_apiKey, maskinportenConfigurationApiKey)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<MaskinportenConfiguration>() {})
                     .block()
         } catch (e: Exception) {
-            LOG.error("idPortenConfigurationApiGwEndpoint: $idPortenConfigurationApiGwEndpoint, maskinportenConfigurationApiKey: $maskinportenConfigurationApiKey")
-            LOG.error("Error getting config from idporten: ${idPortenConfigurationApiGwEndpoint}", e)
+            LOG.error("maskinportenConfigurationApiGwEndpoint: $maskinportenConfigurationApiGwEndpoint, maskinportenConfigurationApiKey: $maskinportenConfigurationApiKey")
+            LOG.error("Error getting config from maskinporten: $maskinportenConfigurationApiGwEndpoint", e)
             throw ConnectToIdPortenException(e.message)
         }.let {
             LOG.info("Got config for idporten")
@@ -150,5 +149,8 @@ class MaskinportenTokenProvider {
         private val LOG = LoggerFactory.getLogger(javaClass.enclosingClass)
 
         const val SCOPE = "scope"
+        const val header_target_url = "target"
+        const val header_x_nav_apiKey="x-nav-apiKey"
+        const val header_content_type="content-type"
     }
 }

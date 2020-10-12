@@ -65,7 +65,7 @@ class AppMetrics(
     }
 
     private fun createGauge(prefix: String, metric: String): Gauge {
-        gaugeValues[prefix] = mutableMapOf<String, Number>(metric to 0)
+        gaugeValues[prefix] = mutableMapOf(metric to 0)
         return Gauge.builder(metric + prefix) { gaugeValues[prefix]!![metric] }.register(meterRegistry)
     }
 

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ClientResponse
 import java.net.URI
@@ -32,7 +31,8 @@ class TokenClient : TokenServiceConsumer {
     @Value("\${STS_URL}")
     lateinit var stsUrl: String
 
-    val maskinportToken: String by lazy { maskinportenTokenProvider.generateToken() }
+    val pensjonsimuleringToken: String by lazy { maskinportenTokenProvider.generatePensjonsimuleringToken() }
+    val tpregisteretToken: String by lazy { maskinportenTokenProvider.generateTpregisteretToken() }
 
     private var oidcToken: Token = TokenImpl(expiresIn = 0)
         get() =
@@ -51,16 +51,16 @@ class TokenClient : TokenServiceConsumer {
     @get:Synchronized
     override val oidcAccessToken: Token
         get() = oidcToken
-                .also { LOG.info("Returning cached and valid oidc-token for user: {}", username) }
+                .also { LOG.info("Returning cached and valid oidc-token for user: $username") }
 
     @get:Synchronized
     override val samlAccessToken: Token
         get() = samlToken
-                .also { LOG.info("Returning cached and valid saml-token for user: {}", username) }
+                .also { LOG.info("Returning cached and valid saml-token for user: $username") }
 
 
     private fun getTokenFromProvider(tokenType: TokenType): Token {
-        LOG.info("Getting new access-token for user: {} from: {}", username, getUrlForType(tokenType))
+        LOG.info("Getting new access-token for user: $username from: ${getUrlForType(tokenType)}")
         return webClient.get()
                 .uri(getUrlForType(tokenType))
                 .header(HttpHeaders.AUTHORIZATION, "Basic" + " " + Base64.getEncoder().encodeToString("$username:$password".toByteArray()))

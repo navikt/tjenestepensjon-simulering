@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.models
 
-import no.nav.tjenestepensjon.simulering.domain.DelytelseType.basistp
+import no.nav.tjenestepensjon.simulering.domain.DelytelseType.BASISTP
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.Pensjonsbeholdningsperiode
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
@@ -62,7 +62,7 @@ val defaultHentStillingsprosentListeRequest = HentStillingsprosentListeRequest(
 )
 
 val defaultDelytelse = Delytelse(
-        pensjonstype = basistp,
+        pensjonstype = BASISTP,
         belop = 0.0
 )
 

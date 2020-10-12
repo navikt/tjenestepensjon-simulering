@@ -44,7 +44,7 @@ object SOAPAdapter {
     }
 
     private fun TpForhold.toXML() = XMLTpForhold().also {
-        it.stillingsprosentListe = stillingsprosentListe.takeUnless(List<Stillingsprosent>::isEmpty)?.map { it.toXML() }
+        it.stillingsprosentListe = stillingsprosentListe.takeUnless(List<Stillingsprosent>::isEmpty)?.map { o -> o.toXML() }
         it.tpnr = tpnr
         it.tssEksternId = tssEksternId
     }
@@ -63,7 +63,7 @@ object SOAPAdapter {
         it.navnOrdning = navnOrdning!!
         it.leverandorUrl = leverandorUrl!!
         it.inkludertOrdningListe = inkluderteOrdninger!!
-        it.utbetalingsperiodeListe = utbetalingsperioder!!.map { it?.toXML(fnr) }
+        it.utbetalingsperiodeListe = utbetalingsperioder!!.map { o -> o?.toXML(fnr) }
     }
 
     private fun Utbetalingsperiode.toXML(fnr: FNR) = XMLUtbetalingsperiode().also {
@@ -121,7 +121,7 @@ object SOAPAdapter {
                     it.simulertAP2011 = simulertAP2011.toXML()
                     it.inntektUnderGradertUttak = inntektUnderGradertUttak
                     it.antallArInntektEtterHeltUttak = antallArInntektEtterHeltUttak
-                    it.tpForholdListe = tpForholdListe.takeUnless(List<TpForhold>::isEmpty)?.map { it.toXML() }
+                    it.tpForholdListe = tpForholdListe.takeUnless(List<TpForhold>::isEmpty)?.map { o -> o.toXML() }
                 }
             }
         }
@@ -155,7 +155,7 @@ object SOAPAdapter {
     fun marshal(p0: HentStillingsprosentListeResponse): XMLHentStillingsprosentListeResponseWrapper = with(p0) {
         XMLHentStillingsprosentListeResponseWrapper().also { wrapper ->
             wrapper.response = XMLHentStillingsprosentListeResponse().also {
-                it.stillingsprosentListe = stillingsprosentListe.map { it.toXML() }
+                it.stillingsprosentListe = stillingsprosentListe.map { o -> o.toXML() }
             }
         }
     }
@@ -169,7 +169,7 @@ object SOAPAdapter {
     fun marshal(p0: SimulerOffentligTjenestepensjonResponse, fnr: FNR): XMLSimulerOffentligTjenestepensjonResponseWrapper = with(p0) {
         XMLSimulerOffentligTjenestepensjonResponseWrapper().also { wrapper ->
             wrapper.response = XMLSimulerOffentligTjenestepensjonResponse().also {
-                it.simulertPensjonListe = simulertPensjonListe.map { it.toXML(fnr) }
+                it.simulertPensjonListe = simulertPensjonListe.map { o -> o.toXML(fnr) }
             }
         }
     }

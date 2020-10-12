@@ -68,20 +68,20 @@ class SoapClient(
     ) =
             (webServiceTemplate.marshalSendAndReceive(
                     with(request.simuleringsperioder) {
-                        if (size > 1 && min()!!.isGradert())
+                        if (size > 1 && minOrNull()!!.isGradert())
                             SimulerOffentligTjenestepensjonRequest(
                                     simulerPensjonRequest = request,
                                     tpOrdning = tpOrdning,
                                     tpOrdningStillingsprosentMap = tpOrdningStillingsprosentMap,
-                                    forsteUttak = min()!!,
-                                    heltUttak = max()!!
+                                    forsteUttak = minOrNull()!!,
+                                    heltUttak = maxOrNull()!!
                             )
                         else
                             SimulerOffentligTjenestepensjonRequest(
                                     simulerPensjonRequest = request,
                                     tpOrdning = tpOrdning,
                                     tpOrdningStillingsprosentMap = tpOrdningStillingsprosentMap,
-                                    forsteUttak = min()!!
+                                    forsteUttak = minOrNull()!!
                             )
                     }.let(SOAPAdapter::marshal),
                     SOAPCallback(

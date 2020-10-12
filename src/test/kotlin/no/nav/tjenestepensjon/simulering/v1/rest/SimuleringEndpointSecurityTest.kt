@@ -7,7 +7,6 @@ import no.nav.tjenestepensjon.simulering.config.TokenProviderStub
 import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,7 +14,6 @@ import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class])
@@ -28,10 +26,10 @@ class SimuleringEndpointSecurityTest {
     @Test
     @Throws(Exception::class)
     fun insecureEndpointsAccessible() {
-        mockMvc.perform(MockMvcRequestBuilders.get("/actuator/prometheus")).andExpect(MockMvcResultMatchers.status().isOk)
-        mockMvc.perform(MockMvcRequestBuilders.get("/actuator/health")).andExpect(MockMvcResultMatchers.status().isOk)
-        mockMvc.perform(MockMvcRequestBuilders.get("/isAlive")).andExpect(MockMvcResultMatchers.status().isOk)
-        mockMvc.perform(MockMvcRequestBuilders.get("/isReady")).andExpect(MockMvcResultMatchers.status().isOk)
+        mockMvc.perform(MockMvcRequestBuilders.get("/actuator/prometheus")).andExpect(status().isOk)
+        mockMvc.perform(MockMvcRequestBuilders.get("/actuator/health")).andExpect(status().isOk)
+        mockMvc.perform(MockMvcRequestBuilders.get("/isAlive")).andExpect(status().isOk)
+        mockMvc.perform(MockMvcRequestBuilders.get("/isReady")).andExpect(status().isOk)
     }
 
     @Test
@@ -40,7 +38,7 @@ class SimuleringEndpointSecurityTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/simulering")
                 .contentType(APPLICATION_JSON)
                 .content("{}")
-        ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
+        ).andExpect(status().isUnauthorized)
     }
 
     @Test
@@ -50,7 +48,7 @@ class SimuleringEndpointSecurityTest {
                 .contentType(APPLICATION_JSON)
                 .content("{}")
                 .header(AUTHORIZATION, "Bearer abc1234")
-        ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
+        ).andExpect(status().isUnauthorized)
     }
 
     @Test

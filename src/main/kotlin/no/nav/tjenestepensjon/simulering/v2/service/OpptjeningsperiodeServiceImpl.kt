@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class OpptjeningsperiodeServiceImpl() : OpptjeningsperiodeService {
+class OpptjeningsperiodeServiceImpl: OpptjeningsperiodeService {
 
     override fun getOpptjeningsperiodeListe(stillingsprosentResponse: StillingsprosentResponse) =
             OpptjeningsperiodeResponse(

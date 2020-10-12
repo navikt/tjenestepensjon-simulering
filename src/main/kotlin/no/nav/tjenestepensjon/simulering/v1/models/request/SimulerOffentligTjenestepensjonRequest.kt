@@ -87,7 +87,7 @@ data class SimulerOffentligTjenestepensjonRequest(
 
         fun findAntallArInntektEtterHeltUttak(inntektList: List<Inntekt>, uttaksDato: LocalDate): Int {
             val inntektAtUttaksDato = findInntektOnDate(inntektList, uttaksDato) ?: return 0
-            val latestInntekt = inntektList.max() ?: return 0
+            val latestInntekt = inntektList.maxOrNull() ?: return 0
             return YEARS.between(latestInntekt.datoFom, inntektAtUttaksDato.datoFom).toInt()
         }
 

@@ -36,7 +36,7 @@ class RestClient {
                     .uri(peproxyUrl)
                     .header(peproxyHttpheadersTargetUrl, tpLeverandor.simuleringUrl)
                     .header("x-application-id", "NAV")
-                    .header(peproxyHttpheadersTargetAuthorization, "Bearer " + if (!tpLeverandor.name.equals("SPK")) tokenClient.maskinportToken else tokenClient.oidcAccessToken)
+                    .header(peproxyHttpheadersTargetAuthorization, "Bearer " + if (tpLeverandor.name != "SPK") tokenClient.pensjonsimuleringToken else tokenClient.oidcAccessToken)
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<SimulerOffentligTjenestepensjonResponse>() {})
