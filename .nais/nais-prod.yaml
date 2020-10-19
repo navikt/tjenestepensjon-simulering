@@ -1,5 +1,5 @@
-apiVersion: "nais.io/v1alpha1"
-kind: "Application"
+apiVersion: nais.io/v1alpha1
+kind: Application
 metadata:
   name: tjenestepensjon-simulering
   namespace: default
@@ -12,27 +12,25 @@ spec:
     - https://tjenestepensjon-simulering.nais.adeo.no
   liveness:
     path: isAlive
+    initialDelay: 30
+    periodSeconds: 1
+    failureThreshold: 60
   readiness:
     path: isReady
+    initialDelay: 30
+    periodSeconds: 1
+    failureThreshold: 60
   vault:
     enabled: true
     paths:
-     - kvPath: /kv/prod/fss/tjenestepensjon-simulering/default
-       mountPath: /var/run/secrets/nais.io/vault
-     - kvPath: /maskinporten/data/prod/creds/tjenestepensjon-simulering
-       mountPath: /var/run/secrets/nais.io/vault/jwks
-  spec:
-    webproxy: true
+      - kvPath: /kv/prod/fss/tjenestepensjon-simulering/default
+        mountPath: /var/run/secrets/nais.io/vault
+      - kvPath: /maskinporten/data/prod/creds/tjenestepensjon-simulering
+        mountPath: /var/run/secrets/nais.io/vault/jwks
+  webproxy: true
   replicas:
     min: 1
     max: 1
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 512Mi
-    requests:
-      cpu: 500m
-      memory: 256Mi
   prometheus:
     enabled: true
     path: actuator/prometheus

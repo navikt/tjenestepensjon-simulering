@@ -31,8 +31,10 @@ class TokenClient : TokenServiceConsumer {
     @Value("\${STS_URL}")
     lateinit var stsUrl: String
 
-    val pensjonsimuleringToken: String by lazy { maskinportenTokenProvider.generatePensjonsimuleringToken() }
-    val tpregisteretToken: String by lazy { maskinportenTokenProvider.generateTpregisteretToken() }
+    val pensjonsimuleringToken: String
+        get() = maskinportenTokenProvider.generatePensjonsimuleringToken()
+    val tpregisteretToken: String
+        get() = maskinportenTokenProvider.generateTpregisteretToken()
 
     private var oidcToken: Token = TokenImpl(expiresIn = 0)
         get() =

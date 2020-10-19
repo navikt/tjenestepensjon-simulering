@@ -18,25 +18,16 @@ class RestClient {
 
     private val webClient = WebClientConfig.webClient()
 
-    @Value("\${PEPROXY_HTTPHEADERS_TARGET_AUTHORIZATION}")
-    lateinit var peproxyHttpheadersTargetAuthorization: String
-
-    @Value("\${PEPROXY_HTTPHEADERS_TARGET_URL}")
-    lateinit var peproxyHttpheadersTargetUrl: String
-
-    @Value("\${PEPROXY_URL}")
-    lateinit var peproxyUrl: String
-
     fun getResponse(
             request: SimulerPensjonRequest,
             tpOrdning: TPOrdning,
             tpLeverandor: TpLeverandor
     ): SimulerOffentligTjenestepensjonResponse =
             webClient.post()
-                    .uri(peproxyUrl)
-                    .header(peproxyHttpheadersTargetUrl, tpLeverandor.simuleringUrl)
-                    .header("x-application-id", "NAV")
-                    .header(peproxyHttpheadersTargetAuthorization, "Bearer " + if (tpLeverandor.name != "SPK") tokenClient.pensjonsimuleringToken else tokenClient.oidcAccessToken)
+                    .uri(tpLeverandor.simuleringUrl)
+                    .headers {
+                        it.setBearerAuth(if (tpLeverandor.name != "SPK") tokenClient.pensjonsimuleringToken else tokenClient.oidcAccessToken.accessToken!!)
+                    }
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(object : ParameterizedTypeReference<SimulerOffentligTjenestepensjonResponse>() {})

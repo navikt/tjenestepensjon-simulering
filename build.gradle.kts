@@ -13,6 +13,13 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://maven.pkg.github.com/navikt/maskinporten-client")
+        credentials {
+            username = "token"
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
@@ -24,6 +31,7 @@ dependencies {
     implementation("io.projectreactor.netty", "reactor-netty", "0.9.12.RELEASE")
     implementation("javax.xml.bind", "jaxb-api", "2.3.1")
     implementation("javax.xml.soap", "javax.xml.soap-api", "1.4.0")
+    implementation("no.nav.pensjonsamhandling", "maskinporten-client", "0.3.2")
     implementation("org.glassfish.jaxb", "jaxb-runtime", "2.3.2")
     implementation("org.springframework","spring-webflux", "5.2.9.RELEASE")
     implementation("org.springframework.boot", "spring-boot-actuator-autoconfigure")
