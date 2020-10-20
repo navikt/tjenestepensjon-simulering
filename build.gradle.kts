@@ -16,7 +16,7 @@ repositories {
     maven {
         url = uri("https://maven.pkg.github.com/navikt/maskinporten-client")
         credentials {
-            username = "token"
+            username = "x-access-token"
             password = System.getenv("GITHUB_TOKEN")
         }
     }

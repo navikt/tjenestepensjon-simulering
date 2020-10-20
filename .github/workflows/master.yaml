@@ -22,9 +22,9 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build
         run: ./gradlew build
-        env:
-          ORG_GRADLE_PROJECT_githubUser: x-access-token
-          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
+#        env:
+#          ORG_GRADLE_PROJECT_githubUser: x-access-token
+#          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
 
       # Release
       - name: Create Docker tag
