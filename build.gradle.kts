@@ -34,6 +34,7 @@ dependencies {
     implementation("org.glassfish.jaxb", "jaxb-runtime", "2.3.2")
     implementation("org.springframework.boot", "spring-boot-actuator-autoconfigure")
     implementation("org.springframework.boot", "spring-boot-starter-cache")
+    implementation("org.springframework.boot", "spring-boot-starter-web")
     implementation("org.springframework.boot", "spring-boot-starter-webflux")
     implementation("org.springframework.metrics", "spring-metrics", "0.5.1.RELEASE")
     implementation("org.springframework.security", "spring-security-jwt", "1.1.1.RELEASE")
