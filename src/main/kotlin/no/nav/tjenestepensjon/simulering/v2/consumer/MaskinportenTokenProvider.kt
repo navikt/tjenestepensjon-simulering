@@ -4,6 +4,7 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import no.nav.security.maskinporten.client.MaskinportenClient
 import no.nav.security.maskinporten.client.MaskinportenConfig
+import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
@@ -43,6 +44,15 @@ class MaskinportenTokenProvider(
             120
     ))
 
-    fun generatePensjonsimuleringToken() = pensjonsimuleringClient.maskinportenTokenString
-    fun generateTpregisteretToken() = tpregisteretClient.maskinportenTokenString
+    fun generatePensjonsimuleringToken() = try {
+        pensjonsimuleringClient.maskinportenTokenString
+    } catch (e: Throwable) {
+        throw ConnectToMaskinPortenException(e.message)
+    }
+
+    fun generateTpregisteretToken() = try {
+        tpregisteretClient.maskinportenTokenString
+    } catch (e: Throwable) {
+        throw ConnectToMaskinPortenException(e.message)
+    }
 }

@@ -5,13 +5,14 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.springframework.web.reactive.function.client.WebClient
 
 internal class TokenClientTest {
-    private val tokenClientOld: TokenClientOld = TokenClientOld().apply {
+    private val tokenClientOld: TokenClientOld = TokenClientOld(WebClient.create()).apply {
         username = "username"
         password = "password"
         stsUrl = "http://localhost:8080"

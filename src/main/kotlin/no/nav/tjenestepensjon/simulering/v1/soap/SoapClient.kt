@@ -1,6 +1,5 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
@@ -31,9 +30,6 @@ class SoapClient(
     init {
         this.webServiceTemplate = webServiceTemplate
     }
-
-    @Autowired
-    lateinit var objectMapper: ObjectMapper
 
     @Value("\${TJENESTEPENSJON_URL}")
     lateinit var simulerOffentlingTjenestepensjonUrl: String
