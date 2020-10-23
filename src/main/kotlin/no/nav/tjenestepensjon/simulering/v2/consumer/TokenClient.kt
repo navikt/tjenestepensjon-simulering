@@ -1,6 +1,5 @@
 package no.nav.tjenestepensjon.simulering.v2.consumer
 
-import no.nav.tjenestepensjon.simulering.config.WebClientConfig
 import no.nav.tjenestepensjon.simulering.consumer.TokenServiceConsumer
 import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
@@ -9,15 +8,14 @@ import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient.TokenType.SAML
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 import java.net.URI
-import java.util.*
 
 @Service
-class TokenClient : TokenServiceConsumer {
+class TokenClient(val webClient: WebClient) : TokenServiceConsumer {
 
     @Autowired
     lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
@@ -31,8 +29,10 @@ class TokenClient : TokenServiceConsumer {
     @Value("\${STS_URL}")
     lateinit var stsUrl: String
 
-    val pensjonsimuleringToken: String by lazy { maskinportenTokenProvider.generatePensjonsimuleringToken() }
-    val tpregisteretToken: String by lazy { maskinportenTokenProvider.generateTpregisteretToken() }
+    val pensjonsimuleringToken: String
+        get() = maskinportenTokenProvider.generatePensjonsimuleringToken()
+    val tpregisteretToken: String
+        get() = maskinportenTokenProvider.generateTpregisteretToken()
 
     private var oidcToken: Token = TokenImpl(expiresIn = 0)
         get() =
@@ -45,8 +45,6 @@ class TokenClient : TokenServiceConsumer {
             if (field.isExpired != true && field.accessToken != null) field
             else
                 getTokenFromProvider(SAML).also { field = it }
-
-    private val webClient = WebClientConfig.webClient()
 
     @get:Synchronized
     override val oidcAccessToken: Token
@@ -63,10 +61,10 @@ class TokenClient : TokenServiceConsumer {
         LOG.info("Getting new access-token for user: $username from: ${getUrlForType(tokenType)}")
         return webClient.get()
                 .uri(getUrlForType(tokenType))
-                .header(HttpHeaders.AUTHORIZATION, "Basic" + " " + Base64.getEncoder().encodeToString("$username:$password".toByteArray()))
+                .headers { it.setBasicAuth(username, password) }
                 .retrieve()
-                .onStatus({ httpStatus: HttpStatus -> httpStatus != HttpStatus.OK }) { clientResponse: ClientResponse -> throw RuntimeException("Error while retrieving token from provider, returned HttpStatus:" + clientResponse.statusCode().value()) }
-                .bodyToMono(TokenImpl::class.java)
+                .onStatus({ httpStatus: HttpStatus -> httpStatus != HttpStatus.OK }) { throw RuntimeException("Error while retrieving token from provider, returned HttpStatus:" + it.statusCode().value()) }
+                .bodyToMono<TokenImpl>()
                 .block()
                 .also(::validate)!!
     }
