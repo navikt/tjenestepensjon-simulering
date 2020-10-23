@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - feature/maskinporten-client
 
 jobs:
   build-and-deploy:
