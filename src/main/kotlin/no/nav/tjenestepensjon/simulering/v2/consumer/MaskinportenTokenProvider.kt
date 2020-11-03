@@ -7,6 +7,7 @@ import no.nav.security.maskinporten.client.MaskinportenConfig
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.text.ParseException
 
 @Service
 class MaskinportenTokenProvider(
@@ -26,7 +27,11 @@ class MaskinportenTokenProvider(
         privateKeys: String
 ) {
 
-    private val privateKey = JWKSet.parse(privateKeys).keys.first() as RSAKey
+    private val privateKey = try {
+        JWKSet.parse(privateKeys).keys.first() as RSAKey
+    } catch (_ : ParseException) {
+        RSAKey.parse(privateKeys)
+    }
 
     val pensjonsimuleringClient = MaskinportenClient(MaskinportenConfig(
             maskinportenUrl,
