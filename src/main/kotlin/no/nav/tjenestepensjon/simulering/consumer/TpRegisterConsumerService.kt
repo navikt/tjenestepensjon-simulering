@@ -30,6 +30,6 @@ class TpRegisterConsumerService(
             .bodyToMono<List<TPOrdning>>()
             .block()
             ?.takeUnless(List<TPOrdning>::isEmpty)
-            ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person:$fnr")
+            ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person.")
 
 }

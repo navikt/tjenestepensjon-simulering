@@ -11,6 +11,7 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSP
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
+import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
@@ -92,8 +93,8 @@ class SimuleringEndpoint(
                 ResponseEntity(response, OK)
             }
         } catch (e: Throwable) {
-            LOG.error("Unable to handle request", e.message)
             when (e) {
+                is NoTpOrdningerFoundException -> null to NOT_FOUND
                 is JsonParseException -> "Unable to parse body to request." to BAD_REQUEST
                 is JsonMappingException -> "Unable to mapping body to request." to BAD_REQUEST
                 is ConnectToIdPortenException -> "Unable to to connect with idPorten." to INTERNAL_SERVER_ERROR
@@ -102,6 +103,7 @@ class SimuleringEndpoint(
                 is SimuleringException -> e.message to INTERNAL_SERVER_ERROR
                 else -> e.message to INTERNAL_SERVER_ERROR
             }.run {
+                LOG.error("Unable to handle request", e.message)
                 LOG.error("httpResponse: {}, cause: {}", first, e.message)
 
                 if (::tpLeverandor.isInitialized) {
@@ -112,7 +114,7 @@ class SimuleringEndpoint(
                     metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_ERROR)
                 }
 
-                ResponseEntity(first.toString(), second)
+                ResponseEntity(first, second)
             }
         }
     }
