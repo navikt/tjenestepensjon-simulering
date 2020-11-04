@@ -11,7 +11,6 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSP
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
-import no.nav.tjenestepensjon.simulering.domain.DelytelseType
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
@@ -29,12 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus.*
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.WebDataBinder
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST
 import org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import java.beans.PropertyEditorSupport
 
 @RestController
 class SimuleringEndpoint(
@@ -131,18 +131,6 @@ class SimuleringEndpoint(
                         tpOrdning to FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorList)
                     }.toMap()
             ).resultMap
-
-    @InitBinder
-    fun initBinder(binder: WebDataBinder) {
-        binder.registerCustomEditor(
-                DelytelseType::class.java,
-                object : PropertyEditorSupport() {
-                    override fun setAsText(text: String) {
-                        value = (DelytelseType.valueOf(text.toUpperCase()))
-                    }
-                }
-        )
-    }
 
     companion object {
         const val NAV_CALL_ID = "nav-call-id"
