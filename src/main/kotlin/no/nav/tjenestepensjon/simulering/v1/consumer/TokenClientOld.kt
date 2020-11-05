@@ -39,15 +39,15 @@ class TokenClientOld(val webClient: WebClient) : TokenServiceConsumer {
     @get:Synchronized
     override val oidcAccessToken: Token
         get() = oidcToken
-                .also { LOG.info("Returning cached and valid oidc-token for user: {}", username) }
+                .also { LOG.info("Returning cached and valid oidc-token for user: $username") }
 
     @get:Synchronized
     override val samlAccessToken: Token
         get() = samlToken
-                .also { LOG.info("Returning cached and valid saml-token for user: {}", username) }
+                .also { LOG.info("Returning cached and valid saml-token for user: $username") }
 
     private fun getTokenFromProvider(tokenType: TokenType): Token {
-        LOG.info("Getting new access-token for user: {} from: {}", username, getUrlForType(tokenType))
+        LOG.info("Getting new access-token for user: $username from: ${getUrlForType(tokenType)}")
         return webClient.get()
                 .uri(getUrlForType(tokenType))
                 .headers { it.setBasicAuth(username, password) }

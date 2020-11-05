@@ -21,11 +21,11 @@ class SoapFaultHandler constructor(private val jaxb2Marshaller: Jaxb2Marshaller)
                             .let(JAXBElement::class::cast)
                             .value as StelvioFault
                     SoapFaultException(knownFault::class.qualifiedName!!, knownFault.errorMessage).also {
-                        LOG.warn("Resolved known fault from SoapFaultDetail: {}", it.toString())
+                        LOG.warn("Resolved known fault from SoapFaultDetail: $it")
                     }
                 } catch (ex: Exception) {
                     SoapFaultException(soapFault.faultCode.toString(), soapFault.faultStringOrReason).also {
-                        LOG.warn("Could not resolve known error from SoapFaultDetail. Resolved from SaopFault: {}", it.toString())
+                        LOG.warn("Could not resolve known error from SoapFaultDetail. Resolved from SoapFault: $it")
                     }
                 }
             }

@@ -25,7 +25,7 @@ class SimpleSimuleringService(
 
         request.tpForholdListe = buildTpForhold(opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap)
         request.sisteTpnr = tpOrdning.tpId
-        LOG.debug("Populated request: ", filterFnr(request.toString()))
+        LOG.debug("Populated request: ${filterFnr(request.toString())}")
         return restClient.getResponse(request = request, tpOrdning = tpOrdning, tpLeverandor = tpLeverandor)
     }
 

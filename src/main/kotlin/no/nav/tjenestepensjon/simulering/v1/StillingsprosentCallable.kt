@@ -21,7 +21,7 @@ class StillingsprosentCallable(
         e.printStackTrace()
         throw StillingsprosentCallableException("Call to getStillingsprosenter failed with exception: $e", e, tpOrdning)
                 .also { ex ->
-                    LOG.warn("Rethrowing as: {}", ex.toString())
+                    LOG.warn("Rethrowing as: $ex")
                 }
     }
 

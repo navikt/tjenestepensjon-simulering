@@ -60,8 +60,8 @@ class SimuleringEndpoint(
             @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
     ): ResponseEntity<Any> {
         addHeaderToRequestContext(NAV_CALL_ID, navCallId)
-        LOG.info("Processing nav-call-id: ", getHeaderFromRequestContext(NAV_CALL_ID))
-        LOG.debug("Received request: ", filterFnr(body))
+        LOG.info("Processing nav-call-id: ${getHeaderFromRequestContext(NAV_CALL_ID)}")
+        LOG.debug("Received request: ${filterFnr(body)}")
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
         return try {
@@ -82,7 +82,7 @@ class SimuleringEndpoint(
                         tpLeverandor
                 )
                 metrics.incrementRestCounter(tpLeverandor.name, "OK")
-                LOG.debug("Returning response: ", filterFnr(response.toString()))
+                LOG.debug("Returning response: ${filterFnr(response.toString())}")
                 ResponseEntity(response, OK)
             } else {
                 LOG.debug("Request simulation from ${tpLeverandor.name} using SOAP")
@@ -92,7 +92,7 @@ class SimuleringEndpoint(
                         tpOrdning,
                         tpLeverandor
                 )
-                LOG.debug("Returning response: ", filterFnr(response.toString()))
+                LOG.debug("Returning response: ${filterFnr(response.toString())}")
                 ResponseEntity(response, OK)
             }
         } catch (e: Throwable) {
@@ -107,7 +107,7 @@ class SimuleringEndpoint(
                 else -> e.message to INTERNAL_SERVER_ERROR
             }.run {
                 LOG.error("Unable to handle request with nav-call-id ", getHeaderFromRequestContext(NAV_CALL_ID))
-                LOG.error("httpResponse: {} - {}, cause: {}", second.value(), first, e.message)
+                LOG.error("httpResponse: ${second.value()} - $first, cause: ${e.message}")
 
                 if (::tpLeverandor.isInitialized) {
                     if (tpLeverandor.impl == REST) {
