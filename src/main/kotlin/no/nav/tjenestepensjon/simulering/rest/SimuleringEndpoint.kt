@@ -106,7 +106,7 @@ class SimuleringEndpoint(
                 is SimuleringException -> e.message to INTERNAL_SERVER_ERROR
                 else -> e.message to INTERNAL_SERVER_ERROR
             }.run {
-                LOG.error("Unable to handle request with nav-call-id ", getHeaderFromRequestContext(NAV_CALL_ID))
+                LOG.error("Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}")
                 LOG.error("httpResponse: ${second.value()} - $first, cause: ${e.message}")
 
                 if (::tpLeverandor.isInitialized) {

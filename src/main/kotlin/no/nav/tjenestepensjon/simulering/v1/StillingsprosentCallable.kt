@@ -18,7 +18,6 @@ class StillingsprosentCallable(
     override fun call() = try {
         soapClient.getStillingsprosenter(fnr, tpOrdning, tpLeverandor)
     } catch (e: Throwable) {
-        e.printStackTrace()
         throw StillingsprosentCallableException("Call to getStillingsprosenter failed with exception: $e", e, tpOrdning)
                 .also { ex ->
                     LOG.warn("Rethrowing as: $ex")
