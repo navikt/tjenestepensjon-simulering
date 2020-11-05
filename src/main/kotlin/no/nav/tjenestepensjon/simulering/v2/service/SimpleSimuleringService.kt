@@ -2,6 +2,7 @@ package no.nav.tjenestepensjon.simulering.v2.service
 
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.rest.SimuleringEndpoint.Companion.filterFnr
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentResponse
 import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
@@ -24,17 +25,17 @@ class SimpleSimuleringService(
 
         request.tpForholdListe = buildTpForhold(opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap)
         request.sisteTpnr = tpOrdning.tpId
-
+        LOG.debug("Populated request: ", filterFnr(request.toString()))
         return restClient.getResponse(request = request, tpOrdning = tpOrdning, tpLeverandor = tpLeverandor)
     }
 
     private fun buildTpForhold(tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap) = tpOrdningOpptjeningsperiodeMap
-        .map{ entry ->
-            TpForhold(
-                    entry.key.tpId,
-                    entry.value
-            )
-        }
+            .map { entry ->
+                TpForhold(
+                        entry.key.tpId,
+                        entry.value
+                )
+            }
 
     companion object {
         @JvmStatic
