@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_FEIL
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
@@ -52,8 +53,6 @@ class SimuleringEndpoint(
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    lateinit var tpLeverandor: TpLeverandor
-
     @PostMapping("/simulering")
     fun simuler(
             @RequestBody body: String,
@@ -71,7 +70,7 @@ class SimuleringEndpoint(
             val tpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
 
             metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_OK)
-            tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
+            val tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
 
             if (tpLeverandor.impl == REST) {
                 LOG.debug("Request simulation from ${tpLeverandor.name} using REST")
@@ -109,10 +108,8 @@ class SimuleringEndpoint(
                 LOG.error("Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}")
                 LOG.error("httpResponse: ${second.value()} - $first, cause: ${e.message}")
 
-                if (::tpLeverandor.isInitialized) {
-                    if (tpLeverandor.impl == REST) {
-                        metrics.incrementRestCounter(tpLeverandor.name, "ERROR")
-                    }
+                if (e is SimuleringException) {
+                    metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_FEIL)
                 } else {
                     metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_ERROR)
                 }
