@@ -40,7 +40,7 @@ class MaskinportenTokenProvider(
             privateKey,
             pensjonsimuleringScope,
             120,
-            ProxyConfig("http://webproxy.nais", 8088)
+            ProxyConfig("webproxy.nais", 8088)
     ))
 
     val tpregisteretClient = MaskinportenClient(MaskinportenConfig(
@@ -49,7 +49,7 @@ class MaskinportenTokenProvider(
             privateKey,
             tpregisteretScope,
             120,
-            ProxyConfig("http://webproxy.nais", 8088)
+            ProxyConfig("webproxy.nais", 8088)
     ))
 
     fun generatePensjonsimuleringToken() = try {
