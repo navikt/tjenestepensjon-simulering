@@ -103,7 +103,7 @@ class SimuleringEndpoint(
                 is ConnectToMaskinPortenException -> "Unable to to get token from maskinporten." to INTERNAL_SERVER_ERROR
                 is WebClientResponseException -> "Caught WebClientResponseException in version 1" to INTERNAL_SERVER_ERROR
                 is SimuleringException -> e.message to INTERNAL_SERVER_ERROR
-                else -> e.message to INTERNAL_SERVER_ERROR
+                else -> e::class.qualifiedName to INTERNAL_SERVER_ERROR
             }.run {
                 LOG.error("Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}")
                 LOG.error("httpResponse: ${second.value()} - $first, cause: ${e.message}")
