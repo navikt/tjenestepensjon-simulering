@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST
 import org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import java.lang.reflect.UndeclaredThrowableException
 
 @RestController
 class SimuleringEndpoint(
@@ -103,6 +104,10 @@ class SimuleringEndpoint(
                 is ConnectToMaskinPortenException -> "Unable to to get token from maskinporten." to INTERNAL_SERVER_ERROR
                 is WebClientResponseException -> "Caught WebClientResponseException in version 1" to INTERNAL_SERVER_ERROR
                 is SimuleringException -> e.message to INTERNAL_SERVER_ERROR
+                is UndeclaredThrowableException -> e.run {
+                    LOG.error("UndeclaredThrowableException received. $cause")
+                    cause?.message to INTERNAL_SERVER_ERROR
+                }
                 else -> e::class.qualifiedName to INTERNAL_SERVER_ERROR
             }.run {
                 LOG.error("Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}")
