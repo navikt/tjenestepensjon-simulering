@@ -30,7 +30,7 @@ dependencies {
     implementation("io.micrometer", "micrometer-registry-prometheus", "1.5.5")
     implementation("javax.xml.bind", "jaxb-api", "2.3.1")
     implementation("javax.xml.soap", "javax.xml.soap-api", "1.4.0")
-    implementation("no.nav.pensjonsamhandling", "maskinporten-client", "0.3.2")
+    implementation("no.nav.pensjonsamhandling", "maskinporten-client", "0.3.6")
     implementation("org.glassfish.jaxb", "jaxb-runtime", "2.3.2")
     implementation("org.springframework.boot", "spring-boot-actuator-autoconfigure")
     implementation("org.springframework.boot", "spring-boot-starter-cache")

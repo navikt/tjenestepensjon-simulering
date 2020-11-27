@@ -4,7 +4,6 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import no.nav.security.maskinporten.client.MaskinportenClient
 import no.nav.security.maskinporten.client.MaskinportenConfig
-import no.nav.security.maskinporten.client.ProxyConfig
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -39,8 +38,7 @@ class MaskinportenTokenProvider(
             clientId,
             privateKey,
             pensjonsimuleringScope,
-            120,
-            ProxyConfig("webproxy.nais", 8088)
+            120
     ))
 
     val tpregisteretClient = MaskinportenClient(MaskinportenConfig(
@@ -48,8 +46,7 @@ class MaskinportenTokenProvider(
             clientId,
             privateKey,
             tpregisteretScope,
-            120,
-            ProxyConfig("webproxy.nais", 8088)
+            120
     ))
 
     fun generatePensjonsimuleringToken() = try {
