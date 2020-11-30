@@ -7,6 +7,8 @@ import no.nav.security.maskinporten.client.MaskinportenConfig
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.net.InetSocketAddress
+import java.net.ProxySelector
 import java.text.ParseException
 
 @Service
@@ -33,12 +35,15 @@ class MaskinportenTokenProvider(
         RSAKey.parse(privateKeys)
     }
 
+    private final val proxySelector: ProxySelector = ProxySelector.of(InetSocketAddress("webproxy-nais.nav.no", 8088))
+
     val pensjonsimuleringClient = MaskinportenClient(MaskinportenConfig(
             maskinportenUrl,
             clientId,
             privateKey,
             pensjonsimuleringScope,
-            120
+            120,
+            proxySelector
     ))
 
     val tpregisteretClient = MaskinportenClient(MaskinportenConfig(
@@ -46,7 +51,8 @@ class MaskinportenTokenProvider(
             clientId,
             privateKey,
             tpregisteretScope,
-            120
+            120,
+            proxySelector
     ))
 
     fun generatePensjonsimuleringToken() = try {
