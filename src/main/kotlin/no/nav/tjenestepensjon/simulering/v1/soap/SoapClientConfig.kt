@@ -24,7 +24,7 @@ class SoapClientConfig(
                 unmarshaller = jaxb2Marshaller()
                 defaultUri = providerUri
                 faultMessageResolver = SoapFaultHandler(jaxb2Marshaller())
-                setCheckConnectionForFault(false)
+                setCheckConnectionForFault(true)
                 setCheckConnectionForError(true)
             }
 }
