@@ -29,7 +29,9 @@ class StillingsprosentServiceImpl(
         val elapsed = metrics.elapsedSince(startTime)
         LOG.info("Retrieved all stillingsprosenter in: $elapsed ms")
         metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_TIME, elapsed.toDouble())
-        return StillingsprosentResponse(asyncResponse.resultMap, asyncResponse.exceptions)
+        return StillingsprosentResponse(asyncResponse.resultMap, asyncResponse.exceptions).apply {
+            exceptions.forEach { LOG.warn("Exception caught while fetching stillingsprosenter: ${it.cause}") }
+        }
     }
 
     @Throws(DuplicateStillingsprosentEndDateException::class,
