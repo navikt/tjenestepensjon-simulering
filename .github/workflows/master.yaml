@@ -3,7 +3,7 @@ name: NAIS Deploy
 on:
   push:
     branches:
-      - master
+      - feature/enable-webproxy
 
 jobs:
   build-and-deploy:
