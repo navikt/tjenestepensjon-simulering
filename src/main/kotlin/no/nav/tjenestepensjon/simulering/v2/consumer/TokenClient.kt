@@ -34,17 +34,15 @@ class TokenClient(val webClient: WebClient) : TokenServiceConsumer {
     val tpregisteretToken: String
         get() = maskinportenTokenProvider.generateTpregisteretToken()
 
-    private var oidcToken: Token = TokenImpl(expiresIn = 0)
+    private var oidcToken: Token = TokenImpl("", expiresIn = 0)
         get() =
-            if (field.isExpired != true && field.accessToken != null) field
-            else
-                getTokenFromProvider(OIDC).also { field = it }
+            if (field.isExpired) getTokenFromProvider(OIDC).also { field = it }
+            else field
 
-    private var samlToken: Token = TokenImpl(expiresIn = 0)
+    private var samlToken: Token = TokenImpl("", expiresIn = 0)
         get() =
-            if (field.isExpired != true && field.accessToken != null) field
-            else
-                getTokenFromProvider(SAML).also { field = it }
+            if (field.isExpired) getTokenFromProvider(SAML).also { field = it }
+            else field
 
     @get:Synchronized
     override val oidcAccessToken: Token
@@ -64,14 +62,13 @@ class TokenClient(val webClient: WebClient) : TokenServiceConsumer {
                 .headers { it.setBasicAuth(username, password) }
                 .retrieve()
                 .onStatus({ httpStatus: HttpStatus -> httpStatus != HttpStatus.OK }) { throw RuntimeException("Error while retrieving token from provider, returned HttpStatus:" + it.statusCode().value()) }
-                .bodyToMono<TokenImpl>()
-                .block()
-                .also(::validate)!!
-    }
-
-    private fun validate(token: Token) {
-        if (token.accessToken == null || token.expiresIn == null)
-            throw RuntimeException("Retrieved invalid token from provider")
+                .run {
+                    try {
+                        bodyToMono<TokenImpl>().block()
+                    } catch (_: Throwable) {
+                        throw RuntimeException("Retrieved invalid token from provider")
+                    }
+                }
     }
 
     private fun getUrlForType(tokenType: TokenType) =

@@ -12,19 +12,17 @@ class SoapClientConfig(
 ) {
 
     @Bean
-    fun jaxb2Marshaller() = Jaxb2Marshaller()
-            .apply {
-                setPackagesToScan("no.nav.tjenestepensjon.simulering.model.v1", "no.nav.tjenestepensjon.simulering.v1.soap.marshalling")
-            }
+    fun jaxb2Marshaller() = Jaxb2Marshaller().apply {
+        setPackagesToScan("no.nav.tjenestepensjon.simulering.model.v1", "no.nav.tjenestepensjon.simulering.v1.soap.marshalling")
+    }
 
     @Bean
-    fun webServiceTemplate() =
-            WebServiceTemplate().apply {
-                marshaller = jaxb2Marshaller()
-                unmarshaller = jaxb2Marshaller()
-                defaultUri = providerUri
-                faultMessageResolver = SoapFaultHandler(jaxb2Marshaller())
-                setCheckConnectionForFault(true)
-                setCheckConnectionForError(true)
-            }
+    fun webServiceTemplate(jaxb2Marshaller: Jaxb2Marshaller) = WebServiceTemplate().apply {
+        defaultUri = providerUri
+        marshaller = jaxb2Marshaller
+        unmarshaller = jaxb2Marshaller
+        faultMessageResolver = SoapFaultHandler(jaxb2Marshaller)
+        setCheckConnectionForFault(true)
+        setCheckConnectionForError(true)
+    }
 }

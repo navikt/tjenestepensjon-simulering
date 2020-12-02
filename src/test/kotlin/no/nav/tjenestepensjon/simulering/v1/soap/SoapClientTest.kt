@@ -37,7 +37,7 @@ internal class SoapClientTest {
                 anyNonNull<XMLHentStillingsprosentListeRequestWrapper>(), anyNonNull<SOAPCallback>()))
                 .thenReturn(SOAPAdapter.marshal(defaultHentStillingsprosentListeResponse))
 
-        Mockito.`when`(tokenClientOld.samlAccessToken).thenReturn(TokenImpl(accessToken = "bogus"))
+        Mockito.`when`(tokenClientOld.samlAccessToken).thenReturn(TokenImpl("bogus", 0))
 
         val result = client.getStillingsprosenter(
                 defaultFNR,
@@ -53,7 +53,7 @@ internal class SoapClientTest {
                 anyNonNull<XMLSimulerOffentligTjenestepensjonRequestWrapper>(), anyNonNull<SOAPCallback>()))
                 .thenReturn(SOAPAdapter.marshal(defaultSimulerOffentligTjenestepensjonResponse, defaultFNR))
 
-        Mockito.`when`(tokenClientOld.samlAccessToken).thenReturn(TokenImpl(accessToken = "bogus"))
+        Mockito.`when`(tokenClientOld.samlAccessToken).thenReturn(TokenImpl("bogus", 0))
 
         val result = client.simulerPensjon(
                 request = defaultSimulerPensjonRequest,

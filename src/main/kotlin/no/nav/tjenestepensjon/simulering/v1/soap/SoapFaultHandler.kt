@@ -9,22 +9,22 @@ import org.springframework.ws.WebServiceMessage
 import org.springframework.ws.client.core.FaultMessageResolver
 import org.springframework.ws.soap.SoapMessage
 import javax.xml.bind.JAXBElement
-import kotlin.reflect.full.cast
 
 @Component
 class SoapFaultHandler constructor(private val jaxb2Marshaller: Jaxb2Marshaller) : FaultMessageResolver {
-    override fun resolveFault(message: WebServiceMessage): Nothing =
-            throw (message as SoapMessage).soapBody.fault.let { soapFault ->
+    override fun resolveFault(message: WebServiceMessage) =
+            throw (message as SoapMessage).soapBody.fault.run {
                 try {
-                    val knownFault: StelvioFault = soapFault.faultDetail.detailEntries.next().source
-                            .let(jaxb2Marshaller::unmarshal)
-                            .let(JAXBElement::class::cast)
-                            .value as StelvioFault
-                    SoapFaultException(knownFault::class.qualifiedName!!, knownFault.errorMessage).also {
-                        LOG.warn("Resolved known fault from SoapFaultDetail: $it")
+                    faultDetail.detailEntries.next().source.let {
+                        @Suppress("UNCHECKED_CAST")
+                        jaxb2Marshaller.unmarshal(it) as JAXBElement<StelvioFault>
+                    }.run {
+                        SoapFaultException(value::class.qualifiedName!!, value.errorMessage).also {
+                            LOG.warn("Resolved known fault from SoapFaultDetail: $it")
+                        }
                     }
                 } catch (ex: Exception) {
-                    SoapFaultException(soapFault.faultCode.toString(), soapFault.faultStringOrReason).also {
+                    SoapFaultException(faultCode.toString(), faultStringOrReason).also {
                         LOG.warn("Could not resolve known error from SoapFaultDetail. Resolved from SoapFault: $it")
                     }
                 }

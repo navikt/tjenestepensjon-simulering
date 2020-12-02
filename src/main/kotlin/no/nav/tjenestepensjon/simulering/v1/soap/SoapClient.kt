@@ -45,7 +45,7 @@ class SoapClient(
             tpOrdning: TPOrdning,
             tpLeverandor: TpLeverandor
     ) =
-            (webServiceTemplate.marshalSendAndReceive(
+            webServiceTemplate.marshalSendAndReceive(
                     HentStillingsprosentListeRequest(fnr, tpOrdning)
                             .let(SOAPAdapter::marshal),
                     SOAPCallback(
@@ -54,7 +54,9 @@ class SoapClient(
                             tokenClientOld.samlAccessToken.accessToken,
                             samlConfig
                     )
-            ) as XMLHentStillingsprosentListeResponseWrapper).let(SOAPAdapter::unmarshal).stillingsprosentListe
+            ).let {
+                SOAPAdapter.unmarshal(it as XMLHentStillingsprosentListeResponseWrapper)
+            }.stillingsprosentListe
 
     override fun simulerPensjon(
             request: SimulerPensjonRequest,
@@ -62,7 +64,7 @@ class SoapClient(
             tpLeverandor: TpLeverandor,
             tpOrdningStillingsprosentMap: TPOrdningStillingsprosentMap
     ) =
-            (webServiceTemplate.marshalSendAndReceive(
+            webServiceTemplate.marshalSendAndReceive(
                     with(request.simuleringsperioder) {
                         if (size > 1 && minOrNull()!!.isGradert())
                             SimulerOffentligTjenestepensjonRequest(
@@ -83,10 +85,12 @@ class SoapClient(
                     SOAPCallback(
                             simulerOffentlingTjenestepensjonUrl,
                             tpLeverandor.simuleringUrl,
-                            tokenClientOld.samlAccessToken.accessToken!!,
+                            tokenClientOld.samlAccessToken.accessToken,
                             samlConfig
                     )
-            ) as XMLSimulerOffentligTjenestepensjonResponseWrapper).let { SOAPAdapter.unmarshal(it, request.fnr) }.simulertPensjonListe
+            ).let {
+                SOAPAdapter.unmarshal(it as XMLSimulerOffentligTjenestepensjonResponseWrapper, request.fnr)
+            }.simulertPensjonListe
 
     companion object {
         @JvmStatic
