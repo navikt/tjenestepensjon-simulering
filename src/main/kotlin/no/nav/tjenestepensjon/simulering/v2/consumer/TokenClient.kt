@@ -47,32 +47,36 @@ class TokenClient(val webClient: WebClient) : TokenServiceConsumer {
     @get:Synchronized
     override val oidcAccessToken: Token
         get() = oidcToken
-                .also { LOG.info("Returning cached and valid oidc-token for user: $username") }
+            .also { LOG.info("Returning cached and valid oidc-token for user: $username") }
 
     @get:Synchronized
     override val samlAccessToken: Token
         get() = samlToken
-                .also { LOG.info("Returning cached and valid saml-token for user: $username") }
+            .also { LOG.info("Returning cached and valid saml-token for user: $username") }
 
 
     private fun getTokenFromProvider(tokenType: TokenType): Token {
         LOG.info("Getting new access-token for user: $username from: ${getUrlForType(tokenType)}")
         return webClient.get()
-                .uri(getUrlForType(tokenType))
-                .headers { it.setBasicAuth(username, password) }
-                .retrieve()
-                .onStatus({ httpStatus: HttpStatus -> httpStatus != HttpStatus.OK }) { throw RuntimeException("Error while retrieving token from provider, returned HttpStatus:" + it.statusCode().value()) }
-                .run {
-                    try {
-                        bodyToMono<TokenImpl>().block()
-                    } catch (_: Throwable) {
-                        throw RuntimeException("Retrieved invalid token from provider")
-                    }
+            .uri(getUrlForType(tokenType))
+            .headers { it.setBasicAuth(username, password) }
+            .retrieve()
+            .onStatus({ httpStatus: HttpStatus -> httpStatus != HttpStatus.OK }) {
+                throw RuntimeException(
+                    "Error while retrieving token from provider, returned HttpStatus:" + it.statusCode().value()
+                )
+            }
+            .run {
+                try {
+                    bodyToMono<TokenImpl>().block()
+                } catch (e: Throwable) {
+                    throw throw if (e is RuntimeException) e else RuntimeException("Retrieved invalid token from provider")
                 }
+            }
     }
 
     private fun getUrlForType(tokenType: TokenType) =
-            if (OIDC == tokenType) oidcEndpointUrl else samlEndpointUrl
+        if (OIDC == tokenType) oidcEndpointUrl else samlEndpointUrl
 
     private val oidcEndpointUrl: URI
         get() = URI.create("$stsUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
