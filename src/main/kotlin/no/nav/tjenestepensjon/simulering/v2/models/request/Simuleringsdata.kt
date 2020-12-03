@@ -3,7 +3,7 @@ package no.nav.tjenestepensjon.simulering.v2.models.request
 import no.nav.tjenestepensjon.simulering.domain.Dateable
 import java.time.LocalDate
 
-class Simuleringsdata(
+data class Simuleringsdata(
         override var datoFom: LocalDate,
         val andvendtTrygdetid: Int,
         val poengArTom1991: Int,
