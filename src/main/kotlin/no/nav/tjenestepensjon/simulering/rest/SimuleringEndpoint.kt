@@ -137,7 +137,9 @@ class SimuleringEndpoint(
                     tpOrdningList.map { tpOrdning ->
                         tpOrdning to FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorList)
                     }.toMap()
-            ).resultMap
+            ).resultMap.apply {
+                if(isEmpty()) throw RuntimeException("No Tp-leverandoer found for person.")
+            }
 
     companion object {
         const val NAV_CALL_ID = "nav-call-id"
