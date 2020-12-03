@@ -63,7 +63,7 @@ class TokenClient(val webClient: WebClient) : TokenServiceConsumer {
             .retrieve()
             .onStatus({ httpStatus: HttpStatus -> httpStatus != HttpStatus.OK }) {
                 throw RuntimeException(
-                    "Error while retrieving token from provider, returned HttpStatus:" + it.statusCode().value()
+                    "Error while retrieving token from provider, returned HttpStatus ${it.statusCode().value()}"
                 )
             }
             .run {

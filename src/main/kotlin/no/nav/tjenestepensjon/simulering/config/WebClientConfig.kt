@@ -16,7 +16,7 @@ class WebClientConfig {
     private final val tcpClient: TcpClient = TcpClient.create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
             .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(READ_TIMEOUT_MILLIS / 1000)) }
-            .proxy { it.type(HTTP).host("webproxy-nais.nav.no").port(8088).nonProxyHosts(".*(tpregisteret|tpconfig).*") }
+            .proxy { it.type(HTTP).host("webproxy-nais.nav.no").port(8088).nonProxyHosts(".*(tpregisteret|tpconfig|security-token-service).*") }
 
     @get:Bean
     val webClient: WebClient = WebClient.builder()
