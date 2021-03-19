@@ -2,7 +2,7 @@ apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
   name: tjenestepensjon-simulering
-  namespace: default
+  namespace: pensjonsamhandling
   labels:
     team: pensjonsamhandling
 spec:
@@ -23,7 +23,7 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: /kv/prod/fss/tjenestepensjon-simulering/default
+      - kvPath: /kv/prod/fss/tjenestepensjon-simulering/pensjonsamhandling
         mountPath: /var/run/secrets/nais.io/vault
       - kvPath: /maskinporten/data/prod/creds/tjenestepensjon-simulering
         mountPath: /var/run/secrets/nais.io/vault/jwks
