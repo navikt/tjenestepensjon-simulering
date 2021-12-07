@@ -25,7 +25,7 @@ class RestClient(val webClient: WebClient) {
                     .headers {
                         it.setBearerAuth(
                                 if (tpLeverandor.name != "SPK") tokenClient.pensjonsimuleringToken
-                                else tokenClient.oidcAccessToken.accessToken!!
+                                else tokenClient.oidcAccessToken.accessToken
                         )
                     }
                     .bodyValue(request)
