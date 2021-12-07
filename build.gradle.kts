@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.tjenestepensjon"
-version = "0.0.1-SNAPSHOT"
 description = "tjenestepensjon-simulering"
 
 plugins {
