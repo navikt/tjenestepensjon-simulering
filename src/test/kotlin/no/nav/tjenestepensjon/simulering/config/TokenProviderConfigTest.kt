@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Assertions.assertNull
 
 internal class TokenProviderConfigTest {
 
-    private val tokenProviderConfig: TokenProviderConfig = TokenProviderConfig()
+    private val tokenProviderConfig: TokenProviderConfig = TokenProviderConfig(null, null)
 
     @Test
     fun `Should create list from delimited string`() {
-        tokenProviderConfig.setIssuerJwksMap("issuer1,http://jwsks1.com|issuer2,jwks2.com,proxyurl:80")
+        tokenProviderConfig.issuerJwksMap = "issuer1,http://jwsks1.com|issuer2,jwks2.com,proxyurl:80"
         val tokenProviders: List<TokenProvider> = tokenProviderConfig.createFromEnv()
         assertEquals("issuer1", tokenProviders[0].issuer)
         assertEquals("http://jwsks1.com", tokenProviders[0].jwksUrl)
@@ -24,19 +24,19 @@ internal class TokenProviderConfigTest {
 
     @Test
     fun `Should fail if missing properties`() {
-        tokenProviderConfig.setIssuerJwksMap("issuer1|issuer2,jwks2.com")
+        tokenProviderConfig.issuerJwksMap = "issuer1|issuer2,jwks2.com"
         assertThrows<AssertionError> { tokenProviderConfig.createFromEnv() }
     }
 
     @Test
     fun `Should fail if empty property`() {
-        tokenProviderConfig.setIssuerJwksMap("issuer1,|issuer2,jwks2.com")
+        tokenProviderConfig.issuerJwksMap = "issuer1,|issuer2,jwks2.com"
         assertThrows<AssertionError> { tokenProviderConfig.createFromEnv() }
     }
 
     @Test
     fun `Should fail if invalid proxy config`() {
-        tokenProviderConfig.setIssuerJwksMap("issuer2,jwks2.com,proxyurl")
+        tokenProviderConfig.issuerJwksMap = "issuer2,jwks2.com,proxyurl"
         assertThrows<IllegalStateException> { tokenProviderConfig.createFromEnv() }
     }
 }

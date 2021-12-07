@@ -5,13 +5,14 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class TokenProviderConfig {
-    private lateinit var issuerJwksMap: String
-
+class TokenProviderConfig(
+    @Value("\${AZURE_OPENID_CONFIG_ISSUER:#{null}}")
+    private val azureIssuer: String?,
+    @Value("\${AZURE_OPENID_CONFIG_JWKS_URI:#{null}}")
+    private val azureJwksUri: String?
+) {
     @Value("\${ISSUER_JWKS_MAP}")
-    fun setIssuerJwksMap(jwksMap: String) {
-        issuerJwksMap = jwksMap
-    }
+    lateinit var issuerJwksMap: String
 
     /**
      * Parse env variable to generate a list of TokenProviders.
@@ -34,6 +35,10 @@ class TokenProviderConfig {
                 validateProxyUrl(data[2])
                 TokenProvider(data[0], data[1], data[2])
             }
+        }.let {
+            if(azureIssuer != null && azureJwksUri != null)
+                it + TokenProvider(azureIssuer, azureJwksUri, "webproxy-nais.nav.no:8080")
+            else it
         }
     }
     private fun validateProxyUrl(proxyUrl: String) {
