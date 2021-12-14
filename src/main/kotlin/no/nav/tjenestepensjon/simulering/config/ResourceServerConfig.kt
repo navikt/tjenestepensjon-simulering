@@ -18,7 +18,7 @@ class ResourceServerConfig(private val tokenStore: TokenStore) : ResourceServerC
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http.authorizeRequests()
-                .antMatchers("/isAlive", "/isReady", "/actuator/**").permitAll()
+                .antMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated()
     }
 

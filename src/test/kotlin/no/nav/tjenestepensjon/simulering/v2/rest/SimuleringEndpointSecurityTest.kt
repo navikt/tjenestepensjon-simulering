@@ -26,8 +26,8 @@ class SimuleringEndpointSecurityTest {
     fun insecureEndpointsAccessible() {
         mockMvc.perform(MockMvcRequestBuilders.get("/actuator/prometheus")).andExpect(MockMvcResultMatchers.status().isOk)
         mockMvc.perform(MockMvcRequestBuilders.get("/actuator/health")).andExpect(MockMvcResultMatchers.status().isOk)
-        mockMvc.perform(MockMvcRequestBuilders.get("/isAlive")).andExpect(MockMvcResultMatchers.status().isOk)
-        mockMvc.perform(MockMvcRequestBuilders.get("/isReady")).andExpect(MockMvcResultMatchers.status().isOk)
+        mockMvc.perform(MockMvcRequestBuilders.get("/actuator/health/liveness")).andExpect(MockMvcResultMatchers.status().isOk)
+        mockMvc.perform(MockMvcRequestBuilders.get("/actuator/health/readiness")).andExpect(MockMvcResultMatchers.status().isOk)
     }
 
     @Test

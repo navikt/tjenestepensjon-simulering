@@ -24,12 +24,12 @@ class TokenClientOld(val webClient: WebClient) : TokenServiceConsumer {
     @Value("\${STS_URL}")
     lateinit var stsUrl: String
 
-    private var oidcToken: Token = TokenImpl("", expiresIn = 0)
+    private var oidcToken: Token = TokenImpl("", expiresIn = -1)
         get() =
             if (field.isExpired) getTokenFromProvider(OIDC).also { field = it }
             else field
 
-    private var samlToken: Token = TokenImpl("", expiresIn = 0)
+    private var samlToken: Token = TokenImpl("", expiresIn = -1)
         get() =
             if (field.isExpired) getTokenFromProvider(SAML).also { field = it }
             else field

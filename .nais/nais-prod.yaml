@@ -19,15 +19,16 @@ spec:
     application:
       enabled: true
   liveness:
-    path: isAlive
+    path: actuator/health/liveness
     initialDelay: 30
-    periodSeconds: 1
-    failureThreshold: 60
   readiness:
-    path: isReady
+    path: actuator/health/readiness
     initialDelay: 30
-    periodSeconds: 1
-    failureThreshold: 60
+  startup:
+    path: actuator/health/readiness
+    initialDelay: 30
+    failureThreshold: 30
+    periodSeconds: 5
   vault:
     enabled: true
     paths:
