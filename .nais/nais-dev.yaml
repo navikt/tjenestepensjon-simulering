@@ -10,6 +10,7 @@ spec:
   port: 8080
   ingresses:
     - https://tjenestepensjon-simulering.nais.preprod.local
+    - https://tjenestepensjon-simulering.dev.intern.nav.no
   accessPolicy:
     inbound:
       rules:
