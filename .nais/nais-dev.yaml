@@ -11,6 +11,7 @@ spec:
   ingresses:
     - https://tjenestepensjon-simulering.nais.preprod.local
     - https://tjenestepensjon-simulering.dev.intern.nav.no
+  webproxy: true
   accessPolicy:
     inbound:
       rules:
