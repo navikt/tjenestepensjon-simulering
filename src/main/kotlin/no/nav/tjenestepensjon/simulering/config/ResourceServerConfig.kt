@@ -30,7 +30,7 @@ class ResourceServerConfig(private val tokenStore: TokenStore) : ResourceServerC
                 }
                 false
             }).denyAll()
-            .antMatchers("/actuator/**").permitAll()
+            .antMatchers("/isAlive", "/isReady", "/actuator/**").permitAll()
             .anyRequest().authenticated()
     }
 }
