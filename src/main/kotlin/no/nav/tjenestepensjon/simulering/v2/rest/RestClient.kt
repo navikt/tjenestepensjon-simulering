@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 
 @Service
-class RestClient(val webClient: WebClient) {
+class RestClient(private val webClient: WebClient) {
     @Autowired
     private lateinit var tokenClient: TokenClient
 

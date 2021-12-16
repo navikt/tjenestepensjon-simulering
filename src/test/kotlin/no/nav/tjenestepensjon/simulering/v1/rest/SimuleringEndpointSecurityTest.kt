@@ -2,7 +2,15 @@ package no.nav.tjenestepensjon.simulering.v1.rest
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
+import no.nav.tjenestepensjon.simulering.config.ProxylessWebClientConfig
+import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
+import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerOffentligTjenestepensjonRequestJson
+import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerPensjonRequestJson
+import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulertPensjonList
+import no.nav.tjenestepensjon.simulering.v1.models.defaultStillingsprosentListe
+import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
 import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenProvider
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
@@ -17,7 +25,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 
-@SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class])
+@SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class, ProxylessWebClientConfig::class])
 @AutoConfigureMockMvc
 class SimuleringEndpointSecurityTest {
 
@@ -27,6 +35,9 @@ class SimuleringEndpointSecurityTest {
     @MockBean
     private lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
 
+    @MockBean
+    private lateinit var soapClient: SoapClient
+
     @Test
     fun insecureEndpointsAccessible() {
         mockMvc.get("/actuator/prometheus").andExpect { status { isOk() } }
@@ -35,17 +46,10 @@ class SimuleringEndpointSecurityTest {
         mockMvc.get("/actuator/health/readiness").andExpect { status { isOk() } }
     }
 
-    private val body = """{
-                |"fnr":"01011234567",
-                |"sivilstandkode":"",
-                |"inntekter":[],
-                |"simuleringsperioder":[]
-                |}""".trimMargin()
-
     @Test
     fun secureEndpointUnauthorizedWhenNoToken() {
         mockMvc.post("/simulering") {
-            content = body
+            content = defaultSimulerPensjonRequestJson
             contentType = APPLICATION_JSON
         }.andExpect {
             status { isUnauthorized() }
@@ -55,7 +59,7 @@ class SimuleringEndpointSecurityTest {
     @Test
     fun secureEndpointUnauthorizedWhenInvalidToken() {
         mockMvc.post("/simulering") {
-            content = body
+            content = defaultSimulerPensjonRequestJson
             contentType = APPLICATION_JSON
             headers { setBearerAuth("abc1234") }
         }.andExpect {
@@ -67,8 +71,14 @@ class SimuleringEndpointSecurityTest {
     @WithMockUser
     fun secureEndpointOkWithValidToken() {
         `when`(maskinportenTokenProvider.generateTpregisteretToken()).thenReturn("")
+        `when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
+            defaultStillingsprosentListe
+        )
+        `when`(soapClient.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
+            defaultSimulertPensjonList
+        )
         mockMvc.post("/simulering") {
-            content = body
+            content = defaultSimulerPensjonRequestJson
             contentType = APPLICATION_JSON
         }.andExpect {
             status { isOk() }
@@ -79,11 +89,10 @@ class SimuleringEndpointSecurityTest {
         private var wireMockServer = WireMockServer().apply {
             start()
             stubFor(
-                WireMock.get(WireMock.urlPathEqualTo("/person/tpordninger"))
-                    .willReturn(WireMock.okJson("""[{"tssId":"1234","tpId":"4321"}]"""))
+                get(urlPathEqualTo("/person/tpordninger")).willReturn(okJson("""[{"tssId":"1234","tpId":"4321"}]"""))
             )
             stubFor(
-                WireMock.get(WireMock.urlPathEqualTo("/tpleverandoer/4321")).willReturn(WireMock.okJson("""{"KLP"}"""))
+                get(urlPathEqualTo("/tpleverandoer/4321")).willReturn(okJson("""leverandor1"""))
             )
         }
 
