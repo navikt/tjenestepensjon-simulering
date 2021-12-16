@@ -12,6 +12,7 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSP
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
 import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
+import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
@@ -41,14 +42,14 @@ import java.lang.reflect.UndeclaredThrowableException
 
 @RestController
 class SimuleringEndpoint(
-        private val service: SimuleringService,
-        private val service2: no.nav.tjenestepensjon.simulering.v2.service.SimuleringService,
-        private val tpRegisterConsumer: TpRegisterConsumer,
-        private val tpConfigConsumer: TpConfigConsumer,
-        private val stillingsprosentService: StillingsprosentService,
-        @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>,
-        private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
-        private val metrics: AppMetrics
+    private val service: SimuleringService,
+    private val service2: no.nav.tjenestepensjon.simulering.v2.service.SimuleringService,
+    private val tpRegisterConsumer: TpRegisterConsumer,
+    private val tpConfigConsumer: TpConfigConsumer,
+    private val stillingsprosentService: StillingsprosentService,
+    @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>,
+    private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
+    private val metrics: AppMetrics
 ) {
 
     @Autowired
@@ -56,8 +57,8 @@ class SimuleringEndpoint(
 
     @PostMapping("/simulering")
     fun simuler(
-            @RequestBody body: String,
-            @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
+        @RequestBody body: String,
+        @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
     ): ResponseEntity<Any> {
         addHeaderToRequestContext(NAV_CALL_ID, navCallId)
         LOG.info("Processing nav-call-id: ${getHeaderFromRequestContext(NAV_CALL_ID)}")
@@ -67,8 +68,10 @@ class SimuleringEndpoint(
         return try {
             val fnr = FNR(JSONObject(body).get("fnr").toString())
             val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(fnr).let(::getTpLeverandorer)
-            val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
-            val tpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
+            val stillingsprosentResponse =
+                stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
+            val tpOrdning =
+                stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
 
             metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_OK)
             val tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
@@ -76,10 +79,12 @@ class SimuleringEndpoint(
             if (tpLeverandor.impl == REST) {
                 LOG.debug("Request simulation from ${tpLeverandor.name} using REST")
                 val response = service2.simulerOffentligTjenestepensjon(
-                        objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java),
-                        stillingsprosentResponse,
-                        tpOrdning,
-                        tpLeverandor
+                    objectMapper.readValue(
+                        body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java
+                    ),
+                    stillingsprosentResponse,
+                    tpOrdning,
+                    tpLeverandor
                 )
                 metrics.incrementRestCounter(tpLeverandor.name, "OK")
                 LOG.debug("Returning response: ${filterFnr(response.toString())}")
@@ -87,10 +92,10 @@ class SimuleringEndpoint(
             } else {
                 LOG.debug("Request simulation from ${tpLeverandor.name} using SOAP")
                 val response = service.simulerOffentligTjenestepensjon(
-                        objectMapper.readValue(body, SimulerPensjonRequest::class.java),
-                        stillingsprosentResponse,
-                        tpOrdning,
-                        tpLeverandor
+                    objectMapper.readValue(body, SimulerPensjonRequest::class.java),
+                    stillingsprosentResponse,
+                    tpOrdning,
+                    tpLeverandor
                 )
                 LOG.debug("Returning response: ${filterFnr(response.toString())}")
                 ResponseEntity(response, OK)
@@ -125,21 +130,18 @@ class SimuleringEndpoint(
     }
 
     fun addHeaderToRequestContext(key: String, value: String?) {
-        if (value != null)
-            currentRequestAttributes().setAttribute(key, value, SCOPE_REQUEST)
+        if (value != null) currentRequestAttributes().setAttribute(key, value, SCOPE_REQUEST)
     }
 
     fun getHeaderFromRequestContext(key: String) =
-            currentRequestAttributes().getAttribute(key, SCOPE_REQUEST)?.toString()
+        currentRequestAttributes().getAttribute(key, SCOPE_REQUEST)?.toString()
 
     private fun getTpLeverandorer(tpOrdningList: List<TPOrdning>) =
-            asyncExecutor.executeAsync(
-                    tpOrdningList.map { tpOrdning ->
-                        tpOrdning to FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorList)
-                    }.toMap()
-            ).resultMap.apply {
-                if(isEmpty()) throw RuntimeException("No Tp-leverandoer found for person.")
-            }
+        asyncExecutor.executeAsync(tpOrdningList.associateWith { tpOrdning ->
+            FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorList)
+        }).resultMap.apply {
+            if (isEmpty()) throw LeveradoerNotFoundException("No Tp-leverandoer found for person.")
+        }
 
     companion object {
         const val NAV_CALL_ID = "nav-call-id"

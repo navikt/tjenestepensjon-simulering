@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.bodyToMono
 import java.net.URI
 
 @Service
-class TokenClientOld(val webClient: WebClient) : TokenServiceConsumer {
+class TokenClientOld(private val webClient: WebClient) : TokenServiceConsumer {
     @Value("\${SERVICE_USER}")
     lateinit var username: String
 

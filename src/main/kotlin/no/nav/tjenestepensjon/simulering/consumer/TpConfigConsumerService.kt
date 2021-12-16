@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.bodyToMono
 @Service
 class TpConfigConsumerService(
         @Value("\${TP_CONFIG_URL}") val tpConfigUrl: String,
-        val webClient: WebClient
+        private val webClient: WebClient
 ) : TpConfigConsumer {
 
     @Cacheable(TP_ORDNING_LEVERANDOR_CACHE)

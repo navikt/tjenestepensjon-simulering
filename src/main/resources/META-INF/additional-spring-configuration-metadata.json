@@ -39,5 +39,10 @@
       "name": "management.endpoints.web.exposure.include",
       "type": "java.lang.String",
       "description": "Description for management.endpoints.web.exposure.include."
+    },
+    {
+      "name": "simulering.security.issuers",
+      "type": "java.lang.String",
+      "description": "Description for simulering.security.issuers."
     }
   ] }

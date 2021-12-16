@@ -15,7 +15,7 @@ import org.springframework.web.reactive.function.client.bodyToMono
 import java.net.URI
 
 @Service
-class TokenClient(val webClient: WebClient) : TokenServiceConsumer {
+class TokenClient(private val webClient: WebClient) : TokenServiceConsumer {
 
     @Autowired
     lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
