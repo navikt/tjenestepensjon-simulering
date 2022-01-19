@@ -1,12 +1,11 @@
 package no.nav.tjenestepensjon.simulering.v1.rest
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
+import no.nav.tjenestepensjon.simulering.*
 import no.nav.tjenestepensjon.simulering.config.ProxylessWebClientConfig
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
-import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerOffentligTjenestepensjonRequestJson
+import no.nav.tjenestepensjon.simulering.v1.models.defaultLeverandor
 import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerPensjonRequestJson
 import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulertPensjonList
 import no.nav.tjenestepensjon.simulering.v1.models.defaultStillingsprosentListe
@@ -14,6 +13,7 @@ import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
 import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenProvider
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.post
 
 @SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class, ProxylessWebClientConfig::class])
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SimuleringEndpointSecurityTest {
 
     @Autowired
@@ -37,6 +38,18 @@ class SimuleringEndpointSecurityTest {
 
     @MockBean
     private lateinit var soapClient: SoapClient
+
+    private var wireMockServer = WireMockServer().apply {
+        start()
+        stubFor(get(urlPathEqualTo(defaultForholdUrl)).willReturn(okJson(defaultForhold)))
+        stubFor(get(urlPathEqualTo(defaultLeveradorUrl)).willReturn(okJson(defaultLeverandor)))
+        stubFor(get(urlPathEqualTo(defaultTssnrUrl)).willReturn(okJson(defaultTssid)))
+    }
+
+    @AfterAll
+    fun afterAll() {
+        wireMockServer.stop()
+    }
 
     @Test
     fun insecureEndpointsAccessible() {
@@ -85,21 +98,4 @@ class SimuleringEndpointSecurityTest {
         }
     }
 
-    companion object {
-        private var wireMockServer = WireMockServer().apply {
-            start()
-            stubFor(
-                get(urlPathEqualTo("/person/tpordninger")).willReturn(okJson("""[{"tssId":"1234","tpId":"4321"}]"""))
-            )
-            stubFor(
-                get(urlPathEqualTo("/tpleverandoer/4321")).willReturn(okJson("""leverandor1"""))
-            )
-        }
-
-        @JvmStatic
-        @AfterAll
-        fun afterAll() {
-            wireMockServer.stop()
-        }
-    }
 }

@@ -1,6 +1,6 @@
 MASKINPORTEN_URL: https://ver2.maskinporten.no
 STS_URL: https://security-token-service.nais.preprod.local
-TP_REGISTERET_URL: https://tpregisteret.nais.preprod.local
+TP_URL: https://tp-api-q1.dev-fss-pub.nais.io
 TP_CONFIG_URL: https://tpconfig.dev.adeo.no
 
 logging.level:

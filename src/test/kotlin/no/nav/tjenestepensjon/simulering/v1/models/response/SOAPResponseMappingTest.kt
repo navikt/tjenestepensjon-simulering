@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v1.models.response
 
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
+import no.nav.tjenestepensjon.simulering.defaultFNR
 import no.nav.tjenestepensjon.simulering.v1.models.*
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.SOAPAdapter
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.response.XMLHentStillingsprosentListeResponseWrapper
@@ -31,7 +32,7 @@ class SOAPResponseMappingTest {
     lateinit var result: StreamResult
 
     @BeforeEach
-    fun reset(){
+    fun reset() {
         writer = StringWriter()
         result = StreamResult(writer)
     }
@@ -39,8 +40,7 @@ class SOAPResponseMappingTest {
     @Test
     fun `Test marshalling of HentStillingsprosentListeResponse`() {
         marshaller.marshal(
-                SOAPAdapter.marshal(defaultHentStillingsprosentListeResponse),
-                result
+            SOAPAdapter.marshal(defaultHentStillingsprosentListeResponse), result
         )
         val output = writer.toString()
         assertEquals(defaultHentStillingsprosentListeResponseXML, output)
@@ -49,23 +49,24 @@ class SOAPResponseMappingTest {
     @Test
     fun `Test marshalling of SimulerOffentligTjenestepensjonResponse`() {
         marshaller.marshal(
-                SOAPAdapter.marshal(defaultSimulerOffentligTjenestepensjonResponse, defaultFNR),
-                result
+            SOAPAdapter.marshal(defaultSimulerOffentligTjenestepensjonResponse, defaultFNR), result
         )
         val output = writer.toString()
         assertEquals(defaultSimulerOffentligTjenestepensjonResponseXML, output)
     }
 
     @Test
-    fun `Test unmarshalling of HentStillingsprosentListeResponse`(){
-        val wrapper = marshaller.unmarshal(StringSource(defaultHentStillingsprosentListeResponseXML)) as XMLHentStillingsprosentListeResponseWrapper
+    fun `Test unmarshalling of HentStillingsprosentListeResponse`() {
+        val wrapper =
+            marshaller.unmarshal(StringSource(defaultHentStillingsprosentListeResponseXML)) as XMLHentStillingsprosentListeResponseWrapper
         val output = SOAPAdapter.unmarshal(wrapper)
         assertEquals(defaultHentStillingsprosentListeResponse, output)
     }
 
     @Test
-    fun `Test unmarshalling of SimulerOffentligTjenestepensjonResponse`(){
-        val wrapper = marshaller.unmarshal(StringSource(defaultSimulerOffentligTjenestepensjonResponseXML)) as XMLSimulerOffentligTjenestepensjonResponseWrapper
+    fun `Test unmarshalling of SimulerOffentligTjenestepensjonResponse`() {
+        val wrapper =
+            marshaller.unmarshal(StringSource(defaultSimulerOffentligTjenestepensjonResponseXML)) as XMLSimulerOffentligTjenestepensjonResponseWrapper
         val output = SOAPAdapter.unmarshal(wrapper, defaultFNR)
         assertEquals(defaultSimulerOffentligTjenestepensjonResponse, output)
     }

@@ -4,7 +4,7 @@ management.endpoints.web.exposure.include: prometheus,health
 
 STS_URL: http://localhost:8080
 TP_CONFIG_URL: http://localhost:8080
-TP_REGISTERET_URL: http://localhost:8080
+TP_URL: http://localhost:8080
 
 PROVIDER_URI: http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
 ISSUER_JWKS_MAP: http://localhost:8080,http://localhost:8080/rest/v1/sts/jwks
