@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.consumer
+package no.nav.tjenestepensjon.simulering.service
 
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
@@ -15,15 +15,15 @@ import org.mockito.junit.jupiter.MockitoExtension
 internal class FindTpLeverandorCallableTest {
 
     @Mock
-    private lateinit var tpConfigConsumer: TpConfigConsumer
+    private lateinit var tpService: TpService
 
     private val tpOrdning: TPOrdning = TPOrdning("80001234", "1234")
     private val tpLeverandorMap: List<TpLeverandor> = listOf(TpLeverandor("tpLeverandorName", SOAP, "simulerUrl", "stillingUrl"))
 
     @Test
     fun `Should return mapped leverandor`() {
-        Mockito.`when`(tpConfigConsumer.findTpLeverandor(tpOrdning)).thenReturn("tpLeverandorName")
-        FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorMap).call().let {
+        Mockito.`when`(tpService.findTpLeverandor(tpOrdning)).thenReturn("tpLeverandorName")
+        FindTpLeverandorCallable(tpOrdning, tpService, tpLeverandorMap).call().let {
             assertEquals("tpLeverandorName", it.name)
             assertEquals(SOAP, it.impl)
             assertEquals("simulerUrl", it.simuleringUrl)

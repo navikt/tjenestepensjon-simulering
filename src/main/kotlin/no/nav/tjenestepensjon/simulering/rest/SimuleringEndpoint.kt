@@ -10,8 +10,7 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
-import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
+import no.nav.tjenestepensjon.simulering.service.TpService
 import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
@@ -44,8 +43,7 @@ import java.lang.reflect.UndeclaredThrowableException
 class SimuleringEndpoint(
     private val service: SimuleringService,
     private val service2: no.nav.tjenestepensjon.simulering.v2.service.SimuleringService,
-    private val tpRegisterConsumer: TpRegisterConsumer,
-    private val tpConfigConsumer: TpConfigConsumer,
+    private val tpService: TpService,
     private val stillingsprosentService: StillingsprosentService,
     @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>,
     private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
@@ -67,7 +65,7 @@ class SimuleringEndpoint(
 
         return try {
             val fnr = FNR(JSONObject(body).get("fnr").toString())
-            val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(fnr).let(::getTpLeverandorer)
+            val tpOrdningAndLeverandorMap = tpService.getTpOrdningerForPerson(fnr).let(::getTpLeverandorer)
             val stillingsprosentResponse =
                 stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
             val tpOrdning =
@@ -138,7 +136,7 @@ class SimuleringEndpoint(
 
     private fun getTpLeverandorer(tpOrdningList: List<TPOrdning>) =
         asyncExecutor.executeAsync(tpOrdningList.associateWith { tpOrdning ->
-            FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorList)
+            FindTpLeverandorCallable(tpOrdning, tpService, tpLeverandorList)
         }).resultMap.apply {
             if (isEmpty()) throw LeveradoerNotFoundException("No Tp-leverandoer found for person.")
         }

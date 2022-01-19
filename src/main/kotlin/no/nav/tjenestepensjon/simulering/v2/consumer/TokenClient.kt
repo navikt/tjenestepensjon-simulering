@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2.consumer
 
-import no.nav.tjenestepensjon.simulering.consumer.TokenServiceConsumer
+import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient.TokenType.OIDC
@@ -15,7 +15,7 @@ import org.springframework.web.reactive.function.client.bodyToMono
 import java.net.URI
 
 @Service
-class TokenClient(private val webClient: WebClient) : TokenServiceConsumer {
+class TokenClient(private val webClient: WebClient) : TokenService {
 
     @Autowired
     lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
