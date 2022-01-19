@@ -15,6 +15,11 @@ spec:
       rules:
         - application: pensjon-pen
           namespace: pensjondeployer
+    outbound:
+      rules:
+        - application: tp
+          namespace: pensjonsamhandling
+          cluster: prod-fss
   azure:
     application:
       enabled: true
