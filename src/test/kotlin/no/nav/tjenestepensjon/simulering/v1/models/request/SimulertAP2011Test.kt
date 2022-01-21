@@ -16,43 +16,47 @@ internal class SimulertAP2011Test {
 
     @BeforeEach
     fun reset() {
-        forsteUttak = Simuleringsperiode(
-            utg = ForsteUttak.UTG,
-            datoFom = LocalDate.of(ForsteUttak.YEAR_FOM, ForsteUttak.MONTH_FOM, ForsteUttak.DAY_FOM),
-            delingstall = ForsteUttak.DELLINGSTALL,
-            poengArTom1991 = ForsteUttak.POENG_AR_TOM_1991,
-            poengArFom1992 = ForsteUttak.POENG_AR_FOM_1992,
-            sluttpoengtall = ForsteUttak.SLUTTPOENGTALL,
-            anvendtTrygdetid = ForsteUttak.ANVENDT_TRYGDETID,
-            forholdstall = ForsteUttak.FORHOLDSTALL,
-            uforegradVedOmregning = ForsteUttak.UFERGRAD_VED_OMREGNING,
-            stillingsprosentOffentlig = ForsteUttak.STILLINGSPROSENT_OFFENTLIG,
-            delytelser = listOf(
-                Delytelse(BASISGP, ForsteUttak.BASISGP_),
-                Delytelse(BASISPT, ForsteUttak.BASISPT_),
-                Delytelse(BASISTP, ForsteUttak.BASISTP_),
-                Delytelse(SKJERMINGSTILLEGG, ForsteUttak.SKJERMINGSTILLEGG_)
+        forsteUttak = ForsteUttak.run {
+            Simuleringsperiode(
+                utg = UTG,
+                datoFom = LocalDate.of(YEAR_FOM, MONTH_FOM, DAY_FOM),
+                delingstall = DELLINGSTALL,
+                poengArTom1991 = POENG_AR_TOM_1991,
+                poengArFom1992 = POENG_AR_FOM_1992,
+                sluttpoengtall = SLUTTPOENGTALL,
+                anvendtTrygdetid = ANVENDT_TRYGDETID,
+                forholdstall = FORHOLDSTALL,
+                uforegradVedOmregning = UFERGRAD_VED_OMREGNING,
+                stillingsprosentOffentlig = STILLINGSPROSENT_OFFENTLIG,
+                delytelser = listOf(
+                    Delytelse(BASISGP, BASISGP_),
+                    Delytelse(BASISPT, BASISPT_),
+                    Delytelse(BASISTP, BASISTP_),
+                    Delytelse(SKJERMINGSTILLEGG, SKJERMINGSTILLEGG_)
+                )
             )
-        )
+        }
 
-        heltUttak = Simuleringsperiode(
-            utg = HeltUttak.UTG,
-            datoFom = LocalDate.of(HeltUttak.YEAR_FOM, HeltUttak.MONTH_FOM, HeltUttak.DAY_FOM),
-            delingstall = HeltUttak.DELLINGSTALL,
-            poengArTom1991 = HeltUttak.POENG_AR_TOM_1991,
-            poengArFom1992 = HeltUttak.POENG_AR_FOM_1992,
-            sluttpoengtall = HeltUttak.SLUTTPOENGTALL,
-            anvendtTrygdetid = HeltUttak.ANVENDT_TRYGDETID,
-            forholdstall = HeltUttak.FORHOLDSTALL,
-            uforegradVedOmregning = HeltUttak.UFERGRAD_VED_OMREGNING,
-            stillingsprosentOffentlig = HeltUttak.STILLINGSPROSENT_OFFENTLIG,
-            delytelser = listOf(
-                Delytelse(BASISGP, HeltUttak.BASISGP_),
-                Delytelse(BASISPT, HeltUttak.BASISPT_),
-                Delytelse(BASISTP, HeltUttak.BASISTP_),
-                Delytelse(SKJERMINGSTILLEGG, HeltUttak.SKJERMINGSTILLEGG_)
+        heltUttak = HeltUttak.run {
+            Simuleringsperiode(
+                utg = UTG,
+                datoFom = LocalDate.of(YEAR_FOM, MONTH_FOM, DAY_FOM),
+                delingstall = DELLINGSTALL,
+                poengArTom1991 = POENG_AR_TOM_1991,
+                poengArFom1992 = POENG_AR_FOM_1992,
+                sluttpoengtall = SLUTTPOENGTALL,
+                anvendtTrygdetid = ANVENDT_TRYGDETID,
+                forholdstall = FORHOLDSTALL,
+                uforegradVedOmregning = UFERGRAD_VED_OMREGNING,
+                stillingsprosentOffentlig = STILLINGSPROSENT_OFFENTLIG,
+                delytelser = listOf(
+                    Delytelse(BASISGP, BASISGP_),
+                    Delytelse(BASISPT, BASISPT_),
+                    Delytelse(BASISTP, BASISTP_),
+                    Delytelse(SKJERMINGSTILLEGG, SKJERMINGSTILLEGG_)
+                )
             )
-        )
+        }
     }
 
     @Test
@@ -69,27 +73,35 @@ internal class SimulertAP2011Test {
         forsteUttak.datoFom = LocalDate.of(2027, 12, 3)
         heltUttak.datoFom = LocalDate.of(2030, 12, 3)
         SimulertAP2011(forsteUttak, heltUttak).apply {
-            assertEquals(ForsteUttak.POENG_AR_TOM_1991, simulertForsteuttak.poengArTom1991)
-            assertEquals(ForsteUttak.POENG_AR_FOM_1992, simulertForsteuttak.poengArFom1992)
-            assertEquals(ForsteUttak.SLUTTPOENGTALL, simulertForsteuttak.sluttpoengtall)
-            assertEquals(ForsteUttak.ANVENDT_TRYGDETID, simulertForsteuttak.anvendtTrygdetid)
-            assertEquals(ForsteUttak.BASISGP_, simulertForsteuttak.basisgp)
-            assertEquals(ForsteUttak.BASISPT_, simulertForsteuttak.basispt)
-            assertEquals(ForsteUttak.BASISTP_, simulertForsteuttak.basistp)
-            assertEquals(ForsteUttak.FORHOLDSTALL, simulertForsteuttak.forholdstall_uttak)
-            assertEquals(ForsteUttak.SKJERMINGSTILLEGG_, simulertForsteuttak.skjermingstillegg)
-            assertEquals(ForsteUttak.UFERGRAD_VED_OMREGNING, simulertForsteuttak.uforegradVedOmregning)
+            ForsteUttak.apply {
+                simulertForsteuttak.apply {
+                    assertEquals(POENG_AR_TOM_1991, poengArTom1991)
+                    assertEquals(POENG_AR_FOM_1992, poengArFom1992)
+                    assertEquals(SLUTTPOENGTALL, sluttpoengtall)
+                    assertEquals(ANVENDT_TRYGDETID, anvendtTrygdetid)
+                    assertEquals(BASISGP_, basisgp)
+                    assertEquals(BASISPT_, basispt)
+                    assertEquals(BASISTP_, basistp)
+                    assertEquals(FORHOLDSTALL, forholdstall_uttak)
+                    assertEquals(SKJERMINGSTILLEGG_, skjermingstillegg)
+                    assertEquals(UFERGRAD_VED_OMREGNING, uforegradVedOmregning)
+                }
+            }
 
-            assertEquals(HeltUttak.POENG_AR_TOM_1991, simulertHeltUttakEtter67Ar?.poengArTom1991)
-            assertEquals(HeltUttak.POENG_AR_FOM_1992, simulertHeltUttakEtter67Ar?.poengArFom1992)
-            assertEquals(HeltUttak.SLUTTPOENGTALL, simulertHeltUttakEtter67Ar?.sluttpoengtall)
-            assertEquals(HeltUttak.ANVENDT_TRYGDETID, simulertHeltUttakEtter67Ar?.anvendtTrygdetid)
-            assertEquals(HeltUttak.BASISGP_, simulertHeltUttakEtter67Ar?.basisgp)
-            assertEquals(HeltUttak.BASISPT_, simulertHeltUttakEtter67Ar?.basispt)
-            assertEquals(HeltUttak.BASISTP_, simulertHeltUttakEtter67Ar?.basistp)
-            assertEquals(HeltUttak.FORHOLDSTALL, simulertHeltUttakEtter67Ar?.forholdstall_uttak)
-            assertEquals(HeltUttak.SKJERMINGSTILLEGG_, simulertHeltUttakEtter67Ar?.skjermingstillegg)
-            assertEquals(HeltUttak.UFERGRAD_VED_OMREGNING, simulertHeltUttakEtter67Ar?.uforegradVedOmregning)
+            HeltUttak.apply {
+                simulertHeltUttakEtter67Ar!!.apply {
+                    assertEquals(POENG_AR_TOM_1991, poengArTom1991)
+                    assertEquals(POENG_AR_FOM_1992, poengArFom1992)
+                    assertEquals(SLUTTPOENGTALL, sluttpoengtall)
+                    assertEquals(ANVENDT_TRYGDETID, anvendtTrygdetid)
+                    assertEquals(BASISGP_, basisgp)
+                    assertEquals(BASISPT_, basispt)
+                    assertEquals(BASISTP_, basistp)
+                    assertEquals(FORHOLDSTALL, forholdstall_uttak)
+                    assertEquals(SKJERMINGSTILLEGG_, skjermingstillegg)
+                    assertEquals(UFERGRAD_VED_OMREGNING, uforegradVedOmregning)
+                }
+            }
         }
     }
 
