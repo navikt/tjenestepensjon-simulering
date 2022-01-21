@@ -49,11 +49,9 @@ internal class CacheConfigTest {
         assertNotNull(old)
         assert(DELAY <= uncachedDelay)
 
-        lateinit var new: String
         val cachedDelay = measureTimeMillis {
-            new = testCache.slowValueFetch(input)
+            assertEquals(old, testCache.slowValueFetch(input))
         }
-        assertEquals(old, new)
         assert(DELAY > cachedDelay)
     }
 
@@ -68,11 +66,9 @@ internal class CacheConfigTest {
 
         sleep(TEST_CACHE_EXPIRES.toMillis())
 
-        lateinit var new: String
         val cachedDelay = measureTimeMillis {
-            new = testCache.slowValueFetch(input)
+            assertEquals(old, testCache.slowValueFetch(input))
         }
-        assertEquals(old, new)
         assert(DELAY <= cachedDelay)
     }
 

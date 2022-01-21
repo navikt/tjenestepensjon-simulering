@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import java.util.concurrent.ThreadPoolExecutor
 
@@ -20,8 +20,11 @@ internal class ExecutorServiceConfigTest {
 
     @Test
     fun `Create one thread per provider`() {
-        Mockito.`when`(tpLeverandorConfig.tpLeverandorList())
-                .thenReturn(listOf(TpLeverandor("lev1", SOAP, "sim2", "stilling2"), TpLeverandor("lev2", SOAP, "sim2", "stilling2")))
+        `when`(tpLeverandorConfig.tpLeverandorList()).thenReturn(
+            listOf(
+                TpLeverandor("lev1", SOAP, "sim2", "stilling2"), TpLeverandor("lev2", SOAP, "sim2", "stilling2")
+            )
+        )
         val executorService = executorServiceConfig.taskExecutor(tpLeverandorConfig) as ThreadPoolExecutor
         assertEquals(2, executorService.corePoolSize)
     }

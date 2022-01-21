@@ -21,9 +21,6 @@ class TpService(
     @Value("\${TP_URL}")
     lateinit var tpUrl: String
 
-    @Value("\${TP_CONFIG_URL}")
-    lateinit var tpConfigUrl: String
-
     fun getTpOrdningerForPerson(fnr: FNR) = findForhold(fnr).map {
         TPOrdning(tpId = it.ordning, tssId = findTssId(it.ordning))
     }
@@ -36,10 +33,11 @@ class TpService(
 
     @Cacheable(TP_ORDNING_LEVERANDOR_CACHE)
     fun findTpLeverandor(tpOrdning: TPOrdning): String =
-        webClient.get().uri("$tpConfigUrl/tpleverandoer/${tpOrdning.tpId}").retrieve().bodyToMono<String>().block()!!
+        webClient.get().uri("$tpUrl/api/tpconfig/tpleverandoer/${tpOrdning.tpId}").retrieve().bodyToMono<String>()
+            .block()!!
 
     @Cacheable(TP_ORDNING_TSSID_CACHE)
     fun findTssId(tpId: String): String =
-        webClient.get().uri("$tpConfigUrl/tssnr/$tpId").retrieve().bodyToMono<String>().block()!!
+        webClient.get().uri("$tpUrl/api/tpconfig/tssnr/$tpId").retrieve().bodyToMono<String>().block()!!
 
 }

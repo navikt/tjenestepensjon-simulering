@@ -10,90 +10,93 @@ import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjen
 
 const val defaultLeverandor = "leverandor2"
 
-val defaultUtbetalingsperiode = Utbetalingsperiode(
-    uttaksgrad = 0, arligUtbetaling = 0.0, datoFom = defaultDatoFom, datoTom = defaultDatoTom, ytelsekode = "bogus"
-)
+val defaultUtbetalingsperiode
+    get() = Utbetalingsperiode(
+        uttaksgrad = 0, arligUtbetaling = 0.0, datoFom = defaultDatoFom, datoTom = defaultDatoTom, ytelsekode = "bogus"
+    )
 
-val defaultUtbetalingsperiodeListe = listOf(
-    defaultUtbetalingsperiode, null
-)
+val defaultUtbetalingsperiodeListe
+    get() = listOf(defaultUtbetalingsperiode, null)
 
-val defaultSimulerOffentligTjenestepensjonResponse = SimulerOffentligTjenestepensjonResponse(
-    tpnr = defaultTpid,
-    navnOrdning = "bogus",
-    inkluderteOrdningerListe = listOf("bogus"),
-    leverandorUrl = "bogus",
-    utbetalingsperiodeListe = defaultUtbetalingsperiodeListe
-)
+val defaultSimulerOffentligTjenestepensjonResponse
+    get() = SimulerOffentligTjenestepensjonResponse(
+        tpnr = defaultTpid,
+        navnOrdning = "bogus",
+        inkluderteOrdningerListe = listOf("bogus"),
+        leverandorUrl = "bogus",
+        utbetalingsperiodeListe = defaultUtbetalingsperiodeListe
+    )
 
-val defaultOpptjeningsperiode = Opptjeningsperiode(
-    aldersgrense = 0,
-    datoFom = defaultDatoFom,
-    datoTom = defaultDatoTom,
-    stillingsprosent = 0.0,
-    stillingsuavhengigTilleggslonn = 0,
-    faktiskHovedlonn = 0
-)
+val defaultOpptjeningsperiode
+    get() = Opptjeningsperiode(
+        aldersgrense = 0,
+        datoFom = defaultDatoFom,
+        datoTom = defaultDatoTom,
+        stillingsprosent = 0.0,
+        stillingsuavhengigTilleggslonn = 0,
+        faktiskHovedlonn = 0
+    )
 
-val defaultSimuleringsperiode = Simuleringsperiode(
-    datoFom = defaultDatoFom,
-    stillingsprosentOffentlig = 0,
-    folketrygdUttaksgrad = 0,
-    simulerAFPOffentligEtterfulgtAvAlder = true
-)
+val defaultSimuleringsperiode
+    get() = Simuleringsperiode(
+        datoFom = defaultDatoFom,
+        stillingsprosentOffentlig = 0,
+        folketrygdUttaksgrad = 0,
+        simulerAFPOffentligEtterfulgtAvAlder = true
+    )
 
-val defaultSimulertAFPPrivat = SimulertAFPPrivat(
-    afpOpptjeningTotalbelop = 0, kompensasjonstillegg = 0.0
-)
-
-
-val defaultSimulertAFPOffentlig = SimulertAFPOffentlig(
-    simulertAFPOffentligBrutto = 0, tpi = 0
-)
+val defaultSimulertAFPPrivat
+    get() = SimulertAFPPrivat(afpOpptjeningTotalbelop = 0, kompensasjonstillegg = 0.0)
 
 
-val defaultPensjonsbeholdningperiode = Pensjonsbeholdningsperiode(
-    datoFom = defaultDatoFom, pensjonsbeholdning = 0, garantipensjonsbeholdning = 0, garantitilleggsbeholdning = 0
-)
+val defaultSimulertAFPOffentlig
+    get() = SimulertAFPOffentlig(simulertAFPOffentligBrutto = 0, tpi = 0)
 
-val defaultInntekt = Inntekt(
-    datoFom = defaultDatoFom, inntekt = 0.0
-)
 
-val defaultSimuleringsdata = Simuleringsdata(
-    datoFom = defaultDatoFom,
-    andvendtTrygdetid = 0,
-    poengArTom1991 = 0,
-    poengArFom1992 = 0,
-    uforegradVedOmregning = 0,
-    sluttpoengtall = 0.0,
-    basisgp = 0.0,
-    basistp = 0.0,
-    basispt = 0.0,
-    delingstallUttak = 0.0,
-    forholdstallUttak = 0.0
-)
+val defaultPensjonsbeholdningperiode
+    get() = Pensjonsbeholdningsperiode(
+        datoFom = defaultDatoFom, pensjonsbeholdning = 0, garantipensjonsbeholdning = 0, garantitilleggsbeholdning = 0
+    )
 
-val defaultTpForhold = TpForhold(
-    tpnr = defaultTpid, opptjeningsperiodeListe = listOf(defaultOpptjeningsperiode)
-)
+val defaultInntekt
+    get() = Inntekt(datoFom = defaultDatoFom, inntekt = 0.0)
 
-val defaultSimulertPensjonRequest = SimulerPensjonRequestV2(
-    fnr = defaultFNR,
-    fodselsdato = "19010101",
-    sisteTpnr = defaultTpid,
-    sivilstandkode = SivilstandCodeEnum.GIFT,
-    sprak = "bogus",
-    pensjonsbeholdningsperiodeListe = listOf(defaultPensjonsbeholdningperiode),
-    simuleringsdataListe = listOf(defaultSimuleringsdata),
-    simuleringsperiodeListe = listOf(defaultSimuleringsperiode),
-    inntektListe = listOf(defaultInntekt),
-    simulertAFPPrivat = defaultSimulertAFPPrivat,
-    simulertAFPOffentlig = defaultSimulertAFPOffentlig,
-    tpForholdListe = listOf(defaultTpForhold)
-)
+val defaultSimuleringsdata
+    get() = Simuleringsdata(
+        datoFom = defaultDatoFom,
+        andvendtTrygdetid = 0,
+        poengArTom1991 = 0,
+        poengArFom1992 = 0,
+        uforegradVedOmregning = 0,
+        sluttpoengtall = 0.0,
+        basisgp = 0.0,
+        basistp = 0.0,
+        basispt = 0.0,
+        delingstallUttak = 0.0,
+        forholdstallUttak = 0.0
+    )
 
-val defaultOpptjeningsperiodeListe: List<Opptjeningsperiode> = listOf(defaultOpptjeningsperiode)
+val defaultTpForhold
+    get() = TpForhold(tpnr = defaultTpid, opptjeningsperiodeListe = listOf(defaultOpptjeningsperiode))
+
+val defaultSimulertPensjonRequest
+    get() = SimulerPensjonRequestV2(
+        fnr = defaultFNR,
+        fodselsdato = "19010101",
+        sisteTpnr = defaultTpid,
+        sivilstandkode = SivilstandCodeEnum.GIFT,
+        sprak = "bogus",
+        pensjonsbeholdningsperiodeListe = listOf(defaultPensjonsbeholdningperiode),
+        simuleringsdataListe = listOf(defaultSimuleringsdata),
+        simuleringsperiodeListe = listOf(defaultSimuleringsperiode),
+        inntektListe = listOf(defaultInntekt),
+        simulertAFPPrivat = defaultSimulertAFPPrivat,
+        simulertAFPOffentlig = defaultSimulertAFPOffentlig,
+        tpForholdListe = listOf(defaultTpForhold)
+    )
+
+val defaultOpptjeningsperiodeListe
+    get() = listOf(defaultOpptjeningsperiode)
 
 const val defaultSimulerOffentligTjenestepensjonResponseJson =
     """{"tpnr":"$defaultTpid","navnOrdning":"bogus","inkluderteOrdningerListe":["bogus"],"leverandorUrl":"bogus","utbetalingsperiodeListe":[{"uttaksgrad":0,"arligUtbetaling":0.0,"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","ytelsekode":"bogus"},null]}"""

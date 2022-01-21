@@ -15,17 +15,20 @@ internal class TpLeverandorConfigTest {
     @Test
     fun `Should create list from delimited string`() {
         tpLeverandorConfig.setLeverandorUrlMap("tp1,SOAP,simUrl1,stillingUrl1|tp2,REST,simUrl2,stillingUrl2")
-        val tpLeverandorList: List<TpLeverandor> = tpLeverandorConfig.tpLeverandorList()
-        val tpLeverandor1 = tpLeverandorList.firstOrNull { l: TpLeverandor -> l.name.equals("tp1", true) }
-        val tpLeverandor2 = tpLeverandorList.firstOrNull { l: TpLeverandor -> l.name.equals("tp2", true) }
-        assertEquals("tp1", tpLeverandor1?.name)
-        assertEquals(SOAP, tpLeverandor1?.impl)
-        assertEquals("simUrl1", tpLeverandor1?.simuleringUrl)
-        assertEquals("stillingUrl1", tpLeverandor1?.stillingsprosentUrl)
-        assertEquals("tp2", tpLeverandor2?.name)
-        assertEquals(REST, tpLeverandor2?.impl)
-        assertEquals("simUrl2", tpLeverandor2?.simuleringUrl)
-        assertEquals("stillingUrl2", tpLeverandor2?.stillingsprosentUrl)
+        tpLeverandorConfig.tpLeverandorList().apply {
+            first { l: TpLeverandor -> l.name.equals("tp1", true) }.apply {
+                assertEquals("tp1", name)
+                assertEquals(SOAP, impl)
+                assertEquals("simUrl1", simuleringUrl)
+                assertEquals("stillingUrl1", stillingsprosentUrl)
+            }
+            first { l: TpLeverandor -> l.name.equals("tp2", true) }.apply {
+                assertEquals("tp2", name)
+                assertEquals(REST, impl)
+                assertEquals("simUrl2", simuleringUrl)
+                assertEquals("stillingUrl2", stillingsprosentUrl)
+            }
+        }
     }
 
     @Test

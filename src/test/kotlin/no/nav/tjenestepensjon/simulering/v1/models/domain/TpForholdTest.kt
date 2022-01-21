@@ -9,12 +9,13 @@ import org.junit.jupiter.api.Test
 internal class TpForholdTest {
     @Test
     fun `Maps tp ordning to tp forhold`() {
-        val tpForhold = TpForhold(defaultTPOrdning, defaultStillingsprosentListe)
-        assertEquals(defaultTPOrdning.tpId, tpForhold.tpnr)
-        assertEquals(defaultTPOrdning.tssId, tpForhold.tssEksternId)
-        assertEquals(1, tpForhold.stillingsprosentListe.size)
-        defaultStillingsprosentListe.forEachIndexed { index, stillingsprosent ->
-            assertEquals(stillingsprosent, tpForhold.stillingsprosentListe[index])
+        TpForhold(defaultTPOrdning, defaultStillingsprosentListe).apply {
+            assertEquals(defaultTPOrdning.tpId, tpnr)
+            assertEquals(defaultTPOrdning.tssId, tssEksternId)
+            assertEquals(1, stillingsprosentListe.size)
+            defaultStillingsprosentListe.forEachIndexed { index, stillingsprosent ->
+                assertEquals(stillingsprosent, stillingsprosentListe[index])
+            }
         }
     }
 }

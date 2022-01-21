@@ -8,137 +8,147 @@ import no.nav.tjenestepensjon.simulering.v1.models.request.*
 import no.nav.tjenestepensjon.simulering.v1.models.response.HentStillingsprosentListeResponse
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulertPensjon
-import no.nav.tjenestepensjon.simulering.v2.models.defaultSimulertAFPOffentligJson
 
 const val defaultLeverandor = "leverandor1"
 
-val defaultUtbetalingsperiode = Utbetalingsperiode(
-    grad = 0,
-    arligUtbetaling = 0.0,
-    datoFom = defaultDatoFom,
-    datoTom = defaultDatoTom,
-    ytelsekode = "bogus",
-    mangelfullSimuleringkode = "bogus"
-)
+val defaultUtbetalingsperiode
+    get() = Utbetalingsperiode(
+        grad = 0,
+        arligUtbetaling = 0.0,
+        datoFom = defaultDatoFom,
+        datoTom = defaultDatoTom,
+        ytelsekode = "bogus",
+        mangelfullSimuleringkode = "bogus"
+    )
 
-val defaultUtbetalingsperiodeListe = listOf(
-    defaultUtbetalingsperiode, null
-)
+val defaultUtbetalingsperiodeListe
+    get() = listOf(defaultUtbetalingsperiode, null)
 
-val defaultSimulertPensjon = SimulertPensjon(
-    tpnr = defaultTpid,
-    navnOrdning = "bogus",
-    inkluderteOrdninger = listOf("bogus"),
-    leverandorUrl = "bogus",
-    utbetalingsperioder = defaultUtbetalingsperiodeListe
-)
+val defaultSimulertPensjon
+    get() = SimulertPensjon(
+        tpnr = defaultTpid,
+        navnOrdning = "bogus",
+        inkluderteOrdninger = listOf("bogus"),
+        leverandorUrl = "bogus",
+        utbetalingsperioder = defaultUtbetalingsperiodeListe
+    )
 
-val defaultSimulertPensjonList = listOf(defaultSimulertPensjon)
+val defaultSimulertPensjonList
+    get() = listOf(defaultSimulertPensjon)
 
-val defaultStillingsprosent = Stillingsprosent(
-    aldersgrense = 0,
-    datoFom = defaultDatoFom,
-    datoTom = defaultDatoTom,
-    stillingsprosent = 0.0,
-    stillingsuavhengigTilleggslonn = "bogus",
-    faktiskHovedlonn = "bogus",
-    utvidelse = null
-)
-
-
-val defaultHentStillingsprosentListeRequest = HentStillingsprosentListeRequest(
-    tssEksternId = defaultTssid, fnr = defaultFNR, tpnr = defaultTpid, simuleringsKode = "bogus"
-)
-
-val defaultDelytelse = Delytelse(
-    pensjonstype = BASISTP, belop = 0.0
-)
-
-val defaultSimuleringsperiode = Simuleringsperiode(
-    datoFom = defaultDatoFom,
-    utg = 0,
-    stillingsprosentOffentlig = 0,
-    poengArTom1991 = 0,
-    poengArFom1992 = 0,
-    sluttpoengtall = 0.0,
-    anvendtTrygdetid = 0,
-    forholdstall = 0.0,
-    delingstall = 0.0,
-    uforegradVedOmregning = 0,
-    delytelser = listOf(defaultDelytelse)
-)
-
-val defaultSimulertAFPPrivat = SimulertAFPPrivat(
-    afpOpptjeningTotalbelop = 0, kompensasjonstillegg = 0.0
-)
-
-val defaultPensjonsbeholdningperiode = Pensjonsbeholdningsperiode(
-    datoFom = defaultDatoFom, pensjonsbeholdning = 0, garantipensjonsbeholdning = 0, garantitilleggsbeholdning = 0
-)
-
-val defaultInntekt = Inntekt(
-    datoFom = defaultDatoFom, inntekt = 0.0
-)
-
-val defaultSimulerPensjonRequest = SimulerPensjonRequestV1(
-    fnr = defaultFNR,
-    sivilstandkode = "GIFT",
-    sprak = "bogus",
-    simuleringsperioder = listOf(defaultSimuleringsperiode),
-    simulertAFPOffentlig = 0,
-    simulertAFPPrivat = defaultSimulertAFPPrivat,
-    pensjonsbeholdningsperioder = listOf(defaultPensjonsbeholdningperiode),
-    inntekter = listOf(defaultInntekt)
-)
-
-val defaultSimuleringsdata = Simuleringsdata(
-    poengArTom1991 = 0,
-    poengArFom1992 = 0,
-    sluttpoengtall = 0.0,
-    anvendtTrygdetid = 0,
-    basisgp = 0.0,
-    basistp = 0.0,
-    basispt = 0.0,
-    forholdstall_uttak = 0.0,
-    skjermingstillegg = 0.0,
-    uforegradVedOmregning = 0
-)
-
-val defaultSimulertAP2011 = SimulertAP2011(
-    simulertForsteuttak = defaultSimuleringsdata, simulertHeltUttakEtter67Ar = defaultSimuleringsdata
-)
+val defaultStillingsprosent
+    get() = Stillingsprosent(
+        aldersgrense = 0,
+        datoFom = defaultDatoFom,
+        datoTom = defaultDatoTom,
+        stillingsprosent = 0.0,
+        stillingsuavhengigTilleggslonn = "bogus",
+        faktiskHovedlonn = "bogus",
+        utvidelse = null
+    )
 
 
-val defaultTpForhold = TpForhold(
-    tpnr = defaultTpid, tssEksternId = defaultTssid, stillingsprosentListe = listOf(defaultStillingsprosent)
-)
+val defaultHentStillingsprosentListeRequest
+    get() = HentStillingsprosentListeRequest(
+        tssEksternId = defaultTssid, fnr = defaultFNR, tpnr = defaultTpid, simuleringsKode = "bogus"
+    )
 
-val defaultSimulerOffentligTjenestepensjonRequest = SimulerOffentligTjenestepensjonRequest(
-    fnr = defaultFNR,
-    tpnr = defaultTpid,
-    tssEksternId = defaultTssid,
-    forsteUttakDato = defaultDatoFom,
-    uttaksgrad = 0,
-    heltUttakDato = defaultDatoFom,
-    stillingsprosentOffHeltUttak = 0,
-    stillingsprosentOffGradertUttak = 0,
-    inntektForUttak = 0,
-    inntektUnderGradertUttak = 0,
-    inntektEtterHeltUttak = 0,
-    antallArInntektEtterHeltUttak = 0,
-    sivilstandKode = "GIFT",
-    sprak = "bogus",
-    simulertAFPOffentlig = 0,
-    simulertAFPPrivat = defaultSimulertAFPPrivat,
-    simulertAP2011 = defaultSimulertAP2011,
-    tpForholdListe = listOf(defaultTpForhold)
-)
+val defaultDelytelse
+    get() = Delytelse(pensjonstype = BASISTP, belop = 0.0)
 
-val defaultStillingsprosentListe: List<Stillingsprosent> = listOf(defaultStillingsprosent)
+val defaultSimuleringsperiode
+    get() = Simuleringsperiode(
+        datoFom = defaultDatoFom,
+        utg = 0,
+        stillingsprosentOffentlig = 0,
+        poengArTom1991 = 0,
+        poengArFom1992 = 0,
+        sluttpoengtall = 0.0,
+        anvendtTrygdetid = 0,
+        forholdstall = 0.0,
+        delingstall = 0.0,
+        uforegradVedOmregning = 0,
+        delytelser = listOf(defaultDelytelse)
+    )
 
-val defaultHentStillingsprosentListeResponse = HentStillingsprosentListeResponse(defaultStillingsprosentListe)
+val defaultSimulertAFPPrivat
+    get() = SimulertAFPPrivat(afpOpptjeningTotalbelop = 0, kompensasjonstillegg = 0.0)
 
-val defaultSimulerOffentligTjenestepensjonResponse = SimulerOffentligTjenestepensjonResponse(defaultSimulertPensjonList)
+val defaultPensjonsbeholdningperiode
+    get() = Pensjonsbeholdningsperiode(
+        datoFom = defaultDatoFom, pensjonsbeholdning = 0, garantipensjonsbeholdning = 0, garantitilleggsbeholdning = 0
+    )
+
+val defaultInntekt
+    get() = Inntekt(datoFom = defaultDatoFom, inntekt = 0.0)
+
+val defaultSimulerPensjonRequest
+    get() = SimulerPensjonRequestV1(
+        fnr = defaultFNR,
+        sivilstandkode = "GIFT",
+        sprak = "bogus",
+        simuleringsperioder = listOf(defaultSimuleringsperiode),
+        simulertAFPOffentlig = 0,
+        simulertAFPPrivat = defaultSimulertAFPPrivat,
+        pensjonsbeholdningsperioder = listOf(defaultPensjonsbeholdningperiode),
+        inntekter = listOf(defaultInntekt)
+    )
+
+val defaultSimuleringsdata
+    get() = Simuleringsdata(
+        poengArTom1991 = 0,
+        poengArFom1992 = 0,
+        sluttpoengtall = 0.0,
+        anvendtTrygdetid = 0,
+        basisgp = 0.0,
+        basistp = 0.0,
+        basispt = 0.0,
+        forholdstall_uttak = 0.0,
+        skjermingstillegg = 0.0,
+        uforegradVedOmregning = 0
+    )
+
+val defaultSimulertAP2011
+    get() = SimulertAP2011(
+        simulertForsteuttak = defaultSimuleringsdata, simulertHeltUttakEtter67Ar = defaultSimuleringsdata
+    )
+
+
+val defaultTpForhold
+    get() = TpForhold(
+        tpnr = defaultTpid, tssEksternId = defaultTssid, stillingsprosentListe = listOf(defaultStillingsprosent)
+    )
+
+val defaultSimulerOffentligTjenestepensjonRequest
+    get() = SimulerOffentligTjenestepensjonRequest(
+        fnr = defaultFNR,
+        tpnr = defaultTpid,
+        tssEksternId = defaultTssid,
+        forsteUttakDato = defaultDatoFom,
+        uttaksgrad = 0,
+        heltUttakDato = defaultDatoFom,
+        stillingsprosentOffHeltUttak = 0,
+        stillingsprosentOffGradertUttak = 0,
+        inntektForUttak = 0,
+        inntektUnderGradertUttak = 0,
+        inntektEtterHeltUttak = 0,
+        antallArInntektEtterHeltUttak = 0,
+        sivilstandKode = "GIFT",
+        sprak = "bogus",
+        simulertAFPOffentlig = 0,
+        simulertAFPPrivat = defaultSimulertAFPPrivat,
+        simulertAP2011 = defaultSimulertAP2011,
+        tpForholdListe = listOf(defaultTpForhold)
+    )
+
+val defaultStillingsprosentListe
+    get() = listOf(defaultStillingsprosent)
+
+val defaultHentStillingsprosentListeResponse
+    get() = HentStillingsprosentListeResponse(defaultStillingsprosentListe)
+
+val defaultSimulerOffentligTjenestepensjonResponse
+    get() = SimulerOffentligTjenestepensjonResponse(defaultSimulertPensjonList)
 
 const val defaultSimulertPensjonJson =
     """{"tpnr":"$defaultTpid","navnOrdning":"bogus","inkluderteOrdninger":["bogus"],"leverandorUrl":"bogus","inkluderteTpnr":null,"utelatteTpnr":null,"utbetalingsperioder":[{"grad":0,"arligUtbetaling":0.0,"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","ytelsekode":"bogus","mangelfullSimuleringkode":"bogus"},null],"status":null,"feilkode":null,"feilbeskrivelse":null}"""

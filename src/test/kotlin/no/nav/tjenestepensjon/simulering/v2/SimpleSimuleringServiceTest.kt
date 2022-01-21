@@ -72,7 +72,7 @@ internal class SimpleSimuleringServiceTest {
         )
         val opptjeningsperiodeResponse = OpptjeningsperiodeResponse(map, exceptions)
 
-        @Suppress("unused") `when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull())).thenReturn(
+        `when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull())).thenReturn(
             opptjeningsperiodeResponse
         )
 

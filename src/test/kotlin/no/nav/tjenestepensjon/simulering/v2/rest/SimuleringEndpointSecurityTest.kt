@@ -8,13 +8,14 @@ import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.models.defaultStillingsprosentListe
 import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
 import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenProvider
-import no.nav.tjenestepensjon.simulering.v2.models.*
+import no.nav.tjenestepensjon.simulering.v2.models.defaultLeverandor
+import no.nav.tjenestepensjon.simulering.v2.models.defaultSimulerOffentligTjenestepensjonRequestJson
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
-import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -87,11 +88,13 @@ class SimuleringEndpointSecurityTest {
     @Test
     @WithMockUser
     fun secureEndpointOkWithValidToken() {
-        Mockito.`when`(maskinportenTokenProvider.generateTpregisteretToken()).thenReturn("")
-        Mockito.`when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull()))
-            .thenReturn(defaultStillingsprosentListe)
-        Mockito.`when`(restClient.getResponse(anyNonNull(), anyNonNull(), anyNonNull()))
-            .thenReturn(SimulerOffentligTjenestepensjonResponse("", ""))
+        `when`(maskinportenTokenProvider.generateTpregisteretToken()).thenReturn("")
+        `when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
+            defaultStillingsprosentListe
+        )
+        `when`(restClient.getResponse(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
+            SimulerOffentligTjenestepensjonResponse("", "")
+        )
         mockMvc.post("/simulering") {
             content = defaultSimulerOffentligTjenestepensjonRequestJson
             contentType = APPLICATION_JSON

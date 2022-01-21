@@ -50,7 +50,7 @@ class SimuleringEndpoint(
     private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
     private val metrics: AppMetrics
 ) {
-    private val log = LoggerFactory.getLogger(javaClass.declaringClass)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Autowired
     lateinit var objectMapper: ObjectMapper

@@ -1,10 +1,13 @@
 package no.nav.tjenestepensjon.simulering.config
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig.Companion.READ_TIMEOUT_MILLIS
-import no.nav.tjenestepensjon.simulering.service.TpService
+import no.nav.tjenestepensjon.simulering.defaultLeveradorUrl
+import no.nav.tjenestepensjon.simulering.defaultTpid
+import no.nav.tjenestepensjon.simulering.defaultTssid
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.service.TpService
 import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
@@ -27,11 +30,8 @@ internal class WebClientConfigTest {
 
     private var wireMockServer = WireMockServer().apply {
         start()
-        stubFor(
-            WireMock.get(WireMock.urlPathEqualTo("/tpleverandoer/tp")).willReturn(
-                WireMock.aResponse().withFixedDelay(READ_TIMEOUT_MILLIS * 2)
-            )
-        )
+        setGlobalFixedDelay(READ_TIMEOUT_MILLIS * 2)
+        stubFor(get(urlPathEqualTo(defaultLeveradorUrl)).willReturn(aResponse()))
     }
 
     @AfterAll
@@ -41,6 +41,6 @@ internal class WebClientConfigTest {
 
     @Test
     fun `Should throw exception if read timeout exceeded`() {
-        assertThrows<RuntimeException> { tpService.findTpLeverandor(TPOrdning("tss", "tp")) }
+        assertThrows<RuntimeException> { tpService.findTpLeverandor(TPOrdning(defaultTssid, defaultTpid)) }
     }
 }
