@@ -30,9 +30,7 @@ internal class OpptjeningsperiodeCallableTest {
     fun `Call shall return stillingsprosenter with soap`() {
         val stillingsprosenter = prepareStillingsprosenter()
         `when`(
-            soapClient.getStillingsprosenter(
-                anyNonNull(), anyNonNull(), anyNonNull()
-            )
+            soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())
         ).thenReturn(stillingsprosenter)
         val result = StillingsprosentCallable(fnr, tpOrdning, soapTpLeverandor, soapClient)()
         assertStillingsprosenter(stillingsprosenter, result)
@@ -43,9 +41,7 @@ internal class OpptjeningsperiodeCallableTest {
     fun `Call shall return stillingsprosenter with rest`() {
         val stillingsprosenter = prepareStillingsprosenter()
         `when`(
-            soapClient.getStillingsprosenter(
-                anyNonNull(), anyNonNull(), anyNonNull()
-            )
+            soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())
         ).thenReturn(stillingsprosenter)
         val result = StillingsprosentCallable(fnr, tpOrdning, restTpLeverandor, soapClient)()
         assertStillingsprosenter(stillingsprosenter, result)
@@ -58,9 +54,7 @@ internal class OpptjeningsperiodeCallableTest {
             WebServiceIOException("msg from cause")
         )
         val exception = assertThrows<StillingsprosentCallableException> {
-            StillingsprosentCallable(
-                fnr, tpOrdning, soapTpLeverandor, soapClient
-            )()
+            StillingsprosentCallable(fnr, tpOrdning, soapTpLeverandor, soapClient)()
         }
         assertEquals(
             "Call to getStillingsprosenter failed with exception: org.springframework.ws.client.WebServiceIOException: msg from cause",
@@ -76,9 +70,7 @@ internal class OpptjeningsperiodeCallableTest {
             WebServiceIOException("msg from cause")
         )
         val exception = assertThrows<StillingsprosentCallableException> {
-            StillingsprosentCallable(
-                fnr, tpOrdning, restTpLeverandor, soapClient
-            )()
+            StillingsprosentCallable(fnr, tpOrdning, restTpLeverandor, soapClient)()
         }
         assertEquals(
             "Call to getStillingsprosenter failed with exception: org.springframework.ws.client.WebServiceIOException: msg from cause",
