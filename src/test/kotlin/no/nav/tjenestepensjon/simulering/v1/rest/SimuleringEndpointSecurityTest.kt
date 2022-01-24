@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.tjenestepensjon.simulering.*
 import no.nav.tjenestepensjon.simulering.config.ProxylessWebClientConfig
+import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.models.defaultLeverandor
 import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerPensjonRequestJson
@@ -35,6 +36,9 @@ class SimuleringEndpointSecurityTest {
 
     @MockBean
     private lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
+
+    @MockBean
+    private lateinit var aadClient: AADClient
 
     @MockBean
     private lateinit var soapClient: SoapClient
@@ -83,7 +87,7 @@ class SimuleringEndpointSecurityTest {
     @Test
     @WithMockUser
     fun secureEndpointOkWithValidToken() {
-        `when`(maskinportenTokenProvider.generateTpregisteretToken()).thenReturn("")
+        `when`(aadClient.getToken("api://bogus")).thenReturn("")
         `when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
             defaultStillingsprosentListe
         )

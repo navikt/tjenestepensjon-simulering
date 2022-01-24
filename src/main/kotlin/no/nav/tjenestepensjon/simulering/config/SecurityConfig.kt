@@ -16,7 +16,7 @@ class SecurityConfig(
     @Value("\${simulering.security.issuers}")
     issuers: String
 ) : WebSecurityConfigurerAdapter() {
-    private val LOG = LoggerFactory.getLogger(javaClass)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     private val issuerResolver = JwtIssuerAuthenticationManagerResolver(issuers.split(','))
 
@@ -29,7 +29,7 @@ class SecurityConfig(
                         try {
                             val token = it.getHeader("Authorization").removePrefix("Bearer ")
                             val issuer = JWTParser.parse(token).jwtClaimsSet.issuer
-                            LOG.info("Received call validated with issuer: $issuer")
+                            log.info("Received call validated with issuer: $issuer")
                         } catch (_: Exception) {
                             /*Do nothing*/
                         }

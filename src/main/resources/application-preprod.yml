@@ -1,7 +1,7 @@
 MASKINPORTEN_URL: https://ver2.maskinporten.no
 STS_URL: https://security-token-service.nais.preprod.local
 TP_URL: https://tp-api-q1.dev-fss-pub.nais.io
-TP_CONFIG_URL: https://tpconfig.dev.adeo.no
+TP_SCOPE: api://dev-fss.pensjonsamhandling.tp-api-q1/.default
 
 logging.level:
   no.nav.tjenestepensjon: DEBUG

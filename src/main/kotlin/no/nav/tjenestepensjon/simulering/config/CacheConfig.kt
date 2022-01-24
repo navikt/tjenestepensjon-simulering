@@ -23,8 +23,8 @@ class CacheConfig {
     fun tpOrdningPersonCache() = getCache(TP_ORDNING_PERSON_CACHE, TP_ORDNING_PERSON_CACHE_EXPIRES)
 
     companion object {
-        fun getCache(name: String, duration: Duration?) = CaffeineCache(
-            name, newBuilder().recordStats().apply { if (duration != null) expireAfterWrite(duration) }.build()
+        fun getCache(name: String, duration: Duration) = CaffeineCache(
+            name, newBuilder().recordStats().expireAfterWrite(duration).build()
         )
 
         const val TP_ORDNING_LEVERANDOR_CACHE = "TP_ORDNING_LEVERANDOR_CACHE"

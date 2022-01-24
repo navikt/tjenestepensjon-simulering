@@ -15,15 +15,15 @@ import org.mockito.junit.jupiter.MockitoExtension
 internal class FindTpLeverandorCallableTest {
 
     @Mock
-    private lateinit var tpService: TpService
+    private lateinit var tpClient: TpClient
 
     private val tpOrdning = TPOrdning("80001234", "1234")
     private val tpLeverandorMap = listOf(TpLeverandor("tpLeverandorName", SOAP, "simulerUrl", "stillingUrl"))
 
     @Test
     fun `Should return mapped leverandor`() {
-        `when`(tpService.findTpLeverandor(tpOrdning)).thenReturn("tpLeverandorName")
-        FindTpLeverandorCallable(tpOrdning, tpService, tpLeverandorMap).call().apply {
+        `when`(tpClient.findTpLeverandor(tpOrdning)).thenReturn("tpLeverandorName")
+        FindTpLeverandorCallable(tpOrdning, tpClient, tpLeverandorMap).call().apply {
             assertEquals("tpLeverandorName", name)
             assertEquals(SOAP, impl)
             assertEquals("simulerUrl", simuleringUrl)

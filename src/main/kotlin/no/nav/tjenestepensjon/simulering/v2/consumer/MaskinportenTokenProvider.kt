@@ -13,20 +13,10 @@ import java.text.ParseException
 
 @Service
 class MaskinportenTokenProvider(
-    @Value("\${PENSJONSIMULERING_SCOPE}")
-    val pensjonsimuleringScope: String,
-
-    @Value("\${TPREGISTERET_SCOPE}")
-    val tpregisteretScope: String,
-
-    @Value("\${client_id}")
-    val clientId: String,
-
-    @Value("\${MASKINPORTEN_URL}")
-    val maskinportenUrl: String,
-
-    @Value("\${jwk_private}")
-    privateKeys: String
+    @Value("\${PENSJONSIMULERING_SCOPE}") val pensjonsimuleringScope: String,
+    @Value("\${client_id}") clientId: String,
+    @Value("\${MASKINPORTEN_URL}") maskinportenUrl: String,
+    @Value("\${jwk_private}") privateKeys: String
 ) {
 
     private val privateKey = try {
@@ -39,22 +29,12 @@ class MaskinportenTokenProvider(
 
     private val maskinportenClient = MaskinportenClient(
         MaskinportenConfig(
-            maskinportenUrl,
-            clientId,
-            privateKey,
-            120,
-            proxySelector
+            maskinportenUrl, clientId, privateKey, 120, proxySelector
         )
     )
 
     fun generatePensjonsimuleringToken() = try {
         maskinportenClient.getTokenString(pensjonsimuleringScope)
-    } catch (e: Throwable) {
-        throw ConnectToMaskinPortenException(e.message)
-    }
-
-    fun generateTpregisteretToken() = try {
-        maskinportenClient.getTokenString(tpregisteretScope)
     } catch (e: Throwable) {
         throw ConnectToMaskinPortenException(e.message)
     }

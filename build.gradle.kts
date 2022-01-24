@@ -23,8 +23,9 @@ repositories {
 
 dependencies {
     implementation(kotlin("reflect"))
-    implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.13.0")
+    implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.13.1")
     implementation("com.github.ben-manes.caffeine", "caffeine", "2.7.0")
+    implementation("com.microsoft.azure", "msal4j", "1.11.0")
     implementation("com.sun.xml.messaging.saaj", "saaj-impl", "1.5.1")
     implementation("io.micrometer", "micrometer-registry-prometheus")
     implementation("javax.xml.bind", "jaxb-api", "2.3.1")
