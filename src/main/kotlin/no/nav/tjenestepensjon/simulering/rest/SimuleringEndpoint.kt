@@ -25,6 +25,7 @@ import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequestV2
+import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,7 +44,7 @@ import java.lang.reflect.UndeclaredThrowableException
 @RestController
 class SimuleringEndpoint(
     private val service: SimuleringServiceV1,
-    private val service2: no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2,
+    private val service2: SimuleringServiceV2,
     private val tpClient: TpClient,
     private val stillingsprosentService: StillingsprosentService,
     @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>,
