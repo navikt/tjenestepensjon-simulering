@@ -9,7 +9,7 @@ TP_SCOPE: api://bogus
 
 AZURE_APP_CLIENT_ID: bogus
 AZURE_APP_CLIENT_SECRET: bogus
-AZURE_OPENID_CONFIG_ISSUER: https://localhost:8080/bogus
+AZURE_APP_WELL_KNOWN_URL: https://localhost:8080/bogus
 
 PROVIDER_URI: http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
 ISSUER_JWKS_MAP: http://localhost:8080,http://localhost:8080/rest/v1/sts/jwks
