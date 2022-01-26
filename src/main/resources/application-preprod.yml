@@ -8,6 +8,7 @@ logging.level:
   org.springframework.ws:
     web: DEBUG
     client.MessageTracing: DEBUG
+  com.microsoft.aad: DEBUG
 
 #spring.security.oauth2.client:
 #  provider:

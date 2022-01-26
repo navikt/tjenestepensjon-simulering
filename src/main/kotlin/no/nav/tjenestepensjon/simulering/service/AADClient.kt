@@ -15,7 +15,8 @@ class AADClient(
     proxy: Proxy = Proxy.NO_PROXY
 ) {
     private val app =
-        ConfidentialClientApplication.builder(clientId, createFromSecret(clientSecret)).authority(authority).proxy(proxy).build()
+        ConfidentialClientApplication.builder(clientId, createFromSecret(clientSecret)).authority(authority)
+            .proxy(proxy).build()
 
     fun getToken(vararg scope: String): String =
         app.acquireToken(ClientCredentialParameters.builder(scope.toSet()).build()).get().accessToken()
