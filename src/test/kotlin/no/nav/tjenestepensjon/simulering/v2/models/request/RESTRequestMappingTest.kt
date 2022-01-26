@@ -22,7 +22,11 @@ class RESTRequestMappingTest {
 
     @Test
     fun `Test deserializing of SimulerOffentligTjenestepensjonRequest`() {
-        val result = objectMapper.readValue(defaultSimulerOffentligTjenestepensjonRequestJson, SimulerPensjonRequest::class.java)
-         assertEquals(objectMapper.writeValueAsString(defaultSimulertPensjonRequest), objectMapper.writeValueAsString(result))
+        val result = objectMapper.readValue(
+            defaultSimulerOffentligTjenestepensjonRequestJson, SimulerPensjonRequestV2::class.java
+        )
+        assertEquals(
+            objectMapper.writeValueAsString(defaultSimulertPensjonRequest), objectMapper.writeValueAsString(result)
+        )
     }
 }

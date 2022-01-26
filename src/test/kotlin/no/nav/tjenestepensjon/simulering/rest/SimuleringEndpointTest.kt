@@ -18,8 +18,6 @@ class SimuleringEndpointTest {
     @Test
     @WithMockUser
     fun secureEndpointOkWithValidToken() {
-        mockMvc.post("/simulering").andExpect {
-            status { isBadRequest() }
-        }
+        mockMvc.post("/simulering").andExpect { status { isBadRequest() } }
     }
 }

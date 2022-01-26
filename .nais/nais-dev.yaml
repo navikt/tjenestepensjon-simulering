@@ -30,6 +30,11 @@ spec:
           namespace: teampensjon
         - application: pensjon-pen-t4
           namespace: teampensjon
+    outbound:
+      rules:
+        - application: tp-q1
+          namespace: pensjonsamhandling
+          cluster: dev-fss
   azure:
     application:
       enabled: true
