@@ -23,14 +23,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.web.WebAppConfiguration
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 
 @SpringBootTest(classes = [TjenestepensjonSimuleringApplication::class, ProxylessWebClientConfig::class])
+@ActiveProfiles("noProxy")
 @AutoConfigureMockMvc
-@WebAppConfiguration
 @TestInstance(PER_CLASS)
 class SimuleringEndpointSecurityTest {
     @Autowired
