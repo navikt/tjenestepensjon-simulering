@@ -6,26 +6,22 @@ import com.microsoft.aad.msal4j.ConfidentialClientApplication
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import java.net.Proxy
 
 @Service
 class AADClient(
     @Value("\${AZURE_APP_CLIENT_ID}") clientId: String,
     @Value("\${AZURE_APP_CLIENT_SECRET}") clientSecret: String,
-    @Value("\${AZURE_APP_WELL_KNOWN_URL}") authority: String,
-    proxy: Proxy
+    @Value("\${AZURE_APP_WELL_KNOWN_URL}") authority: String
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
     init {
         log.debug("Building AAD client:")
         log.debug("Using authority: $authority")
-        log.debug("Using proxy: $proxy")
     }
 
     private val app =
-        ConfidentialClientApplication.builder(clientId, createFromSecret(clientSecret)).authority(authority)
-            .proxy(proxy).build()
+        ConfidentialClientApplication.builder(clientId, createFromSecret(clientSecret)).authority(authority).build()
 
     fun getToken(vararg scope: String): String {
         log.debug("Fetching AAD token with scopes: $scope")
