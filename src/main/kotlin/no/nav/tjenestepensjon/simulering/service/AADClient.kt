@@ -24,7 +24,7 @@ class AADClient(
         ConfidentialClientApplication.builder(clientId, createFromSecret(clientSecret)).authority(authority).build()
 
     fun getToken(vararg scope: String): String {
-        log.debug("Fetching AAD token with scopes: $scope")
+        log.debug("Fetching AAD token with scopes: ${scope.toList()}")
         return app.acquireToken(withScopes(*scope)).get().accessToken()
     }
 
