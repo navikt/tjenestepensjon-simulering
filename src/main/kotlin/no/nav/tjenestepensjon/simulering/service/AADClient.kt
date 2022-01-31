@@ -16,8 +16,7 @@ class AADClient(
     private val log = LoggerFactory.getLogger(javaClass)
 
     init {
-        log.debug("Building AAD client:")
-        log.debug("Using authority: $authority")
+        log.info("Building AAD client with authority: $authority")
     }
 
     private val app =
