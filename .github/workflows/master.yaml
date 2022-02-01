@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: ./gradlew build
         env:
-          GITHUB_TOKEN: ${{ secrets.GITH_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.READER_TOKEN }}
 
       # Release
       - name: Create Docker tag
