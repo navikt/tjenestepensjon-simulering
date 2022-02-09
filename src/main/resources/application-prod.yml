@@ -1,0 +1,8 @@
+MASKINPORTEN_URL: https://maskinporten.no
+STS_URL: https://security-token-service.nais.adeo.no
+TP_URL: https://tp.nais.adeo.no
+TP_SCOPE: api://prod-fss.pensjonsamhandling.tp/.default
+
+logging.level:
+  no.nav.tjenestepensjon: DEBUG
+  org.springframework.security: WARN

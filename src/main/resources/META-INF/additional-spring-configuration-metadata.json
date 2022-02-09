@@ -21,9 +21,9 @@
       "description": "Description for SIMULER_OFFENTLIG_TJENESTEPENSJON_URL."
     },
     {
-      "name": "TP_REGISTERET_URL",
+      "name": "TP_URL",
       "type": "java.lang.String",
-      "description": "Description for TP_REGISTERET_URL."
+      "description": "Description for TP_URL."
     },
     {
       "name": "TP_CONFIG_URL",
@@ -39,5 +39,10 @@
       "name": "management.endpoints.web.exposure.include",
       "type": "java.lang.String",
       "description": "Description for management.endpoints.web.exposure.include."
+    },
+    {
+      "name": "simulering.security.issuers",
+      "type": "java.lang.String",
+      "description": "Description for simulering.security.issuers."
     }
   ] }

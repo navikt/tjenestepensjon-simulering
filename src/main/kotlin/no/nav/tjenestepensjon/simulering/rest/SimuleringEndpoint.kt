@@ -10,8 +10,8 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.consumer.TpConfigConsumer
-import no.nav.tjenestepensjon.simulering.consumer.TpRegisterConsumer
+import no.nav.tjenestepensjon.simulering.service.TpClient
+import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
@@ -19,11 +19,13 @@ import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
-import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequest
-import no.nav.tjenestepensjon.simulering.v1.service.SimuleringService
+import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequestV1
+import no.nav.tjenestepensjon.simulering.v1.service.SimuleringServiceV1
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
+import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequestV2
+import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,58 +43,59 @@ import java.lang.reflect.UndeclaredThrowableException
 
 @RestController
 class SimuleringEndpoint(
-        private val service: SimuleringService,
-        private val service2: no.nav.tjenestepensjon.simulering.v2.service.SimuleringService,
-        private val tpRegisterConsumer: TpRegisterConsumer,
-        private val tpConfigConsumer: TpConfigConsumer,
-        private val stillingsprosentService: StillingsprosentService,
-        @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>,
-        private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
-        private val metrics: AppMetrics
+    private val service: SimuleringServiceV1,
+    private val service2: SimuleringServiceV2,
+    private val tpClient: TpClient,
+    private val stillingsprosentService: StillingsprosentService,
+    @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>,
+    private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
+    private val metrics: AppMetrics
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
     @PostMapping("/simulering")
     fun simuler(
-            @RequestBody body: String,
-            @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
+        @RequestBody body: String, @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
     ): ResponseEntity<Any> {
         addHeaderToRequestContext(NAV_CALL_ID, navCallId)
-        LOG.info("Processing nav-call-id: ${getHeaderFromRequestContext(NAV_CALL_ID)}")
-        LOG.debug("Received request: ${filterFnr(body)}")
+        log.info("Processing nav-call-id: ${getHeaderFromRequestContext(NAV_CALL_ID)}")
+        log.debug("Received request: ${filterFnr(body)}")
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
         return try {
             val fnr = FNR(JSONObject(body).get("fnr").toString())
-            val tpOrdningAndLeverandorMap = tpRegisterConsumer.getTpOrdningerForPerson(fnr).let(::getTpLeverandorer)
-            val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
-            val tpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
+            val tpOrdningAndLeverandorMap = tpClient.getTpOrdningerForPerson(fnr).let(::getTpLeverandorer)
+            val stillingsprosentResponse =
+                stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
+            val tpOrdning =
+                stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
 
             metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_OK)
             val tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
 
             if (tpLeverandor.impl == REST) {
-                LOG.debug("Request simulation from ${tpLeverandor.name} using REST")
+                log.debug("Request simulation from ${tpLeverandor.name} using REST")
                 val response = service2.simulerOffentligTjenestepensjon(
-                        objectMapper.readValue(body, no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest::class.java),
-                        stillingsprosentResponse,
-                        tpOrdning,
-                        tpLeverandor
+                    objectMapper.readValue(body, SimulerPensjonRequestV2::class.java),
+                    stillingsprosentResponse,
+                    tpOrdning,
+                    tpLeverandor
                 )
                 metrics.incrementRestCounter(tpLeverandor.name, "OK")
-                LOG.debug("Returning response: ${filterFnr(response.toString())}")
+                log.debug("Returning response: ${filterFnr(response.toString())}")
                 ResponseEntity(response, OK)
             } else {
-                LOG.debug("Request simulation from ${tpLeverandor.name} using SOAP")
+                log.debug("Request simulation from ${tpLeverandor.name} using SOAP")
                 val response = service.simulerOffentligTjenestepensjon(
-                        objectMapper.readValue(body, SimulerPensjonRequest::class.java),
-                        stillingsprosentResponse,
-                        tpOrdning,
-                        tpLeverandor
+                    objectMapper.readValue(body, SimulerPensjonRequestV1::class.java),
+                    stillingsprosentResponse,
+                    tpOrdning,
+                    tpLeverandor
                 )
-                LOG.debug("Returning response: ${filterFnr(response.toString())}")
+                log.debug("Returning response: ${filterFnr(response.toString())}")
                 ResponseEntity(response, OK)
             }
         } catch (e: Throwable) {
@@ -105,13 +108,13 @@ class SimuleringEndpoint(
                 is WebClientResponseException -> "Caught WebClientResponseException in version 1" to INTERNAL_SERVER_ERROR
                 is SimuleringException -> e.message to INTERNAL_SERVER_ERROR
                 is UndeclaredThrowableException -> e.run {
-                    LOG.error("UndeclaredThrowableException received. $cause")
+                    log.error("UndeclaredThrowableException received. $cause")
                     cause?.message to INTERNAL_SERVER_ERROR
                 }
                 else -> e::class.qualifiedName to INTERNAL_SERVER_ERROR
             }.run {
-                LOG.error("Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}")
-                LOG.error("httpResponse: ${second.value()} - $first, cause: ${e.message}")
+                log.error("Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}")
+                log.error("httpResponse: ${second.value()} - $first, cause: ${e.message}")
 
                 if (e is SimuleringException) {
                     metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_FEIL)
@@ -125,29 +128,23 @@ class SimuleringEndpoint(
     }
 
     fun addHeaderToRequestContext(key: String, value: String?) {
-        if (value != null)
-            currentRequestAttributes().setAttribute(key, value, SCOPE_REQUEST)
+        if (value != null) currentRequestAttributes().setAttribute(key, value, SCOPE_REQUEST)
     }
 
     fun getHeaderFromRequestContext(key: String) =
-            currentRequestAttributes().getAttribute(key, SCOPE_REQUEST)?.toString()
+        currentRequestAttributes().getAttribute(key, SCOPE_REQUEST)?.toString()
 
     private fun getTpLeverandorer(tpOrdningList: List<TPOrdning>) =
-            asyncExecutor.executeAsync(
-                    tpOrdningList.map { tpOrdning ->
-                        tpOrdning to FindTpLeverandorCallable(tpOrdning, tpConfigConsumer, tpLeverandorList)
-                    }.toMap()
-            ).resultMap.apply {
-                if(isEmpty()) throw RuntimeException("No Tp-leverandoer found for person.")
-            }
+        asyncExecutor.executeAsync(tpOrdningList.associateWith { tpOrdning ->
+            FindTpLeverandorCallable(tpOrdning, tpClient, tpLeverandorList)
+        }).resultMap.apply {
+            if (isEmpty()) throw LeveradoerNotFoundException("No Tp-leverandoer found for person.")
+        }
 
     companion object {
         const val NAV_CALL_ID = "nav-call-id"
 
         private val fnrFilterRegex = "(?<=\\d{6})\\d{5}".toRegex()
-
-        @Suppress("JAVA_CLASS_ON_COMPANION")
-        private val LOG = LoggerFactory.getLogger(javaClass.declaringClass)
 
         fun filterFnr(s: String) = fnrFilterRegex.replace(s, "*****")
     }

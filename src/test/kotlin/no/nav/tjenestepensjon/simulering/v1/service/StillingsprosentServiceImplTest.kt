@@ -24,7 +24,8 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate
 
@@ -54,17 +55,21 @@ internal class StillingsprosentServiceImplTest {
 
     @Test
     fun `Should retrieve from tp register async`() {
-        Mockito.`when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
-        stillingsprosentService.getStillingsprosentListe(fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", SOAP, "sim", "stilling")))
-        Mockito.verify<AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable>>(asyncExecutor).executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())
+        `when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
+        stillingsprosentService.getStillingsprosentListe(
+            fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", SOAP, "sim", "stilling"))
+        )
+        verify(asyncExecutor).executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())
     }
 
     @Test
     fun `Handles metrics`() {
-        Mockito.`when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
-        stillingsprosentService.getStillingsprosentListe(fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", SOAP, "sim", "stilling")))
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_OPPTJENINGSPERIODE_CALLS))
-        Mockito.verify<AppMetrics>(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_OPPTJENINGSPERIODE_TIME), anyNonNull())
+        `when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
+        stillingsprosentService.getStillingsprosentListe(
+            fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", SOAP, "sim", "stilling"))
+        )
+        verify(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_OPPTJENINGSPERIODE_CALLS))
+        verify(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_OPPTJENINGSPERIODE_TIME), anyNonNull())
     }
 
     @Throws(Exception::class)
@@ -81,9 +86,7 @@ internal class StillingsprosentServiceImplTest {
     fun `Latest single forhold and three stillingsprosent`() {
         val tpOrdning = TPOrdning("1", "1")
         val pcts: List<Stillingsprosent> = listOf(
-                createPct(jan2019, feb2019),
-                createPct(feb2019, apr2019),
-                createPct(jan2019, mar2019)
+            createPct(jan2019, feb2019), createPct(feb2019, apr2019), createPct(jan2019, mar2019)
         )
         val map = mapOf(tpOrdning to pcts)
         assertEquals(tpOrdning, stillingsprosentService.getLatestFromStillingsprosent(map))
@@ -93,17 +96,13 @@ internal class StillingsprosentServiceImplTest {
     @Test
     fun `Latest single two forhold and three stillingsprosent`() {
         val pcts1 = listOf(
-                createPct(jan2019, feb2019),
-                createPct(feb2019, apr2019),
-                createPct(jan2019, mar2019)
+            createPct(jan2019, feb2019), createPct(feb2019, apr2019), createPct(jan2019, mar2019)
         )
         val pcts2 = listOf(
-                createPct(jan2019, feb2019),
-                createPct(feb2019, may2019)
+            createPct(jan2019, feb2019), createPct(feb2019, may2019)
         )
         val map = mapOf(
-                tpOrdning1 to pcts1,
-                tpOrdning2 to pcts2
+            tpOrdning1 to pcts1, tpOrdning2 to pcts2
         )
         assertEquals(tpOrdning2, stillingsprosentService.getLatestFromStillingsprosent(map))
     }
@@ -111,39 +110,36 @@ internal class StillingsprosentServiceImplTest {
     @Test
     fun `Throws exception if latest end date is not unique`() {
         val pcts1 = listOf(
-                createPct(jan2019, may2019)
+            createPct(jan2019, may2019)
         )
         val pcts2 = listOf(
-                createPct(feb2019, may2019)
+            createPct(feb2019, may2019)
         )
         val map = mapOf(
-                tpOrdning1 to pcts1,
-                tpOrdning2 to pcts2
+            tpOrdning1 to pcts1, tpOrdning2 to pcts2
         )
-        assertThrows<DuplicateStillingsprosentEndDateException> { stillingsprosentService.getLatestFromStillingsprosent(map) }
+        assertThrows<DuplicateStillingsprosentEndDateException> {
+            stillingsprosentService.getLatestFromStillingsprosent(
+                map
+            )
+        }
     }
 
     @Test
     @Throws(Exception::class)
     fun nullIsGreaterThanDate() {
         val pcts1 = listOf(
-                createPct(jan2019, feb2019),
-                createPct(feb2019, apr2019),
-                createPct(apr2019, mar2019)
+            createPct(jan2019, feb2019), createPct(feb2019, apr2019), createPct(apr2019, mar2019)
         )
         val pcts2 = listOf(
-                createPct(jan2019, feb2019),
-                createPct(feb2019, may2019)
+            createPct(jan2019, feb2019), createPct(feb2019, may2019)
         )
         val pcts3 = listOf(
-                createPct(jan2019, feb2019),
-                createPct(feb2019, null)
+            createPct(jan2019, feb2019), createPct(feb2019, null)
         )
 
         val map = mapOf(
-                tpOrdning1 to pcts1,
-                tpOrdning2 to pcts2,
-                tpOrdning3 to pcts3
+            tpOrdning1 to pcts1, tpOrdning2 to pcts2, tpOrdning3 to pcts3
         )
         assertEquals(tpOrdning3, stillingsprosentService.getLatestFromStillingsprosent(map))
     }
@@ -153,19 +149,18 @@ internal class StillingsprosentServiceImplTest {
         val pcts1: List<Stillingsprosent> = emptyList()
         val pcts2: List<Stillingsprosent> = emptyList()
         val map = mapOf(
-                tpOrdning1 to pcts1,
-                tpOrdning2 to pcts2
+            tpOrdning1 to pcts1, tpOrdning2 to pcts2
         )
         assertThrows<MissingStillingsprosentException> { stillingsprosentService.getLatestFromStillingsprosent(map) }
     }
 
     private fun createPct(fom: LocalDate, tom: LocalDate?) = Stillingsprosent(
-            datoFom = fom,
-            datoTom = tom,
-            stillingsprosent = 0.0,
-            aldersgrense = 0,
-            faktiskHovedlonn = "",
-            stillingsuavhengigTilleggslonn = "",
-            utvidelse = null
+        datoFom = fom,
+        datoTom = tom,
+        stillingsprosent = 0.0,
+        aldersgrense = 0,
+        faktiskHovedlonn = "",
+        stillingsuavhengigTilleggslonn = "",
+        utvidelse = null
     )
 }

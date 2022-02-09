@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.consumer
 
-import no.nav.tjenestepensjon.simulering.consumer.TokenServiceConsumer
+import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld.TokenType.OIDC
@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.bodyToMono
 import java.net.URI
 
 @Service
-class TokenClientOld(val webClient: WebClient) : TokenServiceConsumer {
+class TokenClientOld(private val webClient: WebClient) : TokenService {
     @Value("\${SERVICE_USER}")
     lateinit var username: String
 
@@ -24,12 +24,12 @@ class TokenClientOld(val webClient: WebClient) : TokenServiceConsumer {
     @Value("\${STS_URL}")
     lateinit var stsUrl: String
 
-    private var oidcToken: Token = TokenImpl("", expiresIn = 0)
+    private var oidcToken: Token = TokenImpl("", expiresIn = -1)
         get() =
             if (field.isExpired) getTokenFromProvider(OIDC).also { field = it }
             else field
 
-    private var samlToken: Token = TokenImpl("", expiresIn = 0)
+    private var samlToken: Token = TokenImpl("", expiresIn = -1)
         get() =
             if (field.isExpired) getTokenFromProvider(SAML).also { field = it }
             else field

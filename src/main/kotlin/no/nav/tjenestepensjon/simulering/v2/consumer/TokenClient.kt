@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2.consumer
 
-import no.nav.tjenestepensjon.simulering.consumer.TokenServiceConsumer
+import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient.TokenType.OIDC
@@ -15,7 +15,7 @@ import org.springframework.web.reactive.function.client.bodyToMono
 import java.net.URI
 
 @Service
-class TokenClient(val webClient: WebClient) : TokenServiceConsumer {
+class TokenClient(private val webClient: WebClient) : TokenService {
 
     @Autowired
     lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
@@ -31,52 +31,41 @@ class TokenClient(val webClient: WebClient) : TokenServiceConsumer {
 
     val pensjonsimuleringToken: String
         get() = maskinportenTokenProvider.generatePensjonsimuleringToken()
-    val tpregisteretToken: String
-        get() = maskinportenTokenProvider.generateTpregisteretToken()
 
     private var oidcToken: Token = TokenImpl("", expiresIn = 0)
-        get() =
-            if (field.isExpired) getTokenFromProvider(OIDC).also { field = it }
-            else field
+        get() = if (field.isExpired) getTokenFromProvider(OIDC).also { field = it }
+        else field
 
     private var samlToken: Token = TokenImpl("", expiresIn = 0)
-        get() =
-            if (field.isExpired) getTokenFromProvider(SAML).also { field = it }
-            else field
+        get() = if (field.isExpired) getTokenFromProvider(SAML).also { field = it }
+        else field
 
     @get:Synchronized
     override val oidcAccessToken: Token
-        get() = oidcToken
-            .also { LOG.info("Returning cached and valid oidc-token for user: $username") }
+        get() = oidcToken.also { LOG.info("Returning cached and valid oidc-token for user: $username") }
 
     @get:Synchronized
     override val samlAccessToken: Token
-        get() = samlToken
-            .also { LOG.info("Returning cached and valid saml-token for user: $username") }
+        get() = samlToken.also { LOG.info("Returning cached and valid saml-token for user: $username") }
 
 
     private fun getTokenFromProvider(tokenType: TokenType): Token {
         LOG.info("Getting new access-token for user: $username from: ${getUrlForType(tokenType)}")
-        return webClient.get()
-            .uri(getUrlForType(tokenType))
-            .headers { it.setBasicAuth(username, password) }
-            .retrieve()
+        return webClient.get().uri(getUrlForType(tokenType)).headers { it.setBasicAuth(username, password) }.retrieve()
             .onStatus({ httpStatus: HttpStatus -> httpStatus != HttpStatus.OK }) {
                 throw RuntimeException(
                     "Error while retrieving token from provider, returned HttpStatus ${it.statusCode().value()}"
                 )
-            }
-            .run {
+            }.run {
                 try {
                     bodyToMono<TokenImpl>().block()
                 } catch (e: Throwable) {
-                    throw throw if (e is RuntimeException) e else RuntimeException("Retrieved invalid token from provider")
+                    throw if (e is RuntimeException) e else RuntimeException("Retrieved invalid token from provider")
                 }
             }
     }
 
-    private fun getUrlForType(tokenType: TokenType) =
-        if (OIDC == tokenType) oidcEndpointUrl else samlEndpointUrl
+    private fun getUrlForType(tokenType: TokenType) = if (OIDC == tokenType) oidcEndpointUrl else samlEndpointUrl
 
     private val oidcEndpointUrl: URI
         get() = URI.create("$stsUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
