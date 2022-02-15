@@ -45,7 +45,7 @@ class SimuleringEndpointSecurityTest {
 
     private var wireMockServer = WireMockServer().apply {
         start()
-        stubFor(get(urlPathEqualTo(defaultForholdUrl)).willReturn(okJson(defaultForhold)))
+        stubFor(get(urlPathEqualTo(defaultTjenestepensjonUrl)).willReturn(okJson(defaultTjenestepensjon)))
         stubFor(get(urlPathEqualTo(defaultLeveradorUrl)).willReturn(okJson(defaultLeverandor)))
         stubFor(get(urlPathEqualTo(defaultTssnrUrl)).willReturn(okJson(defaultTssid)))
     }

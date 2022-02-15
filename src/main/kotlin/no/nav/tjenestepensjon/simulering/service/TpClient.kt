@@ -6,7 +6,7 @@ import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.Forhold
+import no.nav.tjenestepensjon.simulering.model.domain.Tjenestepensjon
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
@@ -26,9 +26,9 @@ class TpClient(
     }
 
     @Cacheable(TP_ORDNING_PERSON_CACHE)
-    fun findForhold(fnr: FNR) = webClient.get().uri("$tpUrl/api/tjenestepensjon/$fnr/forhold").headers {
+    fun findForhold(fnr: FNR) = webClient.get().uri("$tpUrl/api/tjenestepensjon/$fnr").headers {
         it.setBearerAuth(aadClient.getToken(tpScope))
-    }.retrieve().bodyToMono<List<Forhold>>().block()?.takeUnless(List<Forhold>::isEmpty)
+    }.retrieve().bodyToMono<Tjenestepensjon>().block()?.forhold?.takeUnless(List<Tjenestepensjon.Forhold>::isEmpty)
         ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person.")
 
     @Cacheable(TP_ORDNING_LEVERANDOR_CACHE)
