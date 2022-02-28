@@ -13,7 +13,7 @@ class WebClientConfig {
 
     @Bean
     fun httpClient(): HttpClient =
-        HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
+        HttpClient.create().noProxy().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
             .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(READ_TIMEOUT_MILLIS / 1000)) }
 
     @Bean
