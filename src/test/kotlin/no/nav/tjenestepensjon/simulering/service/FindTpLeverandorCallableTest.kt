@@ -1,5 +1,8 @@
 package no.nav.tjenestepensjon.simulering.service
 
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
@@ -7,14 +10,11 @@ import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.junit.jupiter.MockitoExtension
 
-@ExtendWith(MockitoExtension::class)
+@ExtendWith(MockKExtension::class)
 internal class FindTpLeverandorCallableTest {
 
-    @Mock
+    @MockK
     private lateinit var tpClient: TpClient
 
     private val tpOrdning = TPOrdning("80001234", "1234")
@@ -22,7 +22,7 @@ internal class FindTpLeverandorCallableTest {
 
     @Test
     fun `Should return mapped leverandor`() {
-        `when`(tpClient.findTpLeverandor(tpOrdning)).thenReturn("tpLeverandorName")
+        every { tpClient.findTpLeverandor(tpOrdning) } returns "tpLeverandorName"
         FindTpLeverandorCallable(tpOrdning, tpClient, tpLeverandorMap).call().apply {
             assertEquals("tpLeverandorName", name)
             assertEquals(SOAP, impl)

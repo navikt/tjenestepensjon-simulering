@@ -2,9 +2,10 @@ package no.nav.tjenestepensjon.simulering.v1.rest
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import no.nav.tjenestepensjon.simulering.*
 import no.nav.tjenestepensjon.simulering.service.AADClient
-import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.models.defaultLeverandor
 import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerPensjonRequestJson
 import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulertPensjonList
@@ -15,11 +16,9 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
-import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
@@ -34,13 +33,13 @@ class SimuleringEndpointSecurityTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
-    @MockBean
+    @MockkBean
     private lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
 
-    @MockBean
+    @MockkBean
     private lateinit var aadClient: AADClient
 
-    @MockBean
+    @MockkBean
     private lateinit var soapClient: SoapClient
 
     private var wireMockServer = WireMockServer().apply {
@@ -87,13 +86,10 @@ class SimuleringEndpointSecurityTest {
     @Test
     @WithMockUser
     fun secureEndpointOkWithValidToken() {
-        `when`(aadClient.getToken("api://bogus")).thenReturn("")
-        `when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
-            defaultStillingsprosentListe
-        )
-        `when`(soapClient.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
-            defaultSimulertPensjonList
-        )
+        every { aadClient.getToken("api://bogus") } returns ""
+        every { soapClient.getStillingsprosenter(any(), any(), any()) } returns defaultStillingsprosentListe
+        every { soapClient.simulerPensjon(any(), any(), any(), any()) } returns defaultSimulertPensjonList
+
         mockMvc.post("/simulering") {
             content = defaultSimulerPensjonRequestJson
             contentType = APPLICATION_JSON

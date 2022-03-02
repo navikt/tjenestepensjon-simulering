@@ -1,15 +1,16 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
 import com.sun.xml.messaging.saaj.soap.ver1_1.Message1_1Impl
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.ws.soap.saaj.SaajSoapMessage
@@ -23,10 +24,10 @@ import javax.xml.transform.TransformerException
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(classes = [SamlConfig::class])
-@ExtendWith(MockitoExtension::class)
+@ExtendWith(MockKExtension::class)
 internal class SOAPCallbackTest {
 
-    @Mock
+    @MockK
     lateinit var defaultTransportContext: DefaultTransportContext
 
     @Autowired
@@ -44,7 +45,7 @@ internal class SOAPCallbackTest {
                 samlConfig
         )
 
-        Mockito.`when`(defaultTransportContext.connection).thenReturn(Mockito.mock(HttpUrlConnection::class.java))
+        every { defaultTransportContext.connection } returns mockk<HttpUrlConnection>()
         TransportContextHolder.setTransportContext(defaultTransportContext)
     }
 

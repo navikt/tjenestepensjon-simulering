@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2.models.request
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
 import no.nav.tjenestepensjon.simulering.v2.models.*
 import org.junit.jupiter.api.Test
@@ -12,21 +13,19 @@ import kotlin.test.assertEquals
 class RESTRequestMappingTest {
 
     @Autowired
-    lateinit var objectMapper: ObjectMapper
+    lateinit var jsonMapper: JsonMapper
 
     @Test
     fun `Test serializing of SimulerOffentligTjenestepensjonRequest`() {
-        val result = objectMapper.writeValueAsString(defaultSimulertPensjonRequest)
+        val result = jsonMapper.writeValueAsString(defaultSimulertPensjonRequest)
         assertEquals(defaultSimulerOffentligTjenestepensjonRequestJson, result)
     }
 
     @Test
     fun `Test deserializing of SimulerOffentligTjenestepensjonRequest`() {
-        val result = objectMapper.readValue(
-            defaultSimulerOffentligTjenestepensjonRequestJson, SimulerPensjonRequestV2::class.java
-        )
+        val result = jsonMapper.readValue<SimulerPensjonRequestV2>(defaultSimulerOffentligTjenestepensjonRequestJson)
         assertEquals(
-            objectMapper.writeValueAsString(defaultSimulertPensjonRequest), objectMapper.writeValueAsString(result)
+            jsonMapper.writeValueAsString(defaultSimulertPensjonRequest), jsonMapper.writeValueAsString(result)
         )
     }
 }

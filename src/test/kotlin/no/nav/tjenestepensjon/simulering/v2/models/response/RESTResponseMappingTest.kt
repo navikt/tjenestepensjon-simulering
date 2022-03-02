@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2.models.response
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
 import no.nav.tjenestepensjon.simulering.v2.models.defaultOppjeningsperiodeListeJson
 import no.nav.tjenestepensjon.simulering.v2.models.defaultOpptjeningsperiodeListe
@@ -15,35 +16,35 @@ import kotlin.test.assertEquals
 class RESTResponseMappingTest {
 
     @Autowired
-    lateinit var objectMapper: ObjectMapper
+    lateinit var jsonMapper: JsonMapper
 
     @Test
     fun `Test serializing of SimulertPensjon OK`() {
-        val result = objectMapper.writeValueAsString(defaultSimulerOffentligTjenestepensjonResponse)
+        val result = jsonMapper.writeValueAsString(defaultSimulerOffentligTjenestepensjonResponse)
         assertEquals(defaultSimulerOffentligTjenestepensjonResponseJson, result)
     }
 
     @Test
     fun `Test serializing SimulerOffentligTjenestepensjonResponse`() {
-        val result = objectMapper.writeValueAsString(defaultSimulerOffentligTjenestepensjonResponse)
+        val result = jsonMapper.writeValueAsString(defaultSimulerOffentligTjenestepensjonResponse)
         assertEquals(defaultSimulerOffentligTjenestepensjonResponseJson, result)
     }
 
     @Test
     fun `Test serializing HentOpptjeningsperiodeListeResponse`() {
-        val result = objectMapper.writeValueAsString(defaultOpptjeningsperiodeListe)
+        val result = jsonMapper.writeValueAsString(defaultOpptjeningsperiodeListe)
         assertEquals(defaultOppjeningsperiodeListeJson, result)
     }
 
     @Test
     fun `Test deserializing of SimulerOffentligTjenestepensjonResponse OK`() {
-        val result = objectMapper.readValue(defaultSimulerOffentligTjenestepensjonResponseJson, SimulerOffentligTjenestepensjonResponse::class.java)
+        val result = jsonMapper.readValue<SimulerOffentligTjenestepensjonResponse>(defaultSimulerOffentligTjenestepensjonResponseJson)
         assertEquals(defaultSimulerOffentligTjenestepensjonResponse, result)
     }
 
     @Test
     fun `Test deserializing SimulerOffentligTjenestepensjonResponse`() {
-        val result = objectMapper.readValue(defaultSimulerOffentligTjenestepensjonResponseJson, SimulerOffentligTjenestepensjonResponse::class.java)
+        val result = jsonMapper.readValue<SimulerOffentligTjenestepensjonResponse>(defaultSimulerOffentligTjenestepensjonResponseJson)
         assertEquals(defaultSimulerOffentligTjenestepensjonResponse, result)
     }
 }

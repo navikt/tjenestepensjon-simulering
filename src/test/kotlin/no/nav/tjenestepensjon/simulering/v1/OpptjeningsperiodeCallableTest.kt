@@ -1,11 +1,13 @@
 package no.nav.tjenestepensjon.simulering.v1
 
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
-import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
@@ -13,15 +15,12 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.ws.client.WebServiceIOException
 import java.time.LocalDate
 
-@ExtendWith(MockitoExtension::class)
+@ExtendWith(MockKExtension::class)
 internal class OpptjeningsperiodeCallableTest {
-    @Mock
+    @MockK
     private lateinit var soapClient: SoapClient
 
 
@@ -29,9 +28,7 @@ internal class OpptjeningsperiodeCallableTest {
     @Throws(Exception::class)
     fun `Call shall return stillingsprosenter with soap`() {
         val stillingsprosenter = prepareStillingsprosenter()
-        `when`(
-            soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())
-        ).thenReturn(stillingsprosenter)
+        every { soapClient.getStillingsprosenter(any(), any(), any()) } returns stillingsprosenter
         val result = StillingsprosentCallable(fnr, tpOrdning, soapTpLeverandor, soapClient)()
         assertStillingsprosenter(stillingsprosenter, result)
     }
@@ -40,9 +37,7 @@ internal class OpptjeningsperiodeCallableTest {
     @Throws(Exception::class)
     fun `Call shall return stillingsprosenter with rest`() {
         val stillingsprosenter = prepareStillingsprosenter()
-        `when`(
-            soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())
-        ).thenReturn(stillingsprosenter)
+        every { soapClient.getStillingsprosenter(any(), any(), any()) } returns stillingsprosenter
         val result = StillingsprosentCallable(fnr, tpOrdning, restTpLeverandor, soapClient)()
         assertStillingsprosenter(stillingsprosenter, result)
     }
@@ -50,9 +45,7 @@ internal class OpptjeningsperiodeCallableTest {
     @Test
     @Throws(Exception::class)
     fun `Exception shall be rethrown as StillingsprosentCallableException with soap`() {
-        `when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenThrow(
-            WebServiceIOException("msg from cause")
-        )
+        every { soapClient.getStillingsprosenter(any(), any(), any()) } throws WebServiceIOException("msg from cause")
         val exception = assertThrows<StillingsprosentCallableException> {
             StillingsprosentCallable(fnr, tpOrdning, soapTpLeverandor, soapClient)()
         }
@@ -66,9 +59,7 @@ internal class OpptjeningsperiodeCallableTest {
     @Test
     @Throws(Exception::class)
     fun `Exception shall be rethrown as StillingsprosentCallableException with rest`() {
-        `when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenThrow(
-            WebServiceIOException("msg from cause")
-        )
+        every { soapClient.getStillingsprosenter(any(), any(), any()) } throws WebServiceIOException("msg from cause")
         val exception = assertThrows<StillingsprosentCallableException> {
             StillingsprosentCallable(fnr, tpOrdning, restTpLeverandor, soapClient)()
         }
