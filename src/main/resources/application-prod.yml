@@ -6,3 +6,5 @@ TP_SCOPE: api://prod-fss.pensjonsamhandling.tp/.default
 logging.level:
   no.nav.tjenestepensjon: DEBUG
   org.springframework.security: WARN
+
+simulering.security.issuers: ${AZURE_OPENID_CONFIG_ISSUER},https://security-token-service.nais.adeo.no,https://isso.adeo.no:443/isso/oauth2,https://navnob2c.b2clogin.com/8b7dfc8b-b52e-4741-bde4-d83ea366f94f/v2.0/
