@@ -31,7 +31,7 @@ dependencies {
     implementation("javax.xml.bind", "jaxb-api", "2.3.1")
     implementation("javax.xml.soap", "javax.xml.soap-api", "1.4.0")
     implementation("net.logstash.logback", "logstash-logback-encoder", "6.6")
-    implementation("no.nav.pensjonsamhandling", "maskinporten-client", "1.0.0")
+    implementation("no.nav.pensjonsamhandling", "maskinporten-client", "1.0.1")
     implementation("org.glassfish.jaxb", "jaxb-runtime", "2.3.2")
     implementation("org.springframework.boot", "spring-boot-starter-actuator")
     implementation("org.springframework.boot", "spring-boot-starter-cache")
