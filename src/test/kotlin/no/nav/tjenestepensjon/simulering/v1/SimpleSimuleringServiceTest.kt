@@ -1,5 +1,10 @@
 package no.nav.tjenestepensjon.simulering.v1
 
+import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.verify
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_MANGEL
@@ -8,7 +13,6 @@ import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
-import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Utbetalingsperiode
@@ -21,24 +25,19 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.verify
-import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate.now
 import java.util.concurrent.ExecutionException
 
-@ExtendWith(MockitoExtension::class)
+@ExtendWith(MockKExtension::class)
 internal class SimpleSimuleringServiceTest {
 
-    @Mock
+    @MockK
     private lateinit var soapClient: SoapClient
 
-    @Mock
+    @MockK(relaxed = true)
     private lateinit var metrics: AppMetrics
 
-    @InjectMocks
+    @InjectMockKs
     private lateinit var simuleringService: SimuleringServiceV1
 
     private lateinit var request: SimulerPensjonRequestV1
@@ -51,6 +50,8 @@ internal class SimpleSimuleringServiceTest {
             simuleringsperioder = emptyList(),
             inntekter = emptyList()
         )
+        every { metrics.startTime() } returns 0
+        every { metrics.elapsedSince(any()) } returns 0
     }
 
     @Test
@@ -78,11 +79,11 @@ internal class SimpleSimuleringServiceTest {
         )
         val tpOrdning = TPOrdning("fake", "faker")
         val tpLeverandor = TpLeverandor("fake", SOAP, "faker", "faker")
-        `when`(soapClient.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(listOf(s1))
+        every { soapClient.simulerPensjon(any(), any(), any(), any()) } returns listOf(s1)
         val response = simuleringService.simulerOffentligTjenestepensjon(
             request, stillingsprosentResponse, tpOrdning, tpLeverandor
         )
-        verify(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL)
+        verify { metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL) }
         val simulertPensjon = response.simulertPensjonListe.first()
         assertNotNull(simulertPensjon)
         assertTrue("tpUtelatt" in (simulertPensjon.utelatteTpnr ?: emptyList()))
@@ -103,13 +104,11 @@ internal class SimpleSimuleringServiceTest {
         )
         val tpOrdning = TPOrdning("fake", "faker")
         val tpLeverandor = TpLeverandor("fake", SOAP, "faker", "faker")
-        `when`(soapClient.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
-            listOf(s1, s2)
-        )
+        every { soapClient.simulerPensjon(any(), any(), any(), any()) } returns listOf(s1, s2)
         val response = simuleringService.simulerOffentligTjenestepensjon(
             request, stillingsprosentResponse, tpOrdning, tpLeverandor
         )
-        verify(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_MANGEL)
+        verify { metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_MANGEL) }
         assertNull(response.simulertPensjonListe.first().status)
     }
 }

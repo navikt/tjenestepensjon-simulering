@@ -2,6 +2,7 @@ package no.nav.tjenestepensjon.simulering.config
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.ninjasquad.springmockk.MockkBean
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig.Companion.READ_TIMEOUT_MILLIS
 import no.nav.tjenestepensjon.simulering.defaultLeveradorUrl
 import no.nav.tjenestepensjon.simulering.defaultTpid
@@ -16,13 +17,12 @@ import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 
 @SpringBootTest(classes = [TpClient::class, WebClientConfig::class])
 @TestInstance(PER_CLASS)
 internal class WebClientConfigTest {
 
-    @MockBean
+    @MockkBean
     private lateinit var aadClient: AADClient
 
     @Autowired

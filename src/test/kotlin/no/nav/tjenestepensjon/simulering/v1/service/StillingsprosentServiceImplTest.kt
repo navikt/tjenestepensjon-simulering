@@ -1,5 +1,10 @@
 package no.nav.tjenestepensjon.simulering.v1.service
 
+import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.verify
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_CALLS
@@ -10,8 +15,6 @@ import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
-import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
-import no.nav.tjenestepensjon.simulering.testHelper.safeEq
 import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentCallableMap
 import no.nav.tjenestepensjon.simulering.v1.exceptions.DuplicateStillingsprosentEndDateException
@@ -19,28 +22,24 @@ import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentEx
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.verify
-import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate
 
-@ExtendWith(MockitoExtension::class)
+@ExtendWith(MockKExtension::class)
 internal class StillingsprosentServiceImplTest {
-    @Mock
+    @MockK(relaxed = true)
     lateinit var metrics: AppMetrics
 
-    @Mock
+    @MockK
     lateinit var asyncExecutor: AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable>
 
-    @Mock
+    @MockK
     lateinit var soapClient: SoapClient
 
-    @InjectMocks
+    @InjectMockKs
     lateinit var stillingsprosentService: StillingsprosentServiceImpl
 
     private val fnr = FNR("01011234567")
@@ -53,26 +52,31 @@ internal class StillingsprosentServiceImplTest {
     private val apr2019 = LocalDate.of(2019, 4, 1)
     private val may2019 = LocalDate.of(2019, 5, 1)
 
+    @BeforeEach
+    private fun mockMetrics() {
+        every { metrics.startTime() } returns 0
+        every { metrics.elapsedSince(any()) } returns 0
+    }
+
     @Test
     fun `Should retrieve from tp register async`() {
-        `when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
+        every { asyncExecutor.executeAsync(any<TPOrdningStillingsprosentCallableMap>()) } returns AsyncResponse()
         stillingsprosentService.getStillingsprosentListe(
             fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", SOAP, "sim", "stilling"))
         )
-        verify(asyncExecutor).executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())
+        verify { asyncExecutor.executeAsync(any<TPOrdningStillingsprosentCallableMap>()) }
     }
 
     @Test
     fun `Handles metrics`() {
-        `when`(asyncExecutor.executeAsync(anyNonNull<TPOrdningStillingsprosentCallableMap>())).thenReturn(AsyncResponse())
+        every { asyncExecutor.executeAsync(any<TPOrdningStillingsprosentCallableMap>()) } returns AsyncResponse()
         stillingsprosentService.getStillingsprosentListe(
             fnr, mapOf(TPOrdning("1", "1") to TpLeverandor("name", SOAP, "sim", "stilling"))
         )
-        verify(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_OPPTJENINGSPERIODE_CALLS))
-        verify(metrics).incrementCounter(safeEq(APP_NAME), safeEq(APP_TOTAL_OPPTJENINGSPERIODE_TIME), anyNonNull())
+        verify { metrics.incrementCounter(eq(APP_NAME), eq(APP_TOTAL_OPPTJENINGSPERIODE_CALLS)) }
+        verify { metrics.incrementCounter(eq(APP_NAME), eq(APP_TOTAL_OPPTJENINGSPERIODE_TIME), any()) }
     }
 
-    @Throws(Exception::class)
     @Test
     fun `Latest single forhold and stillingsprosent`() {
         val tpOrdning = TPOrdning("1", "1")

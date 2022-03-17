@@ -2,7 +2,8 @@ package no.nav.tjenestepensjon.simulering.rest
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS
@@ -10,7 +11,6 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
@@ -18,13 +18,12 @@ import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
+import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
-import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequestV1
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringServiceV1
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
-import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequestV2
 import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -54,7 +53,7 @@ class SimuleringEndpoint(
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Autowired
-    lateinit var objectMapper: ObjectMapper
+    lateinit var jsonMapper: JsonMapper
 
     @PostMapping("/simulering")
     fun simuler(
@@ -79,7 +78,7 @@ class SimuleringEndpoint(
             if (tpLeverandor.impl == REST) {
                 log.debug("Request simulation from ${tpLeverandor.name} using REST")
                 val response = service2.simulerOffentligTjenestepensjon(
-                    objectMapper.readValue(body, SimulerPensjonRequestV2::class.java),
+                    jsonMapper.readValue(body),
                     stillingsprosentResponse,
                     tpOrdning,
                     tpLeverandor
@@ -90,7 +89,7 @@ class SimuleringEndpoint(
             } else {
                 log.debug("Request simulation from ${tpLeverandor.name} using SOAP")
                 val response = service.simulerOffentligTjenestepensjon(
-                    objectMapper.readValue(body, SimulerPensjonRequestV1::class.java),
+                    jsonMapper.readValue(body),
                     stillingsprosentResponse,
                     tpOrdning,
                     tpLeverandor

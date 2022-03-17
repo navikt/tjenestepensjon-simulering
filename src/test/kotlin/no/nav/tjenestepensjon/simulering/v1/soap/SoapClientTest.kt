@@ -1,12 +1,13 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
-import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import no.nav.tjenestepensjon.simulering.config.JsonMapperConfig
 import no.nav.tjenestepensjon.simulering.defaultFNR
 import no.nav.tjenestepensjon.simulering.defaultTPOrdning
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
-import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
 import no.nav.tjenestepensjon.simulering.v1.models.*
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.SOAPAdapter
@@ -14,20 +15,18 @@ import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLHentStil
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLSimulerOffentligTjenestepensjonRequestWrapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.ws.client.core.WebServiceTemplate
 
 
-@SpringBootTest(classes = [TokenClientOld::class, WebServiceTemplate::class, SoapClient::class, SamlConfig::class, ObjectMapperConfig::class])
+@SpringBootTest(classes = [TokenClientOld::class, WebServiceTemplate::class, SoapClient::class, SamlConfig::class, JsonMapperConfig::class])
 internal class SoapClientTest {
 
-    @MockBean
+    @MockkBean(relaxed = true)
     lateinit var template: WebServiceTemplate
 
-    @MockBean
+    @MockkBean
     lateinit var tokenClientOld: TokenClientOld
 
     @Autowired
@@ -35,13 +34,11 @@ internal class SoapClientTest {
 
     @Test
     fun `Stillingsprosenter shall return list`() {
-        `when`(
-            template.marshalSendAndReceive(
-                anyNonNull<XMLHentStillingsprosentListeRequestWrapper>(), anyNonNull<SOAPCallback>()
-            )
-        ).thenReturn(SOAPAdapter.marshal(defaultHentStillingsprosentListeResponse))
+        every {
+            template.marshalSendAndReceive(any<XMLHentStillingsprosentListeRequestWrapper>(), any())
+        } returns SOAPAdapter.marshal(defaultHentStillingsprosentListeResponse)
 
-        `when`(tokenClientOld.samlAccessToken).thenReturn(TokenImpl("bogus", 0))
+        every { tokenClientOld.samlAccessToken } returns TokenImpl("bogus", 0)
 
         val result = client.getStillingsprosenter(
             defaultFNR, defaultTPOrdning, TpLeverandor("name", SOAP, "sim", "stilling")
@@ -53,13 +50,11 @@ internal class SoapClientTest {
 
     @Test
     fun `SimulerOffentligTjenestepensjon shall return list`() {
-        `when`(
-            template.marshalSendAndReceive(
-                anyNonNull<XMLSimulerOffentligTjenestepensjonRequestWrapper>(), anyNonNull<SOAPCallback>()
-            )
-        ).thenReturn(SOAPAdapter.marshal(defaultSimulerOffentligTjenestepensjonResponse, defaultFNR))
+        every {
+            template.marshalSendAndReceive(any<XMLSimulerOffentligTjenestepensjonRequestWrapper>(), any())
+        } returns SOAPAdapter.marshal(defaultSimulerOffentligTjenestepensjonResponse, defaultFNR)
 
-        `when`(tokenClientOld.samlAccessToken).thenReturn(TokenImpl("bogus", 0))
+        every { tokenClientOld.samlAccessToken } returns TokenImpl("bogus", 0)
 
         val result = client.simulerPensjon(
             request = defaultSimulerPensjonRequest,

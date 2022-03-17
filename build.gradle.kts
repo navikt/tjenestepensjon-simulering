@@ -42,9 +42,11 @@ dependencies {
     implementation("org.json", "json", "20190722")
     testImplementation(kotlin("test-junit5"))
     testImplementation("com.github.tomakehurst", "wiremock-jre8", "2.32.0")
-    testImplementation("org.mockito", "mockito-junit-jupiter", "2.23.4")
-    testImplementation("org.springframework.boot", "spring-boot-starter-test")
-            .exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+    testImplementation("org.springframework.boot", "spring-boot-starter-test") {
+        exclude(module = "mockito-core")
+        exclude(module = "mockito-junit-jupiter")
+    }
+    testImplementation("com.ninja-squad", "springmockk", "3.1.1")
     testImplementation("org.springframework.security", "spring-security-test")
 }
 

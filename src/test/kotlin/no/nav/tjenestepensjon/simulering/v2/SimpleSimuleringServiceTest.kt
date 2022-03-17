@@ -1,11 +1,14 @@
 package no.nav.tjenestepensjon.simulering.v2
 
+import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
-import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentResponse
 import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
@@ -20,28 +23,24 @@ import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate.now
 import java.util.concurrent.ExecutionException
 import kotlin.test.assertNotNull
 
-@ExtendWith(MockitoExtension::class)
+@ExtendWith(MockKExtension::class)
 internal class SimpleSimuleringServiceTest {
 
-    @Mock
+    @MockK
     private lateinit var opptjeningsperiodeService: OpptjeningsperiodeService
 
-    @Mock
+    @MockK
     private lateinit var restClient: RestClient
 
-    @Mock
+    @MockK
     @Suppress("unused")
     private lateinit var metrics: AppMetrics
 
-    @InjectMocks
+    @InjectMockKs
     private lateinit var simuleringService: SimuleringServiceV2
 
     private lateinit var request: SimulerPensjonRequestV2
@@ -72,10 +71,8 @@ internal class SimpleSimuleringServiceTest {
         )
         val opptjeningsperiodeResponse = OpptjeningsperiodeResponse(map, exceptions)
 
-        `when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull())).thenReturn(
-            opptjeningsperiodeResponse
-        )
-
+        every { opptjeningsperiodeService.getOpptjeningsperiodeListe(any()) } returns opptjeningsperiodeResponse
+        
         val s1 = SimulerOffentligTjenestepensjonResponse(
             tpnr = "feil", navnOrdning = "feil", utbetalingsperiodeListe = listOf(
                 Utbetalingsperiode(
@@ -85,7 +82,7 @@ internal class SimpleSimuleringServiceTest {
         )
         val tpOrdning = TPOrdning("fake", "faker")
         val tpLeverandor = TpLeverandor("fake", REST, "faker", "faker")
-        `when`(restClient.getResponse(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(s1)
+        every { restClient.getResponse( any(), any(), any()) } returns s1
 
         val response = simuleringService.simulerOffentligTjenestepensjon(
             request, StillingsprosentResponse(emptyMap(), emptyList()), tpOrdning, tpLeverandor
@@ -99,7 +96,7 @@ internal class SimpleSimuleringServiceTest {
         val map = mapOf(TPOrdning("tssInkluder", "tpInkluder") to emptyList<Opptjeningsperiode>())
         val opptjeningsperiodeResponse = OpptjeningsperiodeResponse(map, listOf())
 
-        `when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull())).thenReturn(opptjeningsperiodeResponse)
+        every { opptjeningsperiodeService.getOpptjeningsperiodeListe( any()) } returns opptjeningsperiodeResponse
 
         val s1 = SimulerOffentligTjenestepensjonResponse(
             utbetalingsperiodeListe = listOf(), tpnr = "", navnOrdning = ""
@@ -108,7 +105,7 @@ internal class SimpleSimuleringServiceTest {
         val tpOrdning = TPOrdning("fake", "faker")
         val tpLeverandor = TpLeverandor("fake", REST, "faker", "faker")
 
-        `when`(restClient.getResponse(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(s1)
+        every { restClient.getResponse( any(), any(), any()) } returns s1
         assertNotNull(
             simuleringService.simulerOffentligTjenestepensjon(
                 request, StillingsprosentResponse(emptyMap(), emptyList()), tpOrdning, tpLeverandor
