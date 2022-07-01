@@ -29,17 +29,17 @@ jobs:
         env:
           NAME: tjenestepensjon-simulering
         run: |
-          echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"$NAME" > .docker_image
+          echo "ghcr.io"/"$GITHUB_REPOSITORY"/"$NAME" > .docker_image
           echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
       - name: Build Docker image
         run: |
           docker build -t $(cat .docker_image):$(cat .docker_tag) .
-      - name: Login to Github Package Registry
+      - name: Login to Github Container Registry
         env:
           DOCKER_USERNAME: x-access-token
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
+          echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin ghcr.io
           echo "IMAGE=$(cat .docker_image):$(cat .docker_tag)" >> $GITHUB_ENV
       - name: Push Docker image
         run: "docker push $(cat .docker_image):$(cat .docker_tag)"
