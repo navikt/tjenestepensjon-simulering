@@ -43,8 +43,8 @@ spec:
       - kvPath: /maskinporten/data/prod/creds/tjenestepensjon-simulering
         mountPath: /var/run/secrets/nais.io/vault/jwks
   replicas:
-    min: 1
-    max: 1
+    min: 2
+    max: 2
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
