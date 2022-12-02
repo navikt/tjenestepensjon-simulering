@@ -26,7 +26,8 @@ class TpClient(
     }
 
     @Cacheable(TP_ORDNING_PERSON_CACHE)
-    fun findForhold(fnr: FNR) = webClient.get().uri("$tpUrl/api/tjenestepensjon/$fnr").headers {
+    fun findForhold(fnr: FNR) = webClient.get().uri("$tpUrl/api/tjenestepensjon").headers {
+        it["fnr"] = fnr.fnr
         it.setBearerAuth(aadClient.getToken(tpScope))
     }.retrieve().bodyToMono<Tjenestepensjon>().block()?.forhold?.takeUnless(List<Tjenestepensjon.Forhold>::isEmpty)
         ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person.")

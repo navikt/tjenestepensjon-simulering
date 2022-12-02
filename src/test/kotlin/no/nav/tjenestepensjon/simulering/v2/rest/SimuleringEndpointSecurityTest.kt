@@ -2,6 +2,7 @@ package no.nav.tjenestepensjon.simulering.v2.rest
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.matching.EqualToPattern
 import no.nav.tjenestepensjon.simulering.*
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
@@ -47,7 +48,8 @@ class SimuleringEndpointSecurityTest {
 
     private var wireMockServer = WireMockServer().apply {
         start()
-        stubFor(get(urlPathEqualTo(defaultTjenestepensjonUrl)).willReturn(okJson(defaultTjenestepensjon)))
+        stubFor(get(urlPathEqualTo(defaultTjenestepensjonUrl)).withHeader("fnr", EqualToPattern(defaultFNRString))
+            .willReturn(okJson(defaultTjenestepensjon)))
         stubFor(get(urlPathEqualTo(defaultLeveradorUrl)).willReturn(okJson(defaultLeverandor)))
         stubFor(get(urlPathEqualTo(defaultTssnrUrl)).willReturn(okJson(defaultTssid)))
     }
