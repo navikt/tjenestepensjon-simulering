@@ -12,7 +12,7 @@ const val defaultTssid = "1234"
 const val defaultForhold = """[{"ytelser":"[]","ordning":"$defaultTpid"}]"""
 const val defaultTjenestepensjon = """{"forhold":$defaultForhold}"""
 
-const val defaultTjenestepensjonUrl = "/api/tjenestepensjon"
+const val defaultTjenestepensjonUrl = "/api/tjenestepensjon/$defaultFNRString"
 const val defaultLeveradorUrl = "/api/tpconfig/tpleverandoer/$defaultTpid"
 const val defaultTssnrUrl = "/api/tpconfig/tssnr/$defaultTpid"
 
