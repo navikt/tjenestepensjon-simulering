@@ -116,7 +116,7 @@ class SimuleringEndpoint(
                 log.error("""
                     Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}:
                     httpResponse: ${second.value()} - $first, cause: ${e.message}
-                    """.trimIndent())
+                    """.trimIndent(), e)
 
                 if (e is SimuleringException) {
                     metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_FEIL)
