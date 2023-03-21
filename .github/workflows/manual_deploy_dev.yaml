@@ -1,9 +1,7 @@
-name: NAIS Deploy
+name: Manual deploy dev
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -45,7 +43,7 @@ jobs:
         run: "docker push $(cat .docker_image):$(cat .docker_tag)"
 
       # Deploy dev-fss
-      - name: Deploy to dev-fss
+      - name: Deploy tjenestepensjon-simulering to dev-fss
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
@@ -53,11 +51,3 @@ jobs:
           RESOURCE: .nais/nais-dev.yaml
           IMAGE: ${{ env.IMAGE }}
 
-      # Deploy prod-fss
-      - name: Deploy to prod-fss
-        uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-fss
-          RESOURCE: .nais/nais-prod.yaml
-          IMAGE: ${{ env.IMAGE }}
