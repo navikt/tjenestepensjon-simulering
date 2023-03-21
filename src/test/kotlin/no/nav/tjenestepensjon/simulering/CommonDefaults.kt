@@ -1,5 +1,7 @@
 package no.nav.tjenestepensjon.simulering
 
+import com.github.tomakehurst.wiremock.client.MappingBuilder
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import java.time.LocalDate
@@ -12,10 +14,11 @@ const val defaultTssid = "1234"
 const val defaultForhold = """[{"ytelser":"[]","ordning":"$defaultTpid"}]"""
 const val defaultTjenestepensjon = """{"forhold":$defaultForhold}"""
 
-const val defaultTjenestepensjonUrl = "/api/tjenestepensjon/$defaultFNRString"
+const val defaultTjenestepensjonUrl = "/api/tjenestepensjon"
 const val defaultLeveradorUrl = "/api/tpconfig/tpleverandoer/$defaultTpid"
 const val defaultTssnrUrl = "/api/tpconfig/tssnr/$defaultTpid"
-
+val defaultTjenestepensjonRequest: MappingBuilder = get(urlPathEqualTo(defaultTjenestepensjonUrl))
+    .withHeader("fnr", equalTo(defaultFNRString))
 
 const val defaultFomDateString = "1901-01-01"
 const val defaultTomDateString = "1901-01-31"
