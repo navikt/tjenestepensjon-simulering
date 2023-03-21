@@ -113,8 +113,10 @@ class SimuleringEndpoint(
                 }
                 else -> e::class.qualifiedName to INTERNAL_SERVER_ERROR
             }.run {
-                log.error("Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}")
-                log.error("httpResponse: ${second.value()} - $first, cause: ${e.message}")
+                log.error("""
+                    Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}:
+                    httpResponse: ${second.value()} - $first, cause: ${e.message}
+                    """.trimIndent())
 
                 if (e is SimuleringException) {
                     metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_FEIL)
