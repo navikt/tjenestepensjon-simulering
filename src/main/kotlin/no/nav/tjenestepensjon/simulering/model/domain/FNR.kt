@@ -14,15 +14,16 @@ data class FNR(
         @get:JsonValue val fnr: String
 ) {
     @XmlTransient
-    private val individnr = fnr.substring(6, 9).toInt()
-    @XmlTransient
-    private val day = fnr.substring(0, 2).toInt()
-    @XmlTransient
-    private val month = fnr.substring(2, 4).toInt()
-    @XmlTransient
-    private val year = findFourDigitBirthYear()
-    @XmlTransient
-    val birthDate: LocalDate = LocalDate.of(year, month, day)
+    val birthDate: LocalDate = LocalDate.of(fnr.fourDigitBirthYear, fnr.adjustedMonth, fnr.adjustedDay)
+
+    private val String.day
+        get() = substring(0, 2).toInt()
+
+    private val String.month
+        get() = substring(2, 4).toInt()
+
+    private val String.year
+        get() = substring(4, 6).toInt()
 
 
     /**
@@ -32,21 +33,56 @@ data class FNR(
      *
      * @return 4 digit birth year, -1 if invalid
      */
-    private fun findFourDigitBirthYear() = fnr.substring(4, 6).toInt().let { twoDigitYear ->
-        when {
-            individnr < 500 -> 1900 + twoDigitYear
-            individnr < 750 && twoDigitYear < 54 -> 1800 + twoDigitYear
-            individnr < 1000 && twoDigitYear < 40 -> 2000 + twoDigitYear
-            individnr in 900..999 && twoDigitYear > 39 -> 1900 + twoDigitYear
-            else -> -1
+    private val String.fourDigitBirthYear
+        get() = fnr.substring(6, 9).toInt().let { individnr ->
+            when {
+                individnr < 500 -> 1900 + year
+                individnr < 750 && year < 54 -> 1800 + year
+                individnr < 1000 && year < 40 -> 2000 + year
+                individnr in 900..999 && year > 39 -> 1900 + year
+                else -> -1
+            }
         }
-    }
 
     fun datoAtAge(alder: Long, maned: Long, manedIsSluttManed: Boolean): LocalDate =
             birthDate
                     .plusMonths(maned)
                     .plusYears(alder)
                     .let { it.withDayOfMonth(if (manedIsSluttManed) it.lengthOfMonth() else 1) }
+
+
+    /**
+     * Checks that a day may be a D-nummer. In a D-nummer 40 is added to the day part of the date
+     */
+    private val Int.isDnrDay
+        get() = this in 41..71
+
+    private val Int.adjustDnrDay
+        get() = minus(40)
+
+    private val String.adjustedDay
+        get() = if (day.isDnrDay) {
+            day.adjustDnrDay
+        } else {
+            day
+        }
+
+    /**
+     * Removes adjustments from the month.
+     * - Bost adds 20
+     * - Dolly adds 40
+     * - Tenor adds 80
+     */
+    private val String.adjustedMonth
+        get() = when (month) {
+            // BOST-number
+            in 21..32 -> month - 20
+            // Dolly test population
+            in 41..52 -> month - 40
+            // Tenor test population
+            in 81..92 -> month - 80
+            else -> month
+        }
 
     override fun toString() = fnr
 }
