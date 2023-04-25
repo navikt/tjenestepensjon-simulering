@@ -48,7 +48,7 @@ class TpClient(
                 }
             }
         }.onErrorMap {
-            if (it !is ResponseStatusException) badGateway(it.message) else it
+            if (it !is ResponseStatusException && it !is NoTpOrdningerFoundException) badGateway(it.message) else it
         }.doOnSuccess {
             log.info("Successfully fetched data.")
         }.block()
