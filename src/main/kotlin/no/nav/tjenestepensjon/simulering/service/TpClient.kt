@@ -40,7 +40,10 @@ class TpClient(
                 it.setBearerAuth(aadClient.getToken(tpScope))
             }.exchangeToMono {
                 when (it.statusCode().value()) {
-                    200 -> it.bodyToMono<Tjenestepensjon>().map(Tjenestepensjon::forhold)
+                    200 -> it.bodyToMono<Tjenestepensjon>().map {
+                        log.info("Successfully fetched data.")
+                        it.forhold
+                    }
                     404 -> Mono.empty()
                     else -> it.bodyToMono<String>().defaultIfEmpty("<NULL>").flatMap { body ->
                         Mono.error(badGateway("Status code ${it.statusCode()} with message: $body}"))
@@ -48,8 +51,6 @@ class TpClient(
                 }
             }.onErrorMap {
                 if (it !is ResponseStatusException && it !is NoTpOrdningerFoundException) badGateway(it.message) else it
-            }.doOnSuccess {
-                log.info("Successfully fetched data.")
             }.block()?.takeUnless { it.isEmpty() }
             ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person.")
     } catch (ex: RuntimeException) {
