@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.service
 
+import com.fasterxml.jackson.databind.util.TokenBuffer
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
@@ -44,7 +45,7 @@ class TpClient(
                     200 -> it.bodyToFlux<Forhold>().doOnComplete {
                         log.info("Successfully fetched data.")
                     }.onErrorContinue { e, v ->
-                        log.error("Failed to parse response: $v", e)
+                        log.error("Failed to parse response: ${(v as TokenBuffer).asParser().valueAsString}", e)
                     }
 
                     404 -> Flux.empty()
