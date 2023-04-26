@@ -43,6 +43,8 @@ class TpClient(
                 when (it.statusCode().value()) {
                     200 -> it.bodyToFlux<Forhold>().doOnComplete {
                         log.info("Successfully fetched data.")
+                    }.onErrorContinue { e, v ->
+                        log.error("Failed to parse response: $v", e)
                     }
 
                     404 -> Flux.empty()
