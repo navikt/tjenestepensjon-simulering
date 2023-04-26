@@ -5,18 +5,19 @@ import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
+import no.nav.tjenestepensjon.simulering.model.domain.Forhold
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
-import no.nav.tjenestepensjon.simulering.model.domain.Tjenestepensjon
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToFlux
 import org.springframework.web.reactive.function.client.bodyToMono
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.Exceptions
-import reactor.core.publisher.Mono
+import reactor.core.publisher.Flux
 
 @Service
 class TpClient(
@@ -34,24 +35,24 @@ class TpClient(
     @Cacheable(TP_ORDNING_PERSON_CACHE)
     fun findForhold(fnr: FNR) = try {
         webClient.get()
-            .uri("$tpUrl/api/tjenestepensjon")
+            .uri("$tpUrl/api/tjenestepensjon/forhold")
             .headers {
                 it["fnr"] = fnr.fnr
                 it.setBearerAuth(aadClient.getToken(tpScope))
-            }.exchangeToMono {
+            }.exchangeToFlux {
                 when (it.statusCode().value()) {
-                    200 -> it.bodyToMono<Tjenestepensjon>().map {
+                    200 -> it.bodyToFlux<Forhold>().doOnComplete {
                         log.info("Successfully fetched data.")
-                        it.forhold
                     }
-                    404 -> Mono.empty()
-                    else -> it.bodyToMono<String>().defaultIfEmpty("<NULL>").flatMap { body ->
-                        Mono.error(badGateway("Status code ${it.statusCode()} with message: $body}"))
+
+                    404 -> Flux.empty()
+                    else -> it.bodyToFlux<String>().defaultIfEmpty("<NULL>").flatMap { body ->
+                        Flux.error(badGateway("Status code ${it.statusCode()} with message: $body}"))
                     }
                 }
             }.onErrorMap {
                 if (it !is ResponseStatusException && it !is NoTpOrdningerFoundException) badGateway(it.message) else it
-            }.block()?.takeUnless { it.isEmpty() }
+            }.toIterable().toList().takeUnless { it.isEmpty() }
             ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person.")
     } catch (ex: RuntimeException) {
         throw Exceptions.unwrap(ex)
