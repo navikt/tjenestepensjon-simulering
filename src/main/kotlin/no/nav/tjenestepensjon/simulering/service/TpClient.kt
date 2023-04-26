@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import org.springframework.web.server.ResponseStatusException
+import reactor.core.Exceptions
 import reactor.core.publisher.Mono
 
 @Service
@@ -31,28 +32,29 @@ class TpClient(
     }
 
     @Cacheable(TP_ORDNING_PERSON_CACHE)
-    fun findForhold(fnr: FNR) = webClient.get()
-        .uri("$tpUrl/api/tjenestepensjon")
-        .headers {
-            it["fnr"] = fnr.fnr
-            it.setBearerAuth(aadClient.getToken(tpScope))
-        }.exchangeToMono {
-            when (it.statusCode().value()) {
-                200 -> it.bodyToMono<Tjenestepensjon>().flatMap { tp ->
-                    if(tp.forhold.isEmpty()) Mono.error(NoTpOrdningerFoundException("No Tp-ordning found for person."))
-                    else Mono.just(tp.forhold)
+    fun findForhold(fnr: FNR) = try {
+        webClient.get()
+            .uri("$tpUrl/api/tjenestepensjon")
+            .headers {
+                it["fnr"] = fnr.fnr
+                it.setBearerAuth(aadClient.getToken(tpScope))
+            }.exchangeToMono {
+                when (it.statusCode().value()) {
+                    200 -> it.bodyToMono<Tjenestepensjon>().map(Tjenestepensjon::forhold)
+                    404 -> Mono.empty()
+                    else -> it.bodyToMono<String>().defaultIfEmpty("<NULL>").flatMap { body ->
+                        Mono.error(badGateway("Status code ${it.statusCode()} with message: $body}"))
+                    }
                 }
-                404 -> Mono.error(NoTpOrdningerFoundException("No Tp-ordning found for person."))
-                else -> it.bodyToMono<String>().defaultIfEmpty("<NULL>").flatMap { body ->
-                    Mono.error(badGateway("Status code ${it.statusCode()} with message: $body}"))
-                }
-            }
-        }.onErrorMap {
-            if (it !is ResponseStatusException && it !is NoTpOrdningerFoundException) badGateway(it.message) else it
-        }.doOnSuccess {
-            log.info("Successfully fetched data.")
-        }.block()
-        ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person.")
+            }.onErrorMap {
+                if (it !is ResponseStatusException && it !is NoTpOrdningerFoundException) badGateway(it.message) else it
+            }.doOnSuccess {
+                log.info("Successfully fetched data.")
+            }.block()?.takeUnless { it.isEmpty() }
+            ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person.")
+    } catch (ex: RuntimeException) {
+        throw Exceptions.unwrap(ex)
+    }
 
     @Cacheable(TP_ORDNING_LEVERANDOR_CACHE)
     fun findTpLeverandor(tpOrdning: TPOrdning): String =
