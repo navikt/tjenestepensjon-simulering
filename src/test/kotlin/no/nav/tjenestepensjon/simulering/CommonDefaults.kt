@@ -11,7 +11,7 @@ val defaultFNR = FNR(defaultFNRString)
 
 const val defaultTpid = "4321"
 const val defaultTssid = "1234"
-const val defaultForhold = """[{"ytelser":"[]","ordning":"$defaultTpid"}]"""
+const val defaultForhold = """{"forholdDtoList":[{"ytelser":"[]","ordning":"$defaultTpid"}]}"""
 
 const val defaultTjenestepensjonUrl = "/api/tjenestepensjon/forhold"
 const val defaultLeveradorUrl = "/api/tpconfig/tpleverandoer/$defaultTpid"

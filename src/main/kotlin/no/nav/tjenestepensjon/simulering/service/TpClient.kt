@@ -6,7 +6,7 @@ import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.Forhold
+import no.nav.tjenestepensjon.simulering.model.domain.ForholdWrapper
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -42,7 +42,7 @@ class TpClient(
                 it.setBearerAuth(aadClient.getToken(tpScope))
             }.exchangeToFlux {
                 when (it.statusCode().value()) {
-                    200 -> it.bodyToFlux<Forhold>().doOnComplete {
+                    200 -> it.bodyToFlux<ForholdWrapper>().flatMapIterable { it.forholdDtoList }.doOnComplete {
                         log.info("Successfully fetched data.")
                     }.onErrorContinue { e, v ->
                         log.error("Failed to parse response: ${(v as TokenBuffer).asParser().valueAsString}", e)
