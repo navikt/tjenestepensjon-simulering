@@ -1,8 +1,8 @@
 package no.nav.tjenestepensjon.simulering.v1.soap.marshalling.response
 
+import jakarta.xml.bind.annotation.*
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.Utvidelse.HentStillingsprosentListeUtvidelse1
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain.XMLStillingsprosent
-import javax.xml.bind.annotation.*
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = ["response"])

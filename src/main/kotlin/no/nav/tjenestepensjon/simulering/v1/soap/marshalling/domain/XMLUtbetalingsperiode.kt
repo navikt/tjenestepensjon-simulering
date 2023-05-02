@@ -1,13 +1,13 @@
 package no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain
 
+import jakarta.xml.bind.annotation.XmlAccessType.*
+import jakarta.xml.bind.annotation.XmlAccessorType
+import jakarta.xml.bind.annotation.XmlType
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.Utvidelse.UtbetalingsperiodeUtvidelse1
-import javax.xml.bind.annotation.XmlAccessType
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlType
 
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(FIELD)
 @XmlType(propOrder = [
     "startAlder",
     "sluttAlder",

@@ -1,13 +1,13 @@
 package no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain
 
+import jakarta.xml.bind.annotation.XmlAccessType.*
+import jakarta.xml.bind.annotation.XmlAccessorType
+import jakarta.xml.bind.annotation.XmlElement
+import jakarta.xml.bind.annotation.XmlType
 import no.nav.tjenestepensjon.simulering.v1.models.request.Simuleringsdata
-import javax.xml.bind.annotation.XmlAccessType
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlElement
-import javax.xml.bind.annotation.XmlType
 
 @Suppress("PropertyName")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(FIELD)
 @XmlType(propOrder = [
     "poengArTom1991",
     "poengArFom1992",
