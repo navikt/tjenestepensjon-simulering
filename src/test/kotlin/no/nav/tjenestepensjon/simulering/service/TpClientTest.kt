@@ -55,7 +55,7 @@ class TpClientTest {
     @Test
     fun `findForhold uten forhold`() {
         wireMockServer.stubFor(
-            defaultTjenestepensjonRequest.willReturn(okJson("""{"forholdDtoList":[]}"""))
+            defaultTjenestepensjonRequest.willReturn(okJson("""{"_embedded":{"forholdDtoList":[]}}"""))
         )
 
         assertThrows<NoTpOrdningerFoundException> { tpClient.findForhold(defaultFNR) }

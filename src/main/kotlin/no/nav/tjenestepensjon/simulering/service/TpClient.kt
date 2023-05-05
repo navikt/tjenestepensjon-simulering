@@ -1,13 +1,12 @@
 package no.nav.tjenestepensjon.simulering.service
 
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.ForholdWrapper
+import no.nav.tjenestepensjon.simulering.model.domain.HateoasWrapper
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -44,8 +43,8 @@ class TpClient(
                 it.setBearerAuth(aadClient.getToken(tpScope))
             }.exchangeToFlux { clientResponse ->
                 when (clientResponse.statusCode().value()) {
-                    200 -> clientResponse.bodyToMono<String>().flatMapIterable {
-                        jsonMapper.readValue<ForholdWrapper>(it).forholdDtoList
+                    200 -> clientResponse.bodyToMono<HateoasWrapper>().flatMapIterable {
+                        it.embedded.forholdDtoList
                     }.doOnComplete {
                         log.info("Successfully fetched data.")
                     }.onErrorContinue { e, v ->
