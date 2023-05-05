@@ -3,6 +3,7 @@ package no.nav.tjenestepensjon.simulering.service
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.tjenestepensjon.simulering.*
+import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
@@ -14,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.web.server.ResponseStatusException
 
-@SpringBootTest(classes = [TpClient::class, WebClientConfig::class])
+@SpringBootTest(classes = [TpClient::class, WebClientConfig::class, ObjectMapperConfig::class])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TpClientTest {
 
@@ -54,7 +55,7 @@ class TpClientTest {
     @Test
     fun `findForhold uten forhold`() {
         wireMockServer.stubFor(
-            defaultTjenestepensjonRequest.willReturn(okJson("[]"))
+            defaultTjenestepensjonRequest.willReturn(okJson("""{"forholdDtoList":[]}"""))
         )
 
         assertThrows<NoTpOrdningerFoundException> { tpClient.findForhold(defaultFNR) }

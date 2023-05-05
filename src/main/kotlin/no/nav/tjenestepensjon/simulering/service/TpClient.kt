@@ -1,6 +1,8 @@
 package no.nav.tjenestepensjon.simulering.service
 
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.util.TokenBuffer
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
@@ -24,6 +26,7 @@ import reactor.core.publisher.Flux
 class TpClient(
     private val webClient: WebClient,
     private val aadClient: AADClient,
+    private val jsonMapper: JsonMapper,
     @Value("\${TP_URL}") private var tpUrl: String,
     @Value("\${TP_SCOPE}") private val tpScope: String
 ) {
@@ -40,17 +43,19 @@ class TpClient(
             .headers {
                 it["fnr"] = fnr.fnr
                 it.setBearerAuth(aadClient.getToken(tpScope))
-            }.exchangeToFlux {
-                when (it.statusCode().value()) {
-                    200 -> it.bodyToFlux<ForholdWrapper>().flatMapIterable { it.forholdDtoList }.doOnComplete {
+            }.exchangeToFlux { clientResponse ->
+                when (clientResponse.statusCode().value()) {
+                    200 -> clientResponse.bodyToMono<String>().flatMapIterable {
+                        jsonMapper.readValue<ForholdWrapper>(it).forholdDtoList
+                    }.doOnComplete {
                         log.info("Successfully fetched data.")
                     }.onErrorContinue { e, v ->
                         log.error("Failed to parse response: ${(v as TokenBuffer).asParser().valueAsString}", e)
                     }
 
                     404 -> Flux.empty()
-                    else -> it.bodyToFlux<String>().defaultIfEmpty("<NULL>").flatMap { body ->
-                        Flux.error(badGateway("Status code ${it.statusCode()} with message: $body}"))
+                    else -> clientResponse.bodyToFlux<String>().defaultIfEmpty("<NULL>").flatMap { body ->
+                        Flux.error(badGateway("Status code ${clientResponse.statusCode()} with message: $body}"))
                     }
                 }
             }.onErrorMap {
