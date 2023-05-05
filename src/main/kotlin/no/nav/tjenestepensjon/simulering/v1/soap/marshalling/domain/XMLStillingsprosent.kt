@@ -1,12 +1,13 @@
 package no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain
 
+import jakarta.xml.bind.annotation.*
+import jakarta.xml.bind.annotation.XmlAccessType.*
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.Utvidelse
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.toLocalDate
-import javax.xml.bind.annotation.*
 import javax.xml.datatype.XMLGregorianCalendar
 
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(FIELD)
 @XmlType(propOrder = [
     "stillingsprosent",
     "datoFom",

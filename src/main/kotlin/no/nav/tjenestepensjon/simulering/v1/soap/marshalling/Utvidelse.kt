@@ -1,8 +1,8 @@
 package no.nav.tjenestepensjon.simulering.v1.soap.marshalling
 
+import jakarta.xml.bind.annotation.*
+import jakarta.xml.bind.annotation.XmlAccessType.*
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.Utvidelse.*
-import javax.xml.bind.annotation.*
-import javax.xml.bind.annotation.XmlAccessType.FIELD
 import javax.xml.namespace.QName
 
 @XmlAccessorType(FIELD)

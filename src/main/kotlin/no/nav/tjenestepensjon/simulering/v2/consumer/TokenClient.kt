@@ -1,14 +1,15 @@
 package no.nav.tjenestepensjon.simulering.v2.consumer
 
-import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
+import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient.TokenType.OIDC
 import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient.TokenType.SAML
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
@@ -52,7 +53,7 @@ class TokenClient(private val webClient: WebClient) : TokenService {
     private fun getTokenFromProvider(tokenType: TokenType): Token {
         LOG.info("Getting new access-token for user: $username from: ${getUrlForType(tokenType)}")
         return webClient.get().uri(getUrlForType(tokenType)).headers { it.setBasicAuth(username, password) }.retrieve()
-            .onStatus({ httpStatus: HttpStatus -> httpStatus != HttpStatus.OK }) {
+            .onStatus({ httpStatusCode: HttpStatusCode -> httpStatusCode != HttpStatus.OK }) {
                 throw RuntimeException(
                     "Error while retrieving token from provider, returned HttpStatus ${it.statusCode().value()}"
                 )

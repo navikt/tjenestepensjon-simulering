@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
+import jakarta.xml.bind.JAXBElement
 import no.nav.tjenestepensjon.simulering.exceptions.SoapFaultException
 import no.nav.tjenestepensjon.simulering.v1.models.error.StelvioFault
 import org.slf4j.LoggerFactory
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Component
 import org.springframework.ws.WebServiceMessage
 import org.springframework.ws.client.core.FaultMessageResolver
 import org.springframework.ws.soap.SoapMessage
-import javax.xml.bind.JAXBElement
 
 @Component
 class SoapFaultHandler constructor(private val jaxb2Marshaller: Jaxb2Marshaller) : FaultMessageResolver {

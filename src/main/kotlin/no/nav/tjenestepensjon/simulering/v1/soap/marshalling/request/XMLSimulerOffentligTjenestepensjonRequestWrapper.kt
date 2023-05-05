@@ -1,10 +1,10 @@
 package no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request
 
+import jakarta.xml.bind.annotation.*
+import jakarta.xml.bind.annotation.XmlAccessType.*
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain.XMLSimulertAFPPrivat
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain.XMLSimulertAP2011
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain.XMLTpForhold
-import javax.xml.bind.annotation.*
-import javax.xml.bind.annotation.XmlAccessType.FIELD
 import javax.xml.datatype.XMLGregorianCalendar
 
 @XmlAccessorType(FIELD)

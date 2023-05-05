@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 
-@SpringBootTest(classes = [TpClient::class, WebClientConfig::class])
+@SpringBootTest(classes = [TpClient::class, WebClientConfig::class, ObjectMapperConfig::class])
 @TestInstance(PER_CLASS)
 internal class WebClientConfigTest {
 
