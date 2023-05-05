@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.service
 
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
@@ -43,8 +44,8 @@ class TpClient(
                 it.setBearerAuth(aadClient.getToken(tpScope))
             }.exchangeToFlux { clientResponse ->
                 when (clientResponse.statusCode().value()) {
-                    200 -> clientResponse.bodyToMono<HateoasWrapper>().flatMapIterable {
-                        it.embedded.forholdDtoList
+                    200 -> clientResponse.bodyToMono<String>().flatMapIterable {
+                        jsonMapper.readValue<HateoasWrapper>(it).embedded.forholdDtoList
                     }.doOnComplete {
                         log.info("Successfully fetched data.")
                     }.onErrorContinue { e, v ->
