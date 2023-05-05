@@ -12,11 +12,6 @@
 					</valueMask>
 				</jsonGeneratorDecorator>
 			</springProfile>
-			<providers>
-				<stackTrace>
-					<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter"/>
-				</stackTrace>
-			</providers>
 		</encoder>
 	</appender>
 

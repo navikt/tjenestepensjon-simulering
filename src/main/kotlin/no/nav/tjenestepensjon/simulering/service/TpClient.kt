@@ -1,7 +1,6 @@
 package no.nav.tjenestepensjon.simulering.service
 
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.util.TokenBuffer
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
@@ -50,7 +49,7 @@ class TpClient(
                     }.doOnComplete {
                         log.info("Successfully fetched data.")
                     }.onErrorContinue { e, v ->
-                        log.error("Failed to parse response: ${(v as TokenBuffer).asParser().valueAsString}", e)
+                        log.error("Failed to parse response from TP.", e)
                     }
 
                     404 -> Flux.empty()
