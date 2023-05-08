@@ -10,7 +10,6 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
@@ -18,6 +17,7 @@ import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
+import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequestV1
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringServiceV1
@@ -98,11 +98,17 @@ class SimuleringEndpoint(
                 log.debug("Returning response: ${filterFnr(response.toString())}")
                 ResponseEntity(response, OK)
             }
-        } catch (e: Throwable) {
+        } catch (e: NoTpOrdningerFoundException) {
+            log.debug("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No TP-forhold found for person.""")
+            ResponseEntity.notFound().build()
+        } catch (e: JsonParseException) {
+            log.warn("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Unable to parse body to request.""")
+            ResponseEntity.badRequest().build()
+        } catch (e: JsonMappingException) {
+            log.warn("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Unable to map body to request.""")
+            ResponseEntity.badRequest().build()
+        } catch(e: Throwable) {
             when (e) {
-                is NoTpOrdningerFoundException -> null to NOT_FOUND
-                is JsonParseException -> "Unable to parse body to request." to BAD_REQUEST
-                is JsonMappingException -> "Unable to mapping body to request." to BAD_REQUEST
                 is ConnectToIdPortenException -> "Unable to to connect with idPorten." to INTERNAL_SERVER_ERROR
                 is ConnectToMaskinPortenException -> "Unable to to get token from maskinporten." to INTERNAL_SERVER_ERROR
                 is WebClientResponseException -> "Caught WebClientResponseException in version 1" to INTERNAL_SERVER_ERROR
@@ -113,10 +119,12 @@ class SimuleringEndpoint(
                 }
                 else -> e::class.qualifiedName to INTERNAL_SERVER_ERROR
             }.run {
-                log.error("""
+                log.error(
+                    """
                     Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}:
                     httpResponse: ${second.value()} - $first, cause: ${e.message}
-                    """.trimIndent(), e)
+                    """.trimIndent(), e
+                )
 
                 if (e is SimuleringException) {
                     metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_FEIL)
