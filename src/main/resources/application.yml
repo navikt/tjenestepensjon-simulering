@@ -1,0 +1,18 @@
+management:
+  prometheus.metrics.export.enabled: true
+  endpoint.health.probes.enabled: true
+  endpoints.web.exposure.include: prometheus, health
+  metrics.use-global-registry: true
+
+spring:
+  jackson:
+    mapper:
+      accept-case-insensitive-enums: true
+      accept-case-insensitive-values: true
+
+
+PENSJONSIMULERING_SCOPE: klp:pensjonsimulering
+
+TJENESTEPENSJON_URL: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest
+STILLINGSPROSENT_URL: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListeRequest
+SECURITY_CONTEXT_URL: http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd
