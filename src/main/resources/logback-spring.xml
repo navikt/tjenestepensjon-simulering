@@ -19,20 +19,10 @@
 		<appender-ref ref="stdout_json" />
 	</root>
 
-	<logger name="no.nav.tjenestepensjon" level="${logging.level.no.nav.tjenestepensjon:-WARN}">
-		<appender-ref ref="stdout_json" />
-	</logger>
-	<logger name="org.springframework.security.oauth2" level="${logging.level.org.springframework.security.oauth2:-WARN}">
-		<appender-ref ref="stdout_json" />
-	</logger>
-	<logger name="org.springframework.ws.client.MessageTracing" level="${logging.level.org.springframework.ws.client.MessageTracing:-WARN}">
-		<appender-ref ref="stdout_json" />
-	</logger>
-	<logger name="org.springframework.ws.web" level="${logging.level.org.springframework.ws.web:-WARN}">
-		<appender-ref ref="stdout_json" />
-	</logger>
-	<logger name="com.microsoft.aad" level="${logging.level.com.microsoft.aad:-WARN}">
-		<appender-ref ref="stdout_json" />
-	</logger>
+	<logger name="no.nav.tjenestepensjon" level="${logging.level.no.nav.tjenestepensjon:-WARN}"/>
+	<logger name="org.springframework.security.oauth2" level="${logging.level.org.springframework.security.oauth2:-WARN}"/>
+	<logger name="org.springframework.ws.client.MessageTracing" level="${logging.level.org.springframework.ws.client.MessageTracing:-WARN}"/>
+	<logger name="org.springframework.ws.web" level="${logging.level.org.springframework.ws.web:-WARN}"/>
+	<logger name="com.microsoft.aad" level="${logging.level.com.microsoft.aad:-WARN}"/>
 
 </configuration>
