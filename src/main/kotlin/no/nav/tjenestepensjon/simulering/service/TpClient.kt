@@ -45,13 +45,15 @@ class TpClient(
             }.exchangeToFlux { clientResponse ->
                 when (clientResponse.statusCode().value()) {
                     200 -> clientResponse.bodyToMono<String>().flatMapIterable {
-                        jsonMapper.readValue<HateoasWrapper>(it).embedded.forholdDtoList
+                        try {
+                            jsonMapper.readValue<HateoasWrapper>(it).embedded.forholdDtoList
+                        } catch (t: Throwable) {
+                            log.error("Failed to parse response from TP, with body: $it", t)
+                            throw t
+                        }
                     }.doOnComplete {
                         log.info("Successfully fetched data.")
-                    }.onErrorContinue { e, v ->
-                        log.error("Failed to parse response from TP.", e)
                     }
-
                     404 -> Flux.empty()
                     else -> clientResponse.bodyToFlux<String>().defaultIfEmpty("<NULL>").flatMap { body ->
                         Flux.error(badGateway("Status code ${clientResponse.statusCode()} with message: $body}"))
