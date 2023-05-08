@@ -46,7 +46,8 @@ class TpClient(
                 when (clientResponse.statusCode().value()) {
                     200 -> clientResponse.bodyToMono<String>().flatMapIterable {
                         try {
-                            jsonMapper.readValue<HateoasWrapper>(it).embedded.forholdDtoList
+                            if (it.isBlank() || it == "{}") emptyList()
+                            else jsonMapper.readValue<HateoasWrapper>(it).embedded.forholdDtoList
                         } catch (t: Throwable) {
                             log.error("Failed to parse response from TP, with body: $it", t)
                             throw t
