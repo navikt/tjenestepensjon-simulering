@@ -107,7 +107,10 @@ class SimuleringEndpoint(
         } catch (e: JsonMappingException) {
             log.warn("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Unable to map body to request.""")
             ResponseEntity.badRequest().build()
-        } catch(e: Throwable) {
+        } catch (e: LeveradoerNotFoundException) {
+            log.warn("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No supported TP-Ordning found.""")
+            ResponseEntity.notFound().build()
+        } catch (e: Throwable) {
             when (e) {
                 is ConnectToIdPortenException -> "Unable to to connect with idPorten." to INTERNAL_SERVER_ERROR
                 is ConnectToMaskinPortenException -> "Unable to to get token from maskinporten." to INTERNAL_SERVER_ERROR
@@ -117,6 +120,7 @@ class SimuleringEndpoint(
                     log.error("UndeclaredThrowableException received. $cause")
                     cause?.message to INTERNAL_SERVER_ERROR
                 }
+
                 else -> e::class.qualifiedName to INTERNAL_SERVER_ERROR
             }.run {
                 log.error(

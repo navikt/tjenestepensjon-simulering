@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
+import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.HateoasWrapper
@@ -20,6 +21,7 @@ import org.springframework.web.reactive.function.client.bodyToMono
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.Exceptions
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @Service
 class TpClient(
@@ -31,9 +33,10 @@ class TpClient(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    fun getTpOrdningerForPerson(fnr: FNR) = findForhold(fnr).map {
-        TPOrdning(tpId = it.ordning, tssId = findTssId(it.ordning))
-    }
+    fun getTpOrdningerForPerson(fnr: FNR) = findForhold(fnr).mapNotNull { forhold ->
+        findTssId(forhold.ordning)?.let { TPOrdning(tpId = forhold.ordning, tssId = it) }
+    }.takeUnless { it.isEmpty() }
+        ?: throw LeveradoerNotFoundException("TSSnr not found for any tpOrdning.")
 
     @Cacheable(TP_ORDNING_PERSON_CACHE)
     fun findForhold(fnr: FNR) = try {
@@ -55,6 +58,7 @@ class TpClient(
                     }.doOnComplete {
                         log.info("Successfully fetched data.")
                     }
+
                     404 -> Flux.empty()
                     else -> clientResponse.bodyToFlux<String>().defaultIfEmpty("<NULL>").flatMap { body ->
                         Flux.error(badGateway("Status code ${clientResponse.statusCode()} with message: $body}"))
@@ -69,13 +73,24 @@ class TpClient(
     }
 
     @Cacheable(TP_ORDNING_LEVERANDOR_CACHE)
-    fun findTpLeverandor(tpOrdning: TPOrdning): String =
-        webClient.get().uri("$tpUrl/api/tpconfig/tpleverandoer/${tpOrdning.tpId}").retrieve().bodyToMono<String>()
-            .block()!!
+    fun findTpLeverandor(tpOrdning: TPOrdning): String? =
+        webClient.get().uri("$tpUrl/api/tpconfig/tpleverandoer/${tpOrdning.tpId}").exchangeToMono {
+            when (it.statusCode().value()) {
+                200 -> it.bodyToMono<String>()
+                404 -> Mono.empty()
+                else -> Mono.error(badGateway(null))
+            }
+        }.block()
 
     @Cacheable(TP_ORDNING_TSSID_CACHE)
-    fun findTssId(tpId: String): String =
-        webClient.get().uri("$tpUrl/api/tpconfig/tssnr/$tpId").retrieve().bodyToMono<String>().block()!!
+    fun findTssId(tpId: String): String? =
+        webClient.get().uri("$tpUrl/api/tpconfig/tssnr/$tpId").exchangeToMono {
+            when (it.statusCode().value()) {
+                200 -> it.bodyToMono<String>()
+                404 -> Mono.empty()
+                else -> Mono.error(badGateway(null))
+            }
+        }.block()
 
     fun badGateway(logMessage: String?): ResponseStatusException {
         log.error("Error fetching data from TP: $logMessage")
