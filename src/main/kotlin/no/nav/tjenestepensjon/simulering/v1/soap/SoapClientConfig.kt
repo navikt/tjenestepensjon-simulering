@@ -1,6 +1,5 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
-import jakarta.xml.bind.Marshaller.JAXB_ENCODING
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain.*
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLHentStillingsprosentListeRequestWrapper
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLSimulerOffentligTjenestepensjonRequestWrapper
@@ -31,8 +30,8 @@ class SoapClientConfig(
                 XMLStillingsprosent::class.java,
                 XMLTpForhold::class.java,
                 XMLUtbetalingsperiode::class.java)
-        setMarshallerProperties(mapOf(JAXB_ENCODING to ENCODING))
-       // setPackagesToScan("no.nav.tjenestepensjon.simulering.v1.soap.marshalling")
+        //setMarshallerProperties(mapOf(JAXB_ENCODING to ENCODING))
+        // setPackagesToScan("no.nav.tjenestepensjon.simulering.v1.soap.marshalling")
     }
 
     @Bean
@@ -41,11 +40,12 @@ class SoapClientConfig(
         marshaller = jaxb2Marshaller
         unmarshaller = jaxb2Marshaller
         faultMessageResolver = SoapFaultHandler(jaxb2Marshaller)
+        interceptors = arrayOf(NorwegianSoapResponseInterceptor())
         setCheckConnectionForFault(true)
         setCheckConnectionForError(true)
     }
 
     companion object {
-        const val ENCODING = "Unicode"
+        const val ENCODING = "UTF-8"
     }
 }
