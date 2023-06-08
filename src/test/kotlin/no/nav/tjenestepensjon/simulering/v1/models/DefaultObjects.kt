@@ -8,6 +8,7 @@ import no.nav.tjenestepensjon.simulering.v1.models.request.*
 import no.nav.tjenestepensjon.simulering.v1.models.response.HentStillingsprosentListeResponse
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v1.models.response.SimulertPensjon
+import no.nav.tjenestepensjon.simulering.v1.soap.SoapClientConfig.Companion.ENCODING
 
 const val defaultLeverandor = "leverandor1"
 
@@ -178,7 +179,7 @@ const val defaultTpForholdJson =
 const val defaultSimulerOffentligTjenestepensjonRequestJson =
     """{"fnr":"$defaultFNRString","tpnr":"$defaultTpid","tssEksternId":"$defaultTssid","forsteUttakDato":"$defaultFomDateString","uttaksgrad":0,"heltUttakDato":"$defaultFomDateString","stillingsprosentOffHeltUttak":0,"stillingsprosentOffGradertUttak":0,"inntektForUttak":0,"inntektUnderGradertUttak":0,"inntektEtterHeltUttak":0,"antallArInntektEtterHeltUttak":0,"sivilstandKode":"GIFT","sprak":"bogus","simulertAFPOffentlig":0,"simulertAFPPrivat":$defaultSimulertAFPPrivatJson,"simulertAP2011":$defaultSimulertAP2011Json,"tpForholdListe":[$defaultTpForholdJson]}"""
 
-const val defaultXMLMetadata = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"""
+const val defaultXMLMetadata = """<?xml version="1.0" encoding="$ENCODING" standalone="yes"?>"""
 const val defaultPackageXML = """xmlns:ns2="http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1"""
 const val defaultFomDateXML = """$defaultFomDateString+01:00"""
 const val defaultTomDateXML = """$defaultTomDateString+01:00"""

@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
+import jakarta.xml.bind.Marshaller.JAXB_ENCODING
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain.*
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLHentStillingsprosentListeRequestWrapper
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLSimulerOffentligTjenestepensjonRequestWrapper
@@ -30,6 +31,7 @@ class SoapClientConfig(
                 XMLStillingsprosent::class.java,
                 XMLTpForhold::class.java,
                 XMLUtbetalingsperiode::class.java)
+        setMarshallerProperties(mapOf(JAXB_ENCODING to ENCODING))
        // setPackagesToScan("no.nav.tjenestepensjon.simulering.v1.soap.marshalling")
     }
 
@@ -41,5 +43,9 @@ class SoapClientConfig(
         faultMessageResolver = SoapFaultHandler(jaxb2Marshaller)
         setCheckConnectionForFault(true)
         setCheckConnectionForError(true)
+    }
+
+    companion object {
+        const val ENCODING = "Unicode"
     }
 }
