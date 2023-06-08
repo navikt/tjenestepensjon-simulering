@@ -27,16 +27,20 @@ class NorwegianSoapResponseInterceptor: ClientInterceptor {
     }
 
     private fun WebServiceMessage.reformatPayload() {
-        val domResult = DOMResult()
-        transformer.transform(payloadSource, domResult)
+        try {
+            val domResult = DOMResult()
+            transformer.transform(payloadSource, domResult)
 
-        val body = domResult.node.apply {
-            nodeValue = nodeValue
-                .replace("Ø", "Oe").replace("ø", "oe")
-                .replace("Å", "Aa").replace("å", "aa")
-                .replace("Æ", "Ae").replace("æ", "ae")
+            val body = domResult.node.apply {
+
+                nodeValue = nodeValue
+                    .replace("Ø", "Oe").replace("ø", "oe")
+                    .replace("Å", "Aa").replace("å", "aa")
+                    .replace("Æ", "Ae").replace("æ", "ae")
+            }
+
+            transformer.transform(DOMSource(body), payloadResult)
+        } catch (_: Throwable) {
         }
-
-        transformer.transform(DOMSource(body), payloadResult)
     }
 }
