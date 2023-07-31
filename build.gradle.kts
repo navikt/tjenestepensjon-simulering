@@ -43,7 +43,7 @@ dependencies {
     testImplementation("com.github.tomakehurst:wiremock:3.0.0-beta-8")
     testImplementation("org.springframework.boot", "spring-boot-starter-test")
     testImplementation("org.springframework.security", "spring-security-test")
-    implementation("org.springframework.boot:spring-boot-properties-migrator:3.0.6")
+    implementation("org.springframework.boot:spring-boot-properties-migrator:3.1.2")
 
 }
 
