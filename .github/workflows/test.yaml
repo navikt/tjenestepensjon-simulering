@@ -20,3 +20,5 @@ jobs:
         with:
           gradle-version: current
           arguments: build
+        env:
+          GITHUB_TOKEN: ${{ secrets.READER_TOKEN }}
