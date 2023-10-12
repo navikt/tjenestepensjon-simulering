@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      checks: write
+      id-token: write
+      packages: write
     steps:
       # Checkout
       - uses: actions/checkout@v1
