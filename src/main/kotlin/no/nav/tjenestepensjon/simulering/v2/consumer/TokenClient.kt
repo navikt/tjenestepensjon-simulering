@@ -5,6 +5,7 @@ import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient.TokenType.OIDC
 import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient.TokenType.SAML
+import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -12,15 +13,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.bodyToMono
 import java.net.URI
 
 @Service
 class TokenClient(private val webClient: WebClient) : TokenService {
 
-    @Autowired
-    lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
     @Autowired
     lateinit var maskinportenToken: MaskinportenToken
 
@@ -34,15 +32,13 @@ class TokenClient(private val webClient: WebClient) : TokenService {
     lateinit var stsUrl: String
 
     fun pensjonsimuleringToken() : String {
-        try{
-            return maskinportenToken.getToken()
-        } catch (e : WebClientResponseException) {
-            LOG.warn("Error while retrieving token from provider, returned HttpStatus ${e.statusCode} with message ${e.message}")
+        return try{
+            maskinportenToken.getToken()
         }
-        catch (exc: Exception){
+        catch (exc: Throwable){
             LOG.warn("Error while retrieving token from provider: ${exc.message}")
+            throw ConnectToMaskinPortenException(exc.message)
         }
-        return maskinportenTokenProvider.generatePensjonsimuleringToken()
     }
 
     private var oidcToken: Token = TokenImpl("", expiresIn = 0)

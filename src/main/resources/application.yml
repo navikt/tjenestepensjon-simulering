@@ -18,8 +18,6 @@ maskinporten:
   issuer: ${MASKINPORTEN_ISSUER:https://test.maskinporten.no}
 
 
-PENSJONSIMULERING_SCOPE: klp:pensjonsimulering
-
 TJENESTEPENSJON_URL: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest
 STILLINGSPROSENT_URL: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListeRequest
 SECURITY_CONTEXT_URL: http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd

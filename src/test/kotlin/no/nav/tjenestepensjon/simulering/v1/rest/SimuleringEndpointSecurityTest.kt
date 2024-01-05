@@ -10,7 +10,6 @@ import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerPensjonRequestJ
 import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulertPensjonList
 import no.nav.tjenestepensjon.simulering.v1.models.defaultStillingsprosentListe
 import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
-import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenProvider
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -33,9 +32,6 @@ class SimuleringEndpointSecurityTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
-
-    @MockBean
-    private lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
 
     @MockBean
     private lateinit var aadClient: AADClient
