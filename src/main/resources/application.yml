@@ -10,6 +10,13 @@ spring:
       accept-case-insensitive-enums: true
       accept-case-insensitive-values: true
 
+maskinporten:
+  token-endpoint-url: ${MASKINPORTEN_TOKEN_ENDPOINT:https://test.maskinporten.no}
+  client-id: ${MASKINPORTEN_CLIENT_ID:clientId}
+  client-jwk: ${MASKINPORTEN_CLIENT_JWK:clientJwk}
+  scope: ${MASKINPORTEN_SCOPES:"nav:scope:no"}
+  issuer: ${MASKINPORTEN_ISSUER:https://test.maskinporten.no}
+
 
 PENSJONSIMULERING_SCOPE: klp:pensjonsimulering
 

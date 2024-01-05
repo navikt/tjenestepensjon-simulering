@@ -19,7 +19,7 @@ class RestClient(private val webClient: WebClient) {
         request: SimulerPensjonRequestV2, tpOrdning: TPOrdning, tpLeverandor: TpLeverandor
     ): SimulerOffentligTjenestepensjonResponse = webClient.post().uri(tpLeverandor.simuleringUrl).headers {
         it.setBearerAuth(
-            if (tpLeverandor.name != "SPK") tokenClient.pensjonsimuleringToken
+            if (tpLeverandor.name != "SPK") tokenClient.pensjonsimuleringToken()
             else tokenClient.oidcAccessToken.accessToken
         )
     }.bodyValue(request).retrieve().bodyToMono<SimulerOffentligTjenestepensjonResponse>().block()

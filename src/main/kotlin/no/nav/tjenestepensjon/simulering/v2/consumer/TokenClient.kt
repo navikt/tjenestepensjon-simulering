@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.bodyToMono
 import java.net.URI
 
@@ -20,6 +21,8 @@ class TokenClient(private val webClient: WebClient) : TokenService {
 
     @Autowired
     lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
+    @Autowired
+    lateinit var maskinportenToken: MaskinportenToken
 
     @Value("\${SERVICE_USER}")
     lateinit var username: String
@@ -30,8 +33,17 @@ class TokenClient(private val webClient: WebClient) : TokenService {
     @Value("\${STS_URL}")
     lateinit var stsUrl: String
 
-    val pensjonsimuleringToken: String
-        get() = maskinportenTokenProvider.generatePensjonsimuleringToken()
+    fun pensjonsimuleringToken() : String {
+        try{
+            return maskinportenToken.getToken()
+        } catch (e : WebClientResponseException) {
+            LOG.warn("Error while retrieving token from provider, returned HttpStatus ${e.statusCode} with message ${e.message}")
+        }
+        catch (exc: Exception){
+            LOG.warn("Error while retrieving token from provider: ${exc.message}")
+        }
+        return maskinportenTokenProvider.generatePensjonsimuleringToken()
+    }
 
     private var oidcToken: Token = TokenImpl("", expiresIn = 0)
         get() = if (field.isExpired) getTokenFromProvider(OIDC).also { field = it }
