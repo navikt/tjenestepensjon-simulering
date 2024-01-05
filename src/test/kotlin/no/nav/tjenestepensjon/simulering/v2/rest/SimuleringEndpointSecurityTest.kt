@@ -7,7 +7,6 @@ import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.models.defaultStillingsprosentListe
 import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
-import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenProvider
 import no.nav.tjenestepensjon.simulering.v2.models.defaultLeverandor
 import no.nav.tjenestepensjon.simulering.v2.models.defaultSimulerOffentligTjenestepensjonRequestJson
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
@@ -32,9 +31,6 @@ import org.springframework.test.web.servlet.post
 class SimuleringEndpointSecurityTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
-
-    @MockBean
-    private lateinit var maskinportenTokenProvider: MaskinportenTokenProvider
 
     @MockBean
     private lateinit var aadClient: AADClient
