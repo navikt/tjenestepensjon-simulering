@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.config
 
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.boot.context.properties.bind.ConstructorBinding
@@ -11,6 +12,7 @@ import org.springframework.core.env.Environment
 
 @Configuration
 class TpLeverandorConfig(private val environment: Environment) {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Scope("singleton")
     @Bean("tpLeverandor")
@@ -21,7 +23,7 @@ class TpLeverandorConfig(private val environment: Environment) {
         propertiesLoader.loadProperties("ofp")?.let { list.add(it) }
         propertiesLoader.loadProperties("gabler")?.let { list.add(it) }
         propertiesLoader.loadProperties("storebrand")?.let { list.add(it) }
-        print(list)
+        log.info("Loaded tp-leverandører: $list")
         return@let list.toList()
     }
 
