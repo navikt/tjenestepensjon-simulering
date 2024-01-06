@@ -13,7 +13,7 @@ import org.springframework.ws.client.core.WebServiceTemplate
 
 @Configuration
 class SoapClientConfig(
-        @Value("\${PROVIDER_URI}") val providerUri: String
+        @Value("\${provider.uri}") val providerUri: String
 ) {
 
     @Bean

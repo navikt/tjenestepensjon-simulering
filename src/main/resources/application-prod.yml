@@ -6,3 +6,9 @@ logging.level:
   no.nav.tjenestepensjon: INFO
 
 simulering.security.issuers: ${AZURE_OPENID_CONFIG_ISSUER},https://security-token-service.nais.adeo.no,https://navnob2c.b2clogin.com/8b7dfc8b-b52e-4741-bde4-d83ea366f94f/v2.0/
+provider.uri: ${PROVIDER_URI:https://pep-gw.oera.no:9443/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP}
+spk:
+  name: SPK
+  implementation: REST
+  simuleringUrl: https://api.prod.spk.no/medlem/pensjon/prognose/v1
+  stillingsprosentUrl: https://partner-gw.spk.no:443/nav/SimulereTjenestepensjon

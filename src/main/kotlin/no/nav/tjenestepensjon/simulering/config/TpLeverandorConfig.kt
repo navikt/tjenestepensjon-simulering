@@ -1,37 +1,45 @@
 package no.nav.tjenestepensjon.simulering.config
 
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.bind.Binder
+import org.springframework.boot.context.properties.bind.ConstructorBinding
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Scope
+import org.springframework.core.env.Environment
 
 @Configuration
-class TpLeverandorConfig {
+class TpLeverandorConfig(private val environment: Environment) {
 
-    private lateinit var leverandorUrlMap: String
-    @Value("\${TP_LEVERANDOR_URL_MAP}")
-    fun setLeverandorUrlMap(leverandorUrlMap: String) {
-        this.leverandorUrlMap = leverandorUrlMap
-    }
-
+    @Scope("singleton")
     @Bean("tpLeverandor")
-    fun tpLeverandorList() = createListFromEnv(leverandorUrlMap)
-
-    /**
-     * Parse env variable to generate a list of TpLeverandor.
-     * "," delimits the details of induvidual providers
-     * "|" delimits different providers
-     *
-     * @param leverandorUrlMap env variable format "LEVERANDOR,URL,IMPL|..."
-     * @return List of TpLeverandor
-     */
-    private fun createListFromEnv(leverandorUrlMap: String) =
-            leverandorUrlMap.split('|').map(this::parseProvider)
-
-    private fun parseProvider(provider: String): TpLeverandor {
-        val details = provider.split(',')
-        assert(details.size == 4)
-        return TpLeverandor(details[0], EndpointImpl.valueOf(details[1]), details[2], details[3])
+    fun tpLeverandorList(): List<TpLeverandor> = PropertiesLoader(environment).let { propertiesLoader ->
+        val list: MutableList<TpLeverandor> = mutableListOf()
+        propertiesLoader.loadProperties("spk")?.let { list.add(it) }
+        propertiesLoader.loadProperties("klp")?.let { list.add(it) }
+        propertiesLoader.loadProperties("ofp")?.let { list.add(it) }
+        propertiesLoader.loadProperties("gabler")?.let { list.add(it) }
+        propertiesLoader.loadProperties("storebrand")?.let { list.add(it) }
+        print(list)
+        return@let list.toList()
     }
+
+    class PropertiesLoader(private val environment: Environment) {
+
+        fun loadProperties(prefix: String): TpLeverandor? {
+            return Binder.get(environment)
+                .bind(prefix, TpLeverandorProperty::class.java)
+                .map { TpLeverandor(it.name!!, it.implementation!!, it.simuleringUrl!!, it.stillingsprosentUrl!!) }
+                .orElse(null)
+        }
+    }
+
+    @ConfigurationProperties
+    data class TpLeverandorProperty @ConstructorBinding constructor(
+        val name: String?,
+        val implementation: TpLeverandor.EndpointImpl?,
+        val simuleringUrl: String?,
+        val stillingsprosentUrl: String?
+    )
 }

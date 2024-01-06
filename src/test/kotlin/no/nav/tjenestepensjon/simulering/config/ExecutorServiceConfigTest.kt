@@ -26,6 +26,6 @@ internal class ExecutorServiceConfigTest {
             )
         )
         val executorService = executorServiceConfig.taskExecutor(tpLeverandorConfig) as ThreadPoolExecutor
-        assertEquals(2, executorService.corePoolSize)
+        assertEquals(3, executorService.corePoolSize)
     }
 }

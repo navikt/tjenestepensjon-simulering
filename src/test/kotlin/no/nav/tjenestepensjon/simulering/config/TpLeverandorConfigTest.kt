@@ -5,16 +5,22 @@ import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-
+import org.springframework.mock.env.MockEnvironment
 
 internal class TpLeverandorConfigTest {
-
-    private val tpLeverandorConfig: TpLeverandorConfig = TpLeverandorConfig()
+    private val tpLeverandorConfig: TpLeverandorConfig = TpLeverandorConfig(MockEnvironment().apply {
+        setProperty("klp.name", "tp1")
+        setProperty("klp.implementation", "SOAP")
+        setProperty("klp.simuleringUrl", "simUrl1")
+        setProperty("klp.stillingsprosentUrl", "stillingUrl1")
+        setProperty("spk.name", "tp2")
+        setProperty("spk.implementation", "REST")
+        setProperty("spk.simuleringUrl", "simUrl2")
+        setProperty("spk.stillingsprosentUrl", "stillingUrl2")
+    })
 
     @Test
     fun `Should create list from delimited string`() {
-        tpLeverandorConfig.setLeverandorUrlMap("tp1,SOAP,simUrl1,stillingUrl1|tp2,REST,simUrl2,stillingUrl2")
         tpLeverandorConfig.tpLeverandorList().apply {
             first { l: TpLeverandor -> l.name.equals("tp1", true) }.apply {
                 assertEquals("tp1", name)
@@ -29,11 +35,5 @@ internal class TpLeverandorConfigTest {
                 assertEquals("stillingUrl2", stillingsprosentUrl)
             }
         }
-    }
-
-    @Test
-    fun `Fails when missing provider details`() {
-        tpLeverandorConfig.setLeverandorUrlMap("leverandor,http://www.leverandor.com")
-        assertThrows<AssertionError> { tpLeverandorConfig.tpLeverandorList() }
     }
 }
