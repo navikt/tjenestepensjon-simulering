@@ -44,14 +44,14 @@ maskinporten:
   scope: ${MASKINPORTEN_SCOPES:"nav:scope:no"}
   issuer: ${MASKINPORTEN_ISSUER:https://test.maskinporten.no}
 
-bogus:
-  name: bogus
+spk:
+  name: leverandor1
   implementation: SOAP
-  simuleringUrl: simUrl1
-  stillingsprosentUrl: stillingUrl1
+  simuleringUrl: http://simulering.com
+  stillingsprosentUrl: http://opptjening.com
 
-klpt:
-  name: tp2
+klp:
+  name: leverandor2
   implementation: REST
-  simuleringUrl: simUrl2
-  stillingsprosentUrl: stillingUrl2
+  simuleringUrl: http://simulering.com
+  stillingsprosentUrl: http://opptjening.com

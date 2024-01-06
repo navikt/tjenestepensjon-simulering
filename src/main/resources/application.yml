@@ -9,7 +9,7 @@ spring:
     mapper:
       accept-case-insensitive-enums: true
       accept-case-insensitive-values: true
-simulering.security.issuers: https://security-token-service.nais.preprod.local,https://security-token-service-t4.nais.preprod.local,https://navtestb2c.b2clogin.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
+simulering.security.issuers: https://localhost,https://localhost
 provider.uri: ${PROVIDER_URI:http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP}
 
 maskinporten:
