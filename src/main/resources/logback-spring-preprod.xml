@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <valueMask>
+                    <value>(.*)(\d{6})\d{5}(.*)</value>
+                    <mask>$1$2*****$3</mask>
+                </valueMask>
+            </jsonGeneratorDecorator>
+        </encoder>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="stdout_json"/>
+    </root>
+
+    <logger name="no.nav.tjenestepensjon" level="${logging.level.no.nav.tjenestepensjon:-WARN}"/>
+    <logger name="org.springframework.security.oauth2"
+            level="${logging.level.org.springframework.security.oauth2:-WARN}"/>
+    <logger name="org.springframework.ws.client.MessageTracing"
+            level="${logging.level.org.springframework.ws.client.MessageTracing:-WARN}"/>
+    <logger name="org.springframework.ws.web" level="${logging.level.org.springframework.ws.web:-WARN}"/>
+    <logger name="com.microsoft.aad" level="${logging.level.com.microsoft.aad:-WARN}"/>
+
+</configuration>
