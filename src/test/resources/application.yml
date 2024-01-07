@@ -11,9 +11,7 @@ AZURE_APP_CLIENT_ID: bogus
 AZURE_APP_CLIENT_SECRET: bogus
 AZURE_APP_WELL_KNOWN_URL: https://localhost:8080/bogus
 
-PROVIDER_URI: http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
-ISSUER_JWKS_MAP: http://localhost:8080,http://localhost:8080/rest/v1/sts/jwks
-TP_LEVERANDOR_URL_MAP: leverandor1,SOAP,http://simulering.com,http://opptjening.com|leverandor2,REST,http://simulering.com,http://opptjening.com
+provider.uri: http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
 
 SERVICE_USER: serviceuser
 SERVICE_USER_PASSWORD: password
@@ -46,3 +44,14 @@ maskinporten:
   scope: ${MASKINPORTEN_SCOPES:"nav:scope:no"}
   issuer: ${MASKINPORTEN_ISSUER:https://test.maskinporten.no}
 
+spk:
+  name: leverandor1
+  implementation: SOAP
+  simuleringUrl: http://simulering.com
+  stillingsprosentUrl: http://opptjening.com
+
+klp:
+  name: leverandor2
+  implementation: REST
+  simuleringUrl: http://simulering.com
+  stillingsprosentUrl: http://opptjening.com

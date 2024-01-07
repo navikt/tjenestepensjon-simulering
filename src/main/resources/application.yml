@@ -9,6 +9,8 @@ spring:
     mapper:
       accept-case-insensitive-enums: true
       accept-case-insensitive-values: true
+simulering.security.issuers: https://localhost,https://localhost
+provider.uri: ${PROVIDER_URI:http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP}
 
 maskinporten:
   token-endpoint-url: ${MASKINPORTEN_TOKEN_ENDPOINT:https://test.maskinporten.no}
@@ -17,7 +19,25 @@ maskinporten:
   scope: ${MASKINPORTEN_SCOPES:"nav:scope:no"}
   issuer: ${MASKINPORTEN_ISSUER:https://test.maskinporten.no}
 
+spk:
+  name: SPK
+  implementation: REST
+  simuleringUrl: https://api.spk.no/medlem/pensjon/prognose/v1
+  stillingsprosentUrl: https://spk.no:443/nav/SimulereTjenestepensjon
+gabler:
+  name: GABLER
+  implementation: SOAP
+  simuleringUrl: https://elsam.gabler.no/elsam.svc
+  stillingsprosentUrl: https://elsam.gabler.no/elsam.svc
 
 TJENESTEPENSJON_URL: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest
 STILLINGSPROSENT_URL: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListeRequest
 SECURITY_CONTEXT_URL: http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd
+SERVICE_USER: serviceuser
+SERVICE_USER_PASSWORD: password
+AZURE_APP_CLIENT_ID: bogus
+AZURE_APP_CLIENT_SECRET: bogus
+AZURE_APP_WELL_KNOWN_URL: https://localhost:8080/bogus
+STS_URL: http://localhost:8080
+TP_URL: http://localhost:8080
+TP_SCOPE: api://bogus
