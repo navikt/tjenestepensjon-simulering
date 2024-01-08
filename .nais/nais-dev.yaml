@@ -48,13 +48,6 @@ spec:
     initialDelay: 30
     failureThreshold: 30
     periodSeconds: 5
-  vault:
-    enabled: true
-    paths:
-      - kvPath: /kv/preprod/fss/tjenestepensjon-simulering/pensjonsamhandling
-        mountPath: /var/run/secrets/nais.io/vault
-      - kvPath: /maskinporten/data/dev/creds/tjenestepensjon-simulering
-        mountPath: /var/run/secrets/nais.io/vault/jwks
   replicas:
     min: 2
     max: 2
