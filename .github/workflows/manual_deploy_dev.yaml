@@ -51,9 +51,8 @@ jobs:
 
       # Deploy dev-fss
       - name: Deploy tjenestepensjon-simulering to dev-fss
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_PENSJONSKALKULATOR_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: .nais/nais-dev.yaml
           IMAGE: ${{ env.IMAGE }}
