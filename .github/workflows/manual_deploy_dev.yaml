@@ -57,4 +57,5 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais-dev.yaml
           IMAGE: ${{ env.IMAGE }}
+          TEAM: pensjonskalkulator
 
