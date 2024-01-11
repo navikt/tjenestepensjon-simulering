@@ -5,51 +5,28 @@ management.endpoints.web.exposure.include: prometheus,health
 STS_URL: http://localhost:8080
 TP_URL: http://localhost:8080
 TP_SCOPE: api://bogus
-
-
 AZURE_APP_CLIENT_ID: bogus
 AZURE_APP_CLIENT_SECRET: bogus
 AZURE_APP_WELL_KNOWN_URL: https://localhost:8080/bogus
-
 provider.uri: http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
-
 SERVICE_USER: serviceuser
 SERVICE_USER_PASSWORD: password
-
 TJENESTEPENSJON_URL: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest
 STILLINGSPROSENT_URL: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListeRequest
 SECURITY_CONTEXT_URL: http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd
-
 security.oauth2.resource.filter-order: 3
-#spring.security.oauth2.client:
-#  provider.azure:
-#    authorization-uri: test
-#    jwk-set-uri: test
-#    token-uri: test
-#  registration.azure:
-#    authorization-grant-type: authorization_code
-#    client-id: tjenestepensjon-simulering
-#    client-name: azure
-#    client-secret: dummy
-#    provider: azure
-#    scope: openid
-#    redirect-uri: test
-
 simulering.security.issuers: https://localhost,https://localhost
-
 maskinporten:
   token-endpoint-url: ${MASKINPORTEN_TOKEN_ENDPOINT:https://test.maskinporten.no}
   client-id: ${MASKINPORTEN_CLIENT_ID:clientId}
   client-jwk: ${MASKINPORTEN_CLIENT_JWK:clientJwk}
   scope: ${MASKINPORTEN_SCOPES:"nav:scope:no"}
   issuer: ${MASKINPORTEN_ISSUER:https://test.maskinporten.no}
-
 spk:
   name: leverandor1
   implementation: SOAP
   simuleringUrl: http://simulering.com
   stillingsprosentUrl: http://opptjening.com
-
 klp:
   name: leverandor2
   implementation: REST

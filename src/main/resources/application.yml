@@ -10,7 +10,7 @@ spring:
       accept-case-insensitive-enums: true
       accept-case-insensitive-values: true
 simulering.security.issuers: https://localhost,https://localhost
-provider.uri: ${PROVIDER_URI:http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP}
+provider.uri: http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
 
 maskinporten:
   token-endpoint-url: ${MASKINPORTEN_TOKEN_ENDPOINT:https://test.maskinporten.no}

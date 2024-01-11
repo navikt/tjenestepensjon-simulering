@@ -1,7 +1,3 @@
-STS_URL: https://security-token-service.nais.preprod.local
-TP_URL: https://tp-q1.dev.intern.nav.no
-TP_SCOPE: api://dev-fss.pensjonsamhandling.tp-q1/.default
-
 logging.level:
   no.nav.tjenestepensjon: DEBUG
   org.springframework:
@@ -12,7 +8,6 @@ logging.level:
   com.microsoft.aad: DEBUG
 
 simulering.security.issuers: ${AZURE_OPENID_CONFIG_ISSUER},https://security-token-service.nais.preprod.local,https://security-token-service-t4.nais.preprod.local,https://navtestb2c.b2clogin.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
-provider.uri: ${PROVIDER_URI:https://pep-gw-q1.oera-q.local:9443/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP}
 klp:
   name: KLP
   implementation: REST
