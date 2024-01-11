@@ -29,10 +29,10 @@ class SoapClient(
         this.webServiceTemplate = webServiceTemplate
     }
 
-    @Value("\${TJENESTEPENSJON_URL}")
+    @Value("\${tjenestepensjon.url}")
     lateinit var simulerOffentlingTjenestepensjonUrl: String
 
-    @Value("\${STILLINGSPROSENT_URL}")
+    @Value("\${stillingsprosent.url}")
     lateinit var hentStillingsprosentUrl: String
 
     @Autowired

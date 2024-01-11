@@ -5,6 +5,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class SamlConfig {
-    @Value("\${SECURITY_CONTEXT_URL}")
+    @Value("\${security.context.url}")
     lateinit var samlSecurityContextUrl: String
 }

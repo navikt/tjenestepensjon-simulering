@@ -52,6 +52,14 @@ spec:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
+    - name: provider_uri
+      value: https://pep-gw.oera.no:9443/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
+    - name: sts_url
+      value: https://security-token-service.nais.adeo.no
+    - name: tp_url
+      value: https://tp.nais.adeo.no
+    - name: tp_scope
+      value: api://prod-fss.pensjonsamhandling.tp/.default
   prometheus:
     enabled: true
     path: actuator/prometheus
