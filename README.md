@@ -1,7 +1,7 @@
 Tjenestepensjon Simulering
 ==========================
 
-[![Actions Status](https://github.com/navikt/tjenestepensjon-simulering/workflows/master/badge.svg)](https://github.com/navikt/tjenestepensjon-simulering/actions)
+[![Actions Status](https://github.com/navikt/tjenestepensjon-simulering/workflows/main/badge.svg)](https://github.com/navikt/tjenestepensjon-simulering/actions)
 
 Simulering av tjenestepensjon mot eksterne tjenestepensjonsordninger.
 
