@@ -28,8 +28,8 @@ class TpClient(
     private val webClient: WebClient,
     private val aadClient: AADClient,
     private val jsonMapper: JsonMapper,
-    @Value("\${TP_URL}") private var tpUrl: String,
-    @Value("\${TP_SCOPE}") private val tpScope: String
+    @Value("\${tp.url}") private var tpUrl: String,
+    @Value("\${tp.scope}") private val tpScope: String
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 

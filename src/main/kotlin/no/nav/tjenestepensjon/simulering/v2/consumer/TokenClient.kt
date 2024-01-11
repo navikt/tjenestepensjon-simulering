@@ -28,7 +28,7 @@ class TokenClient(private val webClient: WebClient) : TokenService {
     @Value("\${SERVICE_USER_PASSWORD}")
     lateinit var password: String
 
-    @Value("\${STS_URL}")
+    @Value("\${sts.url}")
     lateinit var stsUrl: String
 
     fun pensjonsimuleringToken() : String {

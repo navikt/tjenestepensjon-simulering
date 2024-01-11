@@ -1,21 +1,34 @@
-management.metrics.export.prometheus.enabled: true
-management.endpoint.health.probes.enabled: true
-management.endpoints.web.exposure.include: prometheus,health
+management:
+  prometheus.metrics.export.enabled: true
+  endpoint.health.probes.enabled: true
+  endpoints.web.exposure.include: prometheus, health
+  metrics.use-global-registry: true
 
-STS_URL: http://localhost:8080
-TP_URL: http://localhost:8080
-TP_SCOPE: api://bogus
+sts:
+  url: http://localhost:8080
+tp:
+  url: http://localhost:8080
+  scope: api://bogus
 AZURE_APP_CLIENT_ID: bogus
 AZURE_APP_CLIENT_SECRET: bogus
 AZURE_APP_WELL_KNOWN_URL: https://localhost:8080/bogus
-provider.uri: http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
+provider:
+  uri: http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
 SERVICE_USER: serviceuser
 SERVICE_USER_PASSWORD: password
-TJENESTEPENSJON_URL: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest
-STILLINGSPROSENT_URL: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListeRequest
-SECURITY_CONTEXT_URL: http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd
-security.oauth2.resource.filter-order: 3
-simulering.security.issuers: https://localhost,https://localhost
+tjenestepensjon:
+  url: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest
+stillingsprosent:
+  url: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListeRequest
+security:
+  context:
+    url: http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd
+  oauth2:
+    resource:
+      filter-order: 3
+simulering:
+  security:
+    issuers: https://localhost,https://localhost
 maskinporten:
   token-endpoint-url: ${MASKINPORTEN_TOKEN_ENDPOINT:https://test.maskinporten.no}
   client-id: ${MASKINPORTEN_CLIENT_ID:clientId}

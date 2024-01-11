@@ -21,7 +21,7 @@ class TokenClientOld(private val webClient: WebClient) : TokenService {
     @Value("\${SERVICE_USER_PASSWORD}")
     lateinit var password: String
 
-    @Value("\${STS_URL}")
+    @Value("\${sts.url}")
     lateinit var stsUrl: String
 
     private var oidcToken: Token = TokenImpl("", expiresIn = -1)
