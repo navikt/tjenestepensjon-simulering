@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-
-    <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <maxLength>15000</maxLength>
+                <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                <exclude>java\.util\.concurrent\..*</exclude>
+                <exclude>org\.apache\.tomcat\..*</exclude>
+                <exclude>org\.apache\.coyote\..*</exclude>
+                <exclude>org\.apache\.catalina\..*</exclude>
+                <exclude>org\.springframework\.web\..*</exclude>
+            </throwableConverter>
             <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
                 <valueMask>
                     <value>(.*)(\d{6})\d{5}(.*)</value>
@@ -12,9 +19,8 @@
             </jsonGeneratorDecorator>
         </encoder>
     </appender>
-
-    <root level="WARN">
-        <appender-ref ref="stdout_json"/>
+    <root level="INFO">
+        <appender-ref ref="STDOUT_JSON"/>
     </root>
 
     <logger name="no.nav.tjenestepensjon" level="${logging.level.no.nav.tjenestepensjon:-WARN}"/>
