@@ -2,7 +2,6 @@ package no.nav.tjenestepensjon.simulering.rest
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS
@@ -17,20 +16,20 @@ import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
+import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerOffentligTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
-import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequestV1
+import no.nav.tjenestepensjon.simulering.v1.models.DtoToV1DomainMapper.toSimulerPensjonRequestV1
 import no.nav.tjenestepensjon.simulering.v1.service.SimuleringServiceV1
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
-import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequestV2
+import no.nav.tjenestepensjon.simulering.v2.models.DtoToV2DomainMapper.toSimulerPensjonRequestV2
 import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
-import org.json.JSONObject
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.http.HttpStatus.*
+import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
+import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -53,20 +52,17 @@ class SimuleringEndpoint(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Autowired
-    lateinit var objectMapper: ObjectMapper
-
     @PostMapping("/simulering")
     fun simuler(
-        @RequestBody body: String, @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
+        @RequestBody body: SimulerOffentligTjenestepensjonRequest, @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
     ): ResponseEntity<Any> {
         addHeaderToRequestContext(NAV_CALL_ID, navCallId)
         log.info("Processing nav-call-id: ${getHeaderFromRequestContext(NAV_CALL_ID)}")
-        log.debug("Received request: ${filterFnr(body)}")
+        log.debug("Received request: $body")
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
         return try {
-            val fnr = FNR(JSONObject(body).get("fnr").toString())
+            val fnr = FNR(body.fnr)
             val tpOrdningAndLeverandorMap = tpClient.getTpOrdningerForPerson(fnr).let(::getTpLeverandorer)
             val stillingsprosentResponse =
                 stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
@@ -79,7 +75,7 @@ class SimuleringEndpoint(
             if (tpLeverandor.impl == REST) {
                 log.debug("Request simulation from ${tpLeverandor.name} using REST")
                 val response = service2.simulerOffentligTjenestepensjon(
-                    objectMapper.readValue(body, SimulerPensjonRequestV2::class.java),
+                    body.toSimulerPensjonRequestV2(),
                     stillingsprosentResponse,
                     tpOrdning,
                     tpLeverandor
@@ -90,7 +86,7 @@ class SimuleringEndpoint(
             } else {
                 log.debug("Request simulation from ${tpLeverandor.name} using SOAP")
                 val response = service.simulerOffentligTjenestepensjon(
-                    objectMapper.readValue(body, SimulerPensjonRequestV1::class.java),
+                    body.toSimulerPensjonRequestV1(),
                     stillingsprosentResponse,
                     tpOrdning,
                     tpLeverandor

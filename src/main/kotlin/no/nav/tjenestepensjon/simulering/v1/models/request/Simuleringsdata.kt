@@ -16,12 +16,12 @@ data class Simuleringsdata(
         val uforegradVedOmregning: Int
 ) {
     constructor(periode: Simuleringsperiode) : this(
-            poengArTom1991 = periode.poengArTom1991,
-            poengArFom1992 = periode.poengArFom1992,
-            sluttpoengtall = periode.sluttpoengtall,
-            forholdstall_uttak = periode.forholdstall,
-            anvendtTrygdetid = periode.anvendtTrygdetid,
-            uforegradVedOmregning = periode.uforegradVedOmregning,
+            poengArTom1991 = periode.poengArTom1991!!,
+            poengArFom1992 = periode.poengArFom1992!!,
+            sluttpoengtall = periode.sluttpoengtall!!,
+            forholdstall_uttak = periode.forholdstall!!,
+            anvendtTrygdetid = periode.anvendtTrygdetid!!,
+            uforegradVedOmregning = periode.uforegradVedOmregning!!,
             basisgp = periode.getDelytelseBelop(DelytelseType.BASISGP),
             basispt = periode.getDelytelseBelop(DelytelseType.BASISPT),
             basistp = periode.getDelytelseBelop(DelytelseType.BASISTP),
