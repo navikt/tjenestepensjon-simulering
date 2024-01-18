@@ -40,13 +40,14 @@ class DtoToV2DomainMapperTest {
         assert(res.simuleringsdataListe[0].poengArTom1991 == req.simuleringsdataListe[0].poengArTom1991)
         assert(res.simuleringsdataListe[0].poengArFom1992 == req.simuleringsdataListe[0].poengArFom1992)
         assert(res.simuleringsdataListe[0].uforegradVedOmregning == req.simuleringsdataListe[0].uforegradVedOmregning)
-        assert(res.tpForholdListe[0].tpnr == req.tpForholdListe[0].tpnr)
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].stillingsprosent.toInt() == req.tpForholdListe[0].opptjeningsperiodeListe[0].stillingsprosent)
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].datoFom == req.tpForholdListe[0].opptjeningsperiodeListe[0].datoFom.convertToLocalDate())
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].datoTom == req.tpForholdListe[0].opptjeningsperiodeListe[0].datoTom.convertToLocalDate())
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].faktiskHovedlonn == req.tpForholdListe[0].opptjeningsperiodeListe[0].faktiskHovedlonn)
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].stillingsuavhengigTilleggslonn == req.tpForholdListe[0].opptjeningsperiodeListe[0].stillingsuavhengigTilleggslonn)
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].aldersgrense == req.tpForholdListe[0].opptjeningsperiodeListe[0].aldersgrense)
+        val reqForholdsListe = req.tpForholdListe!!
+        assert(res.tpForholdListe[0].tpnr == reqForholdsListe[0].tpnr)
+        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].stillingsprosent.toInt() == reqForholdsListe[0].opptjeningsperiodeListe[0].stillingsprosent)
+        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].datoFom == reqForholdsListe[0].opptjeningsperiodeListe[0].datoFom.convertToLocalDate())
+        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].datoTom == reqForholdsListe[0].opptjeningsperiodeListe[0].datoTom.convertToLocalDate())
+        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].faktiskHovedlonn == reqForholdsListe[0].opptjeningsperiodeListe[0].faktiskHovedlonn)
+        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].stillingsuavhengigTilleggslonn == reqForholdsListe[0].opptjeningsperiodeListe[0].stillingsuavhengigTilleggslonn)
+        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].aldersgrense == reqForholdsListe[0].opptjeningsperiodeListe[0].aldersgrense)
 
     }
 

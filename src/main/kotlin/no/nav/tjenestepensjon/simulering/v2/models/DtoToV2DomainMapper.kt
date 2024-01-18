@@ -29,7 +29,7 @@ object DtoToV2DomainMapper {
         pensjonsbeholdningsperiodeListe = this.pensjonsbeholdningsperiodeListe.map { it.toPensjonsbeholdningsperiode() },
         simuleringsperiodeListe = simuleringsperiodeListe.map { it.toSimuleringsperiode() },
         simuleringsdataListe = this.simuleringsdataListe.map { it.toSimuleringsdata() },
-        tpForholdListe = this.tpForholdListe.map { it.toTpForhold() },
+        tpForholdListe = this.tpForholdListe?.map { it.toTpForhold() } ?: emptyList(),
     )
 
     private fun SimuleringsperiodeDto.toSimuleringsperiode() =

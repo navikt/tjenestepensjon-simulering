@@ -16,7 +16,7 @@ data class SimulerOffentligTjenestepensjonRequest(
     val pensjonsbeholdningsperiodeListe: List<PensjonsbeholdningsperiodeDto> = emptyList(),
     val simuleringsperiodeListe: List<SimuleringsperiodeDto> = emptyList(),
     val simuleringsdataListe: List<SimuleringsdataDto> = emptyList(),
-    val tpForholdListe: List<TpForholdDto> = emptyList(),
+    val tpForholdListe: List<TpForholdDto>? = emptyList(),
 ){
 
     override fun toString(): String {
