@@ -20,42 +20,45 @@ internal class SimulertAP2011Test {
             Simuleringsperiode(
                 utg = UTG,
                 datoFom = LocalDate.of(YEAR_FOM, MONTH_FOM, DAY_FOM),
-                delingstall = DELLINGSTALL,
-                poengArTom1991 = POENG_AR_TOM_1991,
-                poengArFom1992 = POENG_AR_FOM_1992,
-                sluttpoengtall = SLUTTPOENGTALL,
-                anvendtTrygdetid = ANVENDT_TRYGDETID,
-                forholdstall = FORHOLDSTALL,
-                uforegradVedOmregning = UFERGRAD_VED_OMREGNING,
-                stillingsprosentOffentlig = STILLINGSPROSENT_OFFENTLIG,
+                stillingsprosentOffentlig = STILLINGSPROSENT_OFFENTLIG
+            ).apply {
+                delingstall = DELLINGSTALL
+                poengArTom1991 = POENG_AR_TOM_1991
+                poengArFom1992 = POENG_AR_FOM_1992
+                sluttpoengtall = SLUTTPOENGTALL
+                anvendtTrygdetid = ANVENDT_TRYGDETID
+                forholdstall = FORHOLDSTALL
+                uforegradVedOmregning = UFERGRAD_VED_OMREGNING
                 delytelser = listOf(
                     Delytelse(BASISGP, BASISGP_),
                     Delytelse(BASISPT, BASISPT_),
                     Delytelse(BASISTP, BASISTP_),
                     Delytelse(SKJERMINGSTILLEGG, SKJERMINGSTILLEGG_)
                 )
-            )
+            }
+
         }
 
         heltUttak = HeltUttak.run {
             Simuleringsperiode(
                 utg = UTG,
                 datoFom = LocalDate.of(YEAR_FOM, MONTH_FOM, DAY_FOM),
-                delingstall = DELLINGSTALL,
-                poengArTom1991 = POENG_AR_TOM_1991,
-                poengArFom1992 = POENG_AR_FOM_1992,
-                sluttpoengtall = SLUTTPOENGTALL,
-                anvendtTrygdetid = ANVENDT_TRYGDETID,
-                forholdstall = FORHOLDSTALL,
-                uforegradVedOmregning = UFERGRAD_VED_OMREGNING,
-                stillingsprosentOffentlig = STILLINGSPROSENT_OFFENTLIG,
+                stillingsprosentOffentlig = STILLINGSPROSENT_OFFENTLIG
+            ).apply {
+                delingstall = DELLINGSTALL
+                poengArTom1991 = POENG_AR_TOM_1991
+                poengArFom1992 = POENG_AR_FOM_1992
+                sluttpoengtall = SLUTTPOENGTALL
+                anvendtTrygdetid = ANVENDT_TRYGDETID
+                forholdstall = FORHOLDSTALL
+                uforegradVedOmregning = UFERGRAD_VED_OMREGNING
                 delytelser = listOf(
                     Delytelse(BASISGP, BASISGP_),
                     Delytelse(BASISPT, BASISPT_),
                     Delytelse(BASISTP, BASISTP_),
                     Delytelse(SKJERMINGSTILLEGG, SKJERMINGSTILLEGG_)
                 )
-            )
+            }
         }
     }
 

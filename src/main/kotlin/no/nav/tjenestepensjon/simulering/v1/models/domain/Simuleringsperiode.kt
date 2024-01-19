@@ -9,15 +9,15 @@ data class Simuleringsperiode(
         override var datoFom: LocalDate,
         var utg: Int,
         var stillingsprosentOffentlig: Int,
-        var poengArTom1991: Int,
-        var poengArFom1992: Int,
-        var sluttpoengtall: Double,
-        var anvendtTrygdetid: Int,
-        var forholdstall: Double,
-        var delingstall: Double,
-        var uforegradVedOmregning: Int,
-        var delytelser: List<Delytelse>
 ) : Dateable {
+        var poengArTom1991: Int? = null
+        var poengArFom1992: Int? = null
+        var sluttpoengtall: Double? = null
+        var anvendtTrygdetid: Int? = null
+        var forholdstall: Double? = null
+        var delingstall: Double? = null
+        var uforegradVedOmregning: Int? = null
+        var delytelser: List<Delytelse> = emptyList()
     @JsonIgnore
     fun isGradert() = utg < 100
 

@@ -61,16 +61,18 @@ val defaultSimuleringsperiode
     get() = Simuleringsperiode(
         datoFom = defaultDatoFom,
         utg = 0,
-        stillingsprosentOffentlig = 0,
-        poengArTom1991 = 0,
-        poengArFom1992 = 0,
-        sluttpoengtall = 0.0,
-        anvendtTrygdetid = 0,
-        forholdstall = 0.0,
-        delingstall = 0.0,
-        uforegradVedOmregning = 0,
-        delytelser = listOf(defaultDelytelse)
+        stillingsprosentOffentlig = 0
     )
+        .apply {
+            poengArTom1991 = 0
+            poengArFom1992 = 0
+            sluttpoengtall = 0.0
+            anvendtTrygdetid = 0
+            forholdstall = 0.0
+            delingstall = 0.0
+            uforegradVedOmregning = 0
+            delytelser = listOf(defaultDelytelse)
+        }
 
 val defaultSimulertAFPPrivat
     get() = SimulertAFPPrivat(afpOpptjeningTotalbelop = 0, kompensasjonstillegg = 0.0)
@@ -167,7 +169,7 @@ const val defaultInntektJson = """{"datoFom":"$defaultFomDateString","inntekt":0
 const val defaultPensjonsbeholdningsperiodeJson =
     """{"datoFom":"$defaultFomDateString","pensjonsbeholdning":0,"garantipensjonsbeholdning":0,"garantitilleggsbeholdning":0}"""
 const val defaultSimulerPensjonRequestJson =
-    """{"fnr":"$defaultFNRString","sivilstandkode":"GIFT","sprak":"bogus","simuleringsperioder":[$defaultSimuleringsperiodeJson],"simulertAFPOffentlig":0,"simulertAFPPrivat":$defaultSimulertAFPPrivatJson,"pensjonsbeholdningsperioder":[$defaultPensjonsbeholdningsperiodeJson],"inntekter":[$defaultInntektJson]}"""
+    """{"fnr":"$defaultFNRString","fodselsdato":"1958-10-01","sivilstandkode":"GIFT","sprak":"bogus","simuleringsperioder":[$defaultSimuleringsperiodeJson],"simulertAFPOffentlig":null,"simulertAFPPrivat":$defaultSimulertAFPPrivatJson,"pensjonsbeholdningsperioder":[$defaultPensjonsbeholdningsperiodeJson],"inntekter":[$defaultInntektJson]}"""
 const val defaultSimuleringsdataJson =
     """{"poengArTom1991":0,"poengArFom1992":0,"sluttpoengtall":0.0,"anvendtTrygdetid":0,"basisgp":0.0,"basistp":0.0,"basispt":0.0,"forholdstall_uttak":0.0,"skjermingstillegg":0.0,"uforegradVedOmregning":0}"""
 const val defaultSimulertAP2011Json =
