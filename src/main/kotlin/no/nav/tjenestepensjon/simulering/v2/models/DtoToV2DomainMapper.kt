@@ -44,7 +44,7 @@ object DtoToV2DomainMapper {
         SimulertAFPPrivat(afpOpptjeningTotalbelop, kompensasjonstillegg)
 
     private fun PensjonsbeholdningsperiodeDto.toPensjonsbeholdningsperiode() = Pensjonsbeholdningsperiode(
-        datoFom = LocalDate.from(datoFom.toInstant().atZone(ZoneId.systemDefault())),
+        datoFom = datoFom.convertToLocalDate(),
         pensjonsbeholdning = this.pensjonsbeholdning.toInt(),
         garantipensjonsbeholdning = this.garantipensjonsbeholdning.toInt(),
         garantitilleggsbeholdning = this.garantitilleggsbeholdning.toInt(),
