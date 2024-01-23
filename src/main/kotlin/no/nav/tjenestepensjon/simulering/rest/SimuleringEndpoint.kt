@@ -54,7 +54,8 @@ class SimuleringEndpoint(
 
     @PostMapping("/simulering")
     fun simuler(
-        @RequestBody body: SimulerOffentligTjenestepensjonRequest, @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
+        @RequestBody body: SimulerOffentligTjenestepensjonRequest,
+        @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
     ): ResponseEntity<Any> {
         addHeaderToRequestContext(NAV_CALL_ID, navCallId)
         log.info("Processing nav-call-id: ${getHeaderFromRequestContext(NAV_CALL_ID)}")
@@ -63,7 +64,11 @@ class SimuleringEndpoint(
 
         return try {
             val fnr = FNR(body.fnr)
-            val tpOrdningAndLeverandorMap = tpClient.getTpOrdningerForPerson(fnr).let(::getTpLeverandorer)
+            val tpOrdningAndLeverandorMap = tpClient.findForhold(fnr)
+                .mapNotNull { forhold ->
+                    tpClient.findTssId(forhold.ordning)?.let { TPOrdning(tpId = forhold.ordning, tssId = it) }
+                }
+                .let(::getTpLeverandorer)
             val stillingsprosentResponse =
                 stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
             val tpOrdning =
@@ -144,12 +149,14 @@ class SimuleringEndpoint(
     fun getHeaderFromRequestContext(key: String) =
         currentRequestAttributes().getAttribute(key, SCOPE_REQUEST)?.toString()
 
-    private fun getTpLeverandorer(tpOrdningList: List<TPOrdning>) =
-        asyncExecutor.executeAsync(tpOrdningList.associateWith { tpOrdning ->
+    private fun getTpLeverandorer(tpOrdningList: List<TPOrdning>): MutableMap<TPOrdning, TpLeverandor> {
+        if (tpOrdningList.isEmpty()) throw LeveradoerNotFoundException("TSSnr not found for any tpOrdning.")
+        return asyncExecutor.executeAsync(tpOrdningList.associateWith { tpOrdning ->
             FindTpLeverandorCallable(tpOrdning, tpClient, tpLeverandorList, metrics)
         }).resultMap.apply {
             if (isEmpty()) throw LeveradoerNotFoundException("No Tp-leverandoer found for person.")
         }
+    }
 
     companion object {
         const val NAV_CALL_ID = "nav-call-id"
