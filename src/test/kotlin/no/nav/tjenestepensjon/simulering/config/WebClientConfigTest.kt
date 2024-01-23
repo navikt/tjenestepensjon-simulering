@@ -41,6 +41,6 @@ internal class WebClientConfigTest {
 
     @Test
     fun `Should throw exception if read timeout exceeded`() {
-        assertThrows<RuntimeException> { tpClient.findTpLeverandor(TPOrdning(defaultTssid, defaultTpid)) }
+        assertThrows<RuntimeException> { tpClient.findTpLeverandorName(TPOrdning(defaultTssid, defaultTpid)) }
     }
 }

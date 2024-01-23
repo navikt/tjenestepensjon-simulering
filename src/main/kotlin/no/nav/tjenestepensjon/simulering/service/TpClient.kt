@@ -2,6 +2,7 @@ package no.nav.tjenestepensjon.simulering.service
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
@@ -29,7 +30,7 @@ class TpClient(
     private val aadClient: AADClient,
     private val jsonMapper: JsonMapper,
     @Value("\${tp.url}") private var tpUrl: String,
-    @Value("\${tp.scope}") private val tpScope: String
+    @Value("\${tp.scope}") private val tpScope: String,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -73,7 +74,7 @@ class TpClient(
     }
 
     @Cacheable(TP_ORDNING_LEVERANDOR_CACHE)
-    fun findTpLeverandor(tpOrdning: TPOrdning): String? =
+    fun findTpLeverandorName(tpOrdning: TPOrdning): String? =
         webClient.get().uri("$tpUrl/api/tpconfig/tpleverandoer/${tpOrdning.tpId}").exchangeToMono {
             when (it.statusCode().value()) {
                 200 -> it.bodyToMono<String>()

@@ -146,7 +146,7 @@ class SimuleringEndpoint(
 
     private fun getTpLeverandorer(tpOrdningList: List<TPOrdning>) =
         asyncExecutor.executeAsync(tpOrdningList.associateWith { tpOrdning ->
-            FindTpLeverandorCallable(tpOrdning, tpClient, tpLeverandorList)
+            FindTpLeverandorCallable(tpOrdning, tpClient, tpLeverandorList, metrics)
         }).resultMap.apply {
             if (isEmpty()) throw LeveradoerNotFoundException("No Tp-leverandoer found for person.")
         }

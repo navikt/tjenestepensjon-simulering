@@ -73,6 +73,10 @@ class AppMetrics(
         getCounter(prefix, metric)!!.increment()
     }
 
+    fun incrementCounterWithTag(metric: String, tagName: String) {
+        meterRegistry.counter("${APP_NAME}_${metric}", "tagname", tagName).increment()
+    }
+
     fun incrementRestCounter(tpLeverandorName: String, status: String) {
         restMetrics.getOrPut(tpLeverandorName) {
             Counter.builder("${APP_NAME}_rest_request")
@@ -123,6 +127,7 @@ class AppMetrics(
         const val TP_TOTAL_SIMULERING_CALLS = APP_NAME + "_tp_simulering_calls_"
         const val TP_TOTAL_SIMULERING_TIME = APP_NAME + "_tp_simulering_time_"
         const val TP_LATEST_SIMULERING_TIME = APP_NAME + "_tp_simulering_time_latest_"
+        const val TP_REQUESTED_LEVERANDOR = APP_NAME + "_tp_requested_leverandor"
         const val APP_TOTAL_STILLINGSPROSENT_OK = APP_NAME + "_stillingsprosent_ok"
         const val APP_TOTAL_STILLINGSPROSENT_ERROR = APP_NAME + "_stillingsprosent_error"
     }
