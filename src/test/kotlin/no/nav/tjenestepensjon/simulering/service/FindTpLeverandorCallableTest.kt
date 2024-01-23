@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.service
 
+import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
@@ -16,14 +17,16 @@ internal class FindTpLeverandorCallableTest {
 
     @Mock
     private lateinit var tpClient: TpClient
+    @Mock
+    private lateinit var appMetrics: AppMetrics
 
     private val tpOrdning = TPOrdning("80001234", "1234")
     private val tpLeverandorMap = listOf(TpLeverandor("tpLeverandorName", SOAP, "simulerUrl", "stillingUrl"))
 
     @Test
     fun `Should return mapped leverandor`() {
-        `when`(tpClient.findTpLeverandor(tpOrdning)).thenReturn("tpLeverandorName")
-        FindTpLeverandorCallable(tpOrdning, tpClient, tpLeverandorMap).call().apply {
+        `when`(tpClient.findTpLeverandorName(tpOrdning)).thenReturn("tpLeverandorName")
+        FindTpLeverandorCallable(tpOrdning, tpClient, tpLeverandorMap, appMetrics).call().apply {
             assertEquals("tpLeverandorName", name)
             assertEquals(SOAP, impl)
             assertEquals("simulerUrl", simuleringUrl)
