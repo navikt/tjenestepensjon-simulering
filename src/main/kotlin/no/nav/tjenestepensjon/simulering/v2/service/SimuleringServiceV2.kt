@@ -11,6 +11,7 @@ import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjen
 import no.nav.tjenestepensjon.simulering.v2.rest.RestClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.WebClientResponseException
 
 @Service
 class SimuleringServiceV2(
@@ -28,8 +29,15 @@ class SimuleringServiceV2(
 
         request.tpForholdListe = buildTpForhold(opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap)
         request.sisteTpnr = tpOrdning.tpId
-        log.debug("Populated request: ${SimuleringEndpoint.filterFnr(request.toString())}")
-        return restClient.getResponse(request = request, tpOrdning = tpOrdning, tpLeverandor = tpLeverandor)
+        val requestWithFilteredFnr = SimuleringEndpoint.filterFnr(request.toString())
+        log.debug("Populated request: $requestWithFilteredFnr")
+        return try{
+            restClient.getResponse(request = request, tpOrdning = tpOrdning, tpLeverandor = tpLeverandor)
+        }
+        catch (e: WebClientResponseException){
+            log.error("Error <${e.responseBodyAsString}> while calling ${tpLeverandor.name} with request: $requestWithFilteredFnr", e)
+            throw e
+        }
     }
 
     private fun buildTpForhold(tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap) =
