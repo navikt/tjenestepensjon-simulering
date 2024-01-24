@@ -9,6 +9,7 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
+import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTjenestepensjonException
 import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
@@ -28,8 +29,11 @@ import no.nav.tjenestepensjon.simulering.v2.models.DtoToV2DomainMapper.toSimuler
 import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.OK
+import org.springframework.http.HttpStatusCode
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -107,6 +111,10 @@ class SimuleringEndpoint(
         } catch (e: LeveradoerNotFoundException) {
             log.warn("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No supported TP-Ordning found.""")
             ResponseEntity.notFound().build()
+        }
+        catch (e: BrukerKvalifisererIkkeTilTjenestepensjonException){
+            log.warn("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Bruker kvalifiserer ikke til tjenestepensjon. ${e.message}""")
+            ResponseEntity.status(HttpStatus.CONFLICT).body(e.message ?: "Bruker kvalifiserer ikke til tjenestepensjon")
         } catch (e: Throwable) {
             when (e) {
                 is ConnectToIdPortenException -> "Unable to to connect with idPorten." to INTERNAL_SERVER_ERROR
