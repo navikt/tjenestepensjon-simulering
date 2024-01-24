@@ -73,6 +73,10 @@ class AppMetrics(
         getCounter(prefix, metric)!!.increment()
     }
 
+    fun incrementCounter(metric: String) {
+        meterRegistry.counter(metric).increment()
+    }
+
     fun incrementCounterWithTag(metric: String, tagName: String) {
         meterRegistry.counter("${APP_NAME}_${metric}", "tagname", tagName).increment()
     }
@@ -124,6 +128,8 @@ class AppMetrics(
         const val APP_TOTAL_SIMULERING_UFUL = APP_NAME + "_app_simulering_ufullstendig"
         const val APP_TOTAL_SIMULERING_FEIL = APP_NAME + "_app_simulering_feil"
         const val APP_TOTAL_SIMULERING_MANGEL = APP_NAME + "_app_simulering_mangel"
+        const val APP_TOTAL_SIMULERING_BRUKER_KVALIFISERER_IKKE = APP_NAME + "_app_simulering_kvalifiserer_ikke"
+        const val APP_TOTAL_SIMULERING_TP_ORDNING_STOTTES_IKKE = APP_NAME + "_app_simulering_tp_ordning_stottes_ikke"
         const val TP_TOTAL_SIMULERING_CALLS = APP_NAME + "_tp_simulering_calls_"
         const val TP_TOTAL_SIMULERING_TIME = APP_NAME + "_tp_simulering_time_"
         const val TP_LATEST_SIMULERING_TIME = APP_NAME + "_tp_simulering_time_latest_"
