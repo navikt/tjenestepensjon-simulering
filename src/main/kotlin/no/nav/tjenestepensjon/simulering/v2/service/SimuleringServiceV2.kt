@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2.service
 
+import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTjenestepensjonException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.rest.SimuleringEndpoint
@@ -11,6 +12,7 @@ import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjen
 import no.nav.tjenestepensjon.simulering.v2.rest.RestClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 import org.springframework.web.reactive.function.client.WebClientResponseException
 
 @Service
@@ -35,7 +37,16 @@ class SimuleringServiceV2(
             restClient.getResponse(request = request, tpOrdning = tpOrdning, tpLeverandor = tpLeverandor)
         }
         catch (e: WebClientResponseException){
-            log.error("Error <${e.responseBodyAsString}> while calling ${tpLeverandor.name} with request: $requestWithFilteredFnr", e)
+            val responseBody = e.responseBodyAsString.let { StringUtils.replace(it, "Ã¥", "å") }
+                .let { StringUtils.replace(it, "Ã\u0083Â¥", "å") }
+                .let { StringUtils.replace(it, "Ã¦", "æ") }
+                .let { StringUtils.replace(it, "Ã¸", "ø") }
+                .let { StringUtils.replace(it, "Ã\u0083Â¸", "ø") }
+
+            log.error("Error <$responseBody> while calling ${tpLeverandor.name} with request: $requestWithFilteredFnr", e)
+            if (responseBody.contains("Validation problem")){
+                throw BrukerKvalifisererIkkeTilTjenestepensjonException(responseBody)
+            }
             throw e
         }
     }
