@@ -39,3 +39,10 @@ sts:
 tp:
   url: http://localhost:8080
   scope: api://bogus
+afp:
+  beholdning:
+    url: http://localhost:8080
+    scope: api://bogus
+pen:
+    url: http://localhost:8080
+    scope: api://bogus
