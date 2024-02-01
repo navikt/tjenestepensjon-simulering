@@ -72,9 +72,9 @@ spec:
     - name: afp_beholdning_scope
       value: api://dev-gcp.pensjonopptjening.pensjon-opptjening-afp-api/.default
     - name: pen_url
-      value: https://pensjon-pen-q1.nais.preprod.local/pen/springapi
+      value: https://pensjon-pen-q2.nais.preprod.local/pen/springapi
     - name: pen_scope
-      value: api://dev-fss.pensjon-q1.pensjon-pen-q1/.default
+      value: api://dev-fss.pensjon-q2.pensjon-pen-q2/.default
   prometheus:
     enabled: true
     path: actuator/prometheus
