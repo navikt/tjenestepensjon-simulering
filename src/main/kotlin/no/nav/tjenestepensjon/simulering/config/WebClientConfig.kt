@@ -28,10 +28,9 @@ class WebClientConfig {
     fun afpBeholdningWebClient(
         @Value("\${afp.beholdning.url}") baseUrl: String,
         @Value("\${afp.beholdning.scope}") scope: String,
-        webClientBuilder: WebClient.Builder,
         httpClient: HttpClient,
         adClient: AADClient
-    ): WebClient = webClientBuilder
+    ): WebClient = WebClient.builder()
         .baseUrl(baseUrl)
         .clientConnector(ReactorClientHttpConnector(httpClient))
         .filter { request, next ->
