@@ -27,16 +27,17 @@ class WebClientConfig {
     @Bean
     fun afpBeholdningWebClient(
         @Value("\${afp.beholdning.url}") baseUrl: String,
-        @Value("\${afp.beholdning.scope}") scope: String,
+        @Value("\${afp.beholdning.scope}") afpScope: String,
+        builder: WebClient.Builder,
         httpClient: HttpClient,
         adClient: AADClient
-    ): WebClient = WebClient.builder()
+    ): WebClient = builder
         .baseUrl(baseUrl)
         .clientConnector(ReactorClientHttpConnector(httpClient))
         .filter { request, next ->
             next.exchange(
                 ClientRequest.from(request)
-                    .header(HttpHeaders.AUTHORIZATION, adClient.getToken(scope)) //TODO cache token
+                    .header(HttpHeaders.AUTHORIZATION, adClient.getToken(afpScope))
                     .build()
             )
         }
@@ -46,15 +47,16 @@ class WebClientConfig {
     fun penWebClient(
         @Value("\${pen.url}") baseUrl: String,
         @Value("\${pen.scope}") scope: String,
+        builder: WebClient.Builder,
         httpClient: HttpClient,
-        adClient: AADClient
-    ): WebClient = WebClient.builder()
+        adClient: AADClient,
+    ): WebClient = builder
         .baseUrl(baseUrl)
         .clientConnector(ReactorClientHttpConnector(httpClient))
         .filter { request, next ->
             next.exchange(
                 ClientRequest.from(request)
-                    .header(HttpHeaders.AUTHORIZATION, adClient.getToken(scope)) //TODO cache token
+                    .header(HttpHeaders.AUTHORIZATION, adClient.getToken(scope))
                     .build()
             )
         }
