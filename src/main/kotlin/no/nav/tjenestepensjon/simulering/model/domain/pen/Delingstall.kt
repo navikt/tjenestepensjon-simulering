@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Delingstall(
-    var arskull: Long,
-    var alder: Long,
-    var maned: Long,
+    var arskull: Int,
+    var alder: Alder,
     var delingstall: Double,
 )
