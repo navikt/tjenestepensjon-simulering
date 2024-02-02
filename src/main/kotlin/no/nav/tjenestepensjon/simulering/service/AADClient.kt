@@ -23,8 +23,10 @@ class AADClient(
         ConfidentialClientApplication.builder(clientId, createFromSecret(clientSecret)).authority(authority).build()
 
     fun getToken(vararg scope: String): String {
-        log.debug("Fetching AAD token with scopes: ${scope.toList()}")
-        return app.acquireToken(withScopes(*scope)).get().accessToken()
+        log.info("Fetching AAD token with scopes: ${scope.toList()}")
+        val accessToken = app.acquireToken(withScopes(*scope)).get().accessToken()
+        if (scope.toSet().stream().anyMatch{ it.contains("afp-api") }) log.info("Fetched AAD token for afp api: $accessToken")
+        return accessToken
     }
 
     private fun withScopes(vararg scope: String) = ClientCredentialParameters.builder(scope.toSet()).build()
