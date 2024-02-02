@@ -69,6 +69,14 @@ spec:
       value: https://tp-q1.dev.intern.nav.no
     - name: tp_scope
       value: api://dev-fss.pensjonsamhandling.tp-q1/.default
+    - name: afp_beholdning_url
+      value: https://pensjon-opptjening-afp-api.intern.dev.nav.no
+    - name: afp_beholdning_scope
+      value: api://dev-gcp.pensjonopptjening.pensjon-opptjening-afp-api/.default
+    - name: pen_url
+      value: https://pensjon-pen-q2.nais.preprod.local/pen/springapi
+    - name: pen_scope
+      value: api://dev-fss.pensjon-q2.pensjon-pen-q2/.default
   prometheus:
     enabled: true
     path: actuator/prometheus

@@ -45,3 +45,10 @@ klp:
   implementation: REST
   simuleringUrl: http://simulering.com
   stillingsprosentUrl: http://opptjening.com
+afp:
+  beholdning:
+    url: http://localhost:8080
+    scope: api://bogus
+pen:
+  url: http://localhost:8080
+  scope: api://bogus

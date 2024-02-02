@@ -69,7 +69,7 @@ class SimuleringEndpoint(
         return try {
             val fnr = FNR(body.fnr)
             val tpOrdningAndLeverandorMap = tpClient.findForhold(fnr)
-                .mapNotNull { forhold -> tpClient.findTssId(forhold.ordning)?.let { TPOrdning(tpId = forhold.ordning, tssId = it) } }
+                .mapNotNull { forhold -> tpClient.findTssId(forhold.ordning)?.let { TPOrdning(tpId = forhold.ordning, tssId = it) } }//tpClient.findTpLeverandorName(tpOrdning)
                 .let(::getTpLeverandorer)
             val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
             val tpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
