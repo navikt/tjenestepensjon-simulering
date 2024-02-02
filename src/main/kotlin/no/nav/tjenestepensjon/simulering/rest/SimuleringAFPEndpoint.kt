@@ -8,13 +8,14 @@ import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v3.afp.AFPOffentligLivsvarigSimuleringService
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffentligLivsvarigSimuleringService, val tpClient: TpClient) {
 
     @PostMapping("/simulering/afp-offentlig-livsvarig")
-    fun simulerAfpOffentligLivsvarig(request: SimulerAFPOffentligLivsvarigRequest): SimulerAFPOffentligLivsvarigResponse {
+    fun simulerAfpOffentligLivsvarig(@RequestBody request: SimulerAFPOffentligLivsvarigRequest): SimulerAFPOffentligLivsvarigResponse {
 
         LOG.info("Simulerer AFP Offentlig Livsvarig for request: $request")
 
