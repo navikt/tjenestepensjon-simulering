@@ -23,6 +23,8 @@ spec:
           namespace: pensjon-q2
         - application: pensjon-pen-q5
           namespace: pensjon-q5
+        - application: pensjon-testdata-server-q2
+          namespace: pensjontestdata
     outbound:
       rules:
         - application: tp-q1
