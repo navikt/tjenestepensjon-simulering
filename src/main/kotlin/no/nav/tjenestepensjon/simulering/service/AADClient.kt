@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class AADClient(
-    @Value("\${AZURE_APP_CLIENT_ID}") clientId: String,
-    @Value("\${AZURE_APP_CLIENT_SECRET}") clientSecret: String,
-    @Value("\${AZURE_APP_WELL_KNOWN_URL}") authority: String
+    @Value("\${azure.app.client.id}") clientId: String,
+    @Value("\${azure.app.client.secret}") clientSecret: String,
+    @Value("\${azure.app.well.known.url}") authority: String
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 

@@ -37,7 +37,7 @@ class WebClientConfig {
         .filter { request, next ->
             next.exchange(
                 ClientRequest.from(request)
-                    .header(HttpHeaders.AUTHORIZATION, adClient.getToken(afpScope))
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + adClient.getToken(afpScope))
                     .build()
             )
         }
@@ -56,7 +56,7 @@ class WebClientConfig {
         .filter { request, next ->
             next.exchange(
                 ClientRequest.from(request)
-                    .header(HttpHeaders.AUTHORIZATION, adClient.getToken(scope))
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + adClient.getToken(scope))
                     .build()
             )
         }
