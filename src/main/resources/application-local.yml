@@ -5,12 +5,8 @@ azure:
   app:
     client:
       id: 2fedaa48-77ae-46ab-9ab2-83b3951b8c05
-    well:
-      known:
-        url: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration
-  openid:
-    config:
-      issuer: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0
+    well-known-url: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration
+  openid-config-issuer: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0
 sts:
   url: https://security-token-service.dev.adeo.no
 tp:
