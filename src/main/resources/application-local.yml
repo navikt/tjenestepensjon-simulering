@@ -17,7 +17,7 @@ afp:
     url: https://pensjon-opptjening-afp-api.intern.dev.nav.no
     scope: api://dev-gcp.pensjonopptjening.pensjon-opptjening-afp-api/.default
 pen:
-  url: https://pensjon-pen-q2.dev.adeo.no
+  url: https://pensjon-pen-q2.dev.adeo.no/pen/springapi
   scope: api://dev-fss.pensjon-q2.pensjon-pen-q2/.default
 logging:
   level:
