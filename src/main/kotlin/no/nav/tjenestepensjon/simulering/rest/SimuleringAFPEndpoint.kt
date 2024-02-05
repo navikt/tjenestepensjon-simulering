@@ -18,6 +18,7 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
     fun simulerAfpOffentligLivsvarig(@RequestBody request: SimulerAFPOffentligLivsvarigRequest): SimulerAFPOffentligLivsvarigResponse {
 
         LOG.info("Simulerer AFP Offentlig Livsvarig for request: $request")
+        validateRequest(request)
 
         return tpClient.findForhold(FNR(request.fnr))
             .map { forhold ->
@@ -29,6 +30,16 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
                 SimulerAFPOffentligLivsvarigResponse(request.fnr, afpOffentligLivsvarigSimuleringService.simuler(request), it)
             } ?: SimulerAFPOffentligLivsvarigResponse(request.fnr, emptyList(), null)
     }
+
+    private fun validateRequest(request: SimulerAFPOffentligLivsvarigRequest) {
+        if (request.fodselsdato.year < 1963) {
+            throw IllegalArgumentException("Fødselsdato før 1963 er ikke støttet. Fikk ${request.fodselsdato.year}")
+        }
+        if (request.fom.year - request.fodselsdato.year < 62) {
+            throw IllegalArgumentException("Fom dato er for tidlig i forhold til alder. Fikk ${request.fom.year} og fødselsdato ${request.fodselsdato.year}")
+        }
+    }
+
 
     companion object {
         @JvmStatic
