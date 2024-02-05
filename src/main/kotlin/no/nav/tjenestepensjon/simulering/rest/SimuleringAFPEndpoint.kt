@@ -36,7 +36,7 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
             throw IllegalArgumentException("Fødselsdato før 1963 er ikke støttet. Fikk ${request.fodselsdato.year}")
         }
         if (request.fom.year - request.fodselsdato.year < 62) {
-            throw IllegalArgumentException("Fom dato er for tidlig i forhold til alder. Fikk ${request.fom.year} og fødselsdato ${request.fodselsdato.year}")
+            throw IllegalArgumentException("Fom dato er for tidlig i forhold til alder. Fikk ${request.fom.year} og fødselsår ${request.fodselsdato.year}")
         }
     }
 

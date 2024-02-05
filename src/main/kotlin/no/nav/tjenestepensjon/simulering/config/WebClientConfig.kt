@@ -6,7 +6,6 @@ import no.nav.tjenestepensjon.simulering.service.AADClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpHeaders
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.WebClient
@@ -37,7 +36,7 @@ class WebClientConfig {
         .filter { request, next ->
             next.exchange(
                 ClientRequest.from(request)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + adClient.getToken(afpScope))
+                    .headers { it.setBearerAuth(adClient.getToken(afpScope)) }
                     .build()
             )
         }
@@ -56,7 +55,7 @@ class WebClientConfig {
         .filter { request, next ->
             next.exchange(
                 ClientRequest.from(request)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + adClient.getToken(scope))
+                    .headers { it.setBearerAuth(adClient.getToken(scope)) }
                     .build()
             )
         }

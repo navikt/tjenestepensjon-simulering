@@ -17,12 +17,7 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
     private val hoyesteAlderForDelingstall = Alder(70, 0)
 
     fun simuler(request: SimulerAFPOffentligLivsvarigRequest): List<AFPOffentligLivsvarigYtelse> {
-        val alder: Alder =
-            if (request.fom.year - request.fodselsdato.year >= hoyesteAlderForDelingstall.aar) {
-                hoyesteAlderForDelingstall
-            } else {
-                Alder(request.fom.year - request.fodselsdato.year, request.fom.monthValue)
-            }
+        val alder: Alder = bestemAlderForDelingstall(request)
         log.info("Henter delingstall for fødselsår: ${request.fodselsdato.year} og alder $alder")
         val dt = penClient.hentDelingstall(request.fodselsdato.year, alder)
 
@@ -44,5 +39,13 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
         return afpGrunnlagBeholdninger.map {
             AFPOffentligLivsvarigYtelse(it.fom.year, OffentligAFPYtelseBeregner.beregn(it.beholdning, delingstall), it.fom, it.tom)
         }
+    }
+
+    private fun bestemAlderForDelingstall(request: SimulerAFPOffentligLivsvarigRequest): Alder {
+        return if (request.fom.year - request.fodselsdato.year >= hoyesteAlderForDelingstall.aar) {
+                hoyesteAlderForDelingstall
+            } else {
+                Alder(request.fom.year - request.fodselsdato.year, request.fom.monthValue)
+            }
     }
 }
