@@ -1,0 +1,31 @@
+simulering:
+  security:
+    issuers: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0
+azure:
+  app:
+    client:
+      id: 2fedaa48-77ae-46ab-9ab2-83b3951b8c05
+    well-known-url: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration
+  openid-config-issuer: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0
+sts:
+  url: https://security-token-service.dev.adeo.no
+tp:
+  url: https://tp-q2.dev.intern.nav.no
+  scope: api://dev-fss.pensjonsamhandling.tp-q2/.default
+afp:
+  beholdning:
+    url: https://pensjon-opptjening-afp-api.intern.dev.nav.no
+    scope: api://dev-gcp.pensjonopptjening.pensjon-opptjening-afp-api/.default
+pen:
+  url: https://pensjon-pen-q2.dev.adeo.no
+  scope: api://dev-fss.pensjon-q2.pensjon-pen-q2/.default
+logging:
+  level:
+    no:
+      nav:
+        tjenestepensjon:
+          simulering: DEBUG
+    reactor:
+      netty:
+        http:
+          client: DEBUG
