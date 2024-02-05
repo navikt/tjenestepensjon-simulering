@@ -3,7 +3,7 @@ logging.level:
 
 simulering:
   security:
-    issuers: ${AZURE_OPENID_CONFIG_ISSUER},https://security-token-service.nais.adeo.no,https://navnob2c.b2clogin.com/8b7dfc8b-b52e-4741-bde4-d83ea366f94f/v2.0/
+    issuers: ${azure.openid.config.issuer},https://security-token-service.nais.adeo.no,https://navnob2c.b2clogin.com/8b7dfc8b-b52e-4741-bde4-d83ea366f94f/v2.0/
 spk:
   name: SPK
   implementation: REST

@@ -34,13 +34,13 @@ SERVICE_USER_PASSWORD: password
 azure:
   app:
     client:
-      id: bogus
+      id: ${AZURE_APP_CLIENT_ID:bogus}
     well:
       known:
-        url: bogus
+        url: ${AZURE_APP_WELL_KNOWN_URL:https://localhost:8080/bogus}
   openid:
     config:
-      issuer: https://localhost:8080/bogus
+      issuer: ${AZURE_OPENID_CONFIG_ISSUER:https://localhost:8080/bogus}
 sts:
   url: http://localhost:8080
 tp:
