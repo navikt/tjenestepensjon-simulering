@@ -21,12 +21,12 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
         log.info("Henter delingstall for fødselsår: ${request.fodselsdato.year} og alder $alder")
         val dt = penClient.hentDelingstall(request.fodselsdato.year, alder)
 
-        val requestToAFPBeholdninger = SimulerAFPBeholdningGrunnlagRequest(request.fnr, request.fom, request.fremtidigeInntekter.map { InntektPeriode(it.fom.year, it.belop) })
+        val requestToAFPBeholdninger = SimulerAFPBeholdningGrunnlagRequest(request.fnr, request.fom, request.fremtidigeInntekter.map { InntektPeriode(it.fom, it.belop) })
         log.info("Henter AFP beholdninger for request: $requestToAFPBeholdninger") //TODO fjern fnr før produksjon
         val afpBeholdningsgrunnlag = afpBeholdningClient.simulerAFPBeholdningGrunnlag(requestToAFPBeholdninger)
 
         log.info("Beregner AFP Offentlig Livsvarig for request: $request") //TODO fjern fnr før produksjon
-        val response = beregnAfpOffentligLivsvarigYtelser(dt.delingstall, afpBeholdningsgrunnlag.afpGrunnlagBeholdninger)
+        val response = beregnAfpOffentligLivsvarigYtelser(dt.delingstall, afpBeholdningsgrunnlag.pensjonsBeholdningsPeriodeListe)
 
         log.info("Simulering av AFP Offentlig Livsvarig for request: $request ga response: $response") //TODO fjern fnr før produksjon
         return response
@@ -37,7 +37,7 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
         afpGrunnlagBeholdninger: List<AFPGrunnlagBeholdningPeriode>
     ): List<AFPOffentligLivsvarigYtelse> {
         return afpGrunnlagBeholdninger.map {
-            AFPOffentligLivsvarigYtelse(it.fom.year, OffentligAFPYtelseBeregner.beregn(it.beholdning, delingstall), it.fom, it.tom)
+            AFPOffentligLivsvarigYtelse(it.fom.year, OffentligAFPYtelseBeregner.beregn(it.pensjonsBeholdning, delingstall), it.fom)
         }
     }
 
