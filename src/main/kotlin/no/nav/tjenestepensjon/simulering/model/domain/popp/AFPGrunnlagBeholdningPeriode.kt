@@ -5,4 +5,4 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class AFPGrunnlagBeholdningPeriode(val beholdning: Int,  @JsonProperty("fraOgMedDato") val fom: LocalDate, @JsonProperty("tilOgMedDato") val tom: LocalDate?)
+data class AFPGrunnlagBeholdningPeriode(val pensjonsBeholdning: Int, @JsonProperty("fraOgMedDato") val fom: LocalDate)
