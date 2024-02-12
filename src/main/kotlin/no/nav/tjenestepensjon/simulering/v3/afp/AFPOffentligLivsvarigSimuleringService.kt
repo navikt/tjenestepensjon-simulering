@@ -10,6 +10,7 @@ import no.nav.tjenestepensjon.simulering.service.AFPBeholdningClient
 import no.nav.tjenestepensjon.simulering.service.PenClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdningClient, val penClient: PenClient) {
@@ -21,7 +22,7 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
         log.info("Henter delingstall for fødselsår: ${request.fodselsdato.year} og alder $alder")
         val dt = penClient.hentDelingstall(request.fodselsdato.year, alder)
 
-        val requestToAFPBeholdninger = SimulerAFPBeholdningGrunnlagRequest(request.fnr, request.fom, request.fremtidigeInntekter.map { InntektPeriode(it.fom, it.belop) })
+        val requestToAFPBeholdninger = SimulerAFPBeholdningGrunnlagRequest(request.fnr, LocalDate.of(request.fodselsdato.year + 62, 1, 1), request.fremtidigeInntekter.map { InntektPeriode(it.fom, it.belop) })
         log.info("Henter AFP beholdninger for request: $requestToAFPBeholdninger") //TODO fjern fnr før produksjon
         val afpBeholdningsgrunnlag = afpBeholdningClient.simulerAFPBeholdningGrunnlag(requestToAFPBeholdninger)
 
