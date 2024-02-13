@@ -16,13 +16,14 @@ import java.time.LocalDate
 class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdningClient, val penClient: PenClient) {
     private val log = LoggerFactory.getLogger(javaClass)
     private val hoyesteAlderForDelingstall = Alder(70, 0)
+    private val tidligstMuligUttaksalder = 62
 
     fun simuler(request: SimulerAFPOffentligLivsvarigRequest): List<AFPOffentligLivsvarigYtelse> {
         val alder: Alder = bestemAlderForDelingstall(request)
         log.info("Henter delingstall for fødselsår: ${request.fodselsdato.year} og alder $alder")
         val dt = penClient.hentDelingstall(request.fodselsdato.year, alder)
 
-        val requestToAFPBeholdninger = SimulerAFPBeholdningGrunnlagRequest(request.fnr, LocalDate.of(request.fodselsdato.year + 62, 1, 1), request.fremtidigeInntekter.map { InntektPeriode(it.fom, it.belop) })
+        val requestToAFPBeholdninger = SimulerAFPBeholdningGrunnlagRequest(request.fnr, LocalDate.of(request.fodselsdato.year + tidligstMuligUttaksalder, 1, 1), request.fremtidigeInntekter.map { InntektPeriode(it.fom, it.belop) })
         log.info("Henter AFP beholdninger for request: $requestToAFPBeholdninger") //TODO fjern fnr før produksjon
         val afpBeholdningsgrunnlag = afpBeholdningClient.simulerAFPBeholdningGrunnlag(requestToAFPBeholdninger)
 
