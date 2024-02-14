@@ -4,6 +4,7 @@ import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLivsvarigRequest
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLivsvarigResponse
+import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLivsvarigResponseUtvidetForTest
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v3.afp.AFPOffentligLivsvarigSimuleringService
 import org.slf4j.LoggerFactory
@@ -30,6 +31,25 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
                 SimulerAFPOffentligLivsvarigResponse(request.fnr, afpOffentligLivsvarigSimuleringService.simuler(request), it)
             } ?: SimulerAFPOffentligLivsvarigResponse(request.fnr, emptyList(), null)
     }
+
+    //TODO remove this method after testing
+    @PostMapping("/simulering/afp-offentlig-livsvarig-test")
+    fun simulerAfpOffentligLivsvarigTest(@RequestBody request: SimulerAFPOffentligLivsvarigRequest): SimulerAFPOffentligLivsvarigResponseUtvidetForTest {
+
+        LOG.info("Simulerer AFP Offentlig Livsvarig for request: $request")
+        validateRequest(request)
+
+        return tpClient.findForhold(FNR(request.fnr))
+            .map { forhold ->
+                tpClient.findTssId(forhold.ordning)
+                    ?.let { TPOrdning(tpId = forhold.ordning, tssId = it) }
+                    ?.let { tpClient.findTpLeverandorName(it) }
+            }.firstOrNull()
+            ?.let {
+                afpOffentligLivsvarigSimuleringService.simulerUtvidetTest(request)
+            } ?: SimulerAFPOffentligLivsvarigResponseUtvidetForTest(request.fnr, emptyList(), null, null)
+    }
+
 
     private fun validateRequest(request: SimulerAFPOffentligLivsvarigRequest) {
         if (request.fodselsdato.year < 1963) {
