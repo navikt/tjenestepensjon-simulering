@@ -70,7 +70,7 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
         return if (request.fom.year - request.fodselsdato.year >= hoyesteAlderForDelingstall.aar) {
                 hoyesteAlderForDelingstall
             } else {
-                Alder(request.fom.year - request.fodselsdato.year, request.fom.monthValue)
+                Alder(request.fom.year - request.fodselsdato.year, request.fom.monthValue - 1) //x år og 0..11 måneder gammel
             }
     }
 }
