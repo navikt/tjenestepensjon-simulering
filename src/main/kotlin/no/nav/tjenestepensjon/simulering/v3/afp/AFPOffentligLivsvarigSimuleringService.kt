@@ -33,17 +33,17 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
     //TODO remove this method after testing
     fun simulerUtvidetTest(request: SimulerAFPOffentligLivsvarigRequest): SimulerAFPOffentligLivsvarigResponseUtvidetForTest {
         val alder: Alder = bestemAlderForDelingstall(request)
-        log.info("Henter delingstall for fødselsår: ${request.fodselsdato.year} og alder $alder")
         val dt = penClient.hentDelingstall(request.fodselsdato.year, alder)
+        log.info("TEST Hentet delingstall for fødselsår: ${request.fodselsdato.year} og alder $alder og delingstall: $dt")
 
         val requestToAFPBeholdninger = SimulerAFPBeholdningGrunnlagRequest(request.fnr, request.fom, request.fremtidigeInntekter.map { InntektPeriode(it.fom, it.belop) })
-        log.info("Henter AFP beholdninger for request: $requestToAFPBeholdninger") //TODO fjern fnr før produksjon
+        log.info("TEST Henter AFP beholdninger for request: $requestToAFPBeholdninger") //TODO fjern fnr før produksjon
         val afpBeholdningsgrunnlag = afpBeholdningClient.simulerAFPBeholdningGrunnlag(requestToAFPBeholdninger)
 
-        log.info("Beregner AFP Offentlig Livsvarig for request: $request") //TODO fjern fnr før produksjon
+        log.info("TEST Beregner AFP Offentlig Livsvarig for request: $request") //TODO fjern fnr før produksjon
         val response = beregnAfpOffentligLivsvarigYtelserUtvidetTest(dt.delingstall, afpBeholdningsgrunnlag.pensjonsBeholdningsPeriodeListe)
 
-        log.info("Simulering av AFP Offentlig Livsvarig for request: $request ga response: $response") //TODO fjern fnr før produksjon
+        log.info("TEST Simulering av AFP Offentlig Livsvarig for request: $request ga response: $response") //TODO fjern fnr før produksjon
         return SimulerAFPOffentligLivsvarigResponseUtvidetForTest(request.fnr, response, "Leverandør", dt)
     }
 
@@ -51,6 +51,7 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
         delingstall: Double,
         afpGrunnlagBeholdninger: List<AFPGrunnlagBeholdningPeriode>
     ): List<AFPOffentligLivsvarigYtelseUtvidetTest> {
+        log.info("Beregner AFP Offentlig Livsvarig for request: $afpGrunnlagBeholdninger")
         return afpGrunnlagBeholdninger.map {
             AFPOffentligLivsvarigYtelseUtvidetTest(it.fom.year, OffentligAFPYtelseBeregner.beregn(it.pensjonsBeholdning, delingstall), it.fom, it.pensjonsBeholdning)
         }

@@ -36,7 +36,7 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
     @PostMapping("/simulering/afp-offentlig-livsvarig-test")
     fun simulerAfpOffentligLivsvarigTest(@RequestBody request: SimulerAFPOffentligLivsvarigRequest): SimulerAFPOffentligLivsvarigResponseUtvidetForTest {
 
-        LOG.info("Simulerer AFP Offentlig Livsvarig for request: $request")
+        LOG.info("TEST Simulerer AFP Offentlig Livsvarig for request: $request")
         validateRequest(request)
 
         return tpClient.findForhold(FNR(request.fnr))
@@ -46,7 +46,9 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
                     ?.let { tpClient.findTpLeverandorName(it) }
             }.firstOrNull()
             ?.let {
-                afpOffentligLivsvarigSimuleringService.simulerUtvidetTest(request)
+                afpOffentligLivsvarigSimuleringService.simulerUtvidetTest(request).apply {
+                    this.tpLeverandor = it
+                }
             } ?: SimulerAFPOffentligLivsvarigResponseUtvidetForTest(request.fnr, emptyList(), null, null)
     }
 
