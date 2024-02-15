@@ -33,7 +33,7 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
     }
 
     //TODO remove this method after testing
-    @PostMapping("/simulering/afp-offentlig-livsvarig-test")
+    @PostMapping("/simulering/afp-offentlig-livsvarig/test")
     fun simulerAfpOffentligLivsvarigTest(@RequestBody request: SimulerAFPOffentligLivsvarigRequest): SimulerAFPOffentligLivsvarigResponseUtvidetForTest {
 
         LOG.info("TEST Simulerer AFP Offentlig Livsvarig for request: $request")
