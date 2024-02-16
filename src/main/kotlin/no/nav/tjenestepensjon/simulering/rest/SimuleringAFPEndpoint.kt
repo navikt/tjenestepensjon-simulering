@@ -1,23 +1,24 @@
 package no.nav.tjenestepensjon.simulering.rest
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLivsvarigRequest
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLivsvarigResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v3.afp.AFPOffentligLivsvarigSimuleringService
-import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffentligLivsvarigSimuleringService, val tpClient: TpClient) {
+    private val logger = KotlinLogging.logger {}
 
     @PostMapping("/simulering/afp-offentlig-livsvarig")
     fun simulerAfpOffentligLivsvarig(@RequestBody request: SimulerAFPOffentligLivsvarigRequest): SimulerAFPOffentligLivsvarigResponse {
 
-        LOG.info("Simulerer AFP Offentlig Livsvarig for request: $request")
+        logger.info { "Simulerer AFP Offentlig Livsvarig for request: $request" }
         validateRequest(request)
 
         return tpClient.findForhold(FNR(request.fnr))
@@ -40,9 +41,4 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
         }
     }
 
-
-    companion object {
-        @JvmStatic
-        private val LOG = LoggerFactory.getLogger(AFPOffentligLivsvarigSimuleringService::class.java)
-    }
 }

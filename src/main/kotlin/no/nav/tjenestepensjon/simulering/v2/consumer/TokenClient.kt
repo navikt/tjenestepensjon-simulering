@@ -1,12 +1,12 @@
 package no.nav.tjenestepensjon.simulering.v2.consumer
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient.TokenType.OIDC
 import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient.TokenType.SAML
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -18,6 +18,7 @@ import java.net.URI
 
 @Service
 class TokenClient(private val webClient: WebClient) : TokenService {
+    private val log = KotlinLogging.logger {}
 
     @Autowired
     lateinit var maskinportenToken: MaskinportenToken
@@ -31,12 +32,11 @@ class TokenClient(private val webClient: WebClient) : TokenService {
     @Value("\${sts.url}")
     lateinit var stsUrl: String
 
-    fun pensjonsimuleringToken() : String {
-        return try{
+    fun pensjonsimuleringToken(): String {
+        return try {
             maskinportenToken.getToken()
-        }
-        catch (exc: Throwable){
-            LOG.warn("Error while retrieving token from provider: ${exc.message}")
+        } catch (exc: Throwable) {
+            log.warn { "Error while retrieving token from provider: ${exc.message}" }
             throw ConnectToMaskinPortenException(exc.message)
         }
     }
@@ -51,15 +51,15 @@ class TokenClient(private val webClient: WebClient) : TokenService {
 
     @get:Synchronized
     override val oidcAccessToken: Token
-        get() = oidcToken.also { LOG.info("Returning cached and valid oidc-token for user: $username") }
+        get() = oidcToken.also { log.info { "Returning cached and valid oidc-token for user: $username" } }
 
     @get:Synchronized
     override val samlAccessToken: Token
-        get() = samlToken.also { LOG.info("Returning cached and valid saml-token for user: $username") }
+        get() = samlToken.also { log.info { "Returning cached and valid saml-token for user: $username" } }
 
 
     private fun getTokenFromProvider(tokenType: TokenType): Token {
-        LOG.info("Getting new access-token for user: $username from: ${getUrlForType(tokenType)}")
+        log.info { "Getting new access-token for user: $username from: ${getUrlForType(tokenType)}" }
         return webClient.get().uri(getUrlForType(tokenType)).headers { it.setBasicAuth(username, password) }.retrieve()
             .onStatus({ httpStatusCode: HttpStatusCode -> httpStatusCode != HttpStatus.OK }) {
                 throw RuntimeException(
@@ -84,11 +84,5 @@ class TokenClient(private val webClient: WebClient) : TokenService {
 
     internal enum class TokenType {
         OIDC, SAML
-    }
-
-    companion object {
-        @JvmStatic
-        @Suppress("JAVA_CLASS_ON_COMPANION")
-        private val LOG = LoggerFactory.getLogger(javaClass.enclosingClass)
     }
 }

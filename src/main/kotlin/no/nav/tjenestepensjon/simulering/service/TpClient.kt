@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.service
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.tjenestepensjon.simulering.AppMetrics
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
@@ -11,7 +11,6 @@ import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.HateoasWrapper
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
@@ -32,7 +31,7 @@ class TpClient(
     @Value("\${tp.url}") private var tpUrl: String,
     @Value("\${tp.scope}") private val tpScope: String,
 ) {
-    private val log = LoggerFactory.getLogger(javaClass)
+    private val log = KotlinLogging.logger {}
 
     fun getTpOrdningerForPerson(fnr: FNR) = findForhold(fnr).mapNotNull { forhold ->
         findTssId(forhold.ordning)?.let { TPOrdning(tpId = forhold.ordning, tssId = it) }
@@ -53,11 +52,11 @@ class TpClient(
                             if (it.isBlank() || it == "{}") emptyList()
                             else jsonMapper.readValue<HateoasWrapper>(it).embedded.forholdDtoList
                         } catch (t: Throwable) {
-                            log.error("Failed to parse response from TP, with body: $it", t)
+                            log.error(t) { "Failed to parse response from TP, with body: $it" }
                             throw t
                         }
                     }.doOnComplete {
-                        log.info("Successfully fetched data.")
+                        log.info { "Successfully fetched data." }
                     }
 
                     404 -> Flux.empty()

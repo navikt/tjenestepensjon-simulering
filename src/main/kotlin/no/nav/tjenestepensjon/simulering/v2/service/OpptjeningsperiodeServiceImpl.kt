@@ -8,7 +8,6 @@ import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
 import no.nav.tjenestepensjon.simulering.v2.exceptions.DuplicateOpptjeningsperiodeEndDateException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.MissingOpptjeningsperiodeException
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
@@ -57,11 +56,5 @@ class OpptjeningsperiodeServiceImpl: OpptjeningsperiodeService {
                     stillingsuavhengigTilleggslonn = it.stillingsuavhengigTilleggslonn?.toIntOrNull()
             )
         }
-    }
-
-    companion object {
-        @JvmStatic
-        @Suppress("JAVA_CLASS_ON_COMPANION")
-        private val LOG = LoggerFactory.getLogger(javaClass.enclosingClass)
     }
 }

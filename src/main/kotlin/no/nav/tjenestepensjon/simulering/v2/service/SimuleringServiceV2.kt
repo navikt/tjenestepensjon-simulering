@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTjenestepensjonException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
@@ -10,7 +11,6 @@ import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.request.TpForhold
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v2.rest.RestClient
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -19,7 +19,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 class SimuleringServiceV2(
     private val restClient: RestClient, private val opptjeningsperiodeService: OpptjeningsperiodeService
 ) {
-    private val log = LoggerFactory.getLogger(javaClass)
+    private val log = KotlinLogging.logger {}
 
     fun simulerOffentligTjenestepensjon(
         request: SimulerPensjonRequestV2,
@@ -32,19 +32,18 @@ class SimuleringServiceV2(
         request.tpForholdListe = buildTpForhold(opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap)
         request.sisteTpnr = tpOrdning.tpId
         val requestWithFilteredFnr = SimuleringEndpoint.filterFnr(request.toString())
-        log.debug("Populated request: $requestWithFilteredFnr")
-        return try{
+        log.debug { "Populated request: $requestWithFilteredFnr" }
+        return try {
             restClient.getResponse(request = request, tpOrdning = tpOrdning, tpLeverandor = tpLeverandor)
-        }
-        catch (e: WebClientResponseException){
+        } catch (e: WebClientResponseException) {
             val responseBody = e.responseBodyAsString.let { StringUtils.replace(it, "Ã¥", "å") }
                 .let { StringUtils.replace(it, "Ã\u0083Â¥", "å") }
                 .let { StringUtils.replace(it, "Ã¦", "æ") }
                 .let { StringUtils.replace(it, "Ã¸", "ø") }
                 .let { StringUtils.replace(it, "Ã\u0083Â¸", "ø") }
 
-            log.error("Error <$responseBody> while calling ${tpLeverandor.name} with request: $requestWithFilteredFnr", e)
-            if (responseBody.contains("Validation problem")){
+            log.error(e) { "Error <$responseBody> while calling ${tpLeverandor.name} with request: $requestWithFilteredFnr" }
+            if (responseBody.contains("Validation problem")) {
                 throw BrukerKvalifisererIkkeTilTjenestepensjonException(responseBody)
             }
             throw e

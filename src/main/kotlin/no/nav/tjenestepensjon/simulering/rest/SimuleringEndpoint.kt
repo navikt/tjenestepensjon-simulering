@@ -2,12 +2,13 @@ package no.nav.tjenestepensjon.simulering.rest
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.JsonMappingException
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
-import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_TP_ORDNING_STOTTES_IKKE
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_BRUKER_KVALIFISERER_IKKE
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_CALLS
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_FEIL
+import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_TP_ORDNING_STOTTES_IKKE
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
@@ -29,7 +30,6 @@ import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenExceptio
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import no.nav.tjenestepensjon.simulering.v2.models.DtoToV2DomainMapper.toSimulerPensjonRequestV2
 import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
@@ -54,7 +54,7 @@ class SimuleringEndpoint(
     private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
     private val metrics: AppMetrics
 ) {
-    private val log = LoggerFactory.getLogger(javaClass)
+    private val log = KotlinLogging.logger {}
 
     @PostMapping("/simulering")
     fun simuler(
@@ -62,8 +62,8 @@ class SimuleringEndpoint(
         @RequestHeader(value = NAV_CALL_ID, required = false) navCallId: String?
     ): ResponseEntity<Any> {
         addHeaderToRequestContext(NAV_CALL_ID, navCallId)
-        log.info("Processing nav-call-id: ${getHeaderFromRequestContext(NAV_CALL_ID)}")
-        log.debug("Received request: $body")
+        log.info { "Processing nav-call-id: ${getHeaderFromRequestContext(NAV_CALL_ID)}" }
+        log.debug { "Received request: $body" }
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
         return try {
@@ -78,7 +78,7 @@ class SimuleringEndpoint(
             val tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
 
             if (tpLeverandor.impl == REST) {
-                log.debug("Request simulation from ${tpLeverandor.name} using REST")
+                log.debug { "Request simulation from ${tpLeverandor.name} using REST" }
                 val response = service2.simulerOffentligTjenestepensjon(
                     body.toSimulerPensjonRequestV2(),
                     stillingsprosentResponse,
@@ -86,36 +86,35 @@ class SimuleringEndpoint(
                     tpLeverandor
                 )
                 metrics.incrementRestCounter(tpLeverandor.name, "OK")
-                log.debug("Returning response: ${filterFnr(response.toString())}")
+                log.debug { "Returning response: ${filterFnr(response.toString())}" }
                 ResponseEntity(response, OK)
             } else {
-                log.debug("Request simulation from ${tpLeverandor.name} using SOAP")
+                log.debug { "Request simulation from ${tpLeverandor.name} using SOAP" }
                 val response = service.simulerOffentligTjenestepensjon(
                     body.toSimulerPensjonRequestV1(),
                     stillingsprosentResponse,
                     tpOrdning,
                     tpLeverandor
                 )
-                log.debug("Returning response: ${filterFnr(response.toString())}")
+                log.debug { "Returning response: ${filterFnr(response.toString())}" }
                 ResponseEntity(response, OK)
             }
         } catch (e: NoTpOrdningerFoundException) {
-            log.debug("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No TP-forhold found for person.""")
+            log.debug { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No TP-forhold found for person.""" }
             ResponseEntity.notFound().build()
         } catch (e: JsonParseException) {
-            log.warn("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Unable to parse body to request.""")
+            log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Unable to parse body to request.""" }
             ResponseEntity.badRequest().build()
         } catch (e: JsonMappingException) {
-            log.warn("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Unable to map body to request.""")
+            log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Unable to map body to request.""" }
             ResponseEntity.badRequest().build()
         } catch (e: LeveradoerNotFoundException) {
             metrics.incrementCounter(APP_TOTAL_SIMULERING_TP_ORDNING_STOTTES_IKKE)
-            log.warn("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No supported TP-Ordning found.""")
+            log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No supported TP-Ordning found.""" }
             ResponseEntity.notFound().build()
-        }
-        catch (e: BrukerKvalifisererIkkeTilTjenestepensjonException){
+        } catch (e: BrukerKvalifisererIkkeTilTjenestepensjonException) {
             metrics.incrementCounter(APP_TOTAL_SIMULERING_BRUKER_KVALIFISERER_IKKE)
-            log.warn("""Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Bruker kvalifiserer ikke til tjenestepensjon. ${e.message}""")
+            log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Bruker kvalifiserer ikke til tjenestepensjon. ${e.message}""" }
             ResponseEntity.status(HttpStatus.CONFLICT).body(e.message ?: "Bruker kvalifiserer ikke til tjenestepensjon")
         } catch (e: Throwable) {
             when (e) {
@@ -124,18 +123,22 @@ class SimuleringEndpoint(
                 is WebClientResponseException -> "Caught WebClientResponseException in version 1" to INTERNAL_SERVER_ERROR
                 is SimuleringException -> e.message to INTERNAL_SERVER_ERROR
                 is UndeclaredThrowableException -> e.run {
-                    log.error("UndeclaredThrowableException received. $cause")
+                    log.error { "UndeclaredThrowableException received. $cause" }
                     cause?.message to INTERNAL_SERVER_ERROR
                 }
 
                 else -> e::class.qualifiedName to INTERNAL_SERVER_ERROR
             }.run {
                 log.error(
-                    """
-                    Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}:
-                    httpResponse: ${second.value()} - $first, cause: ${e.message}
-                    """.trimIndent(), e
-                )
+                    e
+                ) {
+                    "${
+                        """
+                                Unable to handle request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}:
+                                httpResponse: ${second.value()} - $first, cause: ${e.message}
+                                """.trimIndent()
+                    }"
+                }
 
                 if (e is SimuleringException) {
                     metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_FEIL)
