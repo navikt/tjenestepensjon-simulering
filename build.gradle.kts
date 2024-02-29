@@ -36,7 +36,7 @@ dependencies {
     testImplementation("org.mockito.kotlin", "mockito-kotlin", "5.2.1")
     testImplementation("org.springframework.boot", "spring-boot-starter-test")
     testImplementation("org.springframework.security", "spring-security-test")
-    implementation("org.springframework.boot:spring-boot-properties-migrator:3.1.2")
+    implementation("org.springframework.boot:spring-boot-properties-migrator:3.2.3")
 
 }
 
