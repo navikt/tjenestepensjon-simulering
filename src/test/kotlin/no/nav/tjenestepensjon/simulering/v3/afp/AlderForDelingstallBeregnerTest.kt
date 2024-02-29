@@ -8,7 +8,7 @@ import java.time.LocalDate
 class AlderForDelingstallBeregnerTest {
 
     @Test
-    fun bestemAlderVeduttaksalder62Aar() {
+    fun `bestem alder ved uttaksalder 62 aar`() {
         val alderListe = AlderForDelingstallBeregner.bestemAldreForDelingstall(LocalDate.of(1963, 2, 3), LocalDate.of(2025, 4, 1))
         assertEquals(2, alderListe.size)
         assertEquals(62, alderListe[0].alder.aar)
@@ -18,7 +18,7 @@ class AlderForDelingstallBeregnerTest {
     }
 
     @Test
-    fun bestemAlderVedUttaksAlderOver70() {
+    fun `bestem alder ved uttaksalder over 70`() {
         val alderListe = AlderForDelingstallBeregner.bestemAldreForDelingstall(LocalDate.of(1963, 12, 24), LocalDate.of(2036, 4, 1))
         assertEquals(1, alderListe.size)
         assertEquals(70, alderListe[0].alder.aar)
@@ -26,7 +26,7 @@ class AlderForDelingstallBeregnerTest {
     }
 
     @Test
-    fun bestemAlderVedUttaksalderMellom62Og70() {
+    fun `bestem alder ved uttaksalder mellom 62 og 70 aar`() {
         val alderListe = AlderForDelingstallBeregner.bestemAldreForDelingstall(LocalDate.of(1964, 4, 15), LocalDate.of(2029, 1, 1))
         assertEquals(1, alderListe.size)
         assertEquals(64, alderListe[0].alder.aar)

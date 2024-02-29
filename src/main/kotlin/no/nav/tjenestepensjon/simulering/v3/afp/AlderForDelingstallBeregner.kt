@@ -7,19 +7,20 @@ import java.time.Period
 
 object AlderForDelingstallBeregner {
     private val hoyesteAlderForDelingstall = Alder(70, 0)
+    private val lavestMuligUttaksalder = 62
 
     fun bestemAldreForDelingstall(fodselsdato: LocalDate, uttaksdato: LocalDate): List<AlderForDelingstall> {
         val aarGammelVedUttak = uttaksdato.year - fodselsdato.year
 
-        if (aarGammelVedUttak == 62) {
-            val noyaktigAlderVedUttak = bestemAlderVedDato(fodselsdato, uttaksdato)
+        if (aarGammelVedUttak == lavestMuligUttaksalder) {
+            val alderVedUttak = bestemAlderVedDato(fodselsdato, uttaksdato)
 
-            val arskifteTilBrukerenBlir63 = LocalDate.of(uttaksdato.year + 1, 1, 1)
-            val alderVedAarskifteTil63 = bestemAlderVedDato(fodselsdato, arskifteTilBrukerenBlir63)
+            val aarskifteTilBrukerenBlir63 = LocalDate.of(uttaksdato.year + 1, 1, 1)
+            val alderVedAarskifteTil63 = bestemAlderVedDato(fodselsdato, aarskifteTilBrukerenBlir63)
 
-            return listOf(AlderForDelingstall(noyaktigAlderVedUttak, uttaksdato), AlderForDelingstall(alderVedAarskifteTil63, arskifteTilBrukerenBlir63))
+            return listOf(AlderForDelingstall(alderVedUttak, uttaksdato), AlderForDelingstall(alderVedAarskifteTil63, aarskifteTilBrukerenBlir63))
         }
-        if (aarGammelVedUttak >= 70) {
+        if (aarGammelVedUttak >= hoyesteAlderForDelingstall.aar) {
             return listOf(AlderForDelingstall(hoyesteAlderForDelingstall, uttaksdato))
         }
         return listOf(AlderForDelingstall(bestemAlderVedDato(fodselsdato, uttaksdato), uttaksdato))

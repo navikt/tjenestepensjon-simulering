@@ -11,7 +11,7 @@ import java.time.LocalDate
 class OffentligAFPYtelseBeregnerTest {
 
     @Test
-    fun beregnAfpOffentligYtelse() {
+    fun `beregn AFP Offentlig ytelse`() {
         assertEquals(48_787.97, OffentligAFPYtelseBeregner.beregn(4_000_000, 19.07), 0.1)
         assertEquals(49785.24, OffentligAFPYtelseBeregner.beregn(2_500_000, 11.68), 0.1)
         assertEquals(17677.019, OffentligAFPYtelseBeregner.beregn(2_150_000, 28.29), 0.1)
@@ -20,7 +20,7 @@ class OffentligAFPYtelseBeregnerTest {
 
 
     @Test
-    fun beregnAfpOffentligLivsvarigYtelserFor62AarGamleBrukereVedUttak() {
+    fun `beregn AFP offentlig livsvarig-ytelser for 62 aar gamle brukere ved uttak`() {
         val grunnlag = listOf(
             AfpBeregningsgrunnlag(3_000_000, AlderForDelingstall(Alder(62, 0), LocalDate.of(2029, 1, 1)), 20.75),
             AfpBeregningsgrunnlag(3_150_000, AlderForDelingstall(Alder(63, 0), LocalDate.of(2030, 1, 1)),19.93)
@@ -33,7 +33,7 @@ class OffentligAFPYtelseBeregnerTest {
 
 
     @Test
-    fun beregnAfpOffentligLivsvarigYtelserForBrukereEldreEnn62() {
+    fun `beregn AFP Offentlig livsvarig-ytelser for brukere eldre enn 62 aar`() {
         val grunnlag = listOf(
             AfpBeregningsgrunnlag(2_658_000, AlderForDelingstall(Alder(64, 2), LocalDate.of(2045, 6, 3)), 20.88),
         )

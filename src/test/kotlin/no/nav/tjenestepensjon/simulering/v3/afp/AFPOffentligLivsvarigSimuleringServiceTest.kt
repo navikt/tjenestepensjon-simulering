@@ -15,7 +15,7 @@ import java.time.LocalDate
 class AFPOffentligLivsvarigSimuleringServiceTest {
 
     @Test
-    fun simuler() {
+    fun `simuler beregning av AFP Offentlig med uttak ved 62 år`() {
         val afpBeholdningGrunnlagResponse = listOf(
             AFPGrunnlagBeholdningPeriode(5441510, LocalDate.of(2026, 1, 1)),
             AFPGrunnlagBeholdningPeriode(5513910, LocalDate.of(2027, 1, 1)

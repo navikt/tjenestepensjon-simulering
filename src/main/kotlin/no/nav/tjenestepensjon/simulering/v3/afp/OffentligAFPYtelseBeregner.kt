@@ -10,21 +10,23 @@ object OffentligAFPYtelseBeregner {
     fun beregnAfpOffentligLivsvarigYtelser(
         grunnlag: List<AfpBeregningsgrunnlag>
     ): List<AfpOffentligLivsvarigYtelseMedDelingstall> {
+        val afpBeregningsgrunnlagVedUttak = grunnlag[0]
         val ytelseFraOnsketUttaksdato = AfpOffentligLivsvarigYtelseMedDelingstall(
-            grunnlag[0].pensjonsbeholdning,
-            beregn(grunnlag[0].pensjonsbeholdning, grunnlag[0].delingstall),
-            grunnlag[0].delingstall,
-            grunnlag[0].alderForDelingstall.datoVedAlder,
-            grunnlag[0].alderForDelingstall.alder
+            pensjonsbeholdning = afpBeregningsgrunnlagVedUttak.pensjonsbeholdning,
+            afpYtelsePerAar = beregn(afpBeregningsgrunnlagVedUttak.pensjonsbeholdning, afpBeregningsgrunnlagVedUttak.delingstall),
+            delingstall = afpBeregningsgrunnlagVedUttak.delingstall,
+            gjelderFra = afpBeregningsgrunnlagVedUttak.alderForDelingstall.datoVedAlder,
+            gjelderFraAlder = afpBeregningsgrunnlagVedUttak.alderForDelingstall.alder
         )
 
         if (grunnlag.size == 2) {
+            val afpBeregningsgrunnlagEtterAarskifteTil63 = grunnlag[1]
             val andreArsYtelse = AfpOffentligLivsvarigYtelseMedDelingstall(
-                grunnlag[1].pensjonsbeholdning,
-                beregn(grunnlag[1].pensjonsbeholdning - grunnlag[0].pensjonsbeholdning, grunnlag[1].delingstall) + ytelseFraOnsketUttaksdato.afpYtelsePerAar,
-                grunnlag[1].delingstall,
-                grunnlag[1].alderForDelingstall.datoVedAlder,
-                grunnlag[1].alderForDelingstall.alder
+                pensjonsbeholdning = afpBeregningsgrunnlagEtterAarskifteTil63.pensjonsbeholdning,
+                afpYtelsePerAar = beregn(afpBeregningsgrunnlagEtterAarskifteTil63.pensjonsbeholdning - afpBeregningsgrunnlagVedUttak.pensjonsbeholdning, afpBeregningsgrunnlagEtterAarskifteTil63.delingstall) + ytelseFraOnsketUttaksdato.afpYtelsePerAar,
+                delingstall = afpBeregningsgrunnlagEtterAarskifteTil63.delingstall,
+                gjelderFra = afpBeregningsgrunnlagEtterAarskifteTil63.alderForDelingstall.datoVedAlder,
+                gjelderFraAlder = afpBeregningsgrunnlagEtterAarskifteTil63.alderForDelingstall.alder
             )
             return listOf(ytelseFraOnsketUttaksdato, andreArsYtelse)
         }
