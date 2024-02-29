@@ -6,6 +6,6 @@ data class AfpOffentligLivsvarigYtelseMedDelingstall (
     val pensjonsbeholdning: Int,
     val afpYtelsePerAar: Double,
     val delingstall: Double,
-    val gjelderFra: LocalDate,
-    val gjelderFraAlder: Alder,
+    val gjelderFraOgMed: LocalDate,
+    val gjelderFraOgMedAlder: Alder,
 )

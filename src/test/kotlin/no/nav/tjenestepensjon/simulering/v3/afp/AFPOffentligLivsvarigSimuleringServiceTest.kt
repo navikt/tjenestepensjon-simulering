@@ -31,8 +31,8 @@ class AFPOffentligLivsvarigSimuleringServiceTest {
         val resultat = service.simuler(SimulerAFPOffentligLivsvarigRequest("07516443469", fodselsdato, listOf(), LocalDate.of(2026, 12, 1)))
         assertEquals(2, resultat.size)
         assertEquals(62134.38, resultat[0].afpYtelsePerAar, 0.01)
-        assertEquals(LocalDate.of(2026, 12, 1), resultat[0].gjelderFra)
+        assertEquals(LocalDate.of(2026, 12, 1), resultat[0].gjelderFraOgMed)
         assertEquals(62963.53, resultat[1].afpYtelsePerAar, 0.01)
-        assertEquals(LocalDate.of(2027, 1, 1), resultat[1].gjelderFra)
+        assertEquals(LocalDate.of(2027, 1, 1), resultat[1].gjelderFraOgMed)
     }
 }

@@ -15,8 +15,8 @@ object OffentligAFPYtelseBeregner {
             pensjonsbeholdning = afpBeregningsgrunnlagVedUttak.pensjonsbeholdning,
             afpYtelsePerAar = beregn(afpBeregningsgrunnlagVedUttak.pensjonsbeholdning, afpBeregningsgrunnlagVedUttak.delingstall),
             delingstall = afpBeregningsgrunnlagVedUttak.delingstall,
-            gjelderFra = afpBeregningsgrunnlagVedUttak.alderForDelingstall.datoVedAlder,
-            gjelderFraAlder = afpBeregningsgrunnlagVedUttak.alderForDelingstall.alder
+            gjelderFraOgMed = afpBeregningsgrunnlagVedUttak.alderForDelingstall.datoVedAlder,
+            gjelderFraOgMedAlder = afpBeregningsgrunnlagVedUttak.alderForDelingstall.alder
         )
 
         if (grunnlag.size == 2) {
@@ -25,8 +25,8 @@ object OffentligAFPYtelseBeregner {
                 pensjonsbeholdning = afpBeregningsgrunnlagEtterAarskifteTil63.pensjonsbeholdning,
                 afpYtelsePerAar = beregn(afpBeregningsgrunnlagEtterAarskifteTil63.pensjonsbeholdning - afpBeregningsgrunnlagVedUttak.pensjonsbeholdning, afpBeregningsgrunnlagEtterAarskifteTil63.delingstall) + ytelseFraOnsketUttaksdato.afpYtelsePerAar,
                 delingstall = afpBeregningsgrunnlagEtterAarskifteTil63.delingstall,
-                gjelderFra = afpBeregningsgrunnlagEtterAarskifteTil63.alderForDelingstall.datoVedAlder,
-                gjelderFraAlder = afpBeregningsgrunnlagEtterAarskifteTil63.alderForDelingstall.alder
+                gjelderFraOgMed = afpBeregningsgrunnlagEtterAarskifteTil63.alderForDelingstall.datoVedAlder,
+                gjelderFraOgMedAlder = afpBeregningsgrunnlagEtterAarskifteTil63.alderForDelingstall.alder
             )
             return listOf(ytelseFraOnsketUttaksdato, andreArsYtelse)
         }
