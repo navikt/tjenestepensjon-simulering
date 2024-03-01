@@ -27,6 +27,7 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
                     ?.let { tpClient.findTpLeverandorName(it) }
             }.firstOrNull()
             ?.let {
+                LOG.info("Bruker er medlem i tp-ordning med leverandør $it. Beregner AFP Offentlig")
                 SimulerAFPOffentligLivsvarigResponse(request.fnr, afpOffentligLivsvarigSimuleringService.simuler(request), it)
             } ?: SimulerAFPOffentligLivsvarigResponse(request.fnr, emptyList(), null)
     }
