@@ -35,6 +35,7 @@ dependencies {
     implementation("org.json", "json", "20220320")
     testImplementation(kotlin("test-junit5"))
     testImplementation("com.github.tomakehurst:wiremock:3.0.1")
+    testImplementation("org.mockito.kotlin", "mockito-kotlin", "5.2.1")
     testImplementation("org.springframework.boot", "spring-boot-starter-test")
     testImplementation("org.springframework.security", "spring-security-test")
     implementation("org.springframework.boot:spring-boot-properties-migrator:3.1.2")
