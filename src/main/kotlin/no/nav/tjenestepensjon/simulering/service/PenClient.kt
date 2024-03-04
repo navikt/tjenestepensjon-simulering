@@ -23,10 +23,10 @@ class PenClient(val penWebClient: WebClient) {
                 .block()!!
                 .delingstall
         } catch (e: WebClientRequestException) {
-            log.error(e) { "${"Request to get delingstall failed: " + e.message}" }
+            log.error(e) { "Request to get delingstall failed: ${e.message}" }
             throw RuntimeException("Noe gikk galt ved henting av delingstall fra PEN")
         } catch (e: WebClientResponseException) {
-            log.error(e) { "${"Request to get delingstall failed with response: " + e.responseBodyAsString}" }
+            log.error(e) { "Request to get delingstall failed with response: ${e.responseBodyAsString}" }
             throw RuntimeException("Noe gikk galt ved henting av delingstall fra PEN")
         }
     }

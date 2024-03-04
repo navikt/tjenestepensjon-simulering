@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffentligLivsvarigSimuleringService, val tpClient: TpClient) {
-    private val logger = KotlinLogging.logger {}
+    private val log = KotlinLogging.logger {}
 
     @PostMapping("/simulering/afp-offentlig-livsvarig")
     fun simulerAfpOffentligLivsvarig(@RequestBody request: SimulerAFPOffentligLivsvarigRequest): SimulerAFPOffentligLivsvarigResponse {
 
-        logger.info { "Simulerer AFP Offentlig Livsvarig for request: $request" }
+        log.info { "Simulerer AFP Offentlig Livsvarig for request: $request" }
         validateRequest(request)
 
         return tpClient.findForhold(FNR(request.fnr))
@@ -28,7 +28,7 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
                     ?.let { tpClient.findTpLeverandorName(it) }
             }.firstOrNull()
             ?.let {
-                logger.info{"Bruker er medlem i tp-ordning med leverandør $it. Beregner AFP Offentlig"}
+                log.info{"Bruker er medlem i tp-ordning med leverandør $it. Beregner AFP Offentlig"}
                 SimulerAFPOffentligLivsvarigResponse(request.fnr, afpOffentligLivsvarigSimuleringService.simuler(request), it)
             } ?: SimulerAFPOffentligLivsvarigResponse(request.fnr, emptyList(), null)
     }
