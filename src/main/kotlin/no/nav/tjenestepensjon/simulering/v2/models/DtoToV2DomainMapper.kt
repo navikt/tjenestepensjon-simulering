@@ -3,12 +3,11 @@ package no.nav.tjenestepensjon.simulering.v2.models
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.Pensjonsbeholdningsperiode
 import no.nav.tjenestepensjon.simulering.model.domain.pen.*
-import no.nav.tjenestepensjon.simulering.v2.models.DtoToV2DomainMapper.convertToLocalDate
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import no.nav.tjenestepensjon.simulering.v2.models.request.*
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.Date
+import java.util.*
 
 object DtoToV2DomainMapper {
 

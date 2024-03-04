@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
@@ -11,15 +12,14 @@ import no.nav.tjenestepensjon.simulering.v1.exceptions.DuplicateStillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.exceptions.MissingStillingsprosentException
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
 class StillingsprosentServiceImpl(
         private val asyncExecutor: AsyncExecutor<List<Stillingsprosent>, StillingsprosentCallable>,
         private val soapClient: SoapClient,
-        private val metrics: AppMetrics) : StillingsprosentService
-{
+        private val metrics: AppMetrics) : StillingsprosentService {
+    private val log = KotlinLogging.logger {}
 
     override fun getStillingsprosentListe(fnr: FNR, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap): StillingsprosentResponse {
         val callableMap = toCallableMap(fnr, tpOrdningAndLeverandorMap)
@@ -27,41 +27,37 @@ class StillingsprosentServiceImpl(
         val startTime = metrics.startTime()
         val asyncResponse = asyncExecutor.executeAsync(callableMap)
         val elapsed = metrics.elapsedSince(startTime)
-        LOG.info("Retrieved all stillingsprosenter in: $elapsed ms")
+        log.info { "Retrieved all stillingsprosenter in: $elapsed ms" }
         metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_TIME, elapsed.toDouble())
         return StillingsprosentResponse(asyncResponse.resultMap, asyncResponse.exceptions).apply {
-            exceptions.forEach { LOG.warn("Exception caught while fetching stillingsprosenter: ${it.cause}") }
+            exceptions.forEach { log.warn { "Exception caught while fetching stillingsprosenter: ${it.cause}" } }
         }
     }
 
-    @Throws(DuplicateStillingsprosentEndDateException::class,
-            MissingStillingsprosentException::class)
+    @Throws(
+        DuplicateStillingsprosentEndDateException::class,
+        MissingStillingsprosentException::class
+    )
     override fun getLatestFromStillingsprosent(map: TPOrdningStillingsprosentMap) =
-            map.flatMap { (key, list) ->
-                    list.map { value ->
-                        key to value
-                    }
-            }.ifEmpty { throw MissingStillingsprosentException("Could not find any stillingsprosent") }
+        map.flatMap { (key, list) ->
+            list.map { value ->
+                key to value
+            }
+        }.ifEmpty { throw MissingStillingsprosentException("Could not find any stillingsprosent") }
             .reduce(::getLatest).first
 
     @Throws(DuplicateStillingsprosentEndDateException::class)
     private fun getLatest(latest: Pair<TPOrdning, Stillingsprosent>, other: Pair<TPOrdning, Stillingsprosent>) = when {
-            latest.second.datoTom == other.second.datoTom -> throw DuplicateStillingsprosentEndDateException("Could not decide latest stillingprosent due to multiple stillingsprosent having the same end date")
-            other.second.datoTom == null -> other
-            latest.second.datoTom == null || latest.second.datoTom!! > other.second.datoTom -> latest
-            latest.second.datoTom!! < other.second.datoTom -> other
-            else -> latest
-        }
+        latest.second.datoTom == other.second.datoTom -> throw DuplicateStillingsprosentEndDateException("Could not decide latest stillingprosent due to multiple stillingsprosent having the same end date")
+        other.second.datoTom == null -> other
+        latest.second.datoTom == null || latest.second.datoTom!! > other.second.datoTom -> latest
+        latest.second.datoTom!! < other.second.datoTom -> other
+        else -> latest
+    }
 
     private fun toCallableMap(fnr: FNR, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap) =
-            tpOrdningAndLeverandorMap.map { (tpOrdning, tpLeverandor) ->
-                tpOrdning to StillingsprosentCallable(fnr, tpOrdning, tpLeverandor, soapClient)
-            }.toMap()
-
-    companion object {
-        @JvmStatic
-        @Suppress("JAVA_CLASS_ON_COMPANION")
-        private val LOG = LoggerFactory.getLogger(javaClass.enclosingClass)
-    }
+        tpOrdningAndLeverandorMap.map { (tpOrdning, tpLeverandor) ->
+            tpOrdning to StillingsprosentCallable(fnr, tpOrdning, tpLeverandor, soapClient)
+        }.toMap()
 
 }
