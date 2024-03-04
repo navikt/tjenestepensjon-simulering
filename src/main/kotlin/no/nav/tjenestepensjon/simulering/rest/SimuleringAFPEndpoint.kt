@@ -1,8 +1,8 @@
 package no.nav.tjenestepensjon.simulering.rest
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.tjenestepensjon.simulering.model.domain.AktivTpOrdningDto
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLivsvarigRequest
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLivsvarigResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
@@ -21,16 +21,13 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
         log.info { "Simulerer AFP Offentlig Livsvarig for request: $request" }
         validateRequest(request)
 
-        return tpClient.findForhold(FNR(request.fnr))
-            .map { forhold ->
-                tpClient.findTssId(forhold.ordning)
-                    ?.let { TPOrdning(tpId = forhold.ordning, tssId = it) }
-                    ?.let { tpClient.findTpLeverandorName(it) }
-            }.firstOrNull()
-            ?.let {
-                log.info{"Bruker er medlem i tp-ordning med leverandør $it. Beregner AFP Offentlig"}
-                SimulerAFPOffentligLivsvarigResponse(request.fnr, afpOffentligLivsvarigSimuleringService.simuler(request), it)
-            } ?: SimulerAFPOffentligLivsvarigResponse(request.fnr, emptyList(), null)
+        val tpLeverandoerer: List<AktivTpOrdningDto> = tpClient.findAktiveForhold(FNR(request.fnr))
+        if (tpLeverandoerer.isNotEmpty()) {
+            val tpLeverandoererNavn = tpLeverandoerer.joinToString(separator = ",") { it.navn }
+            log.info { "Bruker er medlem i tp-ordning med leverandør $tpLeverandoererNavn. Beregner AFP Offentlig" }
+            return SimulerAFPOffentligLivsvarigResponse(request.fnr, afpOffentligLivsvarigSimuleringService.simuler(request), tpLeverandoererNavn)
+        }
+        return SimulerAFPOffentligLivsvarigResponse(request.fnr, emptyList(), null)
     }
 
     private fun validateRequest(request: SimulerAFPOffentligLivsvarigRequest) {
