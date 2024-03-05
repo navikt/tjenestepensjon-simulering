@@ -121,6 +121,8 @@ const val defaultSimulerOffentligTjenestepensjonRequestJson =
     """{"fnr":"$defaultFNRString","fodselsdato":"19010101","sisteTpnr":"$defaultTpid","sprak":"bogus","simulertAFPOffentlig":$defaultSimulertAFPOffentligJson,"simulertAFPPrivat":$defaultSimulertAFPPrivatJson,"sivilstandkode":"GIFT","inntektListe":[$defaultInntektJson],"pensjonsbeholdningsperiodeListe":[$defaultPensjonsbeholdningsperiodeJson],"simuleringsperiodeListe":[$defaultSimuleringsperiodeJson],"simuleringsdataListe":[$defaultSimuleringsDataJson],"tpForholdListe":[$defaultTpForholdJson]}"""
 const val defaultAktiveOrdningerJson =
     """[{"navn": "SPK", "tpNr": "$defaultTpid", "orgNr": "" }, {"navn": "KLP", "tpNr": "${defaultTpid+1}", "orgNr": "" }]"""
+const val ettAktivOrdningJson =
+    """[{"navn": "SPK", "tpNr": "$defaultTpid", "orgNr": "" }]"""
 const val defaultSimulerBeregningAFPOffentligJson =
     """{"fnr": "$defaultFNRString",
         "fodselsdato": "1964-02-01",
@@ -135,4 +137,19 @@ const val defaultSimulerBeregningAFPOffentligJson =
             }
           ],
           "fom": "2026-01-01"
+        }"""
+const val simulerBeregningAFPOffentligUtenMedlemskapITPOrdningJson =
+    """{"fnr": "$fnrUtenMedlemskap",
+        "fodselsdato": "1977-02-01",
+          "fremtidigeInntekter": [
+            {
+             "belop": 500000,
+             "fraOgMed": "2038-01-01"
+            },
+            {
+              "belop": 550000,
+              "fraOgMed": "2039-01-01"
+            }
+          ],
+          "fom": "2040-01-01"
         }"""

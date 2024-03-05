@@ -3,13 +3,16 @@ package no.nav.tjenestepensjon.simulering.rest
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.tjenestepensjon.simulering.defaultFNRString
+import no.nav.tjenestepensjon.simulering.fnrMedEttMedlemskapITPOrdning
+import no.nav.tjenestepensjon.simulering.fnrUtenMedlemskap
 import no.nav.tjenestepensjon.simulering.model.domain.pen.AfpOffentligLivsvarigYtelseMedDelingstall
 import no.nav.tjenestepensjon.simulering.model.domain.pen.Alder
-import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLivsvarigResponse
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v2.models.defaultAktiveOrdningerJson
 import no.nav.tjenestepensjon.simulering.v2.models.defaultSimulerBeregningAFPOffentligJson
+import no.nav.tjenestepensjon.simulering.v2.models.ettAktivOrdningJson
+import no.nav.tjenestepensjon.simulering.v2.models.simulerBeregningAFPOffentligUtenMedlemskapITPOrdningJson
 import no.nav.tjenestepensjon.simulering.v3.afp.AFPOffentligLivsvarigSimuleringService
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
@@ -35,15 +38,14 @@ class SimuleringAFPEndpointTest {
     @MockBean
     private lateinit var aadClient: AADClient
 
-    //    @MockBean
-//    private lateinit var tpClient: TpClient
     @MockBean
     private lateinit var aFPOffentligLivsvarigSimuleringService: AFPOffentligLivsvarigSimuleringService
 
     private var wireMockServer = WireMockServer().apply {
         start()
-        stubFor(get("/api/tjenestepensjon/aktiveOrdninger").willReturn(okJson(defaultAktiveOrdningerJson)))
-//        stubFor(post(""))
+        stubFor(get("/api/tjenestepensjon/aktiveOrdninger").withHeader("fnr", equalTo(defaultFNRString)).willReturn(okJson(defaultAktiveOrdningerJson)))
+        stubFor(get("/api/tjenestepensjon/aktiveOrdninger").withHeader("fnr", equalTo(fnrMedEttMedlemskapITPOrdning)).willReturn(okJson(ettAktivOrdningJson)))
+        stubFor(get("/api/tjenestepensjon/aktiveOrdninger").withHeader("fnr", equalTo(fnrUtenMedlemskap)).willReturn(okJson("[]")))
     }
 
     @AfterAll
@@ -53,16 +55,19 @@ class SimuleringAFPEndpointTest {
 
     @Test
     @WithMockUser
-    fun simulerAfpOffentligLivsvarig() {
+    fun `simuler AFP Offentlig for bruker med to aktive medlemskap`() {
         Mockito.`when`(aadClient.getToken("api://bogus")).thenReturn("")
         Mockito.`when`(aFPOffentligLivsvarigSimuleringService.simuler(anyNonNull()))
             .thenReturn(
-                listOf(AfpOffentligLivsvarigYtelseMedDelingstall(
-                    pensjonsbeholdning = 250000,
-                    afpYtelsePerAar = 50000.1,
-                    delingstall = 18.13,
-                    gjelderFraOgMed = LocalDate.of(2027, 1, 1),
-                    gjelderFraOgMedAlder = Alder(64, 1)))
+                listOf(
+                    AfpOffentligLivsvarigYtelseMedDelingstall(
+                        pensjonsbeholdning = 250000,
+                        afpYtelsePerAar = 50000.1,
+                        delingstall = 18.13,
+                        gjelderFraOgMed = LocalDate.of(2027, 1, 1),
+                        gjelderFraOgMedAlder = Alder(64, 1)
+                    )
+                )
             )
 
         mockMvc.post("/simulering/afp-offentlig-livsvarig") {
@@ -93,6 +98,133 @@ class SimuleringAFPEndpointTest {
                     """.trimIndent()
                     }
                 }
+            }
+    }
+
+    @Test
+    @WithMockUser
+    fun `simuler AFP Offentlig for bruker med et medlemskap`() {
+        Mockito.`when`(aadClient.getToken("api://bogus")).thenReturn("")
+        Mockito.`when`(aFPOffentligLivsvarigSimuleringService.simuler(anyNonNull()))
+            .thenReturn(
+                listOf(
+                    AfpOffentligLivsvarigYtelseMedDelingstall(
+                        pensjonsbeholdning = 250000,
+                        afpYtelsePerAar = 50000.1,
+                        delingstall = 18.13,
+                        gjelderFraOgMed = LocalDate.of(2027, 1, 1),
+                        gjelderFraOgMedAlder = Alder(64, 1)
+                    )
+                )
+            )
+
+        mockMvc.post("/simulering/afp-offentlig-livsvarig") {
+            content = defaultSimulerBeregningAFPOffentligJson
+            contentType = MediaType.APPLICATION_JSON
+        }
+            .andExpect {
+                status { isOk() }
+                content {
+                    content {
+                        """
+                    {
+                        "fnr": "$fnrMedEttMedlemskapITPOrdning"
+                        "ytelser": [
+                            {
+                                "pensjonsbeholdning": 250000,
+                                "afpYtelsePerAar": 50000.1,
+                                "delingstall": 18.13,
+                                "gjelderFraOgMed": "2027-01-01",
+                                "gjelderFraOgMedAlder": {
+                                    "ar": 64,
+                                    "maaneder": 1
+                                }
+                            }
+                        ],
+                        "tpLeverandoerer": "SPK"
+                    }
+                    """.trimIndent()
+                    }
+                }
+            }
+    }
+
+    @Test
+    @WithMockUser
+    fun `simuler AFP Offentlig for bruker uten medlemskap`() {
+        Mockito.`when`(aadClient.getToken("api://bogus")).thenReturn("")
+
+        mockMvc.post("/simulering/afp-offentlig-livsvarig") {
+            content = simulerBeregningAFPOffentligUtenMedlemskapITPOrdningJson
+            contentType = MediaType.APPLICATION_JSON
+        }
+            .andExpect {
+                status { isOk() }
+                content {
+                    content {
+                        """
+                    {
+                        "fnr": "$fnrUtenMedlemskap"
+                        "ytelser": [],
+                        "tpLeverandoerer": null"
+                    }
+                    """.trimIndent()
+                    }
+                }
+            }
+    }
+
+    @Test
+    @WithMockUser
+    fun `simuler for ung bruker`() {
+        Mockito.`when`(aadClient.getToken("api://bogus")).thenReturn("")
+
+        mockMvc.post("/simulering/afp-offentlig-livsvarig") {
+            content = """{"fnr": "$fnrUtenMedlemskap",
+                            "fodselsdato": "1977-02-01",
+                              "fremtidigeInntekter": [
+                                {
+                                 "belop": 500000,
+                                 "fraOgMed": "2028-01-01"
+                                },
+                                {
+                                  "belop": 550000,
+                                  "fraOgMed": "2029-01-01"
+                                }
+                              ],
+                              "fom": "2030-01-01"
+                            }"""
+            contentType = MediaType.APPLICATION_JSON
+        }
+            .andExpect {
+                status { isBadRequest() }
+            }
+    }
+
+    @Test
+    @WithMockUser
+    fun `simuler for bruker foedt foer 1963`() {
+        Mockito.`when`(aadClient.getToken("api://bogus")).thenReturn("")
+
+        mockMvc.post("/simulering/afp-offentlig-livsvarig") {
+            content = """{"fnr": "$fnrUtenMedlemskap",
+                            "fodselsdato": "1962-12-31",
+                              "fremtidigeInntekter": [
+                                {
+                                 "belop": 500000,
+                                 "fraOgMed": "2028-01-01"
+                                },
+                                {
+                                  "belop": 550000,
+                                  "fraOgMed": "2029-01-01"
+                                }
+                              ],
+                              "fom": "2029-01-01"
+                            }"""
+            contentType = MediaType.APPLICATION_JSON
+        }
+            .andExpect {
+                status { isBadRequest() }
             }
     }
 
