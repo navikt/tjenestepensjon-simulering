@@ -27,8 +27,14 @@ spec:
           namespace: pensjontestdata
     outbound:
       rules:
-        - application: tp-q1
+        - application: tp-q2
           namespace: pensjonsamhandling
+          cluster: dev-fss
+        - application: pensjon-opptjening-afp-api
+          namespace: pensjonopptjening
+          cluster: dev-gcp
+        - application: pensjon-pen-q2
+          namespace: pensjon-q2
           cluster: dev-fss
   azure:
     application:
