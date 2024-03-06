@@ -121,7 +121,7 @@ const val defaultSimulerOffentligTjenestepensjonRequestJson =
     """{"fnr":"$defaultFNRString","fodselsdato":"19010101","sisteTpnr":"$defaultTpid","sprak":"bogus","simulertAFPOffentlig":$defaultSimulertAFPOffentligJson,"simulertAFPPrivat":$defaultSimulertAFPPrivatJson,"sivilstandkode":"GIFT","inntektListe":[$defaultInntektJson],"pensjonsbeholdningsperiodeListe":[$defaultPensjonsbeholdningsperiodeJson],"simuleringsperiodeListe":[$defaultSimuleringsperiodeJson],"simuleringsdataListe":[$defaultSimuleringsDataJson],"tpForholdListe":[$defaultTpForholdJson]}"""
 const val defaultAktiveOrdningerJson =
     """[{"navn": "SPK", "tpNr": "$defaultTpid", "orgNr": "" }, {"navn": "KLP", "tpNr": "${defaultTpid+1}", "orgNr": "" }]"""
-const val ettAktivOrdningJson =
+const val enAktivOrdningJson =
     """[{"navn": "SPK", "tpNr": "$defaultTpid", "orgNr": "" }]"""
 const val defaultSimulerBeregningAFPOffentligJson =
     """{"fnr": "$defaultFNRString",

@@ -11,7 +11,7 @@ import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v2.models.defaultAktiveOrdningerJson
 import no.nav.tjenestepensjon.simulering.v2.models.defaultSimulerBeregningAFPOffentligJson
-import no.nav.tjenestepensjon.simulering.v2.models.ettAktivOrdningJson
+import no.nav.tjenestepensjon.simulering.v2.models.enAktivOrdningJson
 import no.nav.tjenestepensjon.simulering.v2.models.simulerBeregningAFPOffentligUtenMedlemskapITPOrdningJson
 import no.nav.tjenestepensjon.simulering.v3.afp.AFPOffentligLivsvarigSimuleringService
 import org.junit.jupiter.api.AfterAll
@@ -39,12 +39,12 @@ class SimuleringAFPEndpointTest {
     private lateinit var aadClient: AADClient
 
     @MockBean
-    private lateinit var aFPOffentligLivsvarigSimuleringService: AFPOffentligLivsvarigSimuleringService
+    private lateinit var afpOffentligLivsvarigSimuleringService: AFPOffentligLivsvarigSimuleringService
 
     private var wireMockServer = WireMockServer().apply {
         start()
         stubFor(get("/api/tjenestepensjon/aktiveOrdninger").withHeader("fnr", equalTo(defaultFNRString)).willReturn(okJson(defaultAktiveOrdningerJson)))
-        stubFor(get("/api/tjenestepensjon/aktiveOrdninger").withHeader("fnr", equalTo(fnrMedEttMedlemskapITPOrdning)).willReturn(okJson(ettAktivOrdningJson)))
+        stubFor(get("/api/tjenestepensjon/aktiveOrdninger").withHeader("fnr", equalTo(fnrMedEttMedlemskapITPOrdning)).willReturn(okJson(enAktivOrdningJson)))
         stubFor(get("/api/tjenestepensjon/aktiveOrdninger").withHeader("fnr", equalTo(fnrUtenMedlemskap)).willReturn(okJson("[]")))
     }
 
@@ -57,7 +57,7 @@ class SimuleringAFPEndpointTest {
     @WithMockUser
     fun `simuler AFP Offentlig for bruker med to aktive medlemskap`() {
         Mockito.`when`(aadClient.getToken("api://bogus")).thenReturn("")
-        Mockito.`when`(aFPOffentligLivsvarigSimuleringService.simuler(anyNonNull()))
+        Mockito.`when`(afpOffentligLivsvarigSimuleringService.simuler(anyNonNull()))
             .thenReturn(
                 listOf(
                     AfpOffentligLivsvarigYtelseMedDelingstall(
@@ -105,7 +105,7 @@ class SimuleringAFPEndpointTest {
     @WithMockUser
     fun `simuler AFP Offentlig for bruker med et medlemskap`() {
         Mockito.`when`(aadClient.getToken("api://bogus")).thenReturn("")
-        Mockito.`when`(aFPOffentligLivsvarigSimuleringService.simuler(anyNonNull()))
+        Mockito.`when`(afpOffentligLivsvarigSimuleringService.simuler(anyNonNull()))
             .thenReturn(
                 listOf(
                     AfpOffentligLivsvarigYtelseMedDelingstall(
