@@ -8,6 +8,8 @@ import java.time.LocalDate
 
 const val defaultFNRString = "01010101010"
 val defaultFNR = FNR(defaultFNRString)
+const val fnrUtenMedlemskap = "01027701010"
+const val fnrMedEttMedlemskapITPOrdning = "01037701010"
 
 const val defaultTpid = "4321"
 const val defaultTssid = "1234"

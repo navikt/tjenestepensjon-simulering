@@ -8,6 +8,7 @@ import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
 import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
+import no.nav.tjenestepensjon.simulering.model.domain.AktivTpOrdningDto
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.HateoasWrapper
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
@@ -61,11 +62,11 @@ class TpClient(
 
                     404 -> Flux.empty()
                     else -> clientResponse.bodyToFlux<String>().defaultIfEmpty("<NULL>").flatMap { body ->
-                        Flux.error(badGateway("Status code ${clientResponse.statusCode()} with message: $body}"))
+                        Flux.error(handleRemoteError("Status code ${clientResponse.statusCode()} with message: $body}"))
                     }
                 }
             }.onErrorMap {
-                if (it !is ResponseStatusException && it !is NoTpOrdningerFoundException) badGateway(it.message) else it
+                if (it !is ResponseStatusException && it !is NoTpOrdningerFoundException) handleRemoteError(it.message) else it
             }.toIterable().toList().takeUnless { it.isEmpty() }
             ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person.")
     } catch (ex: RuntimeException) {
@@ -78,7 +79,7 @@ class TpClient(
             when (it.statusCode().value()) {
                 200 -> it.bodyToMono<String>()
                 404 -> Mono.empty()
-                else -> Mono.error(badGateway(null))
+                else -> Mono.error(handleRemoteError(null))
             }
         }.block()
 
@@ -88,12 +89,27 @@ class TpClient(
             when (it.statusCode().value()) {
                 200 -> it.bodyToMono<String>()
                 404 -> Mono.empty()
-                else -> Mono.error(badGateway(null))
+                else -> Mono.error(handleRemoteError(null))
             }
         }.block()
 
-    fun badGateway(logMessage: String?): ResponseStatusException {
-        log.error("Error fetching data from TP: $logMessage")
-        return ResponseStatusException(HttpStatus.BAD_GATEWAY)
+    fun findAktiveForhold(fnr: FNR): List<AktivTpOrdningDto> {
+        return webClient.get()
+            .uri("$tpUrl/api/tjenestepensjon/aktiveOrdninger")
+            .headers {
+                it["fnr"] = fnr.fnr
+                it.setBearerAuth(aadClient.getToken(tpScope))
+            }.exchangeToMono {
+                when (it.statusCode().value()) {
+                    200 -> it.bodyToMono<List<AktivTpOrdningDto>>()
+                    404 -> Mono.empty()
+                    else -> Mono.error(handleRemoteError(null))
+                }
+            }.block() ?: emptyList()
+    }
+
+    fun handleRemoteError(logMessage: String?): ResponseStatusException {
+        log.error{"Error fetching data from TP: $logMessage"}
+        return ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
