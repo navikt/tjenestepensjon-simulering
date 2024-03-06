@@ -21,6 +21,12 @@ spec:
         - application: tp
           namespace: pensjonsamhandling
           cluster: prod-fss
+        - application: pensjon-opptjening-afp-api
+          namespace: pensjonopptjening
+          cluster: prod-gcp
+        - application: pensjon-pen
+          namespace: pensjondeployer
+          cluster: prod-fss
   azure:
     application:
       enabled: true
