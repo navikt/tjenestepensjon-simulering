@@ -3,9 +3,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator class="ch.qos.logback.access.boolex.JaninoEventEvaluator">
-                <expression>return ((event.getRequestURI().contains("isAlive")) ||
-                    (event.getRequestURI().contains("isReady")) || (event.getRequestURI().contains("prometheus")));
-                </expression>
+                <expression>return (event.getRequestURI().contains("/actuator/"));</expression>
             </evaluator>
             <onMatch>DENY</onMatch>
         </filter>
