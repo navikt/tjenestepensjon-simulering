@@ -19,16 +19,11 @@
             </jsonGeneratorDecorator>
         </encoder>
     </appender>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} MDC=%X{user} - %msg%n</pattern>
-        </encoder>
-    </appender>
     <root level="INFO">
         <appender-ref ref="STDOUT_JSON"/>
     </root>
 
-    <logger name="no.nav.tjenestepensjon" level="${logging.level.no.nav.tjenestepensjon:-WARN}"/>
+    <logger name="no.nav.tjenestepensjon" level="${logging.level.no.nav.tjenestepensjon:-INFO}"/>
     <logger name="org.springframework.security.oauth2"
             level="${logging.level.org.springframework.security.oauth2:-WARN}"/>
     <logger name="org.springframework.ws.client.MessageTracing"
