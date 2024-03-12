@@ -34,11 +34,6 @@ class TpClient(
 ) {
     private val log = KotlinLogging.logger {}
 
-    fun getTpOrdningerForPerson(fnr: FNR) = findForhold(fnr).mapNotNull { forhold ->
-        findTssId(forhold.ordning)?.let { TPOrdning(tpId = forhold.ordning, tssId = it) }
-    }.takeUnless { it.isEmpty() }
-        ?: throw LeveradoerNotFoundException("TSSnr not found for any tpOrdning.")
-
     @Cacheable(TP_ORDNING_PERSON_CACHE)
     fun findForhold(fnr: FNR) = try {
         webClient.get()
