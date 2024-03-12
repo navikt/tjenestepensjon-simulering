@@ -7,6 +7,7 @@ import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.MDC
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class CorrelationIdFilter : Filter {
@@ -19,7 +20,7 @@ class CorrelationIdFilter : Filter {
 
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val httpRequest = request as HttpServletRequest
-        val correlationId = httpRequest.getHeader(CORRELATION_ID_HTTP_HEADER) ?: java.util.UUID.randomUUID().toString()
+        val correlationId = httpRequest.getHeader(CORRELATION_ID_HTTP_HEADER) ?: UUID.randomUUID().toString()
         val consumerId = httpRequest.getHeader(CONSUMER_ID_HTTP_HEADER) ?: "unknown_consumer"
         MDC.put(CORRELATION_ID, correlationId)
         MDC.put(CONSUMER_ID, consumerId)
