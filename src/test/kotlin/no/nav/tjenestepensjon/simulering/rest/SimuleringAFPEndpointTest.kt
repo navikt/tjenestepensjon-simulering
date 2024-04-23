@@ -153,6 +153,18 @@ class SimuleringAFPEndpointTest {
     @WithMockUser
     fun `simuler AFP Offentlig for bruker uten medlemskap`() {
         Mockito.`when`(aadClient.getToken("api://bogus")).thenReturn("")
+        Mockito.`when`(afpOffentligLivsvarigSimuleringService.simuler(anyNonNull()))
+            .thenReturn(
+                listOf(
+                    AfpOffentligLivsvarigYtelseMedDelingstall(
+                        pensjonsbeholdning = 250000,
+                        afpYtelsePerAar = 50000.1,
+                        delingstall = 18.13,
+                        gjelderFraOgMed = LocalDate.of(2027, 1, 1),
+                        gjelderFraOgMedAlder = Alder(64, 1)
+                    )
+                )
+            )
 
         mockMvc.post("/simulering/afp-offentlig-livsvarig") {
             content = simulerBeregningAFPOffentligUtenMedlemskapITPOrdningJson
@@ -165,8 +177,19 @@ class SimuleringAFPEndpointTest {
                         """
                     {
                         "fnr": "$fnrUtenMedlemskap"
-                        "ytelser": [],
-                        "tpLeverandoerer": null"
+                        "ytelser": [
+                            {
+                                "pensjonsbeholdning": 250000,
+                                "afpYtelsePerAar": 50000.1,
+                                "delingstall": 18.13,
+                                "gjelderFraOgMed": "2027-01-01",
+                                "gjelderFraOgMedAlder": {
+                                    "ar": 64,
+                                    "maaneder": 1
+                                }
+                            }
+                        ],
+                        "tpLeverandoerer": ""
                     }
                     """.trimIndent()
                     }
