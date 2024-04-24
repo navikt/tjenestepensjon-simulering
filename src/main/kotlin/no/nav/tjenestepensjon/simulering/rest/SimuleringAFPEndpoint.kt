@@ -21,7 +21,7 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
         log.info { "Simulerer AFP Offentlig Livsvarig for request: $request" }
         validateRequest(request)
 
-        val tpLeverandoererNavn = tpClient.findAktiveForhold(FNR(request.fnr)).joinToString(separator = ",") { it.navn }
+        val tpLeverandoererNavn = tpClient.findAktiveForhold(FNR(request.fnr)).joinToString(separator = ", ") { it.navn }
         log.info { "Beregner AFP Offentlig for en bruker som er medlem i tp-ordning(er): <$tpLeverandoererNavn>" }
         return SimulerAFPOffentligLivsvarigResponse(request.fnr, afpOffentligLivsvarigSimuleringService.simuler(request), tpLeverandoererNavn)
     }
