@@ -13,7 +13,7 @@ const val fnrMedEttMedlemskapITPOrdning = "01037701010"
 
 const val defaultTpid = "4321"
 const val defaultTssid = "1234"
-const val defaultForhold = """{"_embedded": {"forholdDtoList":[{"ytelser":"[]","ordning":"$defaultTpid"}]}}"""
+const val defaultForhold = """{"_embedded": {"forholdModelList":[{"ytelser":"[]","ordning":"$defaultTpid"}]}}"""
 
 const val defaultTjenestepensjonUrl = "/api/tjenestepensjon/forhold"
 const val defaultLeveradorUrl = "/api/tpconfig/tpleverandoer/$defaultTpid"
