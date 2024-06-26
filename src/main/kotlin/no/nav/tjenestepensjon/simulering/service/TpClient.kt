@@ -6,7 +6,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
-import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.model.domain.AktivTpOrdningDto
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
@@ -46,7 +45,7 @@ class TpClient(
                     200 -> clientResponse.bodyToMono<String>().flatMapIterable {
                         try {
                             if (it.isBlank() || it == "{}") emptyList()
-                            else jsonMapper.readValue<HateoasWrapper>(it).embedded.forholdDtoList
+                            else jsonMapper.readValue<HateoasWrapper>(it).embedded.forholdModelList
                         } catch (t: Throwable) {
                             log.error(t) { "Failed to parse response from TP, with body: $it" }
                             throw t
