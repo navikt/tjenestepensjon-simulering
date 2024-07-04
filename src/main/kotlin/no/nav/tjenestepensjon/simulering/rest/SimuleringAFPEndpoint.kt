@@ -18,11 +18,11 @@ class SimuleringAFPEndpoint(val afpOffentligLivsvarigSimuleringService: AFPOffen
     @PostMapping("/simulering/afp-offentlig-livsvarig")
     fun simulerAfpOffentligLivsvarig(@RequestBody request: SimulerAFPOffentligLivsvarigRequest): SimulerAFPOffentligLivsvarigResponse {
 
-        log.info { "Simulerer AFP Offentlig Livsvarig for request: $request" }
+        log.debug { "Simulerer AFP Offentlig Livsvarig for request: $request" }
         validateRequest(request)
 
         val tpLeverandoererNavn = tpClient.findAktiveForhold(FNR(request.fnr)).joinToString(separator = ", ") { it.navn }
-        log.info { "Beregner AFP Offentlig for en bruker som er medlem i tp-ordning(er): <$tpLeverandoererNavn>" }
+        log.debug { "Beregner AFP Offentlig for en bruker som er medlem i tp-ordning(er): <$tpLeverandoererNavn>" }
         return SimulerAFPOffentligLivsvarigResponse(request.fnr, afpOffentligLivsvarigSimuleringService.simuler(request), tpLeverandoererNavn)
     }
 
