@@ -27,6 +27,16 @@ class TpLeverandorConfig(private val environment: Environment) {
         return@let list.toList()
     }
 
+    @Scope("singleton")
+    @Bean("tpLeverandor2025")
+    fun tpLeverandor2025List(): List<TpLeverandor> = PropertiesLoader(environment).let { propertiesLoader ->
+        val list: MutableList<TpLeverandor> = mutableListOf()
+        propertiesLoader.loadProperties("2025.spk")?.let { list.add(it) }
+        propertiesLoader.loadProperties("2025.klp")?.let { list.add(it) }
+        log.info { "Loaded tp-leverandører (2025): $list" }
+        return@let list.toList()
+    }
+
     class PropertiesLoader(private val environment: Environment) {
 
         fun loadProperties(prefix: String): TpLeverandor? {

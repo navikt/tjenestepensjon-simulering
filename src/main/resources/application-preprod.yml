@@ -35,3 +35,10 @@ opf:
   implementation: SOAP
   simuleringUrl: https://partner-gw.opf.no/Elsam.svc
   stillingsprosentUrl: https://partner-gw.opf.no/Elsam.svc
+2025:
+  spk:
+    name: SPK
+    simuleringer: https://api.test.spk.no/nav/v2/tjenestepensjon/simuler/{ordning}
+  klp:
+    name: KLP
+    simuleringer: https://api-test.klp.no/api/oftp/simulering/{ordning}

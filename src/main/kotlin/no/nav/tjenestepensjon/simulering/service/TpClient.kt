@@ -34,7 +34,7 @@ class TpClient(
     private val log = KotlinLogging.logger {}
 
     @Cacheable(TP_ORDNING_PERSON_CACHE)
-    fun findForhold(fnr: FNR) = try {
+    fun findForhold(fnr: String): List<Any> = try {
         webClient.get()
             .uri("$tpUrl/api/tjenestepensjon/forhold")
             .headers {

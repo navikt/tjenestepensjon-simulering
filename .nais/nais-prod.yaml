@@ -42,6 +42,8 @@ spec:
       consumes:
         - name: "klp:pensjonsimulering"
         - name: "nav:pensjon/v1/tpregisteret"
+        - name: "spk:nav"
+        - name: "klp:oftp/simulering"
   liveness:
     path: actuator/health/liveness
     initialDelay: 30
