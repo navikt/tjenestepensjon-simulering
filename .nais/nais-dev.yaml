@@ -7,6 +7,12 @@ metadata:
     team: pensjonskalkulator
 spec:
   image: {{ image }}
+  resources:
+    limits:
+      memory: 916Mi
+    requests:
+      cpu: 50m
+      memory: 458Mi
   port: 8080
   webproxy: true
   ingresses:
