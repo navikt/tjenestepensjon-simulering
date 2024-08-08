@@ -16,7 +16,6 @@ spec:
   port: 8080
   webproxy: true
   ingresses:
-    - https://tjenestepensjon-simulering.nais.adeo.no
     - https://tjenestepensjon-simulering.intern.nav.no
   accessPolicy:
     inbound:
