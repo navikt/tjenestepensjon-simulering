@@ -58,4 +58,4 @@ jobs:
         env:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais-dev.yaml
-          VAR: image=${{ needs.build.outputs.image }}
+          IMAGE: ${{ needs.build.outputs.image }}
