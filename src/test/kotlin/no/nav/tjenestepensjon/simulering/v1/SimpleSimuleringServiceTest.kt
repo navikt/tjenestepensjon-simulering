@@ -5,7 +5,7 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_MANGEL
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_UFUL
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
@@ -55,11 +55,11 @@ internal class SimpleSimuleringServiceTest {
 
     @Test
     fun `Should add response info when simulering returns ok status`() {
-        val map = mapOf(TPOrdning("tssInkluder", "tpInkluder") to emptyList<Stillingsprosent>())
+        val map = mapOf(TPOrdningIdDto("tssInkluder", "tpInkluder") to emptyList<Stillingsprosent>())
         val exceptions = listOf(
             ExecutionException(
                 StillingsprosentCallableException(
-                    "msg", Throwable(), TPOrdning("tssUtelatt", "tpUtelatt")
+                    "msg", Throwable(), TPOrdningIdDto("tssUtelatt", "tpUtelatt")
                 )
             )
         )
@@ -76,11 +76,11 @@ internal class SimpleSimuleringServiceTest {
                 )
             ), tpnr = "feil", navnOrdning = "feil"
         )
-        val tpOrdning = TPOrdning("fake", "faker")
+        val tpOrdningIdDto = TPOrdningIdDto("fake", "faker")
         val tpLeverandor = TpLeverandor("fake", SOAP, "faker", "faker")
         `when`(soapClient.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(listOf(s1))
         val response = simuleringService.simulerOffentligTjenestepensjon(
-            request, stillingsprosentResponse, tpOrdning, tpLeverandor
+            request, stillingsprosentResponse, tpOrdningIdDto, tpLeverandor
         )
         verify(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_UFUL)
         val simulertPensjon = response.simulertPensjonListe.first()
@@ -92,7 +92,7 @@ internal class SimpleSimuleringServiceTest {
 
     @Test
     fun `Should increment metrics`() {
-        val map = mapOf(TPOrdning("tssInkluder", "tpInkluder") to emptyList<Stillingsprosent>())
+        val map = mapOf(TPOrdningIdDto("tssInkluder", "tpInkluder") to emptyList<Stillingsprosent>())
         val stillingsprosentResponse = StillingsprosentResponse(map, listOf())
 
         val s1 = SimulertPensjon(
@@ -101,13 +101,13 @@ internal class SimpleSimuleringServiceTest {
         val s2 = SimulertPensjon(
             utbetalingsperioder = listOf(null), tpnr = "feil", navnOrdning = "feil"
         )
-        val tpOrdning = TPOrdning("fake", "faker")
+        val tpOrdningIdDto = TPOrdningIdDto("fake", "faker")
         val tpLeverandor = TpLeverandor("fake", SOAP, "faker", "faker")
         `when`(soapClient.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
             listOf(s1, s2)
         )
         val response = simuleringService.simulerOffentligTjenestepensjon(
-            request, stillingsprosentResponse, tpOrdning, tpLeverandor
+            request, stillingsprosentResponse, tpOrdningIdDto, tpLeverandor
         )
         verify(metrics).incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_MANGEL)
         assertNull(response.simulertPensjonListe.first().status)

@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.v1.soap
 
 import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
 import no.nav.tjenestepensjon.simulering.defaultFNR
-import no.nav.tjenestepensjon.simulering.defaultTPOrdning
+import no.nav.tjenestepensjon.simulering.defaultTPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
@@ -44,7 +44,7 @@ internal class SoapClientTest {
         `when`(tokenClientOld.samlAccessToken).thenReturn(TokenImpl("bogus", 0))
 
         val result = client.getStillingsprosenter(
-            defaultFNR, defaultTPOrdning, TpLeverandor("name", SOAP, "sim", "stilling")
+            defaultFNR, defaultTPOrdningIdDto, TpLeverandor("name", SOAP, "sim", "stilling")
         )
         defaultStillingsprosentListe.forEachIndexed { index, stillingsprosent ->
             assertEquals(stillingsprosent, result[index])
@@ -63,9 +63,9 @@ internal class SoapClientTest {
 
         val result = client.simulerPensjon(
             request = defaultSimulerPensjonRequest,
-            tpOrdning = defaultTPOrdning,
+            tpOrdning = defaultTPOrdningIdDto,
             tpLeverandor = TpLeverandor("name", SOAP, "sim", "stilling"),
-            tpOrdningStillingsprosentMap = mapOf(defaultTPOrdning to listOf(defaultStillingsprosent))
+            tpOrdningStillingsprosentMap = mapOf(defaultTPOrdningIdDto to listOf(defaultStillingsprosent))
         )
         defaultSimulertPensjonList.forEachIndexed { index, simulertPensjon ->
             assertEquals(simulertPensjon, result[index])

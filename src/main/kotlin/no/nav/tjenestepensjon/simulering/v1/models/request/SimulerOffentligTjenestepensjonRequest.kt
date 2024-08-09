@@ -3,7 +3,7 @@ package no.nav.tjenestepensjon.simulering.v1.models.request
 import no.nav.tjenestepensjon.simulering.v1.models.domain.*
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.YEARS
 
@@ -29,7 +29,7 @@ data class SimulerOffentligTjenestepensjonRequest(
 ) {
     constructor(
         simulerPensjonRequest: SimulerPensjonRequestV1,
-        tpOrdning: TPOrdning,
+        tpOrdning: TPOrdningIdDto,
         tpOrdningStillingsprosentMap: TPOrdningStillingsprosentMap,
         forsteUttak: Simuleringsperiode,
         heltUttak: Simuleringsperiode
@@ -56,7 +56,7 @@ data class SimulerOffentligTjenestepensjonRequest(
 
     constructor(
         simulerPensjonRequest: SimulerPensjonRequestV1,
-        tpOrdning: TPOrdning,
+        tpOrdning: TPOrdningIdDto,
         tpOrdningStillingsprosentMap: TPOrdningStillingsprosentMap,
         forsteUttak: Simuleringsperiode
     ) : this(fnr = simulerPensjonRequest.fnr,

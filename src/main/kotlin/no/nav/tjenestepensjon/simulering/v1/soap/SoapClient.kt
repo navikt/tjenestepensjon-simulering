@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v1.soap
 
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.Tjenestepensjonsimulering
@@ -39,7 +39,7 @@ class SoapClient(
     lateinit var samlConfig: SamlConfig
 
     override fun getStillingsprosenter(
-        fnr: FNR, tpOrdning: TPOrdning, tpLeverandor: TpLeverandor
+        fnr: FNR, tpOrdning: TPOrdningIdDto, tpLeverandor: TpLeverandor
     ) = webServiceTemplate.marshalSendAndReceive(
         HentStillingsprosentListeRequest(fnr, tpOrdning).let(SOAPAdapter::marshal), SOAPCallback(
             hentStillingsprosentUrl,
@@ -53,7 +53,7 @@ class SoapClient(
 
     override fun simulerPensjon(
         request: SimulerPensjonRequestV1,
-        tpOrdning: TPOrdning,
+        tpOrdning: TPOrdningIdDto,
         tpLeverandor: TpLeverandor,
         tpOrdningStillingsprosentMap: TPOrdningStillingsprosentMap
     ) = webServiceTemplate.marshalSendAndReceive(
