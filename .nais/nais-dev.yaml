@@ -17,7 +17,6 @@ spec:
   webproxy: true
   ingresses:
     - https://tjenestepensjon-simulering.intern.dev.nav.no
-    - https://tjenestepensjon-simulering.dev.intern.nav.no
   accessPolicy:
     inbound:
       rules:
