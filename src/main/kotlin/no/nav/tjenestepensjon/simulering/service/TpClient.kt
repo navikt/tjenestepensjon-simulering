@@ -7,10 +7,10 @@ import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
-import no.nav.tjenestepensjon.simulering.model.domain.AktivTpOrdningDto
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningDto
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.HateoasWrapper
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
@@ -68,7 +68,7 @@ class TpClient(
     }
 
     @Cacheable(TP_ORDNING_LEVERANDOR_CACHE)
-    fun findTpLeverandorName(tpOrdning: TPOrdning): String? =
+    fun findTpLeverandorName(tpOrdning: TPOrdningIdDto): String? =
         webClient.get().uri("$tpUrl/api/tpconfig/tpleverandoer/${tpOrdning.tpId}").exchangeToMono {
             when (it.statusCode().value()) {
                 200 -> it.bodyToMono<String>()
@@ -87,7 +87,7 @@ class TpClient(
             }
         }.block()
 
-    fun findAktiveForhold(fnr: FNR): List<AktivTpOrdningDto> {
+    fun findTPForhold(fnr: FNR): List<TpOrdningDto> {
         return webClient.get()
             .uri("$tpUrl/api/tjenestepensjon/aktiveOrdninger")
             .headers {
@@ -95,7 +95,7 @@ class TpClient(
                 it.setBearerAuth(aadClient.getToken(tpScope))
             }.exchangeToMono {
                 when (it.statusCode().value()) {
-                    200 -> it.bodyToMono<List<AktivTpOrdningDto>>()
+                    200 -> it.bodyToMono<List<TpOrdningDto>>()
                     404 -> Mono.empty()
                     else -> Mono.error(handleRemoteError(null))
                 }

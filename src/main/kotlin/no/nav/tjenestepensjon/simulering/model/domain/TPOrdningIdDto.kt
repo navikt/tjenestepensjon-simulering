@@ -1,5 +1,5 @@
 package no.nav.tjenestepensjon.simulering.model.domain
 
-data class TPOrdning(
+data class TPOrdningIdDto(
     var tssId: String, var tpId: String
 )

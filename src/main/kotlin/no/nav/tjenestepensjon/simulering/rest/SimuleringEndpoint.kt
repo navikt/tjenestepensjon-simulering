@@ -17,7 +17,7 @@ import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerOffentligTjenestepensjonRequest
@@ -69,7 +69,7 @@ class SimuleringEndpoint(
         return try {
             val fnr = FNR(body.fnr)
             val tpOrdningAndLeverandorMap = tpClient.findForhold(fnr)
-                .mapNotNull { forhold -> tpClient.findTssId(forhold.ordning)?.let { TPOrdning(tpId = forhold.ordning, tssId = it) } }//tpClient.findTpLeverandorName(tpOrdning)
+                .mapNotNull { forhold -> tpClient.findTssId(forhold.ordning)?.let { TPOrdningIdDto(tpId = forhold.ordning, tssId = it) } }//tpClient.findTpLeverandorName(tpOrdning)
                 .let(::getTpLeverandorer)
             val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
             val tpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
@@ -158,9 +158,9 @@ class SimuleringEndpoint(
     fun getHeaderFromRequestContext(key: String) =
         currentRequestAttributes().getAttribute(key, SCOPE_REQUEST)?.toString()
 
-    private fun getTpLeverandorer(tpOrdningList: List<TPOrdning>): MutableMap<TPOrdning, TpLeverandor> {
-        if (tpOrdningList.isEmpty()) throw LeveradoerNotFoundException("TSSnr not found for any tpOrdning.")
-        return asyncExecutor.executeAsync(tpOrdningList.associateWith { tpOrdning ->
+    private fun getTpLeverandorer(tpOrdningIdDtoList: List<TPOrdningIdDto>): MutableMap<TPOrdningIdDto, TpLeverandor> {
+        if (tpOrdningIdDtoList.isEmpty()) throw LeveradoerNotFoundException("TSSnr not found for any tpOrdning.")
+        return asyncExecutor.executeAsync(tpOrdningIdDtoList.associateWith { tpOrdning ->
             FindTpLeverandorCallable(tpOrdning, tpClient, tpLeverandorList, metrics)
         }).resultMap.apply {
             if (isEmpty()) throw LeveradoerNotFoundException("No Tp-leverandoer found for person.")

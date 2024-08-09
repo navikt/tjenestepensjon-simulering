@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v1
 
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
@@ -81,7 +81,7 @@ internal class OpptjeningsperiodeCallableTest {
 
     private companion object {
         val fnr = FNR("01011234567")
-        val tpOrdning = TPOrdning("tss1", "tp1")
+        val tpOrdning = TPOrdningIdDto("tss1", "tp1")
         val soapTpLeverandor = TpLeverandor("lev", SOAP, "sim", "stilling")
         val restTpLeverandor = TpLeverandor("lev", REST, "sim", "stilling")
 

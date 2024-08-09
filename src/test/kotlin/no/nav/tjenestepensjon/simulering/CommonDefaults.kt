@@ -3,7 +3,7 @@ package no.nav.tjenestepensjon.simulering
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import java.time.LocalDate
 
 const val defaultFNRString = "01010101010"
@@ -26,4 +26,4 @@ const val defaultTomDateString = "1901-01-31"
 val defaultDatoFom: LocalDate = LocalDate.parse(defaultFomDateString)
 val defaultDatoTom: LocalDate = LocalDate.parse(defaultTomDateString)
 
-val defaultTPOrdning = TPOrdning(defaultTssid, defaultTpid)
+val defaultTPOrdningIdDto = TPOrdningIdDto(defaultTssid, defaultTpid)

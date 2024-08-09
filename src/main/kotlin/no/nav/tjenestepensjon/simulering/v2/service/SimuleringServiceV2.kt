@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.v2.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTjenestepensjonException
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.rest.SimuleringEndpoint
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentResponse
@@ -24,7 +24,7 @@ class SimuleringServiceV2(
     fun simulerOffentligTjenestepensjon(
         request: SimulerPensjonRequestV2,
         stillingsprosentResponse: StillingsprosentResponse,
-        tpOrdning: TPOrdning,
+        tpOrdning: TPOrdningIdDto,
         tpLeverandor: TpLeverandor
     ): SimulerOffentligTjenestepensjonResponse {
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(stillingsprosentResponse)

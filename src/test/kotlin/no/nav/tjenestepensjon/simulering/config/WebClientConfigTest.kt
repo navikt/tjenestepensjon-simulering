@@ -6,7 +6,7 @@ import no.nav.tjenestepensjon.simulering.config.WebClientConfig.Companion.READ_T
 import no.nav.tjenestepensjon.simulering.defaultLeveradorUrl
 import no.nav.tjenestepensjon.simulering.defaultTpid
 import no.nav.tjenestepensjon.simulering.defaultTssid
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import org.junit.jupiter.api.AfterAll
@@ -41,6 +41,6 @@ internal class WebClientConfigTest {
 
     @Test
     fun `Should throw exception if read timeout exceeded`() {
-        assertThrows<RuntimeException> { tpClient.findTpLeverandorName(TPOrdning(defaultTssid, defaultTpid)) }
+        assertThrows<RuntimeException> { tpClient.findTpLeverandorName(TPOrdningIdDto(defaultTssid, defaultTpid)) }
     }
 }
