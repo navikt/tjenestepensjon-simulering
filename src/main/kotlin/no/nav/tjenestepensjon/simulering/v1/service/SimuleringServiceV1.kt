@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.v1.service
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v1.exceptions.StillingsprosentCallableException
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequestV1
@@ -20,7 +20,7 @@ class SimuleringServiceV1(
     fun simulerOffentligTjenestepensjon(
         request: SimulerPensjonRequestV1,
         stillingsprosentResponse: StillingsprosentResponse,
-        tpOrdning: TPOrdning,
+        tpOrdning: TPOrdningIdDto,
         tpLeverandor: TpLeverandor
     ) = SimulerOffentligTjenestepensjonResponse(simulertPensjonListe = try {
         soapClient.simulerPensjon(
@@ -43,8 +43,8 @@ class SimuleringServiceV1(
     ): List<SimulertPensjon> {
         val utelatteTpNr = stillingsprosentResponse.exceptions.map(ExecutionException::cause)
             .filterIsInstance<StillingsprosentCallableException>().map(StillingsprosentCallableException::tpOrdning)
-            .map(TPOrdning::tpId)
-        val inkluderteTpNr = stillingsprosentResponse.tpOrdningStillingsprosentMap.keys.map(TPOrdning::tpId)
+            .map(TPOrdningIdDto::tpId)
+        val inkluderteTpNr = stillingsprosentResponse.tpOrdningStillingsprosentMap.keys.map(TPOrdningIdDto::tpId)
         return simulertPensjonList.onEach { simulertPensjon ->
             if (simulertPensjon.tpnr != null) {
                 simulertPensjon.utelatteTpnr = utelatteTpNr

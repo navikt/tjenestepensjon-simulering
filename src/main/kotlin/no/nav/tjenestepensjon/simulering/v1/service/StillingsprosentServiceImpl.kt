@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningTpLeverandorMap
@@ -47,7 +47,7 @@ class StillingsprosentServiceImpl(
             .reduce(::getLatest).first
 
     @Throws(DuplicateStillingsprosentEndDateException::class)
-    private fun getLatest(latest: Pair<TPOrdning, Stillingsprosent>, other: Pair<TPOrdning, Stillingsprosent>) = when {
+    private fun getLatest(latest: Pair<TPOrdningIdDto, Stillingsprosent>, other: Pair<TPOrdningIdDto, Stillingsprosent>) = when {
         latest.second.datoTom == other.second.datoTom -> throw DuplicateStillingsprosentEndDateException("Could not decide latest stillingprosent due to multiple stillingsprosent having the same end date")
         other.second.datoTom == null -> other
         latest.second.datoTom == null || latest.second.datoTom!! > other.second.datoTom -> latest

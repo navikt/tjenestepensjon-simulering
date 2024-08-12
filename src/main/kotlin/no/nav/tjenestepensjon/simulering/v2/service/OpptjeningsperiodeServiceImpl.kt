@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2.service
 
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentResponse
@@ -32,7 +32,7 @@ class OpptjeningsperiodeServiceImpl: OpptjeningsperiodeService {
                     .reduce(::getLatest).first
 
     @Throws(DuplicateOpptjeningsperiodeEndDateException::class)
-    private fun getLatest(latest: Pair<TPOrdning, Opptjeningsperiode>, other: Pair<TPOrdning, Opptjeningsperiode>) = when {
+    private fun getLatest(latest: Pair<TPOrdningIdDto, Opptjeningsperiode>, other: Pair<TPOrdningIdDto, Opptjeningsperiode>) = when {
         latest.second.datoTom == other.second.datoTom -> throw DuplicateOpptjeningsperiodeEndDateException("Could not decide latest stillingprosent due to multiple stillingsprosent having the same end date")
         other.second.datoTom == null -> other
         latest.second.datoTom == null || latest.second.datoTom!! > other.second.datoTom -> latest

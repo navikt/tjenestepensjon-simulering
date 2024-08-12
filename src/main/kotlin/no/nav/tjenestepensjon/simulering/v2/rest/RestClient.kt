@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2.rest
 
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdning
+import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequestV2
@@ -16,7 +16,7 @@ class RestClient(private val webClient: WebClient) {
     private lateinit var tokenClient: TokenClient
 
     fun getResponse(
-        request: SimulerPensjonRequestV2, tpOrdning: TPOrdning, tpLeverandor: TpLeverandor
+        request: SimulerPensjonRequestV2, tpOrdning: TPOrdningIdDto, tpLeverandor: TpLeverandor
     ): SimulerOffentligTjenestepensjonResponse = webClient.post().uri(tpLeverandor.simuleringUrl).headers {
         it.setBearerAuth(
             if (tpLeverandor.name != "SPK") tokenClient.pensjonsimuleringToken()
