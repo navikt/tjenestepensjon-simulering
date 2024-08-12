@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.v3.afp
+package no.nav.tjenestepensjon.simulering.v2025.afp.v1
 
 import no.nav.tjenestepensjon.simulering.model.domain.AfpBeregningsgrunnlag
 import no.nav.tjenestepensjon.simulering.model.domain.PensjonsbeholdningMedDelingstallAlder
@@ -15,7 +15,8 @@ import org.springframework.stereotype.Service
 class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdningClient, val penClient: PenClient) {
 
     fun simuler(request: SimulerAFPOffentligLivsvarigRequest): List<AfpOffentligLivsvarigYtelseMedDelingstall> {
-        val aldreForDelingstall: List<AlderForDelingstall> = AlderForDelingstallBeregner.bestemAldreForDelingstall(request.fodselsdato, request.fom)
+        val aldreForDelingstall: List<AlderForDelingstall> =
+            AlderForDelingstallBeregner.bestemAldreForDelingstall(request.fodselsdato, request.fom)
 
         val requestToAFPBeholdninger = SimulerAFPBeholdningGrunnlagRequest(request.fnr, request.fom, request.fremtidigeInntekter.map { InntektPeriode(it.fom, it.belop) })
         val beholdningerMedAldreForDelingstall: List<PensjonsbeholdningMedDelingstallAlder> = afpBeholdningClient.simulerAFPBeholdningGrunnlag(requestToAFPBeholdninger)
