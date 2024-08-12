@@ -13,7 +13,7 @@ import no.nav.tjenestepensjon.simulering.v2.models.defaultAktiveOrdningerJson
 import no.nav.tjenestepensjon.simulering.v2.models.defaultSimulerBeregningAFPOffentligJson
 import no.nav.tjenestepensjon.simulering.v2.models.enAktivOrdningJson
 import no.nav.tjenestepensjon.simulering.v2.models.simulerBeregningAFPOffentligUtenMedlemskapITPOrdningJson
-import no.nav.tjenestepensjon.simulering.v3.afp.AFPOffentligLivsvarigSimuleringService
+import no.nav.tjenestepensjon.simulering.v2025.afp.v1.AFPOffentligLivsvarigSimuleringService
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

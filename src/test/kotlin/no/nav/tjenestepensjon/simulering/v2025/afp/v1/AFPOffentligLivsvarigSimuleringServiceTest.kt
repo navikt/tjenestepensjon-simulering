@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.v3.afp
+package no.nav.tjenestepensjon.simulering.v2025.afp.v1
 
 import no.nav.tjenestepensjon.simulering.model.domain.pen.Alder
 import no.nav.tjenestepensjon.simulering.model.domain.pen.Delingstall
@@ -6,6 +6,7 @@ import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLiv
 import no.nav.tjenestepensjon.simulering.model.domain.popp.AFPGrunnlagBeholdningPeriode
 import no.nav.tjenestepensjon.simulering.service.AFPBeholdningClient
 import no.nav.tjenestepensjon.simulering.service.PenClient
+import no.nav.tjenestepensjon.simulering.v2025.afp.v1.AFPOffentligLivsvarigSimuleringService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any

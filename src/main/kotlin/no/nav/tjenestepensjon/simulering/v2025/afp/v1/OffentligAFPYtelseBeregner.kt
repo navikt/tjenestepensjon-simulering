@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.v3.afp
+package no.nav.tjenestepensjon.simulering.v2025.afp.v1
 
 import no.nav.tjenestepensjon.simulering.model.domain.AfpBeregningsgrunnlag
 import no.nav.tjenestepensjon.simulering.model.domain.pen.AfpOffentligLivsvarigYtelseMedDelingstall
