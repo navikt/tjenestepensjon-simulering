@@ -38,6 +38,8 @@ spec:
         - application: pensjon-pen
           namespace: pensjondeployer
           cluster: prod-fss
+      external:
+        - host: api.klp.no
   azure:
     application:
       enabled: true

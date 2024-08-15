@@ -52,6 +52,8 @@ spec:
         - application: pensjon-pen-q2
           namespace: pensjon-q2
           cluster: dev-fss
+      external:
+        - host: api-test.klp.no
   azure:
     application:
       enabled: true
