@@ -2,7 +2,6 @@ package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service
 
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.TjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
@@ -13,8 +12,8 @@ import org.springframework.stereotype.Service
 @Service
 class TjenestepensjonV2025Service(
     private val tpClient: TpClient,
-    @Qualifier("spk") private val spk: TjenestepensjonV2025Client,
-    @Qualifier("klp") private val klp: TjenestepensjonV2025Client,
+    @Qualifier("oftp-2025-spk") private val spk: TjenestepensjonV2025Client,
+    @Qualifier("oftp-2025-klp") private val klp: TjenestepensjonV2025Client,
     ) {
 
     @Throws(BrukerErIkkeMedlemException::class, TpOrdningStoettesIkkeException::class, TjenestepensjonSimuleringException::class)
@@ -23,8 +22,8 @@ class TjenestepensjonV2025Service(
             ?: throw BrukerErIkkeMedlemException()
 
         return when (tpOrdningNavn.lowercase()) {
-            "spk" -> spk.simuler(TjenestepensjonRequest(request.fnr))
-            "klp" -> klp.simuler(TjenestepensjonRequest(request.fnr))
+            "spk" -> spk.simuler(request)
+            "klp" -> klp.simuler(request)
             else -> throw TpOrdningStoettesIkkeException(tpOrdningNavn)
         }
     }

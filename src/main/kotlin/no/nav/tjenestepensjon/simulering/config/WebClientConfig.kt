@@ -99,18 +99,19 @@ class WebClientConfig {
             .build()
     }
 
-    private fun addCorrelationId(
-        next: ExchangeFunction,
-        request: ClientRequest
-    ): Mono<ClientResponse> = next.exchange(
-        ClientRequest.from(request)
-            .header(CORRELATION_ID_HTTP_HEADER, MDC.get(CORRELATION_ID))
-            .header(CONSUMER_ID_HTTP_HEADER, MDC.get(CONSUMER_ID))
-            .build()
-    )
 
     companion object {
         private const val CONNECT_TIMEOUT_MILLIS = 3000
         const val READ_TIMEOUT_MILLIS = 5000
+
+        fun addCorrelationId(
+            next: ExchangeFunction,
+            request: ClientRequest
+        ): Mono<ClientResponse> = next.exchange(
+            ClientRequest.from(request)
+                .header(CORRELATION_ID_HTTP_HEADER, MDC.get(CORRELATION_ID))
+                .header(CONSUMER_ID_HTTP_HEADER, MDC.get(CONSUMER_ID))
+                .build()
+        )
     }
 }

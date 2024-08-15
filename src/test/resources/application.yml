@@ -63,3 +63,8 @@ pen:
 spring:
   profiles:
     active: dev-gcp,test
+oftp:
+  2025:
+    klp:
+      endpoint:
+        url: https://api-test.klp.no

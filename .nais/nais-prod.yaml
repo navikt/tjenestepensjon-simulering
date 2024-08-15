@@ -46,6 +46,7 @@ spec:
     scopes:
       consumes:
         - name: "klp:pensjonsimulering"
+        - name: "klp:oftp/simulering"
         - name: "nav:pensjon/v1/tpregisteret"
   liveness:
     path: actuator/health/liveness
