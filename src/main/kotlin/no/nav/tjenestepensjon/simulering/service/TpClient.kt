@@ -87,11 +87,11 @@ class TpClient(
             }
         }.block()
 
-    fun findTPForhold(fnr: FNR): List<TpOrdningDto> {
+    fun findTPForhold(fnr: String): List<TpOrdningDto> {
         return webClient.get()
             .uri("$tpUrl/api/tjenestepensjon/aktiveOrdninger")
             .headers {
-                it["fnr"] = fnr.fnr
+                it["fnr"] = fnr
                 it.setBearerAuth(aadClient.getToken(tpScope))
             }.exchangeToMono {
                 when (it.statusCode().value()) {

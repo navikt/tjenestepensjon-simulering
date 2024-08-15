@@ -30,6 +30,9 @@ spec:
           namespace: pensjon-q5
         - application: pensjon-testdata-server-q2
           namespace: pensjontestdata
+        - application: pensjonskalkulator-backend
+          namespace: pensjonskalkulator
+          cluster: dev-gcp
     outbound:
       rules:
         - application: tp-q2
