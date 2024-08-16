@@ -34,6 +34,7 @@ class Tjenestepensjon2025ClientConfig {
                     HttpClient
                         .create()
                         .proxyWithSystemProperties()
+                        .followRedirect(true)
                 )
             )
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
