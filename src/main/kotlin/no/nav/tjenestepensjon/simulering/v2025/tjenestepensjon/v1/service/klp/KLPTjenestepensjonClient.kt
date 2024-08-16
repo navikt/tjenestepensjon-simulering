@@ -7,6 +7,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.Tjen
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.bodyToMono
 
@@ -31,6 +32,9 @@ class KLPTjenestepensjonClient(private val webClient: WebClient) : Tjenestepensj
                 throw RuntimeException("Failed to simulate tjenestepensjon 2025 hos KLP ${errorMsg}", e)
             }
             throw TjenestepensjonSimuleringException(errorMsg)
+        } catch (e: WebClientRequestException){
+            log.error(e) { "Failed to send request to simulate tjenestepensjon 2025 hos KLP med url ${e.uri}" }
+            throw RuntimeException("Failed to send request to simulate tjenestepensjon 2025 hos KLP", e)
         }
     }
 }
