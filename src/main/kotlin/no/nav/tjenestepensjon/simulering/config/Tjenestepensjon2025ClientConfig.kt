@@ -10,11 +10,13 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import reactor.netty.http.client.HttpClient
 import kotlin.reflect.KFunction0
 
 @Configuration
@@ -27,6 +29,13 @@ class Tjenestepensjon2025ClientConfig {
         tokenClient: TokenClient,
     ): TjenestepensjonV2025Client {
         return KLPTjenestepensjonClient(webClientBuilder
+            .clientConnector(
+                ReactorClientHttpConnector(
+                    HttpClient
+                        .create()
+                        .proxyWithSystemProperties()
+                )
+            )
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .baseUrl(url)
             .filter { request, next -> addCorrelationId(next, request) }
