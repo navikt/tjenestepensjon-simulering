@@ -85,7 +85,7 @@ spec:
     - name: tp_scope
       value: api://dev-fss.pensjonsamhandling.tp-q2/.default
     - name: afp_beholdning_url
-      value: https://pensjon-opptjening-afp-api.intern.dev.nav.no
+      value: https://pensjon-opptjening-afp-api.pensjonopptjening
     - name: afp_beholdning_scope
       value: api://dev-gcp.pensjonopptjening.pensjon-opptjening-afp-api/.default
     - name: pen_url
