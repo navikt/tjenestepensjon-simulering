@@ -83,6 +83,10 @@ spec:
       value: https://pensjon-pen.nais.adeo.no/pen/springapi
     - name: pen_scope
       value: api://prod-fss.pensjondeployer.pensjon-pen/.default
+    - name: pen-fss-gateway_url
+      value: https://pensjon-selvbetjening-fss-gateway.prod-fss-pub.nais.io
+    - name: pen-fss-gateway_scope
+      value: api://prod-fss.pensjonselvbetjening.pensjon-selvbetjening-fss-gateway/.default
   prometheus:
     enabled: true
     path: actuator/prometheus

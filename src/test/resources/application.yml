@@ -56,3 +56,9 @@ afp:
 pen:
   url: http://localhost:8080
   scope: api://bogus
+pen-fss-gateway:
+  url: http://localhost:8080
+  scope: api://bogus
+spring:
+  profiles:
+    active: dev-gcp,test

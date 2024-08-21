@@ -11,8 +11,12 @@ import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.MediaType
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
-import org.springframework.web.reactive.function.client.*
+import org.springframework.web.reactive.function.client.ClientRequest
+import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.ExchangeFunction
+import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 
@@ -69,6 +73,26 @@ class WebClientConfig {
         }
         .filter { request, next -> addCorrelationId(next, request) }
         .build()
+
+    @Bean
+    fun soapGatewayAuthWebClient(
+        @Value("\${pen-fss-gateway.url}") url: String,
+        @Value("\${pen-fss-gateway.scope}") scope: String,
+        httpClient: HttpClient,
+        adClient: AADClient,
+    ): WebClient {
+        return WebClient.builder()
+            .baseUrl(url)
+            .clientConnector(ReactorClientHttpConnector(httpClient))
+            .filter { request, next ->
+                next.exchange(
+                    ClientRequest.from(request)
+                        .headers { it.setBearerAuth(adClient.getToken(scope)) }
+                        .build()
+                )
+            }
+            .build()
+    }
 
     private fun addCorrelationId(
         next: ExchangeFunction,
