@@ -92,9 +92,9 @@ spec:
       value: https://pensjon-pen-q2.dev-fss-pub.nais.io/pen/springapi
     - name: pen_scope
       value: api://dev-fss.pensjon-q2.pensjon-pen-q2/.default
-    - name: pen-fss-gateway_url
+    - name: pen_fss_gateway_url
       value: https://pensjon-selvbetjening-fss-gateway.dev-fss-pub.nais.io
-    - name: pen-fss-gateway_scope
+    - name: pen_fss_gateway_scope
       value: api://dev-fss.pensjonselvbetjening.pensjon-selvbetjening-fss-gateway/.default
   prometheus:
     enabled: true

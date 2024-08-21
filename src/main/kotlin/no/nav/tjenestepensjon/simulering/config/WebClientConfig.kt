@@ -76,8 +76,8 @@ class WebClientConfig {
 
     @Bean
     fun soapGatewayAuthWebClient(
-        @Value("\${pen-fss-gateway.url}") url: String,
-        @Value("\${pen-fss-gateway.scope}") scope: String,
+        @Value("\${pen.fss.gateway.url}") url: String,
+        @Value("\${pen.fss.gateway.scope}") scope: String,
         httpClient: HttpClient,
         adClient: AADClient,
     ): WebClient {
