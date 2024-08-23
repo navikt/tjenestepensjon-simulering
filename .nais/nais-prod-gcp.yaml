@@ -14,7 +14,6 @@ spec:
       cpu: 100m
       memory: 544Mi
   port: 8080
-  webproxy: true
   ingresses:
     - https://tjenestepensjon-simulering-gcp.intern.nav.no
   accessPolicy:
