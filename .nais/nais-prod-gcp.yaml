@@ -60,7 +60,7 @@ spec:
     periodSeconds: 5
   replicas:
     min: 2
-    max: 2
+    max: 4
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod-gcp
