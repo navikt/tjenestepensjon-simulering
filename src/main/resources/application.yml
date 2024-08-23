@@ -47,5 +47,9 @@ afp:
     url: http://localhost:8080
     scope: api://bogus
 pen:
-    url: http://localhost:8080
-    scope: api://bogus
+  url: http://localhost:8080
+  scope: api://bogus
+  fss:
+    gateway:
+      url: http://localhost:8080
+      scope: api://bogus

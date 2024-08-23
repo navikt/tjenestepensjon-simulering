@@ -14,22 +14,26 @@ spec:
       cpu: 50m
       memory: 458Mi
   port: 8080
-  webproxy: true
   ingresses:
-    - https://tjenestepensjon-simulering.intern.dev.nav.no
+    - https://tjenestepensjon-simulering-gcp.intern.dev.nav.no
   accessPolicy:
     inbound:
       rules:
         - application: pensjon-pen-q0
           namespace: pensjon-q0
+          cluster: dev-fss
         - application: pensjon-pen-q1
           namespace: pensjon-q1
+          cluster: dev-fss
         - application: pensjon-pen-q2
           namespace: pensjon-q2
+          cluster: dev-fss
         - application: pensjon-pen-q5
           namespace: pensjon-q5
+          cluster: dev-fss
         - application: pensjon-testdata-server-q2
           namespace: pensjontestdata
+          cluster: dev-fss
         - application: pensjonskalkulator-backend
           namespace: pensjonskalkulator
           cluster: dev-gcp
@@ -40,10 +44,16 @@ spec:
           cluster: dev-fss
         - application: pensjon-opptjening-afp-api
           namespace: pensjonopptjening
-          cluster: dev-gcp
         - application: pensjon-pen-q2
           namespace: pensjon-q2
           cluster: dev-fss
+        - application: pensjon-selvbetjening-fss-gateway
+          namespace: pensjonselvbetjening
+          cluster: dev-fss
+      external:
+        - host: pensjon-selvbetjening-fss-gateway.dev-fss-pub.nais.io
+        - host: pensjon-pen-q2.dev-fss-pub.nais.io
+        - host: tp-api-q2.dev-fss-pub.nais.io
   azure:
     application:
       enabled: true
@@ -64,31 +74,22 @@ spec:
     initialDelay: 30
     failureThreshold: 30
     periodSeconds: 5
-  vault:
-    enabled: true
-    paths:
-      - kvPath: /kv/preprod/fss/tjenestepensjon-simulering/pensjonskalkulator
-        mountPath: /var/run/secrets/nais.io/vault
   replicas:
     min: 2
     max: 2
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: preprod
-    - name: provider_uri
-      value: https://pep-gw-q1.oera-q.local:9443/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
-    - name: sts_url
-      value: https://security-token-service.nais.preprod.local
+      value: dev-gcp
     - name: tp_url
-      value: https://tp-q2.dev.intern.nav.no
+      value: https://tp-api-q2.dev-fss-pub.nais.io
     - name: tp_scope
       value: api://dev-fss.pensjonsamhandling.tp-q2/.default
     - name: afp_beholdning_url
-      value: https://pensjon-opptjening-afp-api.intern.dev.nav.no
+      value: http://pensjon-opptjening-afp-api.pensjonopptjening
     - name: afp_beholdning_scope
       value: api://dev-gcp.pensjonopptjening.pensjon-opptjening-afp-api/.default
     - name: pen_url
-      value: https://pensjon-pen-q2.nais.preprod.local/pen/springapi
+      value: https://pensjon-pen-q2.dev-fss-pub.nais.io/pen/springapi
     - name: pen_scope
       value: api://dev-fss.pensjon-q2.pensjon-pen-q2/.default
     - name: pen_fss_gateway_url

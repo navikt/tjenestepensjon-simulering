@@ -3,9 +3,9 @@ package no.nav.tjenestepensjon.simulering.v1.soap
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
+import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.Tjenestepensjonsimulering
-import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
 import no.nav.tjenestepensjon.simulering.v1.models.request.HentStillingsprosentListeRequest
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerOffentligTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequestV1
@@ -22,7 +22,7 @@ import org.springframework.ws.client.core.support.WebServiceGatewaySupport
 @Service
 @Controller
 class SoapClient(
-    webServiceTemplate: WebServiceTemplate, private val tokenClientOld: TokenClientOld
+    webServiceTemplate: WebServiceTemplate, private val tokenService: TokenService
 ) : WebServiceGatewaySupport(), Tjenestepensjonsimulering {
 
     init {
@@ -44,7 +44,7 @@ class SoapClient(
         HentStillingsprosentListeRequest(fnr, tpOrdning).let(SOAPAdapter::marshal), SOAPCallback(
             hentStillingsprosentUrl,
             tpLeverandor.stillingsprosentUrl,
-            tokenClientOld.samlAccessToken.accessToken,
+            tokenService.samlAccessToken.accessToken,
             samlConfig
         )
     ).let {
@@ -74,7 +74,7 @@ class SoapClient(
         }.let(SOAPAdapter::marshal), SOAPCallback(
             simulerOffentlingTjenestepensjonUrl,
             tpLeverandor.simuleringUrl,
-            tokenClientOld.samlAccessToken.accessToken,
+            tokenService.samlAccessToken.accessToken,
             samlConfig
         )
     ).let {

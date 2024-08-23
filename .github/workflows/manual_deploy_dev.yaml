@@ -59,3 +59,20 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais-dev.yaml
           IMAGE: ${{ needs.build.outputs.image }}
+
+  deploy_dev-gcp:
+    name: Deploy to dev-gcp
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      packages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/nais-dev-gcp.yaml
+          IMAGE: ${{ needs.build.outputs.image }}

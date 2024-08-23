@@ -7,12 +7,14 @@ import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld.TokenType.OIDC
 import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld.TokenType.SAML
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import java.net.URI
 
+@Profile(value = ["prod", "preprod"]) //TODO fjern, når appen flyttes til gcp
 @Service
 class TokenClientOld(private val webClient: WebClient) : TokenService {
     private val log = KotlinLogging.logger {}
