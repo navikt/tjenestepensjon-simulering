@@ -1,0 +1,85 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: tjenestepensjon-simulering
+  namespace: pensjonskalkulator
+  labels:
+    team: pensjonskalkulator
+spec:
+  image: {{ image }}
+  resources:
+    limits:
+      memory: 1088Mi
+    requests:
+      cpu: 100m
+      memory: 544Mi
+  port: 8080
+  ingresses:
+    - https://tjenestepensjon-simulering-gcp.intern.nav.no
+  accessPolicy:
+    inbound:
+      rules:
+        - application: pensjon-pen
+          namespace: pensjondeployer
+          cluster: prod-fss
+        - application: pensjonskalkulator-backend
+          namespace: pensjonskalkulator
+    outbound:
+      rules:
+        - application: tp
+          namespace: pensjonsamhandling
+          cluster: prod-fss
+        - application: pensjon-opptjening-afp-api
+          namespace: pensjonopptjening
+        - application: pensjon-pen
+          namespace: pensjondeployer
+          cluster: prod-fss
+      external:
+        - host: pensjon-selvbetjening-fss-gateway.prod-fss-pub.nais.io
+        - host: pensjon-pen.prod-fss-pub.nais.io
+        - host: tp-api.prod-fss-pub.nais.io
+  azure:
+    application:
+      enabled: true
+  maskinporten:
+    enabled: true
+    scopes:
+      consumes:
+        - name: "klp:pensjonsimulering"
+        - name: "nav:pensjon/v1/tpregisteret"
+  liveness:
+    path: actuator/health/liveness
+    initialDelay: 30
+  readiness:
+    path: actuator/health/readiness
+    initialDelay: 30
+  startup:
+    path: actuator/health/readiness
+    initialDelay: 30
+    failureThreshold: 30
+    periodSeconds: 5
+  replicas:
+    min: 2
+    max: 4
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: prod-gcp
+    - name: tp_url
+      value: https://tp-api.prod-fss-pub.nais.io
+    - name: tp_scope
+      value: api://prod-fss.pensjonsamhandling.tp/.default
+    - name: afp_beholdning_url
+      value: http://pensjon-opptjening-afp-api.pensjonopptjening
+    - name: afp_beholdning_scope
+      value: api://prod-gcp.pensjonopptjening.pensjon-opptjening-afp-api/.default
+    - name: pen_url
+      value: https://pensjon-pen.prod-fss-pub.nais.io/pen/springapi
+    - name: pen_scope
+      value: api://prod-fss.pensjondeployer.pensjon-pen/.default
+    - name: pen_fss_gateway_url
+      value: https://pensjon-selvbetjening-fss-gateway.prod-fss-pub.nais.io
+    - name: pen_fss_gateway_scope
+      value: api://prod-fss.pensjonselvbetjening.pensjon-selvbetjening-fss-gateway/.default
+  prometheus:
+    enabled: true
+    path: actuator/prometheus
