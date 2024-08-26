@@ -64,6 +64,8 @@ spec:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod-gcp
+    - name: provider_uri
+      value: https://pensjon-selvbetjening-fss-gateway.prod-fss-pub.nais.io/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
     - name: tp_url
       value: https://tp-api.prod-fss-pub.nais.io
     - name: tp_scope

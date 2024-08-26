@@ -9,6 +9,7 @@ import no.nav.tjenestepensjon.simulering.model.domain.pen.AfpOffentligLivsvarigY
 import no.nav.tjenestepensjon.simulering.model.domain.pen.Alder
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
+import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import no.nav.tjenestepensjon.simulering.v2.models.defaultAktiveOrdningerJson
 import no.nav.tjenestepensjon.simulering.v2.models.defaultSimulerBeregningAFPOffentligJson
 import no.nav.tjenestepensjon.simulering.v2.models.enAktivOrdningJson
@@ -37,6 +38,9 @@ class SimuleringAFPEndpointTest {
 
     @MockBean
     private lateinit var aadClient: AADClient
+
+    @MockBean
+    private lateinit var fssGatewayAuthService: FssGatewayAuthService
 
     @MockBean
     private lateinit var afpOffentligLivsvarigSimuleringService: AFPOffentligLivsvarigSimuleringService

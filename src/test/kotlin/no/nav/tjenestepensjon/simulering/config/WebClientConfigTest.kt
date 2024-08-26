@@ -9,6 +9,7 @@ import no.nav.tjenestepensjon.simulering.defaultTssid
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.service.TpClient
+import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -21,6 +22,9 @@ import org.springframework.boot.test.mock.mockito.MockBean
 @SpringBootTest(classes = [TpClient::class, WebClientConfig::class, ObjectMapperConfig::class, TestConfig::class])
 @TestInstance(PER_CLASS)
 internal class WebClientConfigTest {
+
+    @MockBean
+    private lateinit var fssGatewayAuthService: FssGatewayAuthService
 
     @MockBean
     private lateinit var aadClient: AADClient

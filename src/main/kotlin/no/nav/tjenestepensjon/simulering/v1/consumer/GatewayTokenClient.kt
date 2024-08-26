@@ -3,9 +3,7 @@ package no.nav.tjenestepensjon.simulering.v1.consumer
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
-import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.service.TokenService
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
@@ -16,8 +14,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @Profile(value = ["prod-gcp", "dev-gcp"])
 @Service
 class GatewayTokenClient(private val soapGatewayAuthWebClient: WebClient,
-                         @Value("\${pen.fss.gateway.scope}") private val scope: String,
-                         private val adClient: AADClient,
+                         private val fssGatewayAuthService: FssGatewayAuthService,
     ) : TokenService {
     private val log = KotlinLogging.logger {}
     override val oidcAccessToken: Token?
@@ -27,8 +24,9 @@ class GatewayTokenClient(private val soapGatewayAuthWebClient: WebClient,
         else field
 
     private fun hentSamlToken(): Token {
-        val token = adClient.getToken(scope)
+
         return try {
+            val token = fssGatewayAuthService.hentToken() ?: throw RuntimeException("Tried to get a token from fssGatewayAuthService from fss")
             soapGatewayAuthWebClient
                 .post()
                 .uri(TOKEN_EXCHANGE_PATH)
@@ -36,7 +34,8 @@ class GatewayTokenClient(private val soapGatewayAuthWebClient: WebClient,
                 .body(body(token))
                 .retrieve()
                 .bodyToMono(TokenImpl::class.java)
-                .block() ?: throw RuntimeException("Failed to fetch SAML token from fss-gateway")
+                .block()
+                .also { log.info { "Hentet SAML token fra fss-gateway" } } ?: throw RuntimeException("Failed to fetch SAML token from fss-gateway")
         } catch (e: WebClientRequestException) {
             log.error(e) { "Failed to fetch SAML, WebClientRequestException" }
             throw RuntimeException(DEFAULT_ERROR_MSG, e)
