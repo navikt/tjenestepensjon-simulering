@@ -83,6 +83,7 @@ class WebClientConfig {
     ): WebClient {
         return WebClient.builder()
             .baseUrl(url)
+            .defaultHeaders { it.contentType = MediaType.APPLICATION_FORM_URLENCODED }
             .clientConnector(ReactorClientHttpConnector(httpClient))
             .filter { request, next ->
                 next.exchange(
