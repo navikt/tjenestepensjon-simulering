@@ -7,6 +7,7 @@ import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CO
 import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CORRELATION_ID
 import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CORRELATION_ID_HTTP_HEADER
 import no.nav.tjenestepensjon.simulering.service.AADClient
+import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -77,21 +78,13 @@ class WebClientConfig {
     @Bean
     fun soapGatewayAuthWebClient(
         @Value("\${pen.fss.gateway.url}") url: String,
-        @Value("\${pen.fss.gateway.scope}") scope: String,
+        fssGatewayAuthService: FssGatewayAuthService,
         httpClient: HttpClient,
-        adClient: AADClient,
     ): WebClient {
         return WebClient.builder()
             .baseUrl(url)
             .defaultHeaders { it.contentType = MediaType.APPLICATION_FORM_URLENCODED }
             .clientConnector(ReactorClientHttpConnector(httpClient))
-            .filter { request, next ->
-                next.exchange(
-                    ClientRequest.from(request)
-                        .headers { it.setBearerAuth(adClient.getToken(scope)) }
-                        .build()
-                )
-            }
             .build()
     }
 

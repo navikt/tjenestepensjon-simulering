@@ -13,11 +13,20 @@ class SamlHeaderCallback(private val token: String, private val samlConfig: Saml
     private val transformer = TransformerFactory.newInstance().newTransformer()
 
     override fun doWithMessage(message: WebServiceMessage) {
-        transformer.transform(
-                StringSource(String(Base64.getDecoder().decode(token))),
-                (message as SoapMessage).soapHeader.addHeaderElement(
-                        QName(samlConfig.samlSecurityContextUrl, "Security")
-                ).result
+        val soapMessage = message as SoapMessage
+
+        // Safely add header without affecting Content-Length
+        val headerElement = soapMessage.soapHeader.addHeaderElement(
+            QName(samlConfig.samlSecurityContextUrl, "Security")
         )
+
+        // Use the transformer to ensure message integrity
+        transformer.transform(StringSource(decodeToken(token)), headerElement.result)
+    }
+    companion object {
+        fun decodeToken(token: String): String {
+            return if (token.contains("-")) String(Base64.getUrlDecoder().decode(token))
+            else String(Base64.getDecoder().decode(token))
+        }
     }
 }

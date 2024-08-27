@@ -11,6 +11,7 @@ import no.nav.tjenestepensjon.simulering.defaultTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.defaultTpid
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
+import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.mockito.Mockito
@@ -25,6 +26,9 @@ class TpClientTest {
 
     @MockBean
     private lateinit var aadClient: AADClient
+
+    @MockBean
+    private lateinit var fssGatewayAuthService: FssGatewayAuthService
 
     @Autowired
     private lateinit var tpClient: TpClient
