@@ -25,7 +25,7 @@ import reactor.netty.http.client.HttpClient
 @Configuration
 class WebClientConfig {
 
-    @Profile(value = ["prod", "preprod"])
+    @Profile(value = ["prod", "preprod", "test"])
     @Bean
     fun httpClient(): HttpClient =
         HttpClient.create().proxyWithSystemProperties().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
