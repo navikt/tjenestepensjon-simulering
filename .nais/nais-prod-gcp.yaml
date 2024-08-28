@@ -24,6 +24,9 @@ spec:
           cluster: prod-fss
         - application: pensjonskalkulator-backend
           namespace: pensjonskalkulator
+        - application: penbatch
+          namespace: pensjon-batch
+          cluster: prod-fss
     outbound:
       rules:
         - application: tp

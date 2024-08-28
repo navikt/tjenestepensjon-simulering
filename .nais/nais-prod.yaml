@@ -25,6 +25,8 @@ spec:
         - application: pensjonskalkulator-backend
           namespace: pensjonskalkulator
           cluster: prod-gcp
+        - application: penbatch
+          namespace: pensjon-batch
     outbound:
       rules:
         - application: tp
