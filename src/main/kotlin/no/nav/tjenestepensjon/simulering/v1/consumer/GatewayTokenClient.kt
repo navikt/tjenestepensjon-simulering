@@ -17,20 +17,23 @@ class GatewayTokenClient(private val soapGatewayAuthWebClient: WebClient,
                          private val fssGatewayAuthService: FssGatewayAuthService,
     ) : TokenService {
     private val log = KotlinLogging.logger {}
-    override val oidcAccessToken: Token?
-        get() = null //not supported
+    override var oidcAccessToken: Token = TokenImpl("", expiresIn = -1)
+        get() = if (field.isExpired) hentOidcToken().also { field = it }
+        else field
     override var samlAccessToken: Token = TokenImpl("", expiresIn = -1)
         get() = if (field.isExpired) hentSamlToken().also { field = it }
         else field
 
     private fun hentSamlToken(): Token {
-
         return try {
             val token = fssGatewayAuthService.hentToken() ?: throw RuntimeException("Tried to get a token from fssGatewayAuthService from fss")
             soapGatewayAuthWebClient
                 .post()
                 .uri(TOKEN_EXCHANGE_PATH)
-                .headers { it.setBearerAuth(token) }
+                .headers {
+                    it.setBearerAuth(token)
+                    it["Service-User-Id"] = "3"
+                }
                 .body(body(token))
                 .retrieve()
                 .bodyToMono(TokenImpl::class.java)
@@ -45,9 +48,33 @@ class GatewayTokenClient(private val soapGatewayAuthWebClient: WebClient,
         }
     }
 
+    private fun hentOidcToken(): Token {
+        return try {
+            val token = fssGatewayAuthService.hentToken() ?: throw RuntimeException("Tried to get a OIDC token from fssGatewayAuthService from fss")
+            soapGatewayAuthWebClient
+                .get()
+                .uri(TOKEN_PATH)
+                .headers {
+                    it.setBearerAuth(token)
+                    it["Service-User-Id"] = "3"
+                }
+                .retrieve()
+                .bodyToMono(TokenImpl::class.java)
+                .block()
+                .also { log.info { "Hentet OIDC token fra fss-gateway" } } ?: throw RuntimeException("Failed to fetch OIDC token from fss-gateway")
+        } catch (e: WebClientRequestException) {
+            log.error(e) { "Failed to fetch OIDC, WebClientRequestException" }
+            throw RuntimeException(DEFAULT_ERROR_MSG, e)
+        } catch (e: WebClientResponseException) {
+            log.error(e) { "Failed to fetch OIDC, WebClientResponseException" }
+            throw RuntimeException(DEFAULT_ERROR_MSG, e)
+        }
+    }
+
     companion object {
         private const val DEFAULT_ERROR_MSG = "Failed to fetch SAML token from fss-gateway"
         private const val TOKEN_EXCHANGE_PATH = "/rest/v1/sts/token/exchange?serviceUserId=3"
+        private const val TOKEN_PATH = "/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
 
         private fun body(token: String) =
             BodyInserters

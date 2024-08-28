@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.tjenestepensjon.simulering.*
 import no.nav.tjenestepensjon.simulering.service.AADClient
+import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import no.nav.tjenestepensjon.simulering.v1.models.defaultLeverandor
@@ -43,6 +44,9 @@ class SimuleringEndpointSecurityTest {
 
     @MockBean
     private lateinit var fssGatewayAuthService: FssGatewayAuthService
+
+    @MockBean
+    private lateinit var tokenService: TokenService
 
     @MockBean
     private lateinit var soapClient: SoapClient
