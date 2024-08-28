@@ -37,6 +37,18 @@ spec:
         - application: pensjonskalkulator-backend
           namespace: pensjonskalkulator
           cluster: dev-gcp
+        - application: penbatch-q0
+          namespace: pensjon-batch
+          cluster: dev-fss
+        - application: penbatch-q1
+          namespace: pensjon-batch
+          cluster: dev-fss
+        - application: penbatch-q2
+          namespace: pensjon-batch
+          cluster: dev-fss
+        - application: penbatch-q5
+          namespace: pensjon-batch
+          cluster: dev-fss
     outbound:
       rules:
         - application: tp-q2
