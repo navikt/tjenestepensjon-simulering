@@ -41,6 +41,7 @@ spec:
         - host: pensjon-selvbetjening-fss-gateway.prod-fss-pub.nais.io
         - host: pensjon-pen.prod-fss-pub.nais.io
         - host: tp-api.prod-fss-pub.nais.io
+        - host: api.prod.spk.no
   azure:
     application:
       enabled: true
