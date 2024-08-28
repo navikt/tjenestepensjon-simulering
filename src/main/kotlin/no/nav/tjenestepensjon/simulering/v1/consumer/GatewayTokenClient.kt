@@ -30,7 +30,10 @@ class GatewayTokenClient(private val soapGatewayAuthWebClient: WebClient,
             soapGatewayAuthWebClient
                 .post()
                 .uri(TOKEN_EXCHANGE_PATH)
-                .headers { it.setBearerAuth(token) }
+                .headers {
+                    it.setBearerAuth(token)
+                    it["Service-User-Id"] = "3"
+                }
                 .body(body(token))
                 .retrieve()
                 .bodyToMono(TokenImpl::class.java)
@@ -51,7 +54,10 @@ class GatewayTokenClient(private val soapGatewayAuthWebClient: WebClient,
             soapGatewayAuthWebClient
                 .get()
                 .uri(TOKEN_PATH)
-                .headers { it.setBearerAuth(token) }
+                .headers {
+                    it.setBearerAuth(token)
+                    it["Service-User-Id"] = "3"
+                }
                 .retrieve()
                 .bodyToMono(TokenImpl::class.java)
                 .block()
@@ -68,7 +74,7 @@ class GatewayTokenClient(private val soapGatewayAuthWebClient: WebClient,
     companion object {
         private const val DEFAULT_ERROR_MSG = "Failed to fetch SAML token from fss-gateway"
         private const val TOKEN_EXCHANGE_PATH = "/rest/v1/sts/token/exchange?serviceUserId=3"
-        private const val TOKEN_PATH = "/rest/v1/sts/token?grant_type=client_credentials&scope=openid&serviceUserId=3"
+        private const val TOKEN_PATH = "/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
 
         private fun body(token: String) =
             BodyInserters
