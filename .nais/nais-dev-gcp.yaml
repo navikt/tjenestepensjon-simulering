@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: tjenestepensjon-simulering
   namespace: pensjonskalkulator
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "256M"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "90"
+    config.linkerd.io/proxy-outbound-connect-timeout: "3s"
   labels:
     team: pensjonskalkulator
 spec:

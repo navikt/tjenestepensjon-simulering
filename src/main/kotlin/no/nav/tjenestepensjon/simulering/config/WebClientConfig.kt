@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.config
 
 import io.netty.channel.ChannelOption
+import io.netty.handler.logging.LogLevel
 import io.netty.handler.timeout.ReadTimeoutHandler
 import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CONSUMER_ID
 import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CONSUMER_ID_HTTP_HEADER
@@ -21,6 +22,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
+import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 class WebClientConfig {
@@ -34,8 +36,9 @@ class WebClientConfig {
     @Profile(value = ["prod-gcp", "dev-gcp"])
     @Bean
     fun client(): HttpClient =
-        HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
-            .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(READ_TIMEOUT_MILLIS / 1000)) }
+        HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10_000)
+            .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(30)) }
+            .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL)
 
     @Bean
     fun webClient(httpClient: HttpClient): WebClient =
