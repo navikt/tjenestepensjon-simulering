@@ -116,7 +116,7 @@ spec:
     - name: pen_fss_gateway_scope
       value: api://dev-fss.pensjonselvbetjening.pensjon-selvbetjening-fss-gateway/.default
     - name: OTEL_RESOURCE_ATTRIBUTES
-      value: "service.name=tjenestepensjon-simulering-gcp,deployment.environment=q2,service.namespace=pensjon,nais.backend=grafana-lgtm"
+      value: "service.name=tjenestepensjon-simulering-gcp,deployment.environment=q2,service.namespace=pensjonskalkulator,nais.backend=grafana-lgtm"
   prometheus:
     enabled: true
     path: actuator/prometheus
