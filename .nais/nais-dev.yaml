@@ -103,6 +103,8 @@ spec:
       value: https://pensjon-selvbetjening-fss-gateway.dev-fss-pub.nais.io
     - name: pen_fss_gateway_scope
       value: api://dev-fss.pensjonselvbetjening.pensjon-selvbetjening-fss-gateway/.default
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "service.name=tjenestepensjon-simulering-fss,deployment.environment=q2"
   prometheus:
     enabled: true
     path: actuator/prometheus
