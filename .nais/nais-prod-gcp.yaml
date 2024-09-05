@@ -92,7 +92,7 @@ spec:
       value: api://prod-fss.pensjonselvbetjening.pensjon-selvbetjening-fss-gateway/.default
     # TODO fjern når nais får på plass at vi kan sette environment selv
     - name: OTEL_RESOURCE_ATTRIBUTES
-      value: "service.name=tjenestepensjon-simulering-gcp,deployment.environment=p,service.namespace=pensjonskalkulator,nais.backend=grafana-lgtm"
+      value: "service.name=tjenestepensjon-simulering-gcp,deployment.environment.name=p,service.namespace=pensjonskalkulator,nais.backend=grafana-lgtm"
   prometheus:
     enabled: true
     path: actuator/prometheus
