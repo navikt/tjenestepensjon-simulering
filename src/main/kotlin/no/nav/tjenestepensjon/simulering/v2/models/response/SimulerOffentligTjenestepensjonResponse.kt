@@ -4,9 +4,17 @@ import no.nav.tjenestepensjon.simulering.v1.models.response.AbstractSimulerOffen
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Utbetalingsperiode
 
 data class SimulerOffentligTjenestepensjonResponse(
-        val tpnr: String,
-        val navnOrdning: String,
-        val inkluderteOrdningerListe: List<String> = emptyList(),
-        val leverandorUrl: String? = null,
-        val utbetalingsperiodeListe: List<Utbetalingsperiode?> = emptyList()
-) : AbstractSimulerOffentligTjenestepensjonResponse()
+    val tpnr: String,
+    val navnOrdning: String,
+    val inkluderteOrdningerListe: List<String> = emptyList(),
+    val leverandorUrl: String? = null,
+    val utbetalingsperiodeListe: List<Utbetalingsperiode?> = emptyList(),
+    var brukerErIkkeMedlemAvTPOrdning: Boolean = false,
+    var brukerErMedlemAvTPOrdningSomIkkeStoettes: Boolean = false,
+) : AbstractSimulerOffentligTjenestepensjonResponse() {
+
+    companion object {
+        fun Companion.ikkeMedlem() = SimulerOffentligTjenestepensjonResponse("", "", emptyList(), brukerErIkkeMedlemAvTPOrdning = true)
+        fun Companion.tpOrdningStoettesIkke() = SimulerOffentligTjenestepensjonResponse("", "", emptyList(), brukerErMedlemAvTPOrdningSomIkkeStoettes = true)
+    }
+}
