@@ -29,6 +29,9 @@ import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import no.nav.tjenestepensjon.simulering.v2.models.DtoToV2DomainMapper.toSimulerPensjonRequestV2
+import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
+import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.ikkeMedlem
+import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.tpOrdningStoettesIkke
 import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
@@ -101,7 +104,7 @@ class SimuleringEndpoint(
             }
         } catch (e: NoTpOrdningerFoundException) {
             log.debug { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No TP-forhold found for person.""" }
-            ResponseEntity.notFound().build()
+            ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.ikkeMedlem())
         } catch (e: JsonParseException) {
             log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Unable to parse body to request.""" }
             ResponseEntity.badRequest().build()
@@ -111,7 +114,7 @@ class SimuleringEndpoint(
         } catch (e: LeveradoerNotFoundException) {
             metrics.incrementCounter(APP_TOTAL_SIMULERING_TP_ORDNING_STOTTES_IKKE)
             log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No supported TP-Ordning found.""" }
-            ResponseEntity.notFound().build()
+            ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.tpOrdningStoettesIkke())
         } catch (e: BrukerKvalifisererIkkeTilTjenestepensjonException) {
             metrics.incrementCounter(APP_TOTAL_SIMULERING_BRUKER_KVALIFISERER_IKKE)
             log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Bruker kvalifiserer ikke til tjenestepensjon. ${e.message}""" }

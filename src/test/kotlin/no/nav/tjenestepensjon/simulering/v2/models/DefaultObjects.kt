@@ -24,7 +24,9 @@ val defaultSimulerOffentligTjenestepensjonResponse
         navnOrdning = "bogus",
         inkluderteOrdningerListe = listOf("bogus"),
         leverandorUrl = "bogus",
-        utbetalingsperiodeListe = defaultUtbetalingsperiodeListe
+        utbetalingsperiodeListe = defaultUtbetalingsperiodeListe,
+        brukerErIkkeMedlemAvTPOrdning = false,
+        brukerErMedlemAvTPOrdningSomIkkeStoettes = false,
     )
 
 val defaultOpptjeningsperiode
@@ -99,7 +101,7 @@ val defaultOpptjeningsperiodeListe
     get() = listOf(defaultOpptjeningsperiode)
 
 const val defaultSimulerOffentligTjenestepensjonResponseJson =
-    """{"tpnr":"$defaultTpid","navnOrdning":"bogus","inkluderteOrdningerListe":["bogus"],"leverandorUrl":"bogus","utbetalingsperiodeListe":[{"uttaksgrad":0,"arligUtbetaling":0.0,"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","ytelsekode":"bogus"},null]}"""
+    """{"tpnr":"$defaultTpid","navnOrdning":"bogus","inkluderteOrdningerListe":["bogus"],"leverandorUrl":"bogus","utbetalingsperiodeListe":[{"uttaksgrad":0,"arligUtbetaling":0.0,"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","ytelsekode":"bogus"},null],"brukerErIkkeMedlemAvTPOrdning":false,"brukerErMedlemAvTPOrdningSomIkkeStoettes":false}"""
 
 const val defaultOppjeningsperiodeJson =
     """{"datoFom":"$defaultFomDateString","datoTom":"$defaultTomDateString","stillingsprosent":0.0,"aldersgrense":0,"faktiskHovedlonn":0,"stillingsuavhengigTilleggslonn":0}"""
