@@ -5,14 +5,15 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Simuler
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
-import org.springframework.beans.factory.annotation.Qualifier
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonClient
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonClient
 import org.springframework.stereotype.Service
 
 @Service
 class TjenestepensjonV2025Service(
     private val tpClient: TpClient,
-    @Qualifier("oftp-2025-spk") private val spk: TjenestepensjonV2025Client,
-    @Qualifier("oftp-2025-klp") private val klp: TjenestepensjonV2025Client,
+    private val spk: SPKTjenestepensjonClient,
+    private val klp: KLPTjenestepensjonClient,
     ) {
 
     @Throws(BrukerErIkkeMedlemException::class, TpOrdningStoettesIkkeException::class)

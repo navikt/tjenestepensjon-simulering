@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.ClientRequest
@@ -50,12 +51,19 @@ class WebClientConfig {
             .build()
 
     @Bean
-    fun klpWebClient(client: HttpClient, maskinportenTokenClient: MaskinportenTokenClient) : WebClient{
-        return  WebClient.builder().clientConnector(ReactorClientHttpConnector(client))
+    fun klpWebClient(
+        client: HttpClient,
+        maskinportenTokenClient: MaskinportenTokenClient,
+        @Value("\${oftp.2025.klp.endpoint.url}") baseUrl: String,
+        @Value("\${oftp.2025.klp.endpoint.maskinportenscope}") scope: String,
+    ): WebClient {
+        return WebClient.builder().clientConnector(ReactorClientHttpConnector(client))
+            .baseUrl(baseUrl)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .filter { request, next ->
                 next.exchange(
                     ClientRequest.from(request)
-                        .headers { it.setBearerAuth(maskinportenTokenClient.pensjonsimuleringToken()) }
+                        .headers { it.setBearerAuth(maskinportenTokenClient.pensjonsimuleringToken(scope)) }
                         .build()
                 )
             }

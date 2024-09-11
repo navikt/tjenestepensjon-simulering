@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service
 class MaskinportenTokenClient(val maskinportenToken: MaskinportenToken) {
     private val log = KotlinLogging.logger {}
 
-    fun pensjonsimuleringToken(): String {
-        log.info { "Henter maskinporten token" }
+    fun pensjonsimuleringToken(scope: String): String {
+        log.info { "Henter maskinporten token for $scope" }
         return try {
-            maskinportenToken.getToken()
+            maskinportenToken.getToken(scope)
         } catch (exc: Throwable) {
-            log.warn { "Error while retrieving token from provider: ${exc.message}" }
+            log.error(exc) { "Error while retrieving token from provider: ${exc.message}" }
             throw ConnectToMaskinPortenException(exc.message)
         }
     }

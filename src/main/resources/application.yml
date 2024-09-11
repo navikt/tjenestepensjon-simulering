@@ -58,3 +58,4 @@ oftp:
     klp:
       endpoint:
         url: https://api-test.klp.no
+        maskinportenscope: klp:oftp/simulering
