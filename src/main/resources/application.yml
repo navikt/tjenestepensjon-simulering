@@ -57,5 +57,5 @@ oftp:
   2025:
     klp:
       endpoint:
-        url: https://api-test.klp.no
+        url: https://api.klp.no
         maskinportenscope: klp:oftp/simulering
