@@ -51,8 +51,7 @@ class MaskinportenToken(
             .retrieve()
             .bodyToMono(MaskinportenTokenResponse::class.java)
             .block()
-        log.info { "Hentet token fra maskinporten ${response}" }
-        log.info { "Token fra maskinporten with following scope: ${scope}" }
+        log.info { "Hentet token fra maskinporten med scope(s): ${scope}" }
         return response!!.access_token
     }
 
