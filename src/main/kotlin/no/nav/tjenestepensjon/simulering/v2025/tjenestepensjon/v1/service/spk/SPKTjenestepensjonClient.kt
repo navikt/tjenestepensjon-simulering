@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class SPKTjenestepensjonClient : TjenestepensjonV2025Client {
-    override fun simuler(request: SimulerTjenestepensjonRequestDto): SimulertTjenestepensjon {
-        return SimulertTjenestepensjon()
+    override fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjon> {
+        return Result.success(SimulertTjenestepensjon())
     }
 }

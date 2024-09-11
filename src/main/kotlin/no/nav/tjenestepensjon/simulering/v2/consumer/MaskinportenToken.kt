@@ -7,6 +7,7 @@ import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -23,6 +24,7 @@ class MaskinportenToken(
     @Value("\${maskinporten.issuer}") val issuer: String,
     @Value("\${maskinporten.token-endpoint-url}") val endpoint: String,
 ) {
+    private val log = KotlinLogging.logger {}
 
     fun getToken(): String {
         val rsaKey = RSAKey.parse(clientJwk)
@@ -50,6 +52,7 @@ class MaskinportenToken(
             .retrieve()
             .bodyToMono(MaskinportenTokenResponse::class.java)
             .block()
+        log.info { "Hentet token fra maskinporten" }
         return response!!.access_token
     }
 

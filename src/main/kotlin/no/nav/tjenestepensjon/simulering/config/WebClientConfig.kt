@@ -9,6 +9,7 @@ import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CO
 import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CORRELATION_ID_HTTP_HEADER
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
+import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -45,6 +46,20 @@ class WebClientConfig {
         WebClient.builder().clientConnector(ReactorClientHttpConnector(httpClient))
             .filter { request, next -> addCorrelationId(next, request) }
             .build()
+
+    @Bean
+    fun klpWebClient(client: HttpClient, maskinportenTokenClient: MaskinportenTokenClient) : WebClient{
+        return  WebClient.builder().clientConnector(ReactorClientHttpConnector(client))
+            .filter { request, next ->
+                next.exchange(
+                    ClientRequest.from(request)
+                        .headers { it.setBearerAuth(maskinportenTokenClient.pensjonsimuleringToken()) }
+                        .build()
+                )
+            }
+            .filter { request, next -> addCorrelationId(next, request) }
+            .build()
+    }
 
     @Bean
     fun afpBeholdningWebClient(

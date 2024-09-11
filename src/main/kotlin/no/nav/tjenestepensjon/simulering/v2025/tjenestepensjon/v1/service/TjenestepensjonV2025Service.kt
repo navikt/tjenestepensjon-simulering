@@ -5,7 +5,6 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Simuler
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
@@ -16,15 +15,15 @@ class TjenestepensjonV2025Service(
     @Qualifier("oftp-2025-klp") private val klp: TjenestepensjonV2025Client,
     ) {
 
-    @Throws(BrukerErIkkeMedlemException::class, TpOrdningStoettesIkkeException::class, TjenestepensjonSimuleringException::class)
-    fun simuler(request: SimulerTjenestepensjonRequestDto): SimulertTjenestepensjon {
+    @Throws(BrukerErIkkeMedlemException::class, TpOrdningStoettesIkkeException::class)
+    fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjon> {
         val tpOrdningNavn = tpClient.findTPForhold(request.fnr).flatMap { it.alias }.firstOrNull()
             ?: throw BrukerErIkkeMedlemException()
 
         return when (tpOrdningNavn.lowercase()) {
             "spk" -> spk.simuler(request)
             "klp" -> klp.simuler(request)
-            else -> throw TpOrdningStoettesIkkeException(tpOrdningNavn)
+            else -> klp.simuler(request) //TODO throw TpOrdningStoettesIkkeException(tpOrdningNavn)
         }
     }
 }

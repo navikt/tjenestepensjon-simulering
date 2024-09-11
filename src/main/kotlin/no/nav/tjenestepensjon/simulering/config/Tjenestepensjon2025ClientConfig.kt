@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.config
 
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig.Companion.addCorrelationId
-import no.nav.tjenestepensjon.simulering.v2.consumer.TokenClient
+import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonClient
@@ -26,7 +26,7 @@ class Tjenestepensjon2025ClientConfig {
     fun klpTjenestepensjonV2025Client(
         @Value("\${oftp.2025.klp.endpoint.url}") url: String,
         webClientBuilder: WebClient.Builder,
-        tokenClient: TokenClient,
+        tokenClient: MaskinportenTokenClient,
     ): TjenestepensjonV2025Client {
         return KLPTjenestepensjonClient(webClientBuilder
             .clientConnector(
@@ -40,7 +40,7 @@ class Tjenestepensjon2025ClientConfig {
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .baseUrl(url)
             .filter { request, next -> addCorrelationId(next, request) }
-            .filter { request, next -> authorize(request, next, tokenClient::hentMaskinportenToken) }
+            .filter { request, next -> authorize(request, next, tokenClient::pensjonsimuleringToken) }
             .build()
         )
     }

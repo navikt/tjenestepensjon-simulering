@@ -12,29 +12,26 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.reactive.function.client.bodyToMono
 
 @Service
-class KLPTjenestepensjonClient(private val webClient: WebClient) : TjenestepensjonV2025Client {
+class KLPTjenestepensjonClient(private val klpWebClient: WebClient) : TjenestepensjonV2025Client {
     private val log = KotlinLogging.logger {}
 
-    override fun simuler(request: SimulerTjenestepensjonRequestDto): SimulertTjenestepensjon {
+    override fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjon> {
         try {
-            val response = webClient
+            val response = klpWebClient
                 .post()
                 .uri("/api/oftp/simulering/3200")
                 .bodyValue(KLPMapper.mapToRequest(request))
                 .retrieve()
                 .bodyToMono<KLPSimulerTjenestepensjonResponse>()
                 .block()
-            return response?.let { KLPMapper.mapToResponse(it) } ?: throw TjenestepensjonSimuleringException("No response body")
+            return response?.let { Result.success(KLPMapper.mapToResponse(it)) } ?: Result.failure(TjenestepensjonSimuleringException("No response body"))
         } catch (e: WebClientResponseException) {
-            val errorMsg = e.responseBodyAsString
-            log.error(e) { "Failed to simulate tjenestepensjon 2025 hos KLP ${errorMsg}" }
-            if (e.statusCode.is4xxClientError) {
-                throw RuntimeException("Failed to simulate tjenestepensjon 2025 hos KLP ${errorMsg}", e)
-            }
-            throw TjenestepensjonSimuleringException(errorMsg)
+            val errorMsg = "Failed to simulate tjenestepensjon 2025 hos KLP ${ e.responseBodyAsString}"
+            log.error(e) { errorMsg }
+            return Result.failure(TjenestepensjonSimuleringException(errorMsg))
         } catch (e: WebClientRequestException){
             log.error(e) { "Failed to send request to simulate tjenestepensjon 2025 hos KLP med url ${e.uri}" }
-            throw RuntimeException("Failed to send request to simulate tjenestepensjon 2025 hos KLP", e)
+            return Result.failure(TjenestepensjonSimuleringException("Failed to send request to simulate tjenestepensjon 2025 hos KLP"))
         }
     }
 }
