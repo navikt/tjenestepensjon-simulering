@@ -38,6 +38,8 @@ class WebClientConfig {
     @Bean
     fun client(): HttpClient =
         HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10_000)
+            .compress(true)
+            .followRedirect(true)
             .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(30)) }
             .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL)
 
