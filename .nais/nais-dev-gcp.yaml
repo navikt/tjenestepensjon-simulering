@@ -71,6 +71,7 @@ spec:
         - host: pensjon-pen-q2.dev-fss-pub.nais.io
         - host: tp-api-q2.dev-fss-pub.nais.io
         - host: api.preprod.spk.no
+        - host: api-test.klp.no
   azure:
     application:
       enabled: true
@@ -78,6 +79,7 @@ spec:
     enabled: true
     scopes:
       consumes:
+        - name: "klp:oftp/simulering"
         - name: "klp:pensjonsimulering"
         - name: "nav:pensjon/v1/tpregisteret"
   liveness:

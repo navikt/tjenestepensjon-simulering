@@ -10,6 +10,7 @@ import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
+import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -28,6 +29,9 @@ internal class WebClientConfigTest {
 
     @MockBean
     private lateinit var aadClient: AADClient
+
+    @MockBean
+    private lateinit var maskinportenTokenClient: MaskinportenTokenClient
 
     @Autowired
     private lateinit var tpClient: TpClient

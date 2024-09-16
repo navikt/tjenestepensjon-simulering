@@ -53,3 +53,9 @@ pen:
     gateway:
       url: http://localhost:8080
       scope: api://bogus
+oftp:
+  2025:
+    klp:
+      endpoint:
+        url: https://api.klp.no
+        maskinportenscope: klp:oftp/simulering

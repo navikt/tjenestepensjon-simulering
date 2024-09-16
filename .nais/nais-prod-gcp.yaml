@@ -46,6 +46,7 @@ spec:
         - host: pensjon-pen.prod-fss-pub.nais.io
         - host: tp-api.prod-fss-pub.nais.io
         - host: api.prod.spk.no
+        - host: api.klp.no
   azure:
     application:
       enabled: true
@@ -53,6 +54,7 @@ spec:
     enabled: true
     scopes:
       consumes:
+        - name: "klp:oftp/simulering"
         - name: "klp:pensjonsimulering"
         - name: "nav:pensjon/v1/tpregisteret"
   liveness:

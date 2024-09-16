@@ -52,6 +52,8 @@ spec:
         - application: pensjon-pen-q2
           namespace: pensjon-q2
           cluster: dev-fss
+      external:
+        - host: api-test.klp.no
   azure:
     application:
       enabled: true
@@ -60,6 +62,7 @@ spec:
     scopes:
       consumes:
         - name: "klp:pensjonsimulering"
+        - name: "klp:oftp/simulering"
         - name: "nav:pensjon/v1/tpregisteret"
   liveness:
     path: actuator/health/liveness

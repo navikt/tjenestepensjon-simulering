@@ -7,6 +7,7 @@ import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -19,12 +20,12 @@ class MaskinportenToken(
     private val webClient: WebClient,
     @Value("\${maskinporten.client-id}") val clientId: String,
     @Value("\${maskinporten.client-jwk}") val clientJwk: String,
-    @Value("\${maskinporten.scope}") val scopes: String,
     @Value("\${maskinporten.issuer}") val issuer: String,
     @Value("\${maskinporten.token-endpoint-url}") val endpoint: String,
 ) {
+    private val log = KotlinLogging.logger {}
 
-    fun getToken(): String {
+    fun getToken(scope: String): String {
         val rsaKey = RSAKey.parse(clientJwk)
         val signedJWT = SignedJWT(
             JWSHeader.Builder(JWSAlgorithm.RS256)
@@ -34,7 +35,7 @@ class MaskinportenToken(
             JWTClaimsSet.Builder()
                 .audience(issuer)
                 .issuer(clientId)
-                .claim("scope", scopes)
+                .claim("scope", scope)
                 .issueTime(Date())
                 .expirationTime(twoMinutesFromDate(Date()))
                 .build()
@@ -50,6 +51,7 @@ class MaskinportenToken(
             .retrieve()
             .bodyToMono(MaskinportenTokenResponse::class.java)
             .block()
+        log.info { "Hentet token fra maskinporten med scope(s): ${scope}" }
         return response!!.access_token
     }
 

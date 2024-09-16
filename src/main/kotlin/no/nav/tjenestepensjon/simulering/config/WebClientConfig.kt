@@ -9,11 +9,13 @@ import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CO
 import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CORRELATION_ID_HTTP_HEADER
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
+import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.ClientRequest
@@ -37,6 +39,8 @@ class WebClientConfig {
     @Bean
     fun client(): HttpClient =
         HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10_000)
+            .compress(true)
+            .followRedirect(true)
             .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(30)) }
             .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL)
 
@@ -45,6 +49,27 @@ class WebClientConfig {
         WebClient.builder().clientConnector(ReactorClientHttpConnector(httpClient))
             .filter { request, next -> addCorrelationId(next, request) }
             .build()
+
+    @Bean
+    fun klpWebClient(
+        client: HttpClient,
+        maskinportenTokenClient: MaskinportenTokenClient,
+        @Value("\${oftp.2025.klp.endpoint.url}") baseUrl: String,
+        @Value("\${oftp.2025.klp.endpoint.maskinportenscope}") scope: String,
+    ): WebClient {
+        return WebClient.builder().clientConnector(ReactorClientHttpConnector(client))
+            .baseUrl(baseUrl)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .filter { request, next ->
+                next.exchange(
+                    ClientRequest.from(request)
+                        .headers { it.setBearerAuth(maskinportenTokenClient.pensjonsimuleringToken(scope)) }
+                        .build()
+                )
+            }
+            .filter { request, next -> addCorrelationId(next, request) }
+            .build()
+    }
 
     @Bean
     fun afpBeholdningWebClient(
@@ -99,18 +124,19 @@ class WebClientConfig {
             .build()
     }
 
-    private fun addCorrelationId(
-        next: ExchangeFunction,
-        request: ClientRequest
-    ): Mono<ClientResponse> = next.exchange(
-        ClientRequest.from(request)
-            .header(CORRELATION_ID_HTTP_HEADER, MDC.get(CORRELATION_ID))
-            .header(CONSUMER_ID_HTTP_HEADER, MDC.get(CONSUMER_ID))
-            .build()
-    )
 
     companion object {
         private const val CONNECT_TIMEOUT_MILLIS = 3000
         const val READ_TIMEOUT_MILLIS = 5000
+
+        fun addCorrelationId(
+            next: ExchangeFunction,
+            request: ClientRequest
+        ): Mono<ClientResponse> = next.exchange(
+            ClientRequest.from(request)
+                .header(CORRELATION_ID_HTTP_HEADER, MDC.get(CORRELATION_ID))
+                .header(CONSUMER_ID_HTTP_HEADER, MDC.get(CONSUMER_ID))
+                .build()
+        )
     }
 }
