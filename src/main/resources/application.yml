@@ -61,5 +61,5 @@ oftp:
         maskinportenscope: klp:oftp/simulering
     spk:
       endpoint:
-        url: https://api.spk.no
+        url: https://api.prod.spk.no
         maskinportenscope: spk:nav
