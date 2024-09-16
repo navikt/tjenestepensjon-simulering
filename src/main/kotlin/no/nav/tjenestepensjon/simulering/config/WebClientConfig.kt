@@ -8,7 +8,6 @@ import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CO
 import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CORRELATION_ID
 import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CORRELATION_ID_HTTP_HEADER
 import no.nav.tjenestepensjon.simulering.service.AADClient
-import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
@@ -131,7 +130,6 @@ class WebClientConfig {
     @Bean
     fun soapGatewayAuthWebClient(
         @Value("\${pen.fss.gateway.url}") url: String,
-        fssGatewayAuthService: FssGatewayAuthService,
         httpClient: HttpClient,
     ): WebClient {
         return WebClient.builder()
