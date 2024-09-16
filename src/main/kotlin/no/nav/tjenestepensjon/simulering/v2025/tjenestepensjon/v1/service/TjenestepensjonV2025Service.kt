@@ -19,12 +19,12 @@ class TjenestepensjonV2025Service(
     @Throws(BrukerErIkkeMedlemException::class, TpOrdningStoettesIkkeException::class)
     fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjon> {
         val tpOrdningNavn = tpClient.findTPForhold(request.fnr).flatMap { it.alias }.firstOrNull()
-            ?: "klp" //TODO throw BrukerErIkkeMedlemException()
+            ?: "spk" //TODO throw BrukerErIkkeMedlemException()
 
         return when (tpOrdningNavn.lowercase()) {
             "spk" -> spk.simuler(request)
             "klp" -> klp.simuler(request)
-            else -> klp.simuler(request) //TODO throw TpOrdningStoettesIkkeException(tpOrdningNavn)
+            else -> throw TpOrdningStoettesIkkeException(tpOrdningNavn)
         }
     }
 }
