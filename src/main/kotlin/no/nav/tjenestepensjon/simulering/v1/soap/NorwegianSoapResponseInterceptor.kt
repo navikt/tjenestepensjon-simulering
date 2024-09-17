@@ -9,7 +9,7 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMResult
 import javax.xml.transform.dom.DOMSource
 
-class NorwegianSoapResponseInterceptor: ClientInterceptor {
+class NorwegianSoapResponseInterceptor : ClientInterceptor {
     private val logger = KotlinLogging.logger {}
     private val transformer: Transformer = TransformerFactory.newInstance().newTransformer()
     override fun handleRequest(messageContext: MessageContext) = true
@@ -33,11 +33,12 @@ class NorwegianSoapResponseInterceptor: ClientInterceptor {
             transformer.transform(message.payloadSource, domResult)
 
             val body = domResult.node?.apply {
-
-                nodeValue = nodeValue
-                    .replace("Ø", "Oe").replace("ø", "oe")
-                    .replace("Å", "Aa").replace("å", "aa")
-                    .replace("Æ", "Ae").replace("æ", "ae")
+                if (nodeValue != null) {
+                    nodeValue = nodeValue
+                        .replace("Ø", "Oe").replace("ø", "oe")
+                        .replace("Å", "Aa").replace("å", "aa")
+                        .replace("Æ", "Ae").replace("æ", "ae")
+                }
             }
 
             if (body != null) {
