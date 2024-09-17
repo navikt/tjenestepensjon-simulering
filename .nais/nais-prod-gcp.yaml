@@ -13,10 +13,10 @@ spec:
   image: {{ image }}
   resources:
     limits:
-      memory: 1088Mi
+      memory: 2048Mi
     requests:
       cpu: 100m
-      memory: 544Mi
+      memory: 1024Mi
   port: 8080
   ingresses:
     - https://tjenestepensjon-simulering-gcp.intern.nav.no
