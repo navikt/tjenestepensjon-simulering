@@ -35,6 +35,6 @@ object SPKMapper {
                 val fraOgMed = periode.fraOgMedDato
                 periode.delytelseListe.map { Utbetalingsperiode(fraOgMed, it.maanedligBelop, it.ytelseType) }
             },
-            aarsakIngenUtbetaling = response.aarsakIngenUtbetaling
+            aarsakIngenUtbetaling = response.aarsakIngenUtbetaling.map { it.statusBeskrivelse + ": " + it.ytelseType }
         )
 }

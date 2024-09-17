@@ -5,7 +5,7 @@ import java.time.LocalDate
 data class SPKSimulerTjenestepensjonResponse(
     val inkludertOrdningListe: List<InkludertOrdning>,
     val utbetalingListe: List<Utbetaling>,
-    val aarsakIngenUtbetaling: List<String>,
+    val aarsakIngenUtbetaling: List<AarsakIngenUtbetaling>,
 )
 
 data class InkludertOrdning(
@@ -20,4 +20,10 @@ data class Utbetaling(
 data class Delytelse(
     val ytelseType: String,
     val maanedligBelop: Int,
+)
+
+data class AarsakIngenUtbetaling(
+    val statusKode: String,
+    val statusBeskrivelse: String,
+    val ytelseType: String,
 )
