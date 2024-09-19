@@ -50,6 +50,7 @@ spec:
         - name: "klp:pensjonsimulering"
         - name: "klp:oftp/simulering"
         - name: "nav:pensjon/v1/tpregisteret"
+        - name: "spk:nav"
   liveness:
     path: actuator/health/liveness
     initialDelay: 30
