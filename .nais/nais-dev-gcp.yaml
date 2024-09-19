@@ -71,6 +71,7 @@ spec:
         - host: pensjon-pen-q2.dev-fss-pub.nais.io
         - host: tp-api-q2.dev-fss-pub.nais.io
         - host: api.preprod.spk.no
+        - host: api.test.spk.no
         - host: api-test.klp.no
   azure:
     application:
@@ -82,6 +83,7 @@ spec:
         - name: "klp:oftp/simulering"
         - name: "klp:pensjonsimulering"
         - name: "nav:pensjon/v1/tpregisteret"
+        - name: "spk:nav"
   liveness:
     path: actuator/health/liveness
     initialDelay: 30

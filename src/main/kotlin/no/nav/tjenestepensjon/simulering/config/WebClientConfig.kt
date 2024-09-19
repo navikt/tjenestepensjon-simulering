@@ -8,7 +8,6 @@ import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CO
 import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CORRELATION_ID
 import no.nav.tjenestepensjon.simulering.config.CorrelationIdFilter.Companion.CORRELATION_ID_HTTP_HEADER
 import no.nav.tjenestepensjon.simulering.service.AADClient
-import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
@@ -57,19 +56,36 @@ class WebClientConfig {
         @Value("\${oftp.2025.klp.endpoint.url}") baseUrl: String,
         @Value("\${oftp.2025.klp.endpoint.maskinportenscope}") scope: String,
     ): WebClient {
-        return WebClient.builder().clientConnector(ReactorClientHttpConnector(client))
-            .baseUrl(baseUrl)
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .filter { request, next ->
-                next.exchange(
-                    ClientRequest.from(request)
-                        .headers { it.setBearerAuth(maskinportenTokenClient.pensjonsimuleringToken(scope)) }
-                        .build()
-                )
-            }
-            .filter { request, next -> addCorrelationId(next, request) }
-            .build()
+        return opprettWebClient(client, baseUrl, maskinportenTokenClient, scope)
     }
+
+    @Bean
+    fun spkWebClient(
+        client: HttpClient,
+        maskinportenTokenClient: MaskinportenTokenClient,
+        @Value("\${oftp.2025.spk.endpoint.url}") baseUrl: String,
+        @Value("\${oftp.2025.spk.endpoint.maskinportenscope}") scope: String,
+    ): WebClient {
+        return opprettWebClient(client, baseUrl, maskinportenTokenClient, scope)
+    }
+
+    private fun opprettWebClient(
+        client: HttpClient,
+        baseUrl: String,
+        maskinportenTokenClient: MaskinportenTokenClient,
+        scope: String
+    ): WebClient = WebClient.builder().clientConnector(ReactorClientHttpConnector(client))
+        .baseUrl(baseUrl)
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .filter { request, next ->
+            next.exchange(
+                ClientRequest.from(request)
+                    .headers { it.setBearerAuth(maskinportenTokenClient.pensjonsimuleringToken(scope)) }
+                    .build()
+            )
+        }
+        .filter { request, next -> addCorrelationId(next, request) }
+        .build()
 
     @Bean
     fun afpBeholdningWebClient(
@@ -114,7 +130,6 @@ class WebClientConfig {
     @Bean
     fun soapGatewayAuthWebClient(
         @Value("\${pen.fss.gateway.url}") url: String,
-        fssGatewayAuthService: FssGatewayAuthService,
         httpClient: HttpClient,
     ): WebClient {
         return WebClient.builder()
