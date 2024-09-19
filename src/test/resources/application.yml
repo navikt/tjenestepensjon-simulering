@@ -73,3 +73,6 @@ oftp:
       endpoint:
         url: https://api.test.spk.no
         maskinportenscope: spk:nav
+  before2025:
+    spk:
+      maskinportenscope: spk:nav
