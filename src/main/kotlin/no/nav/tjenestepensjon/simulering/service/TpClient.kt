@@ -11,13 +11,16 @@ import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningDto
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.HateoasWrapper
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
+import no.nav.tjenestepensjon.simulering.ping.PingResponse
+import no.nav.tjenestepensjon.simulering.ping.Pingable
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonClient
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonClient.Companion
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.bodyToFlux
-import org.springframework.web.reactive.function.client.bodyToMono
+import org.springframework.web.reactive.function.client.*
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.Exceptions
 import reactor.core.publisher.Flux
@@ -30,7 +33,7 @@ class TpClient(
     private val jsonMapper: JsonMapper,
     @Value("\${tp.url}") private var tpUrl: String,
     @Value("\${tp.scope}") private val tpScope: String,
-) {
+) : Pingable {
     private val log = KotlinLogging.logger {}
 
     @Cacheable(TP_ORDNING_PERSON_CACHE)
@@ -103,7 +106,33 @@ class TpClient(
     }
 
     fun handleRemoteError(logMessage: String?): ResponseStatusException {
-        log.error{"Error fetching data from TP: $logMessage"}
+        log.error { "Error fetching data from TP: $logMessage" }
         return ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    override fun ping(): PingResponse {
+        try{
+            val response = webClient.get()
+                .uri("$tpUrl/actuator/health/liveness")
+                .headers { it.setBearerAuth(aadClient.getToken(tpScope)) }
+                .retrieve().bodyToMono(String::class.java)
+                .block() ?: "PING OK, ingen response body"
+            return PingResponse(PROVIDER, TJENESTE, response)
+        } catch (e: WebClientResponseException) {
+            val errorMsg = "Failed to ping $PROVIDER ${e.responseBodyAsString}"
+            log.error(e) { errorMsg }
+            return PingResponse(PROVIDER, TJENESTE, errorMsg)
+        } catch (e: WebClientRequestException) {
+            log.error(e) { "Failed to ping $PROVIDER with url ${e.uri}" }
+            return PingResponse(PROVIDER, TJENESTE, "Failed")
+        } catch (e: Exception) {
+            log.error(e) { "An unexpected error occurred while pinging $PROVIDER ${e.message}" }
+            return PingResponse(PROVIDER, TJENESTE, "Unexpected error: ${e.message}")
+        }
+    }
+
+    companion object {
+        const val PROVIDER = "Tp-registeret"
+        const val TJENESTE = "TpForhold"
     }
 }
