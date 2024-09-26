@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.rest
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.Tjenestepensjon2025Mapper.mapToVellykketTjenestepensjonSimuleringResponse
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.response.SimulerTjenestepensjonResponseDto
@@ -8,6 +9,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.response.S
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Service
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -34,5 +36,10 @@ class TjenestepensjonSimuleringV2025Controller(
         } catch (e: TpOrdningStoettesIkkeException) {
             return SimulerTjenestepensjonResponseDto(SimuleringsResultatTypeDto.ERROR, e.message)
         }
+    }
+
+    @GetMapping("/v2025/tjenestepensjon/ping")
+    fun ping(): List<PingResponse> {
+        return tjenestepensjonV2025Service.ping()
     }
 }
