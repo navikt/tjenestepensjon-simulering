@@ -21,7 +21,7 @@ class SecurityConfig(
     fun configure(http: HttpSecurity): DefaultSecurityFilterChain = http.run {
         csrf { it.disable() }
         authorizeHttpRequests {
-            it.requestMatchers(antMatcher("/actuator/**"), antMatcher("/v2025/tjenestepensjon/ping")).permitAll().anyRequest().authenticated()
+            it.requestMatchers(antMatcher("/actuator/**"), antMatcher("/v2025/tjenestepensjon/ping"), antMatcher("/simulering/ping")).permitAll().anyRequest().authenticated()
         }
         oauth2ResourceServer {
             it.authenticationManagerResolver(issuerResolver)
