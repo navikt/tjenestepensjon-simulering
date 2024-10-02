@@ -37,6 +37,7 @@ import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequest
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.ikkeMedlem
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.tpOrdningStoettesIkke
+import no.nav.tjenestepensjon.simulering.v2.rest.RestClient
 import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -58,6 +59,7 @@ class SimuleringEndpoint(
     private val service2: SimuleringServiceV2,
     private val tpClient: TpClient,
     private val restGatewayWebClient: WebClient,
+    private val restClient: RestClient, //TODO remove etter test
     @Value("\${oftp.before2025.spk.maskinportenscope}") val spkScope: String,
     private val stillingsprosentService: StillingsprosentService,
     @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>,
@@ -183,15 +185,7 @@ class SimuleringEndpoint(
             val resp = restGatewayWebClient.post()
                 .uri("/medlem/pensjon/prognose/v1")
                 .header("scope", spkScope)
-                .bodyValue(SimulerPensjonRequestV2(
-                    fnr = FNR("01015512345"),
-                    fodselsdato = "01-01-1955",
-                    sisteTpnr = "3010",
-                    sivilstandkode = SivilstandCodeEnum.UGIF,
-                    inntektListe = emptyList(),
-                    simuleringsperiodeListe = emptyList(),
-                    simuleringsdataListe = emptyList()
-                ))
+                .bodyValue(dummyRequest())
                 .retrieve()
                 .bodyToMono(String::class.java)
                 .block() ?: "Received no body"
@@ -212,6 +206,38 @@ class SimuleringEndpoint(
             return listOf(PingResponse(PROVIDER, TJENESTE, "Unexpected error: ${e.message}"))
         }
     }
+
+    @GetMapping("/fss/simulering/ping")
+    fun pingFraFss() : List<PingResponse> {
+        try{
+            val resp = restClient.ping(dummyRequest())
+            return listOf(PingResponse(PROVIDER, TJENESTE, resp))
+        } catch (e: WebClientResponseException) {
+            if (e.statusCode.is4xxClientError || e.statusCode.is5xxServerError || e.statusCode.is2xxSuccessful){
+                log.error(e) { "Successfully connected to $PROVIDER, received ${e.statusText} (${e.statusCode})" }
+                return listOf(PingResponse(PROVIDER, TJENESTE, "Failed"))
+            }
+            val errorMsg = "Failed to ping $PROVIDER ${e.responseBodyAsString}"
+            log.error(e) { errorMsg }
+            return listOf(PingResponse(PROVIDER, TJENESTE, errorMsg))
+        } catch (e: WebClientRequestException) {
+            log.error(e) { "Failed to ping $PROVIDER with url ${e.uri}" }
+            return listOf(PingResponse(PROVIDER, TJENESTE, "Failed"))
+        } catch (e: Exception) {
+            log.error(e) { "An unexpected error occurred while pinging $PROVIDER ${e.message}" }
+            return listOf(PingResponse(PROVIDER, TJENESTE, "Unexpected error: ${e.message}"))
+        }
+    }
+
+    private fun dummyRequest(fnr: String = "01015512345") = SimulerPensjonRequestV2(
+        fnr = FNR(fnr),
+        fodselsdato = "01-01-1955",
+        sisteTpnr = "3010",
+        sivilstandkode = SivilstandCodeEnum.UGIF,
+        inntektListe = emptyList(),
+        simuleringsperiodeListe = emptyList(),
+        simuleringsdataListe = emptyList()
+    )
 
     companion object {
         const val NAV_CALL_ID = "nav-call-id"
