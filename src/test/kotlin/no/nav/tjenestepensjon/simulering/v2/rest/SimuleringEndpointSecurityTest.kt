@@ -91,7 +91,7 @@ class SimuleringEndpointSecurityTest {
         `when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
             defaultStillingsprosentListe
         )
-        `when`(restClient.getResponse(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
+        `when`(restClient.getResponse(anyNonNull(), anyNonNull())).thenReturn(
             SimulerOffentligTjenestepensjonResponse("", "")
         )
         mockMvc.post("/simulering") {

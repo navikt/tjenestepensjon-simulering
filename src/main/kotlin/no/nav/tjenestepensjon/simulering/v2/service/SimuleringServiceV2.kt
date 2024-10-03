@@ -34,7 +34,7 @@ class SimuleringServiceV2(
         val requestWithFilteredFnr = SimuleringEndpoint.filterFnr(request.toString())
         log.debug { "Populated request: $requestWithFilteredFnr" }
         return try {
-            restClient.getResponse(request = request, tpOrdning = tpOrdning, tpLeverandor = tpLeverandor)
+            restClient.getResponse(request = request, tpOrdning = tpOrdning)
         } catch (e: WebClientResponseException) {
             val responseBody = e.responseBodyAsString.let { StringUtils.replace(it, "Ã¥", "å") }
                 .let { StringUtils.replace(it, "Ã\u0083Â¥", "å") }
