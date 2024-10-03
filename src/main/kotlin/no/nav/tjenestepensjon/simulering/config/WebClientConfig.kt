@@ -139,6 +139,25 @@ class WebClientConfig {
             .build()
     }
 
+    @Bean
+    fun restGatewayWebClient(
+        @Value("\${pen.fss.gateway.url}") baseUrl: String,
+        @Value("\${pen.fss.gateway.scope}") fssGatewayScope: String,
+        builder: WebClient.Builder,
+        httpClient: HttpClient,
+        adClient: AADClient
+    ): WebClient = builder
+        .baseUrl(baseUrl)
+        .clientConnector(ReactorClientHttpConnector(httpClient))
+        .filter { request, next ->
+            next.exchange(
+                ClientRequest.from(request)
+                    .headers { it.setBearerAuth(adClient.getToken(fssGatewayScope)) }
+                    .build()
+            )
+        }
+        .filter { request, next -> addCorrelationId(next, request) }
+        .build()
 
     companion object {
         private const val CONNECT_TIMEOUT_MILLIS = 3000

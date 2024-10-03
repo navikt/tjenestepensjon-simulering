@@ -25,4 +25,12 @@ class RestClient(
         )
     }.bodyValue(request).retrieve().bodyToMono<SimulerOffentligTjenestepensjonResponse>().block()
         ?: SimulerOffentligTjenestepensjonResponse(request.sisteTpnr, tpOrdning.tpId)
+
+    fun ping(request: SimulerPensjonRequestV2) : String {
+        return webClient.post()
+            .uri("https://api.preprod.spk.no/medlem/pensjon/prognose/v1")
+            .headers { it.setBearerAuth(maskinportenTokenClient.pensjonsimuleringToken(scope)) }
+            .bodyValue(request)
+            .retrieve().bodyToMono(String::class.java).block() ?: "No body received"
+    }
 }
