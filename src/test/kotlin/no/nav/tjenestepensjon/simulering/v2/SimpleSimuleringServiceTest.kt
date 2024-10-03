@@ -85,7 +85,7 @@ internal class SimpleSimuleringServiceTest {
         )
         val tpOrdningIdDto = TPOrdningIdDto("fake", "faker")
         val tpLeverandor = TpLeverandor("fake", REST, "faker", "faker")
-        `when`(restClient.getResponse(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(s1)
+        `when`(restClient.getResponse(anyNonNull(), anyNonNull())).thenReturn(s1)
 
         val response = simuleringService.simulerOffentligTjenestepensjon(
             request, StillingsprosentResponse(emptyMap(), emptyList()), tpOrdningIdDto, tpLeverandor
@@ -108,7 +108,7 @@ internal class SimpleSimuleringServiceTest {
         val tpOrdningIdDto = TPOrdningIdDto("fake", "faker")
         val tpLeverandor = TpLeverandor("fake", REST, "faker", "faker")
 
-        `when`(restClient.getResponse(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(s1)
+        `when`(restClient.getResponse(anyNonNull(), anyNonNull())).thenReturn(s1)
         assertNotNull(
             simuleringService.simulerOffentligTjenestepensjon(
                 request, StillingsprosentResponse(emptyMap(), emptyList()), tpOrdningIdDto, tpLeverandor
