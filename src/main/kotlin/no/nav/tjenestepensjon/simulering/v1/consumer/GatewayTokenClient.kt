@@ -4,14 +4,12 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.domain.Token
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.service.TokenService
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 
-@Profile(value = ["prod-gcp", "dev-gcp"])
 @Service
 class GatewayTokenClient(private val soapGatewayAuthWebClient: WebClient,
                          private val fssGatewayAuthService: FssGatewayAuthService,
