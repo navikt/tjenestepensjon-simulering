@@ -44,24 +44,6 @@ jobs:
     outputs:
       image: ${{ steps.build-image.outputs.image }}
 
-  deploy_prod_fss:
-    name: Deploy to prod-fss
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      checks: write
-      packages: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: nais/deploy/actions/deploy@v2
-        name: Deploy to prod-fss
-        env:
-          CLUSTER: prod-fss
-          RESOURCE: .nais/nais-prod.yaml
-          IMAGE: ${{ needs.build.outputs.image }}
-
   deploy_prod:
     name: Deploy to prod
     needs: build

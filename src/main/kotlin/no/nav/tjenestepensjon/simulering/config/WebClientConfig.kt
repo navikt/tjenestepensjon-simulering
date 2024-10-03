@@ -13,7 +13,6 @@ import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
@@ -28,16 +27,10 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 @Configuration
 class WebClientConfig {
 
-    @Profile(value = ["prod", "preprod", "test"])
-    @Bean
-    fun httpClient(): HttpClient =
-        HttpClient.create().proxyWithSystemProperties().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
-            .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(READ_TIMEOUT_MILLIS / 1000)) }
-
-    @Profile(value = ["prod-gcp", "dev-gcp"])
     @Bean
     fun client(): HttpClient =
-        HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10_000)
+        HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
+            .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(READ_TIMEOUT_MILLIS / 1000)) }
             .compress(true)
             .followRedirect(true)
             .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(30)) }
