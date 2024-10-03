@@ -191,9 +191,10 @@ class SimuleringEndpoint(
                 .block() ?: "Received no body"
             return listOf(PingResponse(PROVIDER, TJENESTE, resp))
         } catch (e: WebClientResponseException) {
-            if (e.statusCode.is4xxClientError || e.statusCode.is5xxServerError || e.statusCode.is2xxSuccessful){
-                log.error(e) { "Successfully connected to $PROVIDER, received ${e.statusText} (${e.statusCode})" }
-                return listOf(PingResponse(PROVIDER, TJENESTE, "Failed"))
+            if (e.statusCode.is4xxClientError || e.statusCode.value() == 502 || e.statusCode.is2xxSuccessful){
+                val melding = "Successfully connected to $PROVIDER, received ${e.statusText} (${e.statusCode})"
+                log.error(e) { melding }
+                return listOf(PingResponse(PROVIDER, TJENESTE, melding))
             }
             val errorMsg = "Failed to ping $PROVIDER ${e.responseBodyAsString}"
             log.error(e) { errorMsg }
@@ -213,9 +214,10 @@ class SimuleringEndpoint(
             val resp = restClient.ping(dummyRequest())
             return listOf(PingResponse(PROVIDER, TJENESTE, resp))
         } catch (e: WebClientResponseException) {
-            if (e.statusCode.is4xxClientError || e.statusCode.is5xxServerError || e.statusCode.is2xxSuccessful){
-                log.error(e) { "Successfully connected to $PROVIDER, received ${e.statusText} (${e.statusCode})" }
-                return listOf(PingResponse(PROVIDER, TJENESTE, "Failed"))
+            if (e.statusCode.is4xxClientError || e.statusCode.value() == 502 || e.statusCode.is2xxSuccessful){
+                val melding = "Successfully connected to $PROVIDER, received ${e.statusText} (${e.statusCode})"
+                log.error(e) { melding }
+                return listOf(PingResponse(PROVIDER, TJENESTE, melding))
             }
             val errorMsg = "Failed to ping $PROVIDER ${e.responseBodyAsString}"
             log.error(e) { errorMsg }
