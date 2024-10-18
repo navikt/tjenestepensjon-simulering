@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version "1.9.20"
     kotlin("plugin.spring") version "1.9.22"
     id("org.springframework.boot") version "3.1.5"
-    id("io.spring.dependency-management") version "1.1.4"
+    id("io.spring.dependency-management") version "1.1.6"
 }
 
 repositories {
@@ -22,7 +22,8 @@ dependencies {
     implementation("jakarta.annotation", "jakarta.annotation-api", "2.1.1")
     implementation("javax.xml.soap", "javax.xml.soap-api", "1.4.0")
     implementation("net.logstash.logback", "logstash-logback-encoder", "7.2")
-    implementation("ch.qos.logback", "logback-access")
+    implementation("ch.qos.logback", "logback-access", "1.4.14")
+    implementation("org.yaml","snakeyaml","2.3")
     implementation("org.codehaus.janino", "janino", "3.1.6")
     implementation("org.codehaus.janino", "commons-compiler", "3.1.6")
     implementation ("io.github.oshai", "kotlin-logging-jvm", "5.1.0")
