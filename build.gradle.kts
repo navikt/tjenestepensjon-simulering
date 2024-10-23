@@ -36,7 +36,6 @@ dependencies {
     implementation("org.springframework.boot", "spring-boot-starter-webflux")
     implementation("org.springframework.boot", "spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.ws", "spring-ws-core", "4.0.3")
-    implementation("org.json", "json", "20220320")
     testImplementation(kotlin("test-junit5"))
     testImplementation("com.github.tomakehurst:wiremock:3.0.1")
     testImplementation("org.mockito.kotlin", "mockito-kotlin", "5.2.1")
