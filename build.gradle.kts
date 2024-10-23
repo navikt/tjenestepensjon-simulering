@@ -2,7 +2,7 @@ group = "no.nav.tjenestepensjon"
 description = "tjenestepensjon-simulering"
 
 plugins {
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm") version "1.9.23"
     kotlin("plugin.spring") version "1.9.23"
     id("org.springframework.boot") version "3.1.5"
     id("io.spring.dependency-management") version "1.1.6"
