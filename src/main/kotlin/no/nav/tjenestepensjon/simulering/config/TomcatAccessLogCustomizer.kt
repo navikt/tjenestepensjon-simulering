@@ -11,6 +11,6 @@ class TomcatAccessLogCustomizer : WebServerFactoryCustomizer<TomcatServletWebSer
         val logbackValve = LogbackValve()
         logbackValve.name = "Logback Access"
         logbackValve.filename = "logback-access.xml"
-        factory.addEngineValves(logbackValve)
+        factory.addContextValves(logbackValve)
     }
 }

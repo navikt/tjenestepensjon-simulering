@@ -55,40 +55,48 @@ class TpClientTest {
     @Test
     fun `findForhold med ett forhold`() {
 
-        wireMockServer.stubFor(
+        val stub = wireMockServer.stubFor(
             defaultTjenestepensjonRequest.willReturn(okJson(defaultForhold))
         )
 
         val response = tpClient.findForhold(defaultFNR)
 
         assertEquals(defaultTpid, response.first().ordning)
+
+        wireMockServer.removeStub(stub.uuid)
     }
 
     @Test
     fun `findForhold uten forhold`() {
-        wireMockServer.stubFor(
+        val stub = wireMockServer.stubFor(
             defaultTjenestepensjonRequest.willReturn(okJson("""{"_embedded":{"forholdModelList":[]}}"""))
         )
 
         assertThrows<NoTpOrdningerFoundException> { tpClient.findForhold(defaultFNR) }
+
+        wireMockServer.removeStub(stub.uuid)
     }
 
     @Test
     fun `findForhold person ikke funnet`() {
-        wireMockServer.stubFor(
+        val stub = wireMockServer.stubFor(
             defaultTjenestepensjonRequest.willReturn(notFound())
         )
 
         assertThrows<NoTpOrdningerFoundException> { tpClient.findForhold(defaultFNR) }
+
+        wireMockServer.removeStub(stub.uuid)
     }
 
     @Test
     fun `findForhold unauthorized`() {
-        wireMockServer.stubFor(
+        val stub = wireMockServer.stubFor(
             defaultTjenestepensjonRequest.willReturn(unauthorized())
         )
 
         assertThrows<ResponseStatusException> { tpClient.findForhold(defaultFNR) }
+
+        wireMockServer.removeStub(stub.uuid)
 
     }
 
