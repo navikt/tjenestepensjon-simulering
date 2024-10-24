@@ -46,7 +46,6 @@ class SoapClientConfig(
             faultMessageResolver = SoapFaultHandler(jaxb2Marshaller)
             interceptors = arrayOf(
                 AuthAttachingHttpRequestInterceptor(fssGatewayAuthService),
-                NorwegianSoapResponseInterceptor(),
             )
             setMessageSender(HttpUrlConnectionMessageSender())
             setCheckConnectionForFault(true)
