@@ -1,6 +1,6 @@
 package no.nav.tjenestepensjon.simulering.config
 
-import ch.qos.logback.access.spi.IAccessEvent
+import ch.qos.logback.access.common.spi.IAccessEvent
 import com.fasterxml.jackson.core.JsonGenerator
 import net.logstash.logback.composite.AbstractFieldJsonProvider
 import net.logstash.logback.composite.JsonWritingUtils

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import kotlin.test.AfterTest
 
+
 @SpringBootTest
 internal class WebClientConfigTest {
 
@@ -33,6 +34,7 @@ internal class WebClientConfigTest {
 
     @Test
     fun `Should throw exception if read timeout exceeded`() {
+
         assertThrows<RuntimeException> {
             val findTpLeverandorName = tpClient.findTpLeverandorName(TPOrdningIdDto(defaultTssid, defaultTpid))
             print(findTpLeverandorName)
