@@ -60,7 +60,7 @@ class SPKTjenestepensjonClient(private val spkWebClient: WebClient) : Tjenestepe
     }
 
     companion object {
-        private const val SIMULER_PATH = "/nav/v2/tjenestepensjon/simuler/3010"
+        const val SIMULER_PATH = "/nav/v2/tjenestepensjon/simuler/3010"
         private const val PING_PATH = "/nav/admin/ping"
         private const val PROVIDER = "SPK"
     }
