@@ -31,6 +31,7 @@ spec:
         - application: penbatch
           namespace: pensjon-batch
           cluster: prod-fss
+        - application: pensjonssimulator
     outbound:
       rules:
         - application: tp
