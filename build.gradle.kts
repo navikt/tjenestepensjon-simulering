@@ -38,7 +38,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-tomcat") // Spring Boot manages Tomcat
 
     // Exclude older versions of Tomcat
-    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.30")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.1")
     implementation("org.springframework.boot", "spring-boot-starter-actuator")
     implementation("org.springframework.boot", "spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-web")
