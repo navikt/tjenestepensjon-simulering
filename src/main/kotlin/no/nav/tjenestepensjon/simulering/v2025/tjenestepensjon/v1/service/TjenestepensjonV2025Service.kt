@@ -22,8 +22,7 @@ class TjenestepensjonV2025Service(
     @Throws(BrukerErIkkeMedlemException::class, TpOrdningStoettesIkkeException::class)
     fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
         val response = tp.findTPForhold(request.pid)
-        val tpOrdningNavn = response.flatMap { it.alias }.firstOrNull()
-            ?: "spk" //TODO før prodsetting -> throw BrukerErIkkeMedlemException()
+        val tpOrdningNavn = response.flatMap { it.alias }.firstOrNull() ?: throw BrukerErIkkeMedlemException()
         log.info { "Fant aktive tp-ordninger for bruker: $response, skal bruke $tpOrdningNavn for å simulere" }
 
         return when (tpOrdningNavn.lowercase()) {

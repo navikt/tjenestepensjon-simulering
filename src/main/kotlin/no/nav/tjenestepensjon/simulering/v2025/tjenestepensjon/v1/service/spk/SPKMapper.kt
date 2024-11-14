@@ -16,7 +16,7 @@ object SPKMapper {
             uttaksListe = opprettUttaksliste(request),
             fremtidigInntektListe = listOf(
                 FremtidigInntekt(
-                    fraOgMedDato = LocalDate.now().withDayOfYear(1),
+                    fraOgMedDato = fjorAarSomManglerOpptjeningIPopp(),
                     aarligInntekt = request.sisteInntekt
                 )
             ),
@@ -24,6 +24,8 @@ object SPKMapper {
             epsPensjon = request.epsPensjon,
             eps2G = request.eps2G,
         )
+
+    private fun fjorAarSomManglerOpptjeningIPopp(): LocalDate = LocalDate.now().minusYears(1).withDayOfYear(1)
 
     fun mapToResponse(response: SPKSimulerTjenestepensjonResponse) =
         SimulertTjenestepensjon(
@@ -37,7 +39,7 @@ object SPKMapper {
         )
 
     fun opprettUttaksliste(request: SimulerTjenestepensjonRequestDto) =
-        mutableListOf("PAASLAG", "APOF2020", "OAFP", "OT6370", "SAERALDERSPAASLAG", if (request.brukerBaOmAfp) "AFP" else "BTP")
+        mutableListOf("PAASLAG", "APOF2020", "OT6370", "SAERALDERSPAASLAG", if (request.brukerBaOmAfp) "OAFP" else "BTP")
             .map {
                 Uttak(
                     ytelseType = it,
