@@ -18,9 +18,10 @@ class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient) : 
                 onSuccess = {
                     Result.success(
                         SimulertTjenestepensjonMedMaanedsUtbetalinger(
-                            tpLeverandoer = it.tpLeverandoer,
+                            tpLeverandoer = SPKMapper.PROVIDER_FULLT_NAVN,
                             ordningsListe = it.ordningsListe,
-                            utbetalingsperioder = grupperMedDatoFra(it.utbetalingsperioder, request.foedselsdato)
+                            utbetalingsperioder = grupperMedDatoFra(it.utbetalingsperioder, request.foedselsdato),
+                            betingetTjenestepensjonErInkludert = it.betingetTjenestepensjonErInkludert,
                         )
                     )
                 },

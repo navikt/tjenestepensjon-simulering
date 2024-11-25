@@ -9,7 +9,7 @@ import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025ServiceTest.Companion.dummyRequest
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKMapper.LEVERANDOER
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKMapper.PROVIDER_FULLT_NAVN
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonClient.Companion.SIMULER_PATH
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.*
@@ -59,7 +59,7 @@ class SPKTjenestepensjonClientTest{
         assertTrue(response.isSuccess)
         val tjenestepensjon = response.getOrNull()
         assertNotNull(tjenestepensjon)
-        assertEquals(LEVERANDOER, tjenestepensjon!!.tpLeverandoer)
+        assertEquals(PROVIDER_FULLT_NAVN, tjenestepensjon!!.tpLeverandoer)
         assertEquals(1, tjenestepensjon.ordningsListe.size)
         assertEquals("3010", tjenestepensjon.ordningsListe[0].tpNummer)
         assertEquals(5, tjenestepensjon.utbetalingsperioder.size)

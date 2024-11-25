@@ -47,8 +47,9 @@ class Tjenestepensjon2025AggregatorTest {
             ),
             aarsakIngenUtbetaling = emptyList()
         )
+        val ordninger = listOf("tpLeverandoer")
 
-        val result: SimulerTjenestepensjonResponseDto = Tjenestepensjon2025Aggregator.aggregerRespons(simulertTjenestepensjon)
+        val result: SimulerTjenestepensjonResponseDto = Tjenestepensjon2025Aggregator.aggregerVellykketRespons(simulertTjenestepensjon, ordninger)
 
         assertEquals(ResultatTypeDto.SUCCESS, result.simuleringsResultatStatus.resultatType)
 
@@ -91,8 +92,9 @@ class Tjenestepensjon2025AggregatorTest {
                     maanedsBeloep = 1000,
                     fraOgMedAlder = Alder(aar = 63, maaneder = 3)
                 )))
+        val ordninger = listOf("pensjonskasse")
 
-        val result: SimulerTjenestepensjonResponseDto = Tjenestepensjon2025Aggregator.aggregerRespons(simulertTjenestepensjon)
+        val result: SimulerTjenestepensjonResponseDto = Tjenestepensjon2025Aggregator.aggregerVellykketRespons(simulertTjenestepensjon, ordninger)
 
         assertEquals(ResultatTypeDto.SUCCESS, result.simuleringsResultatStatus.resultatType)
 
@@ -110,13 +112,14 @@ class Tjenestepensjon2025AggregatorTest {
     @Test
     fun `aggregering haandterer tom liste`() {
         val simulertTjenestepensjon = SimulertTjenestepensjonMedMaanedsUtbetalinger(
-            tpLeverandoer = "pensjpnskasse",
+            tpLeverandoer = "pensjonskasse",
             ordningsListe = listOf(Ordning("3010")),
             utbetalingsperioder = emptyList(),
             aarsakIngenUtbetaling = listOf("Ingen utbetaling"),
         )
+        val ordninger = listOf("pensjonskasse")
 
-        val result = Tjenestepensjon2025Aggregator.aggregerRespons(simulertTjenestepensjon)
+        val result = Tjenestepensjon2025Aggregator.aggregerVellykketRespons(simulertTjenestepensjon, ordninger)
 
         assertEquals(ResultatTypeDto.SUCCESS, result.simuleringsResultatStatus.resultatType)
         assertTrue(result.simuleringsResultat!!.utbetalingsperioder.isEmpty())

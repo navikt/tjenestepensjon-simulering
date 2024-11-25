@@ -9,6 +9,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Simuler
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.Tjenestepensjon2025AggregatorTest.Companion.MAANEDER_I_AAR
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Service
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
@@ -19,12 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
-import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 
 @AutoConfigureMockMvc
@@ -74,10 +73,11 @@ class TjenestepensjonSimuleringV2025ControllerTest {
             tpLeverandoer = "pensjonskasse",
             ordningsListe = emptyList(),
             utbetalingsperioder = perioder,
-            aarsakIngenUtbetaling = emptyList()
+            aarsakIngenUtbetaling = emptyList(),
+            betingetTjenestepensjonErInkludert = true
         )
 
-        `when`(service.simuler(any())).thenReturn(Result.success(mockRespons))
+        `when`(service.simuler(any())).thenReturn(listOf("Statens pensjonskasse") to Result.success(mockRespons))
         `when`(aadClient.getToken("api://bogus")).thenReturn("")
         val aarsBeloepVed63 = perioder[0].maanedsBeloep * (perioder[1].fraOgMedAlder.maaneder) +
                 perioder[1].maanedsBeloep * (perioder[2].fraOgMedAlder.maaneder - perioder[1].fraOgMedAlder.maaneder) +
@@ -196,8 +196,10 @@ class TjenestepensjonSimuleringV2025ControllerTest {
                                         "aar": 85,
                                         "beloep": 36000
                                     }
-                                ]
-                        }
+                                ],
+                                "betingetTjenestepensjonErInkludert": true
+                        },
+                        "relevanteTpOrdninger": ["Statens pensjonskasse"]
                     }
                     """.trimIndent()
                     )
@@ -208,7 +210,7 @@ class TjenestepensjonSimuleringV2025ControllerTest {
     @Test
     @WithMockUser
     fun `test simulering naar bruker ikke er medlem`() {
-        `when`(service.simuler(any())).thenReturn(Result.failure(BrukerErIkkeMedlemException()))
+        `when`(service.simuler(any())).thenReturn(emptyList<String>() to Result.failure(BrukerErIkkeMedlemException()))
         `when`(aadClient.getToken("api://bogus")).thenReturn("")
 
         mockMvc.post("/v2025/tjenestepensjon/v1/simulering") {
@@ -222,7 +224,7 @@ class TjenestepensjonSimuleringV2025ControllerTest {
                         """
                     {
                         "simuleringsResultatStatus": {
-                            "resultatType": "ERROR",
+                            "resultatType": "BRUKER_ER_IKKE_MEDLEM_HOS_TP_ORDNING",
                             "feilmelding": "Bruker er ikke medlem av en offentlig tjenestepensjonsordning"
                         },
                         "simuleringsResultat": null
@@ -237,7 +239,7 @@ class TjenestepensjonSimuleringV2025ControllerTest {
     @WithMockUser
     fun `test simulering naar tp-ordning ikke stoettes`() {
         val tpOrdning = "opf"
-        `when`(service.simuler(any())).thenReturn(Result.failure(TpOrdningStoettesIkkeException(tpOrdning)))
+        `when`(service.simuler(any())).thenReturn(listOf("Dummy tp-ordning") to Result.failure(TpOrdningStoettesIkkeException(tpOrdning)))
         `when`(aadClient.getToken("api://bogus")).thenReturn("")
 
         mockMvc.post("/v2025/tjenestepensjon/v1/simulering") {
@@ -251,10 +253,11 @@ class TjenestepensjonSimuleringV2025ControllerTest {
                         """
                     {
                         "simuleringsResultatStatus": {
-                            "resultatType": "ERROR",
+                            "resultatType": "TP_ORDNING_ER_IKKE_STOTTET",
                             "feilmelding": "$tpOrdning støtter ikke simulering av tjenestepensjon v2025"
                         },
-                        "simuleringsResultat": null
+                        "simuleringsResultat": null,
+                        "relevanteTpOrdninger": ["Dummy tp-ordning"]
                     }
                     """.trimIndent()
                     )
@@ -265,28 +268,13 @@ class TjenestepensjonSimuleringV2025ControllerTest {
     @Test
     @WithMockUser
     fun `test simulering naar tpregisteret feiler`() {
-        `when`(service.simuler(any())).thenReturn(Result.failure(ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)))
+        `when`(service.simuler(any())).thenReturn(emptyList<String>() to Result.failure(TpregisteretException("feil")))
         `when`(aadClient.getToken("api://bogus")).thenReturn("")
 
         mockMvc.post("/v2025/tjenestepensjon/v1/simulering") {
             content = defaultSimulerTjenestepensjonHosSPKJson
             contentType = MediaType.APPLICATION_JSON
         }
-            .andExpect {
-                status { isOk() }
-                content {
-                    json(
-                        """
-                    {
-                        "simuleringsResultatStatus": {
-                            "resultatType": "ERROR",
-                            "feilmelding": "500 INTERNAL_SERVER_ERROR"
-                        },
-                        "simuleringsResultat": null
-                    }
-                    """.trimIndent()
-                    )
-                }
-            }
+            .andExpect { status { is5xxServerError() } }
     }
 }

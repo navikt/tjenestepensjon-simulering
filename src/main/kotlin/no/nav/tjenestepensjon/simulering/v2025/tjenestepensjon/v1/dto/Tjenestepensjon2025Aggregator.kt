@@ -6,12 +6,14 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.response.*
 
 object Tjenestepensjon2025Aggregator {
 
-    fun aggregerRespons(simulertTjenestepensjon: SimulertTjenestepensjonMedMaanedsUtbetalinger) =
+    fun aggregerVellykketRespons(simulertTjenestepensjon: SimulertTjenestepensjonMedMaanedsUtbetalinger, tpOrdninger: List<String>) =
         SimulerTjenestepensjonResponseDto(
+            relevanteTpOrdninger = tpOrdninger,
             simuleringsResultatStatus = SimuleringsResultatStatusDto(ResultatTypeDto.SUCCESS),
             simuleringsResultat = SimuleringsResultatDto(
                 tpLeverandoer = simulertTjenestepensjon.tpLeverandoer,
                 utbetalingsperioder = aggregerTilAarligePerioder(simulertTjenestepensjon.utbetalingsperioder),
+                betingetTjenestepensjonErInkludert = simulertTjenestepensjon.betingetTjenestepensjonErInkludert
             )
         )
 

@@ -44,10 +44,10 @@ class TjenestepensjonV2025ServiceTest {
         `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning()))
         `when`(spk.simuler(req)).thenReturn(dummyResult())
 
-        val res: Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = tjenestepensjonV2025Service.simuler(req)
+        val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
-        assertTrue(res.isSuccess)
-        val tjenestepensjon = res.getOrNull()
+        assertTrue(res.second.isSuccess)
+        val tjenestepensjon = res.second.getOrNull()
         assertNotNull(tjenestepensjon)
         assertEquals("spk", tjenestepensjon.tpLeverandoer)
         assertEquals(1, tjenestepensjon.ordningsListe.size)
@@ -60,10 +60,10 @@ class TjenestepensjonV2025ServiceTest {
         `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning()))
         `when`(spk.simuler(req)).thenReturn(Result.failure(WebClientResponseException("Failed to simulate", 500, "error", null, null, null)))
 
-        val res: Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = tjenestepensjonV2025Service.simuler(req)
+        val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
-        assertTrue(res.isFailure)
-        val tjenestepensjonFailure = res.exceptionOrNull()
+        assertTrue(res.second.isFailure)
+        val tjenestepensjonFailure = res.second.exceptionOrNull()
         assertNotNull(tjenestepensjonFailure)
         assertEquals("Failed to simulate", tjenestepensjonFailure.message)
     }

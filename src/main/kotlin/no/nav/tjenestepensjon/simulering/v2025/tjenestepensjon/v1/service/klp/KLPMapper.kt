@@ -13,7 +13,8 @@ object KLPMapper {
     fun mapToRequest(request: SimulerTjenestepensjonRequestDto) =
         KLPSimulerTjenestepensjonRequest(
             personId = request.pid,
-            uttaksListe = listOf(Uttak(
+            uttaksListe = listOf(
+                Uttak(
                     ytelseType = "ALLE",
                     fraOgMedDato = request.uttaksdato,
                     uttaksgrad = 100
@@ -37,6 +38,7 @@ object KLPMapper {
             tpLeverandoer = LEVERANDOER,
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
             utbetalingsperioder = response.utbetalingsListe.map { Utbetalingsperiode(it.fraOgMedDato, it.manedligUtbetaling, it.ytelseType) },
-            aarsakIngenUtbetaling = response.arsakIngenUtbetaling
+            aarsakIngenUtbetaling = response.arsakIngenUtbetaling,
+            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == "BTP" }
         )
 }

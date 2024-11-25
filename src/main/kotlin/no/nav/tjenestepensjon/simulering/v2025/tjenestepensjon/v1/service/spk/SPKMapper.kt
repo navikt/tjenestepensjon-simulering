@@ -8,7 +8,7 @@ import java.time.LocalDate
 
 object SPKMapper {
 
-    const val LEVERANDOER = "Statens pensjonskasse"
+    const val PROVIDER_FULLT_NAVN = "Statens Pensjonskasse"
 
     fun mapToRequest(request: SimulerTjenestepensjonRequestDto) =
         SPKSimulerTjenestepensjonRequest(
@@ -29,13 +29,14 @@ object SPKMapper {
 
     fun mapToResponse(response: SPKSimulerTjenestepensjonResponse) =
         SimulertTjenestepensjon(
-            tpLeverandoer = LEVERANDOER,
+            tpLeverandoer = PROVIDER_FULLT_NAVN,
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
             utbetalingsperioder = response.utbetalingListe.flatMap { periode ->
                 val fraOgMed = periode.fraOgMedDato
                 periode.delytelseListe.map { Utbetalingsperiode(fraOgMed, it.maanedligBelop, it.ytelseType) }
             },
-            aarsakIngenUtbetaling = response.aarsakIngenUtbetaling.map { it.statusBeskrivelse + ": " + it.ytelseType }
+            aarsakIngenUtbetaling = response.aarsakIngenUtbetaling.map { it.statusBeskrivelse + ": " + it.ytelseType },
+            betingetTjenestepensjonErInkludert = response.utbetalingListe.flatMap { it.delytelseListe }.any { it.ytelseType == "BTP"}
         )
 
     fun opprettUttaksliste(request: SimulerTjenestepensjonRequestDto) =

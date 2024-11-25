@@ -32,7 +32,8 @@ class SPKTjenestepensjonServiceTest {
         assertTrue(res.isSuccess)
         val tjenestepensjon = res.getOrNull()
         assertNotNull(tjenestepensjon)
-        assertEquals("spk", tjenestepensjon!!.tpLeverandoer)
+        assertEquals(SPKMapper.PROVIDER_FULLT_NAVN, tjenestepensjon!!.tpLeverandoer)
+        assertFalse(tjenestepensjon.betingetTjenestepensjonErInkludert)
         assertEquals(1, tjenestepensjon.ordningsListe.size)
         assertEquals(2, tjenestepensjon.utbetalingsperioder.size)
 
@@ -47,7 +48,20 @@ class SPKTjenestepensjonServiceTest {
         assertEquals(0, tjenestepensjon.utbetalingsperioder[1].fraOgMedAlder.maaneder)
     }
 
-    fun dummyResult() : Result<SimulertTjenestepensjon> {
+    @Test
+    fun `simuler med BTP fra spk`() {
+        val req = dummyRequest("1963-02-05")
+        `when`(client.simuler(req)).thenReturn(dummyResult(inkluderBTP = true))
+
+        val res : Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = spkTjenestepensjonService.simuler(req)
+
+        assertTrue(res.isSuccess)
+        val tjenestepensjon = res.getOrNull()
+        assertNotNull(tjenestepensjon)
+        assertTrue(tjenestepensjon!!.betingetTjenestepensjonErInkludert)
+    }
+
+    fun dummyResult(inkluderBTP: Boolean = false) : Result<SimulertTjenestepensjon> {
         return Result.success(SimulertTjenestepensjon(
             tpLeverandoer = "spk",
             ordningsListe = listOf(Ordning("3010")),
@@ -72,7 +86,8 @@ class SPKTjenestepensjonServiceTest {
                     maanedligBelop = 2000,
                     ytelseType = "APOF2020"
                 ),
-            )
+            ),
+            betingetTjenestepensjonErInkludert = inkluderBTP
         ))
     }
 

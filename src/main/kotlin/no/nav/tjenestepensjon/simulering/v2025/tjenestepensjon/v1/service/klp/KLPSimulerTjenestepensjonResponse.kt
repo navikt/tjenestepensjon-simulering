@@ -6,6 +6,7 @@ data class KLPSimulerTjenestepensjonResponse(
     val inkludertOrdningListe: List<InkludertOrdning>,
     val utbetalingsListe: List<Utbetaling>,
     val arsakIngenUtbetaling: List<String>,
+    val betingetTjenestepensjonErInkludert: Boolean,
 )
 
 data class InkludertOrdning(
