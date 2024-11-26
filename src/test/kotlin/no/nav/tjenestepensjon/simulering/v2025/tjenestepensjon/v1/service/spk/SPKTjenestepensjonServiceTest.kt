@@ -61,6 +61,33 @@ class SPKTjenestepensjonServiceTest {
         assertTrue(tjenestepensjon!!.betingetTjenestepensjonErInkludert)
     }
 
+    @Test
+    fun `afp fjernes fra utbetalingsperioder fra spk`() {
+        val req = dummyRequest("1963-02-05")
+        `when`(client.simuler(req)).thenReturn(Result.success(SimulertTjenestepensjon(
+            tpLeverandoer = "spk",
+            ordningsListe = listOf(Ordning("3010")),
+            utbetalingsperioder = listOf(
+                Utbetalingsperiode(
+                    fom = LocalDate.parse("2026-03-01"),
+                    maanedligBelop = 3000,
+                    ytelseType = "OAFP"
+                ),
+            ),
+            betingetTjenestepensjonErInkludert = false
+        )))
+
+        val res : Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = spkTjenestepensjonService.simuler(req)
+
+        assertTrue(res.isSuccess)
+        val tjenestepensjon = res.getOrNull()
+        assertNotNull(tjenestepensjon)
+        assertEquals(SPKMapper.PROVIDER_FULLT_NAVN, tjenestepensjon!!.tpLeverandoer)
+        assertFalse(tjenestepensjon.betingetTjenestepensjonErInkludert)
+        assertEquals(1, tjenestepensjon.ordningsListe.size)
+        assertTrue(tjenestepensjon.utbetalingsperioder.isEmpty())
+    }
+
     fun dummyResult(inkluderBTP: Boolean = false) : Result<SimulertTjenestepensjon> {
         return Result.success(SimulertTjenestepensjon(
             tpLeverandoer = "spk",
@@ -69,7 +96,7 @@ class SPKTjenestepensjonServiceTest {
                 Utbetalingsperiode(
                     fom = LocalDate.parse("2026-03-01"),
                     maanedligBelop = 3000,
-                    ytelseType = "OAFP"
+                    ytelseType = "SAERALDERSPAASLAG"
                 ),
                 Utbetalingsperiode(
                     fom = LocalDate.parse("2026-03-01"),
