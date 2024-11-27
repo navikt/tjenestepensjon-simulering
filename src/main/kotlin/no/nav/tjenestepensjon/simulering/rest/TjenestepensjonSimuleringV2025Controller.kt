@@ -42,7 +42,7 @@ class TjenestepensjonSimuleringV2025Controller(
                 when (e) {
                     is BrukerErIkkeMedlemException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.BRUKER_ER_IKKE_MEDLEM_HOS_TP_ORDNING, e.message, relevanteTpOrdninger)
                     is TpOrdningStoettesIkkeException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.TP_ORDNING_ER_IKKE_STOTTET, e.message, relevanteTpOrdninger)
-                    is TjenestepensjonSimuleringException -> loggOgReturnerTekniskFeil(e)
+                    is TjenestepensjonSimuleringException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.TEKNISK_FEIL_FRA_TP_ORDNING, e.message, relevanteTpOrdninger)
                     is TpregisteretException -> loggOgReturnerTekniskFeil(e)
                     else -> loggOgReturnerTekniskFeil(RuntimeException(e))
                 }
