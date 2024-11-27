@@ -35,6 +35,7 @@ import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjen
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.tpOrdningStoettesIkke
 import no.nav.tjenestepensjon.simulering.v2.rest.RestClient
 import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
@@ -103,6 +104,9 @@ class SimuleringEndpoint(
                 log.debug { "Returning response: ${filterFnr(response.toString())}" }
                 ResponseEntity(response, OK)
             }
+        } catch (e: TpregisteretException) {
+            log.error (e) { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. failed.""" }
+            ResponseEntity.internalServerError().build()
         } catch (e: NoTpOrdningerFoundException) {
             log.debug { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No TP-forhold found for person.""" }
             ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.ikkeMedlem())

@@ -1,5 +1,6 @@
-package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk
+package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDate
 
 data class SPKSimulerTjenestepensjonResponse(
@@ -13,6 +14,7 @@ data class InkludertOrdning(
 )
 
 data class Utbetaling(
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val fraOgMedDato: LocalDate,
     val delytelseListe: List<Delytelse>,
 )

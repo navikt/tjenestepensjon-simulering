@@ -26,7 +26,7 @@ object AlderForDelingstallBeregner {
         return listOf(AlderForDelingstall(bestemAlderVedDato(fodselsdato, uttaksdato), uttaksdato))
     }
 
-    private fun bestemAlderVedDato(fodselsdato: LocalDate, date: LocalDate): Alder {
+    fun bestemAlderVedDato(fodselsdato: LocalDate, date: LocalDate): Alder {
         val periode = Period.between(fodselsdato, date)
         return Alder(periode.years, periode.months)
     }

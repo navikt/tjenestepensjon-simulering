@@ -81,26 +81,25 @@ class SimuleringAFPEndpointTest {
             .andExpect {
                 status { isOk() }
                 content {
-                    content {
+                    json(
                         """
                     {
-                        "fnr": "$defaultFNRString"
-                        "ytelser": [
+                        "fnr": "$defaultFNRString",
+                        "afpYtelser": [
                             {
                                 "pensjonsbeholdning": 250000,
                                 "afpYtelsePerAar": 50000.1,
                                 "delingstall": 18.13,
                                 "gjelderFraOgMed": "2027-01-01",
                                 "gjelderFraOgMedAlder": {
-                                    "ar": 64,
+                                    "aar": 64,
                                     "maaneder": 1
                                 }
                             }
-                        ],
-                        "tpLeverandoerer": "SPK,KLP"
+                        ]
                     }
                     """.trimIndent()
-                    }
+                    )
                 }
             }
     }
@@ -129,26 +128,25 @@ class SimuleringAFPEndpointTest {
             .andExpect {
                 status { isOk() }
                 content {
-                    content {
+                    json(
                         """
                     {
-                        "fnr": "$fnrMedEttMedlemskapITPOrdning"
-                        "ytelser": [
+                        "fnr": "$defaultFNRString",
+                        "afpYtelser": [
                             {
                                 "pensjonsbeholdning": 250000,
                                 "afpYtelsePerAar": 50000.1,
                                 "delingstall": 18.13,
                                 "gjelderFraOgMed": "2027-01-01",
                                 "gjelderFraOgMedAlder": {
-                                    "ar": 64,
+                                    "aar": 64,
                                     "maaneder": 1
                                 }
                             }
-                        ],
-                        "tpLeverandoerer": "SPK"
+                        ]
                     }
                     """.trimIndent()
-                    }
+                    )
                 }
             }
     }
@@ -177,26 +175,25 @@ class SimuleringAFPEndpointTest {
             .andExpect {
                 status { isOk() }
                 content {
-                    content {
+                    json(
                         """
                     {
-                        "fnr": "$fnrUtenMedlemskap"
-                        "ytelser": [
+                        "fnr": "$fnrUtenMedlemskap",
+                        "afpYtelser": [
                             {
                                 "pensjonsbeholdning": 250000,
                                 "afpYtelsePerAar": 50000.1,
                                 "delingstall": 18.13,
                                 "gjelderFraOgMed": "2027-01-01",
                                 "gjelderFraOgMedAlder": {
-                                    "ar": 64,
+                                    "aar": 64,
                                     "maaneder": 1
                                 }
                             }
-                        ],
-                        "tpLeverandoerer": ""
+                        ]
                     }
                     """.trimIndent()
-                    }
+                    )
                 }
             }
     }

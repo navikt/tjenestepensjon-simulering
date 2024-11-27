@@ -30,10 +30,9 @@ class WebClientConfig {
     @Bean
     fun client(): HttpClient =
         HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
-            .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(READ_TIMEOUT_MILLIS / 1000)) }
             .compress(true)
             .followRedirect(true)
-            .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(30)) }
+            .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(READ_TIMEOUT_SECONDS)) }
             .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL)
 
     @Bean
@@ -154,7 +153,7 @@ class WebClientConfig {
 
     companion object {
         private const val CONNECT_TIMEOUT_MILLIS = 3000
-        const val READ_TIMEOUT_MILLIS = 5000
+        const val READ_TIMEOUT_SECONDS = 45
 
         fun addCorrelationId(
             next: ExchangeFunction,

@@ -155,3 +155,13 @@ const val simulerBeregningAFPOffentligUtenMedlemskapITPOrdningJson =
           ],
           "fom": "2040-01-01"
         }"""
+const val defaultSimulerTjenestepensjonHosSPKJson =
+    """{"pid": "$defaultFNRString",
+        "foedselsdato": "1963-12-05",
+        "uttaksdato": "2026-02-01",
+        "sisteInntekt": 600000,
+        "aarIUtlandetEtter16": 0,
+        "brukerBaOmAfp": false,
+        "epsPensjon": false,
+        "eps2G": false
+        }"""

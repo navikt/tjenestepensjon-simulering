@@ -1,9 +1,19 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain
 
-data class SimulertTjenestepensjon(
+open class SimulertTjenestepensjon(
+    val tpLeverandoer: String,
     var ordningsListe: List<Ordning> = emptyList(),
     var utbetalingsperioder: List<Utbetalingsperiode> = emptyList(),
     var aarsakIngenUtbetaling: List<String> = emptyList(),
+    val betingetTjenestepensjonErInkludert: Boolean
 )
 
 data class Ordning(val tpNummer: String)
+
+open class SimulertTjenestepensjonMedMaanedsUtbetalinger(
+    val tpLeverandoer: String,
+    var ordningsListe: List<Ordning> = emptyList(),
+    var utbetalingsperioder: List<Maanedsutbetaling> = emptyList(),
+    var aarsakIngenUtbetaling: List<String> = emptyList(),
+    val betingetTjenestepensjonErInkludert: Boolean = false
+)

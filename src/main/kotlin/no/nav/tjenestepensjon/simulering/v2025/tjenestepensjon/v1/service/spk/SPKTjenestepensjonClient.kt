@@ -8,6 +8,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.Si
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client.Companion.TJENESTE
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto.SPKSimulerTjenestepensjonResponse
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
@@ -60,7 +61,7 @@ class SPKTjenestepensjonClient(private val spkWebClient: WebClient) : Tjenestepe
     }
 
     companion object {
-        private const val SIMULER_PATH = "/nav/v2/tjenestepensjon/simuler/3010"
+        const val SIMULER_PATH = "/nav/v2/tjenestepensjon/simuler/3010"
         private const val PING_PATH = "/nav/admin/ping"
         private const val PROVIDER = "SPK"
     }

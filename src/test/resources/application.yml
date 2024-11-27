@@ -68,7 +68,7 @@ oftp:
         maskinportenscope: klp:oftp/simulering
     spk:
       endpoint:
-        url: https://api.test.spk.no
+        url: http://localhost:8080
         maskinportenscope: spk:nav
   before2025:
     spk:

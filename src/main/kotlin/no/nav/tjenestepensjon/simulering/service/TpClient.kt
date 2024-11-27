@@ -13,12 +13,9 @@ import no.nav.tjenestepensjon.simulering.model.domain.HateoasWrapper
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.ping.Pingable
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonClient
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonClient.Companion
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.*
 import org.springframework.web.server.ResponseStatusException
@@ -100,14 +97,16 @@ class TpClient(
                 when (it.statusCode().value()) {
                     200 -> it.bodyToMono<List<TpOrdningDto>>()
                     404 -> Mono.empty()
-                    else -> Mono.error(handleRemoteError(null))
+                    else -> Mono.error(handleRemoteError("Received status code ${it.statusCode()} fra tpregisteret")) //TODO bedre feilhåndtering i alle funksjonene
                 }
-            }.block() ?: emptyList()
+            }
+            .onErrorMap { handleRemoteError(it.message) }
+            .block() ?: emptyList()
     }
 
-    fun handleRemoteError(logMessage: String?): ResponseStatusException {
+    fun handleRemoteError(logMessage: String?): TpregisteretException {
         log.error { "Error fetching data from TP: $logMessage" }
-        return ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
+        return TpregisteretException("Error fetching data from TP")
     }
 
     override fun ping(): PingResponse {

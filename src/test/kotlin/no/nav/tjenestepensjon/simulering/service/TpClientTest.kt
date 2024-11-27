@@ -13,13 +13,13 @@ import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.web.server.ResponseStatusException
 
 @SpringBootTest(classes = [TpClient::class, WebClientConfig::class, ObjectMapperConfig::class, TestConfig::class])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -94,7 +94,7 @@ class TpClientTest {
             defaultTjenestepensjonRequest.willReturn(unauthorized())
         )
 
-        assertThrows<ResponseStatusException> { tpClient.findForhold(defaultFNR) }
+        assertThrows<TpregisteretException> { tpClient.findForhold(defaultFNR) }
 
         wireMockServer.removeStub(stub.uuid)
 

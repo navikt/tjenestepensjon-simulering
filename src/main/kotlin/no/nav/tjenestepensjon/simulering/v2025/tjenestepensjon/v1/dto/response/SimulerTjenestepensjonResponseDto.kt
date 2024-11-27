@@ -2,21 +2,33 @@ package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.response
 
 data class SimulerTjenestepensjonResponseDto(
     val simuleringsResultatStatus: SimuleringsResultatStatusDto,
-    val simuleringsResultatDto: SimuleringsResultatDto? = null,
-){
-    constructor(simuleringsResultatTypeDto: SimuleringsResultatTypeDto, feilmelding: String) : this(
-        SimuleringsResultatStatusDto(simuleringsResultatTypeDto, feilmelding)
+    val simuleringsResultat: SimuleringsResultatDto? = null,
+    val relevanteTpOrdninger: List<String> = emptyList(),
+) {
+    constructor(resultatTypeDto: ResultatTypeDto, feilmelding: String?, tpOrdninger: List<String>) : this(
+        SimuleringsResultatStatusDto(resultatTypeDto, feilmelding), null, tpOrdninger
     )
 }
 
 data class SimuleringsResultatStatusDto(
-    val simuleringsResultatStatus: SimuleringsResultatTypeDto,
+    val resultatType: ResultatTypeDto,
     val feilmelding: String? = null,
 )
 
-enum class SimuleringsResultatTypeDto { SUCCESS, ERROR }
+enum class ResultatTypeDto {
+    SUCCESS,
+    BRUKER_ER_IKKE_MEDLEM_HOS_TP_ORDNING,
+    TP_ORDNING_ER_IKKE_STOTTET,
+    INGEN_UTBETALINGSPERIODER_FRA_TP_ORDNING,
+}
 
 data class SimuleringsResultatDto(
-    val utbetalingsperioder: List<UtbetalingsperiodeDto>,
-    val aarsakIngenUtbetaling: List<String>,
+    val tpLeverandoer: String,
+    val utbetalingsperioder: List<UtbetalingPerAar>,
+    val betingetTjenestepensjonErInkludert: Boolean,
+)
+
+data class UtbetalingPerAar(
+    val aar: Int,
+    val beloep: Int,
 )
