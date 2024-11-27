@@ -4,6 +4,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto.*
 import java.time.LocalDate
 
 object SPKMapper {
@@ -36,11 +37,11 @@ object SPKMapper {
                 periode.delytelseListe.map { Utbetalingsperiode(fraOgMed, it.maanedligBelop, it.ytelseType) }
             },
             aarsakIngenUtbetaling = response.aarsakIngenUtbetaling.map { it.statusBeskrivelse + ": " + it.ytelseType },
-            betingetTjenestepensjonErInkludert = response.utbetalingListe.flatMap { it.delytelseListe }.any { it.ytelseType == "BTP"}
+            betingetTjenestepensjonErInkludert = response.utbetalingListe.flatMap { it.delytelseListe }.any { it.ytelseType == "BTP" }
         )
 
-    fun opprettUttaksliste(request: SimulerTjenestepensjonRequestDto) =
-        mutableListOf("PAASLAG", "APOF2020", "OT6370", "SAERALDERSPAASLAG", if (request.brukerBaOmAfp) "OAFP" else "BTP")
+    fun opprettUttaksliste(request: SimulerTjenestepensjonRequestDto): List<Uttak> {
+        return SPKYtelse.hentAlleUnntattType(if (request.brukerBaOmAfp) SPKYtelse.BTP else SPKYtelse.OAFP)
             .map {
                 Uttak(
                     ytelseType = it,
@@ -48,4 +49,5 @@ object SPKMapper {
                     uttaksgrad = null
                 )
             }
+    }
 }

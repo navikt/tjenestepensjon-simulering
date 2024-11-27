@@ -4,6 +4,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.*
 import java.time.LocalDate
 
 object KLPMapper {
@@ -15,7 +16,7 @@ object KLPMapper {
             personId = request.pid,
             uttaksListe = listOf(
                 Uttak(
-                    ytelseType = "ALLE",
+                    ytelseType = KLPYtelse.ALLE.name,
                     fraOgMedDato = request.uttaksdato,
                     uttaksgrad = 100
                 )
@@ -39,6 +40,6 @@ object KLPMapper {
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
             utbetalingsperioder = response.utbetalingsListe.map { Utbetalingsperiode(it.fraOgMedDato, it.manedligUtbetaling, it.ytelseType) },
             aarsakIngenUtbetaling = response.arsakIngenUtbetaling,
-            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == "BTP" }
+            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name }
         )
 }

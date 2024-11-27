@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk
+package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDate
