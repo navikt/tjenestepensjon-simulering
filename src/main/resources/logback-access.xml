@@ -20,6 +20,7 @@
                 <requestedUri/>
                 <remoteHost/>
                 <contentLength/>
+                <elapsedTime/>
                 <threadName/>
                 <message/>
             </providers>
