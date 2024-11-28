@@ -16,12 +16,12 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.reactive.function.client.bodyToMono
 
 @Service
-class SPKTjenestepensjonClient(private val spkWebClient: WebClient) : TjenestepensjonV2025Client, Pingable {
+class SPKTjenestepensjonClient(private val spk2025WebClient: WebClient) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}
 
     override fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjon> {
         try {
-            val response = spkWebClient
+            val response = spk2025WebClient
                 .post()
                 .uri(SIMULER_PATH)
                 .bodyValue(SPKMapper.mapToRequest(request))
@@ -41,7 +41,7 @@ class SPKTjenestepensjonClient(private val spkWebClient: WebClient) : Tjenestepe
 
     override fun ping(): PingResponse {
         try {
-            val response = spkWebClient.get()
+            val response = spk2025WebClient.get()
                 .uri(PING_PATH)
                 .retrieve()
                 .bodyToMono<String>()

@@ -63,6 +63,8 @@ oftp:
       endpoint:
         url: https://api.prod.spk.no
         maskinportenscope: spk:nav
-  before2025:
+  pre2025:
     spk:
-      maskinportenscope: spk:nav
+      endpoint:
+        url: https://api.prod.spk.no
+        maskinportenscope: spk:nav

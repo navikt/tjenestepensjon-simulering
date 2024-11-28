@@ -70,6 +70,8 @@ oftp:
       endpoint:
         url: http://localhost:8080
         maskinportenscope: spk:nav
-  before2025:
+  pre2025:
     spk:
-      maskinportenscope: spk:nav
+      endpoint:
+        url: https://api.test.spk.no
+        maskinportenscope: spk:nav

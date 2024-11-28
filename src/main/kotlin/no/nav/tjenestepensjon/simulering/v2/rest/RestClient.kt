@@ -5,31 +5,25 @@ import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.v2.models.domain.SivilstandCodeEnum
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequestV2
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 
 @Service
-class RestClient(
-    private val restGatewayWebClient: WebClient,
-    @Value("\${oftp.before2025.spk.maskinportenscope}") private val scope: String,
-) {
+class RestClient(private val spkPre2025Client: WebClient) {
 
-    fun getResponse(request: SimulerPensjonRequestV2, tpOrdning: TPOrdningIdDto): SimulerOffentligTjenestepensjonResponse = restGatewayWebClient
+    fun getResponse(request: SimulerPensjonRequestV2, tpOrdning: TPOrdningIdDto): SimulerOffentligTjenestepensjonResponse = spkPre2025Client
         .post()
-        .uri("/medlem/pensjon/prognose/v1")
-        .header("scope", scope)
+        .uri("/nav/pensjon/prognose/v1")
         .bodyValue(request)
         .retrieve()
         .bodyToMono<SimulerOffentligTjenestepensjonResponse>()
         .block()
         ?: SimulerOffentligTjenestepensjonResponse(request.sisteTpnr, tpOrdning.tpId)
 
-    fun ping(): String = restGatewayWebClient
+    fun ping(): String = spkPre2025Client
         .post()
-        .uri("/medlem/pensjon/prognose/v1")
-        .header("scope", scope)
+        .uri("/nav/pensjon/prognose/v1")
         .bodyValue(dummyRequest())
         .retrieve()
         .bodyToMono(String::class.java)

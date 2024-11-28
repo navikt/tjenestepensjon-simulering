@@ -52,7 +52,7 @@ class WebClientConfig {
     }
 
     @Bean
-    fun spkWebClient(
+    fun spk2025WebClient(
         client: HttpClient,
         maskinportenTokenClient: MaskinportenTokenClient,
         @Value("\${oftp.2025.spk.endpoint.url}") baseUrl: String,
@@ -60,6 +60,14 @@ class WebClientConfig {
     ): WebClient {
         return opprettWebClient(client, baseUrl, maskinportenTokenClient, scope)
     }
+
+    @Bean
+    fun spkPre2025Client(
+        client: HttpClient,
+        maskinportenTokenClient: MaskinportenTokenClient,
+        @Value("\${oftp.pre2025.spk.endpoint.url}") baseUrl: String,
+        @Value("\${oftp.pre2025.spk.endpoint.maskinportenscope}") scope: String,
+    ): WebClient = opprettWebClient(client, baseUrl, maskinportenTokenClient, scope)
 
     private fun opprettWebClient(
         client: HttpClient,
@@ -130,26 +138,6 @@ class WebClientConfig {
             .clientConnector(ReactorClientHttpConnector(httpClient))
             .build()
     }
-
-    @Bean
-    fun restGatewayWebClient(
-        @Value("\${pen.fss.gateway.url}") baseUrl: String,
-        @Value("\${pen.fss.gateway.scope}") fssGatewayScope: String,
-        builder: WebClient.Builder,
-        httpClient: HttpClient,
-        adClient: AADClient
-    ): WebClient = builder
-        .baseUrl(baseUrl)
-        .clientConnector(ReactorClientHttpConnector(httpClient))
-        .filter { request, next ->
-            next.exchange(
-                ClientRequest.from(request)
-                    .headers { it.setBearerAuth(adClient.getToken(fssGatewayScope)) }
-                    .build()
-            )
-        }
-        .filter { request, next -> addCorrelationId(next, request) }
-        .build()
 
     companion object {
         private const val CONNECT_TIMEOUT_MILLIS = 3000

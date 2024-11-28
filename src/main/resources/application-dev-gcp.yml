@@ -18,7 +18,7 @@ klp:
 spk:
   name: SPK
   implementation: REST
-  simuleringUrl: https://api.preprod.spk.no/medlem/pensjon/prognose/v1
+  simuleringUrl: https://api.test.spk.no/nav/pensjon/prognose/v1
   stillingsprosentUrl: https://partner-gw-test.spk.no/nav/SimulereTjenestepensjon
 storebrand:
   name: STOREBRAND
@@ -41,6 +41,11 @@ oftp:
       endpoint:
         url: https://api-test.klp.no
         maskinportenscope: klp:oftp/simulering
+    spk:
+      endpoint:
+        url: https://api.test.spk.no
+        maskinportenscope: spk:nav
+  pre2025:
     spk:
       endpoint:
         url: https://api.test.spk.no
