@@ -6,8 +6,11 @@ import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.v2.models.domain.SivilstandCodeEnum
 import no.nav.tjenestepensjon.simulering.v2.models.request.*
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientRequestException
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.bodyToMono
 import java.time.LocalDate
 
@@ -27,14 +30,25 @@ class RestClient(private val spkPre2025Client: WebClient) {
     fun ping(): String {
         val request = dummyRequest()
         val url = "/nav/pensjon/prognose/v1"
-        log.info { "Pinging SPK at url https://api.prod.spk.no$url with request $request" }
-        return spkPre2025Client
-            .post()
-            .uri(url)
-            .bodyValue(request)
-            .retrieve()
-            .bodyToMono(String::class.java)
-            .block() ?: "No body received"
+        log.info { "Pinging SPK at url $url with request $request" }
+        return try {
+            spkPre2025Client
+                .post()
+                .uri(url)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(String::class.java)
+                .block() ?: "No body received"
+        } catch (e: WebClientResponseException){
+            val msg = "Failed to ping SPK at url $url, got: ${e.responseBodyAsString} for request $request, ${e.message}"
+            log.error(e) { msg }
+            msg
+        } catch (e: WebClientRequestException){
+            val msg = "Failed to ping SPK at uri ${e.uri} with request $request"
+            log.error(e) { msg }
+            msg
+        }
+
     }
 
     private fun dummyRequest(fnr: String = "14866297763"): DummyRequestV2 {
