@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto
 
+import no.nav.tjenestepensjon.simulering.model.domain.pen.Alder
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maanedsutbetaling
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.response.*
@@ -17,27 +18,28 @@ object Tjenestepensjon2025Aggregator {
             )
         )
 
-    fun aggregerTilAarligePerioder(maanedsutbetalinger: List<Maanedsutbetaling>): List<UtbetalingPerAar> {
-        val aarligeUtbetalinger = mutableMapOf<Int, MutableMap<Int, Int>>() //år -> månedsnummer(1-12) -> beløp for måneden
-
-        maanedsutbetalinger.forEach { maanedsutbetaling ->
-            val (startAar, startMaaned) = maanedsutbetaling.fraOgMedAlder.let { it.aar to it.maaneder + 1 }
-
-            // Bruk beløp for start år-måned og fremtidige år
-            (startAar..SISTE_UTBETALINGSAAR).forEach { aar ->
-                val maanedFra = if (aar == startAar) startMaaned else 1
-                aarligeUtbetalinger
-                    .getOrPut(aar) { mutableMapOf() }
-                    .putAll((maanedFra..MAANEDER_I_AAR).associateWith { maanedsutbetaling.maanedsBeloep })
-            }
+    fun aggregerTilAarligePerioder(maanedsutbetalinger: List<Maanedsutbetaling>): List<UtbetalingPerAlder> {
+        val aarligeUtbetalinger = mutableListOf<UtbetalingPerAlder>()
+        for (index in maanedsutbetalinger.indices) {
+            val sluttAlder = maanedsutbetalinger
+                .getOrNull(index + 1)
+                ?.fraOgMedAlder
+                ?.let {
+                    if (it.maaneder == 0) {
+                        Alder(it.aar - 1, 11)
+                    }
+                    else{
+                        Alder(it.aar, it.maaneder - 1)
+                    }
+                }
+            aarligeUtbetalinger.add(
+                UtbetalingPerAlder(
+                    startAlder = maanedsutbetalinger[index].fraOgMedAlder,
+                    sluttAlder = sluttAlder,
+                    maanedligBeloep = maanedsutbetalinger[index].maanedsBeloep,
+                )
+            )
         }
-
-        // Summer beløp per år
         return aarligeUtbetalinger
-            .map { (aar, maanedToBeloep) -> UtbetalingPerAar(aar, maanedToBeloep.values.sum()) }
-            .sortedBy { it.aar }
     }
-
-    const val MAANEDER_I_AAR = 12
-    const val SISTE_UTBETALINGSAAR = 85
 }

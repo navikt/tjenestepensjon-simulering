@@ -1,5 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.response
 
+import no.nav.tjenestepensjon.simulering.model.domain.pen.Alder
+
 data class SimulerTjenestepensjonResponseDto(
     val simuleringsResultatStatus: SimuleringsResultatStatusDto,
     val simuleringsResultat: SimuleringsResultatDto? = null,
@@ -25,11 +27,12 @@ enum class ResultatTypeDto {
 
 data class SimuleringsResultatDto(
     val tpLeverandoer: String,
-    val utbetalingsperioder: List<UtbetalingPerAar>,
+    val utbetalingsperioder: List<UtbetalingPerAlder>,
     val betingetTjenestepensjonErInkludert: Boolean,
 )
 
-data class UtbetalingPerAar(
-    val aar: Int,
-    val beloep: Int,
+data class UtbetalingPerAlder(
+    val startAlder: Alder,
+    val sluttAlder: Alder?,
+    val maanedligBeloep: Int,
 )
