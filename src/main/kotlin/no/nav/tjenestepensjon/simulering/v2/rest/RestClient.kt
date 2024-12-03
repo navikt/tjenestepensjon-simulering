@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2.rest
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.model.domain.Pensjonsbeholdningsperiode
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.v2.models.domain.SivilstandCodeEnum
@@ -12,6 +13,7 @@ import java.time.LocalDate
 
 @Service
 class RestClient(private val spkPre2025Client: WebClient) {
+    private val log = KotlinLogging.logger {}
 
     fun getResponse(request: SimulerPensjonRequestV2, tpOrdning: TPOrdningIdDto): SimulerOffentligTjenestepensjonResponse = spkPre2025Client
         .post()
@@ -22,13 +24,18 @@ class RestClient(private val spkPre2025Client: WebClient) {
         .block()
         ?: SimulerOffentligTjenestepensjonResponse(request.sisteTpnr, tpOrdning.tpId)
 
-    fun ping(): String = spkPre2025Client
-        .post()
-        .uri("/nav/pensjon/prognose/v1")
-        .bodyValue(dummyRequest())
-        .retrieve()
-        .bodyToMono(String::class.java)
-        .block() ?: "No body received"
+    fun ping(): String {
+        val request = dummyRequest()
+        val url = "/nav/pensjon/prognose/v1"
+        log.info { "Pinging SPK at url https://api.prod.spk.no$url with request $request" }
+        return spkPre2025Client
+            .post()
+            .uri(url)
+            .bodyValue(request)
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block() ?: "No body received"
+    }
 
     private fun dummyRequest(fnr: String = "14866297763"): DummyRequestV2 {
         val now = LocalDate.now()
