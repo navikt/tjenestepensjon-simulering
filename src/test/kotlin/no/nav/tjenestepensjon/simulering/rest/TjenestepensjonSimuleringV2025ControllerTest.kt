@@ -6,7 +6,6 @@ import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.v2.models.defaultSimulerTjenestepensjonHosSPKJson
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maanedsutbetaling
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.Tjenestepensjon2025AggregatorTest.Companion.MAANEDER_I_AAR
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
@@ -79,10 +78,6 @@ class TjenestepensjonSimuleringV2025ControllerTest {
 
         `when`(service.simuler(any())).thenReturn(listOf("Statens pensjonskasse") to Result.success(mockRespons))
         `when`(aadClient.getToken("api://bogus")).thenReturn("")
-        val aarsBeloepVed63 = perioder[0].maanedsBeloep * (perioder[1].fraOgMedAlder.maaneder) +
-                perioder[1].maanedsBeloep * (perioder[2].fraOgMedAlder.maaneder - perioder[1].fraOgMedAlder.maaneder) +
-                perioder[2].maanedsBeloep * (MAANEDER_I_AAR - perioder[2].fraOgMedAlder.maaneder)
-
         mockMvc.post("/v2025/tjenestepensjon/v1/simulering") {
             content = defaultSimulerTjenestepensjonHosSPKJson
             contentType = MediaType.APPLICATION_JSON
@@ -101,100 +96,34 @@ class TjenestepensjonSimuleringV2025ControllerTest {
                                 "tpLeverandoer": "${mockRespons.tpLeverandoer}",
                                 "utbetalingsperioder": [
                                     {
-                                        "aar": 62,
-                                        "beloep": 11000
+                                        "startAlder": {
+                                            "aar": 62,
+                                            "maaneder": 1
+                                        },
+                                        "sluttAlder": {
+                                            "aar": 63,
+                                            "maaneder": 3
+                                        },
+                                        "maanedligBeloep": 1000
                                     },
                                     {
-                                        "aar": 63,
-                                        "beloep": $aarsBeloepVed63
+                                        "startAlder": {
+                                            "aar": 63,
+                                            "maaneder": 4
+                                        },
+                                        "sluttAlder": {
+                                            "aar": 63,
+                                            "maaneder": 6
+                                        },
+                                        "maanedligBeloep": 2000
                                     },
                                     {
-                                        "aar": 64,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 65,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 66,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 67,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 68,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 69,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 70,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 71,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 72,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 73,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 74,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 75,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 76,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 77,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 78,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 79,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 80,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 81,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 82,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 83,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 84,
-                                        "beloep": 36000
-                                    },
-                                    {
-                                        "aar": 85,
-                                        "beloep": 36000
+                                        "startAlder": {
+                                            "aar": 63,
+                                            "maaneder": 7
+                                        },
+                                        "sluttAlder": null,
+                                        "maanedligBeloep": 3000
                                     }
                                 ],
                                 "betingetTjenestepensjonErInkludert": true
@@ -276,5 +205,9 @@ class TjenestepensjonSimuleringV2025ControllerTest {
             contentType = MediaType.APPLICATION_JSON
         }
             .andExpect { status { is5xxServerError() } }
+    }
+
+    companion object {
+        const val MAANEDER_I_AAR = 12
     }
 }
