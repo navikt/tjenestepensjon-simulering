@@ -7,14 +7,20 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maaneds
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient) : Pingable {
+class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, private val environment: Environment) : Pingable {
     private val log = KotlinLogging.logger {}
 
     fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
+        if (environment.activeProfiles.contains("prod-gcp")) {
+            return Result.failure(TjenestepensjonSimuleringException("Simulering av tjenestepensjon hos SPK er ikke tilgjengelig i produksjon"))
+        }
+
         return client.simuler(request)
             .fold(
                 onSuccess = {
