@@ -19,22 +19,22 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 @SpringBootTest(classes = [TpClient::class, WebClientConfig::class, ObjectMapperConfig::class, TestConfig::class])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TpClientTest {
 
-    @MockBean
+    @MockitoBean
     private lateinit var aadClient: AADClient
 
-    @MockBean
+    @MockitoBean
     private lateinit var fssGatewayAuthService: FssGatewayAuthService
 
     @Autowired
     private lateinit var tpClient: TpClient
 
-    @MockBean
+    @MockitoBean
     private lateinit var maskinportenTokenClient: MaskinportenTokenClient
 
     private var wireMockServer = WireMockServer().apply {

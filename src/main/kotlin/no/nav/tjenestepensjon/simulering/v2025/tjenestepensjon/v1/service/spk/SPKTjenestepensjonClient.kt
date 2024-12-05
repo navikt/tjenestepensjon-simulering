@@ -3,6 +3,8 @@ package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.ping.Pingable
+import no.nav.tjenestepensjon.simulering.sporingslogg.Organisasjon
+import no.nav.tjenestepensjon.simulering.sporingslogg.SporingsloggService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
@@ -16,15 +18,20 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.reactive.function.client.bodyToMono
 
 @Service
-class SPKTjenestepensjonClient(private val spkWebClient: WebClient) : TjenestepensjonV2025Client, Pingable {
+class SPKTjenestepensjonClient(
+    private val spkWebClient: WebClient,
+    private val sporingsloggService: SporingsloggService
+) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}
 
     override fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjon> {
+        val dto = SPKMapper.mapToRequest(request)
+        sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, request.pid, dto)
         try {
             val response = spkWebClient
                 .post()
                 .uri(SIMULER_PATH)
-                .bodyValue(SPKMapper.mapToRequest(request))
+                .bodyValue(dto)
                 .retrieve()
                 .bodyToMono<SPKSimulerTjenestepensjonResponse>()
                 .block()
