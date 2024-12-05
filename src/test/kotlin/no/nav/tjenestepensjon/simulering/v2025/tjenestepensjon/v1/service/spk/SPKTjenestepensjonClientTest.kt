@@ -20,16 +20,16 @@ import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import java.time.LocalDate
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SPKTjenestepensjonClientTest{
 
-    @MockBean
+    @MockitoBean
     private lateinit var aadClient: AADClient
-    @MockBean
+    @MockitoBean
     private lateinit var maskinportenTokenClient: MaskinportenTokenClient
     @Autowired
     private lateinit var spkClient: SPKTjenestepensjonClient

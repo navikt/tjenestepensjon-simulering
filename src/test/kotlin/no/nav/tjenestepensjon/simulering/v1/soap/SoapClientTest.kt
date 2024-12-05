@@ -6,6 +6,7 @@ import no.nav.tjenestepensjon.simulering.defaultTPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
+import no.nav.tjenestepensjon.simulering.sporingslogg.SporingsloggService
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.consumer.TokenClientOld
 import no.nav.tjenestepensjon.simulering.v1.models.*
@@ -17,18 +18,21 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.ws.client.core.WebServiceTemplate
 
 
 @SpringBootTest(classes = [TokenClientOld::class, WebServiceTemplate::class, SoapClient::class, SamlConfig::class, ObjectMapperConfig::class])
 internal class SoapClientTest {
 
-    @MockBean
+    @MockitoBean
     lateinit var template: WebServiceTemplate
 
-    @MockBean
+    @MockitoBean
     lateinit var tokenClientOld: TokenClientOld
+
+    @MockitoBean
+    lateinit var sporingsloggService: SporingsloggService
 
     @Autowired
     lateinit var client: SoapClient
