@@ -32,7 +32,9 @@ class TjenestepensjonSimuleringV2025Controller(
         return simuleringsresultat.second.fold(
             onSuccess = {
                 if (it.utbetalingsperioder.isNotEmpty()) {
-                    aggregerVellykketRespons(it, relevanteTpOrdninger)
+                    val aggregerVellykketRespons: SimulerTjenestepensjonResponseDto = aggregerVellykketRespons(it, relevanteTpOrdninger)
+                    log.debug { "Simulering vellykket: $aggregerVellykketRespons" }
+                    aggregerVellykketRespons
                 } else {
                     log.info { "Simulering fra ${it.tpLeverandoer} inneholder ingen utbetalingsperioder" }
                     SimulerTjenestepensjonResponseDto(ResultatTypeDto.INGEN_UTBETALINGSPERIODER_FRA_TP_ORDNING, "Simulering fra ${it.tpLeverandoer} inneholder ingen utbetalingsperioder", relevanteTpOrdninger)
