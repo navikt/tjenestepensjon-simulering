@@ -26,6 +26,7 @@ class SPKTjenestepensjonClient(
 
     override fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjon> {
         val dto = SPKMapper.mapToRequest(request)
+        log.debug { "Simulating tjenestepensjon 2025 hos SPK with request $dto" }
         sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, request.pid, dto)
         try {
             val response = spkWebClient

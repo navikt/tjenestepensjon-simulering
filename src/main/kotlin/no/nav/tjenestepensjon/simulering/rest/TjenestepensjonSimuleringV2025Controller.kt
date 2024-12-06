@@ -27,6 +27,7 @@ class TjenestepensjonSimuleringV2025Controller(
 
     @PostMapping("/v2025/tjenestepensjon/v1/simulering")
     fun simuler(@RequestBody request: SimulerTjenestepensjonRequestDto): SimulerTjenestepensjonResponseDto {
+        log.debug { "Simulerer tjenestepensjon for request: $request" }
         val simuleringsresultat = tjenestepensjonV2025Service.simuler(request)
         val relevanteTpOrdninger = simuleringsresultat.first
         return simuleringsresultat.second.fold(
