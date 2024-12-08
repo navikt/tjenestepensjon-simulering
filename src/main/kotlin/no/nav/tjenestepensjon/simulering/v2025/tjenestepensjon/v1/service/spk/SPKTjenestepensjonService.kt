@@ -1,8 +1,9 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.tjenestepensjon.simulering.common.AlderUtil.bestemAlderVedDato
+import no.nav.tjenestepensjon.simulering.common.AlderUtil.bestemUttaksalderVedDato
 import no.nav.tjenestepensjon.simulering.ping.Pingable
-import no.nav.tjenestepensjon.simulering.v2025.afp.v1.AlderForDelingstallBeregner.bestemAlderVedDato
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maanedsutbetaling
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
@@ -50,7 +51,7 @@ class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, pr
             .groupBy { it.fom }
             .map { (datoFra, ytelser) ->
                 val totalMaanedsBelop = ytelser.sumOf { it.maanedligBelop }
-                Maanedsutbetaling(datoFra, bestemAlderVedDato(foedselsdato, datoFra), totalMaanedsBelop)
+                Maanedsutbetaling(datoFra, bestemUttaksalderVedDato(foedselsdato, datoFra), totalMaanedsBelop)
             }
             .sortedBy { it.fraOgMedDato }
     }
