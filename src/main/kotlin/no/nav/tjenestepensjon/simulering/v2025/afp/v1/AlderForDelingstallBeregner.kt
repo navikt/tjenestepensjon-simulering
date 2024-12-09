@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2025.afp.v1
 
+import no.nav.tjenestepensjon.simulering.common.AlderUtil.bestemAlderVedDato
 import no.nav.tjenestepensjon.simulering.model.domain.pen.Alder
 import no.nav.tjenestepensjon.simulering.model.domain.pen.AlderForDelingstall
 import java.time.LocalDate
@@ -24,10 +25,5 @@ object AlderForDelingstallBeregner {
             return listOf(AlderForDelingstall(hoyesteAlderForDelingstall, uttaksdato))
         }
         return listOf(AlderForDelingstall(bestemAlderVedDato(fodselsdato, uttaksdato), uttaksdato))
-    }
-
-    fun bestemAlderVedDato(fodselsdato: LocalDate, date: LocalDate): Alder {
-        val periode = Period.between(fodselsdato, date)
-        return Alder(periode.years, periode.months)
     }
 }

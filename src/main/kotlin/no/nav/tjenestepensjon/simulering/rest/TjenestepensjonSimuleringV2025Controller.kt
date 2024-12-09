@@ -27,12 +27,15 @@ class TjenestepensjonSimuleringV2025Controller(
 
     @PostMapping("/v2025/tjenestepensjon/v1/simulering")
     fun simuler(@RequestBody request: SimulerTjenestepensjonRequestDto): SimulerTjenestepensjonResponseDto {
+        log.debug { "Simulerer tjenestepensjon for request: $request" }
         val simuleringsresultat = tjenestepensjonV2025Service.simuler(request)
         val relevanteTpOrdninger = simuleringsresultat.first
         return simuleringsresultat.second.fold(
             onSuccess = {
                 if (it.utbetalingsperioder.isNotEmpty()) {
-                    aggregerVellykketRespons(it, relevanteTpOrdninger)
+                    val aggregerVellykketRespons: SimulerTjenestepensjonResponseDto = aggregerVellykketRespons(it, relevanteTpOrdninger)
+                    log.debug { "Simulering vellykket: $aggregerVellykketRespons" }
+                    aggregerVellykketRespons
                 } else {
                     log.info { "Simulering fra ${it.tpLeverandoer} inneholder ingen utbetalingsperioder" }
                     SimulerTjenestepensjonResponseDto(ResultatTypeDto.INGEN_UTBETALINGSPERIODER_FRA_TP_ORDNING, "Simulering fra ${it.tpLeverandoer} inneholder ingen utbetalingsperioder", relevanteTpOrdninger)

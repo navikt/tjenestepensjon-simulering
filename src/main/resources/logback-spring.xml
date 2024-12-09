@@ -1,5 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <springProfile name="dev-gcp">
+        <logger name="no.nav.tjenestepensjon" level="${logging.level.no.nav.tjenestepensjon:-DEBUG}" />
+    </springProfile>
+
+    <springProfile name="prod-gcp">
+        <logger name="no.nav.tjenestepensjon" level="${logging.level.no.nav.tjenestepensjon:-INFO}"/>
+    </springProfile>
+
     <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
@@ -23,12 +30,10 @@
         <appender-ref ref="STDOUT_JSON"/>
     </root>
 
-    <logger name="no.nav.tjenestepensjon" level="${logging.level.no.nav.tjenestepensjon:-INFO}"/>
     <logger name="org.springframework.security.oauth2"
             level="${logging.level.org.springframework.security.oauth2:-WARN}"/>
     <logger name="org.springframework.ws.client.MessageTracing"
             level="${logging.level.org.springframework.ws.client.MessageTracing:-WARN}"/>
     <logger name="org.springframework.ws.web" level="${logging.level.org.springframework.ws.web:-WARN}"/>
     <logger name="com.microsoft.aad" level="${logging.level.com.microsoft.aad:-WARN}"/>
-
 </configuration>
