@@ -38,11 +38,29 @@ class AlderUtilTest {
     }
 
     @Test
-    fun `test bestem uttaksalder for X aar og 11 maaneder`(){
+    fun `test bestem uttaksalder for X aar og 11 maaneder`() {
         val foedselsdato = LocalDate.of(2000, 3, 15)
         val uttaksdato = LocalDate.of(2062, 3, 1)
         val alder = AlderUtil.bestemUttaksalderVedDato(foedselsdato, uttaksdato)
         assertEquals(61, alder.aar)
+        assertEquals(11, alder.maaneder)
+    }
+
+    @Test
+    fun `bestem uttaksalder haandterer aarskifte for brukere foedt i foerste i foerste`() {
+        val foedselsdato = LocalDate.of(2001, 1, 1)
+        val uttaksdato = LocalDate.of(2064, 1, 1)
+        val alder = AlderUtil.bestemUttaksalderVedDato(foedselsdato, uttaksdato)
+        assertEquals(62, alder.aar)
+        assertEquals(11, alder.maaneder)
+    }
+
+    @Test
+    fun `bestem uttaksalder haandterer generell aldersskifte`() {
+        val foedselsdato = LocalDate.of(2001, 1, 2)
+        val uttaksdato = LocalDate.of(2064, 1, 1)
+        val alder = AlderUtil.bestemUttaksalderVedDato(foedselsdato, uttaksdato)
+        assertEquals(62, alder.aar)
         assertEquals(11, alder.maaneder)
     }
 }
