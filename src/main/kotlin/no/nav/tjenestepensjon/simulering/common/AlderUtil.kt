@@ -19,7 +19,11 @@ object AlderUtil {
     fun bestemUttaksalderVedDato(fodselsdato: LocalDate, date: LocalDate): Alder {
         val periode = Period.between(fodselsdato, date)
         if (fodselsdato.dayOfMonth == 1) {
-            return Alder(periode.years, periode.months - 1)
+            return if (periode.months - 1 < 0) { //Substraction of months doesn't affect years in java.time.Period
+                Alder(periode.years - 1, 11)
+            } else {
+                Alder(periode.years, periode.months - 1)
+            }
         }
         return Alder(periode.years, periode.months)
     }
