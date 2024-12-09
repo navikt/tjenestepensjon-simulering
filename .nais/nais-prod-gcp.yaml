@@ -96,6 +96,8 @@ spec:
       value: api://prod-fss.pensjonselvbetjening.pensjon-selvbetjening-fss-gateway/.default
     - name: OTEL_RESOURCE_ATTRIBUTES
       value: deployment.environment.name=p
+  envFrom:
+    - secret: tjenestepensjon-simulering-unleash-api-token
   prometheus:
     enabled: true
     path: actuator/prometheus
