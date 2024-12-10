@@ -1,9 +1,12 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk
 
+import no.nav.tjenestepensjon.simulering.service.FeatureToggleService
+import no.nav.tjenestepensjon.simulering.service.FeatureToggleService.Companion.PEN_715_SIMULER_SPK
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025ServiceTest.Companion.dummyRequest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -19,6 +22,9 @@ class SPKTjenestepensjonServiceTest {
     @MockitoBean
     private lateinit var client: SPKTjenestepensjonClient
 
+    @MockitoBean
+    private lateinit var featureToggleService: FeatureToggleService
+
     @Autowired
     private lateinit var spkTjenestepensjonService: SPKTjenestepensjonService
 
@@ -26,6 +32,7 @@ class SPKTjenestepensjonServiceTest {
     fun `simuler gruppering og sortering av tjenestepensjon fra spk`() {
         val req = dummyRequest("1963-02-05")
         `when`(client.simuler(req)).thenReturn(dummyResult())
+        `when`(featureToggleService.isEnabled(PEN_715_SIMULER_SPK)).thenReturn(true)
 
         val res : Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = spkTjenestepensjonService.simuler(req)
 
@@ -52,6 +59,7 @@ class SPKTjenestepensjonServiceTest {
     fun `simuler med BTP fra spk`() {
         val req = dummyRequest("1963-02-05")
         `when`(client.simuler(req)).thenReturn(dummyResult(inkluderBTP = true))
+        `when`(featureToggleService.isEnabled(PEN_715_SIMULER_SPK)).thenReturn(true)
 
         val res : Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = spkTjenestepensjonService.simuler(req)
 
@@ -64,6 +72,7 @@ class SPKTjenestepensjonServiceTest {
     @Test
     fun `afp fjernes fra utbetalingsperioder fra spk`() {
         val req = dummyRequest("1963-02-05")
+        `when`(featureToggleService.isEnabled(PEN_715_SIMULER_SPK)).thenReturn(true)
         `when`(client.simuler(req)).thenReturn(Result.success(SimulertTjenestepensjon(
             tpLeverandoer = "spk",
             ordningsListe = listOf(Ordning("3010")),
@@ -86,6 +95,21 @@ class SPKTjenestepensjonServiceTest {
         assertFalse(tjenestepensjon.betingetTjenestepensjonErInkludert)
         assertEquals(1, tjenestepensjon.ordningsListe.size)
         assertTrue(tjenestepensjon.utbetalingsperioder.isEmpty())
+    }
+
+    @Test
+    fun `simulering skal ikke gjoeres if feature toggle er av`() {
+        val req = dummyRequest("1963-02-05")
+        `when`(client.simuler(req)).thenReturn(dummyResult(inkluderBTP = true))
+        `when`(featureToggleService.isEnabled(PEN_715_SIMULER_SPK)).thenReturn(false)
+
+        val res : Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = spkTjenestepensjonService.simuler(req)
+
+        assertTrue(res.isFailure)
+        val tjenestepensjonException = res.exceptionOrNull()
+        assertNotNull(tjenestepensjonException)
+        assertTrue(tjenestepensjonException is TjenestepensjonSimuleringException)
+        assertTrue(tjenestepensjonException!!.message!!.contains("Simulering av tjenestepensjon hos SPK er slått av"))
     }
 
     fun dummyResult(inkluderBTP: Boolean = false) : Result<SimulertTjenestepensjon> {
