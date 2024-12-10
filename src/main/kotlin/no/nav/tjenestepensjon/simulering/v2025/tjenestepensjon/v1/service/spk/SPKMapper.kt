@@ -21,6 +21,10 @@ object SPKMapper {
                 FremtidigInntekt(
                     fraOgMedDato = fjorAarSomManglerOpptjeningIPopp(),
                     aarligInntekt = request.sisteInntekt
+                ),
+                FremtidigInntekt(
+                    fraOgMedDato = request.uttaksdato,
+                    aarligInntekt = 0
                 )
             ),
             aarIUtlandetEtter16 = request.aarIUtlandetEtter16,
