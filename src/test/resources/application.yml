@@ -73,3 +73,15 @@ oftp:
   before2025:
     spk:
       maskinportenscope: spk:nav
+unleash:
+  server:
+    api:
+      url: https://pensjonskalkulator-unleash-api.nav.cloud.nais.io
+      token: unleashToken
+  toggle:
+    interval: 60
+nais:
+  cluster:
+    name: local
+  app:
+    name: tjenestepensjon-simulering

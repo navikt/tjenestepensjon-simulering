@@ -74,6 +74,7 @@ spec:
         - host: api.preprod.spk.no
         - host: api.test.spk.no
         - host: api-test.klp.no
+        - host: pensjonskalkulator-unleash-api.nav.cloud.nais.io
   azure:
     application:
       enabled: true
