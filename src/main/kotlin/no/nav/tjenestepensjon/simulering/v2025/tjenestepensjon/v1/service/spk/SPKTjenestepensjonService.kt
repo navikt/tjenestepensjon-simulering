@@ -19,9 +19,7 @@ class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, pr
 
     fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
         if (!featureToggleService.isEnabled(PEN_715_SIMULER_SPK)) {
-            val message = "Simulering av tjenestepensjon hos SPK er slått av"
-            log.warn { message }
-//            return loggOgReturn()
+            return loggOgReturn()
         }
 
         return client.simuler(request)
