@@ -21,12 +21,12 @@ object KLPMapper {
                     uttaksgrad = 100
                 )
             ),
-            fremtidigInntektsListe = listOf(
+            fremtidigInntektsListe = request.fremtidigeInntekter?.map {
                 FremtidigInntekt(
-                    fraOgMedDato = aarUtenRegistrertInntektHosSkatteetaten(),
-                    arligInntekt = request.sisteInntekt
+                    fraOgMedDato = it.fraOgMed,
+                    arligInntekt = it.aarligInntekt
                 )
-            ),
+            } ?: emptyList(),
             arIUtlandetEtter16 = request.aarIUtlandetEtter16,
             epsPensjon = request.epsPensjon,
             eps2G = request.eps2G,

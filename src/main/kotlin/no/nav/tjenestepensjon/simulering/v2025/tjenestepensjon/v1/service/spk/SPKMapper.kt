@@ -13,24 +13,43 @@ object SPKMapper {
 
     const val PROVIDER_FULLT_NAVN = "Statens Pensjonskasse"
 
-    fun mapToRequest(request: SimulerTjenestepensjonRequestDto) =
-        SPKSimulerTjenestepensjonRequest(
-            personId = request.pid,
-            uttaksListe = opprettUttaksliste(request),
-            fremtidigInntektListe = listOf(
-                FremtidigInntekt(
-                    fraOgMedDato = fjorAarSomManglerOpptjeningIPopp(),
-                    aarligInntekt = request.sisteInntekt
-                ),
-                FremtidigInntekt(
-                    fraOgMedDato = request.uttaksdato,
-                    aarligInntekt = 0
-                )
+    fun mapToRequest(request: SimulerTjenestepensjonRequestDto): SPKSimulerTjenestepensjonRequest {
+        return request.sisteInntekt
+            ?.let { mapToRequestV1(request) }
+            ?: mapToRequestV2(request)
+    }
+
+    private fun mapToRequestV1(request: SimulerTjenestepensjonRequestDto) = SPKSimulerTjenestepensjonRequest(
+        personId = request.pid,
+        uttaksListe = opprettUttaksliste(request),
+        fremtidigInntektListe = listOf(
+            FremtidigInntekt(
+                fraOgMedDato = fjorAarSomManglerOpptjeningIPopp(),
+                aarligInntekt = request.sisteInntekt!!
             ),
-            aarIUtlandetEtter16 = request.aarIUtlandetEtter16,
-            epsPensjon = request.epsPensjon,
-            eps2G = request.eps2G,
-        )
+            FremtidigInntekt(
+                fraOgMedDato = request.uttaksdato,
+                aarligInntekt = 0
+            )
+        ),
+        aarIUtlandetEtter16 = request.aarIUtlandetEtter16,
+        epsPensjon = request.epsPensjon,
+        eps2G = request.eps2G,
+    )
+
+    private fun mapToRequestV2(request: SimulerTjenestepensjonRequestDto) = SPKSimulerTjenestepensjonRequest(
+        personId = request.pid,
+        uttaksListe = opprettUttaksliste(request),
+        fremtidigInntektListe = request.fremtidigeInntekter?.map {
+            FremtidigInntekt(
+                fraOgMedDato = it.fraOgMed,
+                aarligInntekt = it.aarligInntekt
+            )
+        } ?: emptyList(),
+        aarIUtlandetEtter16 = request.aarIUtlandetEtter16,
+        epsPensjon = request.epsPensjon,
+        eps2G = request.eps2G,
+    )
 
     private fun fjorAarSomManglerOpptjeningIPopp(): LocalDate = LocalDate.now().minusYears(1).withDayOfYear(1)
 
