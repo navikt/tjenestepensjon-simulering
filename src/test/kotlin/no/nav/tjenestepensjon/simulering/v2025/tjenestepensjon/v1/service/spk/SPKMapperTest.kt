@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk
 
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonFremtidigInntektDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto.*
 import org.junit.jupiter.api.Test
@@ -115,5 +116,39 @@ class SPKMapperTest {
         assertEquals(3, result.aarIUtlandetEtter16)
         assertTrue(result.epsPensjon)
         assertTrue(result.eps2G)
+    }
+
+    @Test
+    fun `map request hvor bruker har ulike fremtidige inntekter`() {
+        val uttaksdato = LocalDate.of(2025, 2, 1)
+        val request = SimulerTjenestepensjonRequestDto(
+            pid = "12345678901",
+            sisteInntekt = 100000,
+            aarIUtlandetEtter16 = 3,
+            epsPensjon = true,
+            eps2G = true,
+            brukerBaOmAfp = true,
+            uttaksdato = uttaksdato,
+            foedselsdato = LocalDate.of(1990, 1, 1),
+            fremtidigeInntekter = listOf(
+                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2025, 2, 1), 4),
+                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2026, 3, 1), 5),
+                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2027, 4, 1), 6)
+            )
+        )
+
+        val result: SPKSimulerTjenestepensjonRequest = SPKMapper.mapToRequest(request)
+
+        assertEquals("12345678901", result.personId)
+        assertEquals(4, result.fremtidigInntektListe.size)
+        assertEquals(request.sisteInntekt, result.fremtidigInntektListe[0].aarligInntekt)
+        assertTrue(result.fremtidigInntektListe[0].fraOgMedDato.isBefore(LocalDate.now().minusYears(1)))
+        assertEquals(4, result.fremtidigInntektListe[1].aarligInntekt)
+        assertEquals(LocalDate.of(2025, 2, 1), result.fremtidigInntektListe[1].fraOgMedDato)
+        assertEquals(5, result.fremtidigInntektListe[2].aarligInntekt)
+        assertEquals(LocalDate.of(2026, 3, 1), result.fremtidigInntektListe[2].fraOgMedDato)
+        assertEquals(6, result.fremtidigInntektListe[3].aarligInntekt)
+        assertEquals(LocalDate.of(2027, 4, 1), result.fremtidigInntektListe[3].fraOgMedDato)
+
     }
 }

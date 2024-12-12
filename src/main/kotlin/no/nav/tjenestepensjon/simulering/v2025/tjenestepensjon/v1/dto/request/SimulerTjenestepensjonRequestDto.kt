@@ -11,4 +11,7 @@ data class SimulerTjenestepensjonRequestDto(
     val brukerBaOmAfp: Boolean,
     val epsPensjon: Boolean,
     val eps2G: Boolean,
+    val fremtidigeInntekter: List<SimulerTjenestepensjonFremtidigInntektDto>? = null //kun i V2
 )
+
+data class SimulerTjenestepensjonFremtidigInntektDto(val fraOgMed: LocalDate, val aarligInntekt: Int)
