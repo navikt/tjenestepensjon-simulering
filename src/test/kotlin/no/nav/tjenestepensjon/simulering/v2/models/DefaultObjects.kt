@@ -165,3 +165,34 @@ const val defaultSimulerTjenestepensjonHosSPKJson =
         "epsPensjon": false,
         "eps2G": false
         }"""
+const val simulerTjenestepensjonMedFremtidigeInntekterHosSPKJson =
+    """{"pid": "$defaultFNRString",
+        "foedselsdato": "1963-12-05",
+        "uttaksdato": "2026-02-01",
+        "sisteInntekt": 600000,
+        "fremtidigeInntekter": [
+            {
+             "fraOgMed": "2026-02-01",
+             "aarligInntekt": 300000
+            },
+            {
+              "fraOgMed": "2029-01-01",
+              "aarligInntekt": 100000
+            }
+          ],
+        "aarIUtlandetEtter16": 0,
+        "brukerBaOmAfp": false,
+        "epsPensjon": false,
+        "eps2G": false
+        }"""
+const val simulerTjenestepensjonMedTommeFremtidigeInntekterHosSPKJson =
+    """{"pid": "$defaultFNRString",
+        "foedselsdato": "1963-12-05",
+        "uttaksdato": "2026-02-01",
+        "sisteInntekt": 600000,
+        "fremtidigeInntekter": [],
+        "aarIUtlandetEtter16": 0,
+        "brukerBaOmAfp": false,
+        "epsPensjon": false,
+        "eps2G": false
+        }"""
