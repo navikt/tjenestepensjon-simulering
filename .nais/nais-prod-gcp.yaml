@@ -15,7 +15,7 @@ spec:
     limits:
       memory: 4096Mi
     requests:
-      cpu: 50m
+      cpu: 150m
       memory: 2048Mi
   port: 8080
   ingresses:
