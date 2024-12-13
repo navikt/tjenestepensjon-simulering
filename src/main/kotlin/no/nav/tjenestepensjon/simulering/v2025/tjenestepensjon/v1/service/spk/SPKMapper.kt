@@ -13,24 +13,49 @@ object SPKMapper {
 
     const val PROVIDER_FULLT_NAVN = "Statens Pensjonskasse"
 
-    fun mapToRequest(request: SimulerTjenestepensjonRequestDto) =
-        SPKSimulerTjenestepensjonRequest(
+    fun mapToRequest(request: SimulerTjenestepensjonRequestDto): SPKSimulerTjenestepensjonRequest {
+        return request.fremtidigeInntekter
+            ?.let { mapToRequestV2(request) }
+            ?: mapToRequestV1(request)
+    }
+
+    private fun mapToRequestV1(request: SimulerTjenestepensjonRequestDto) = SPKSimulerTjenestepensjonRequest(
+        personId = request.pid,
+        uttaksListe = opprettUttaksliste(request),
+        fremtidigInntektListe = listOf(
+            opprettNaaverendeInntektFoerUttak(request),
+            FremtidigInntekt(
+                fraOgMedDato = request.uttaksdato,
+                aarligInntekt = 0
+            )
+        ),
+        aarIUtlandetEtter16 = request.aarIUtlandetEtter16,
+        epsPensjon = request.epsPensjon,
+        eps2G = request.eps2G,
+    )
+
+    private fun mapToRequestV2(request: SimulerTjenestepensjonRequestDto): SPKSimulerTjenestepensjonRequest {
+        val fremtidigeInntekter: MutableList<FremtidigInntekt> = mutableListOf(opprettNaaverendeInntektFoerUttak(request))
+        fremtidigeInntekter.addAll(request.fremtidigeInntekter?.map {
+            FremtidigInntekt(
+                fraOgMedDato = it.fraOgMed,
+                aarligInntekt = it.aarligInntekt
+            )
+        } ?: emptyList())
+        return SPKSimulerTjenestepensjonRequest(
             personId = request.pid,
             uttaksListe = opprettUttaksliste(request),
-            fremtidigInntektListe = listOf(
-                FremtidigInntekt(
-                    fraOgMedDato = fjorAarSomManglerOpptjeningIPopp(),
-                    aarligInntekt = request.sisteInntekt
-                ),
-                FremtidigInntekt(
-                    fraOgMedDato = request.uttaksdato,
-                    aarligInntekt = 0
-                )
-            ),
+            fremtidigInntektListe = fremtidigeInntekter,
             aarIUtlandetEtter16 = request.aarIUtlandetEtter16,
             epsPensjon = request.epsPensjon,
             eps2G = request.eps2G,
         )
+    }
+
+    private fun opprettNaaverendeInntektFoerUttak(request: SimulerTjenestepensjonRequestDto) = FremtidigInntekt(
+        fraOgMedDato = fjorAarSomManglerOpptjeningIPopp(),
+        aarligInntekt = request.sisteInntekt
+    )
 
     private fun fjorAarSomManglerOpptjeningIPopp(): LocalDate = LocalDate.now().minusYears(1).withDayOfYear(1)
 

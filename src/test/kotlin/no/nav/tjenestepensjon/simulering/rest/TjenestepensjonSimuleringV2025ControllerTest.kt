@@ -4,6 +4,8 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import no.nav.tjenestepensjon.simulering.model.domain.pen.Alder
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.v2.models.defaultSimulerTjenestepensjonHosSPKJson
+import no.nav.tjenestepensjon.simulering.v2.models.simulerTjenestepensjonMedFremtidigeInntekterHosSPKJson
+import no.nav.tjenestepensjon.simulering.v2.models.simulerTjenestepensjonMedTommeFremtidigeInntekterHosSPKJson
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maanedsutbetaling
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
@@ -50,7 +52,7 @@ class TjenestepensjonSimuleringV2025ControllerTest {
 
     @Test
     @WithMockUser
-    fun `test simulering med beregnet resultat`() {
+    fun `test simulering med og uten fremtidige inntekter og faa med beregnet resultat`() {
         val perioder = listOf(
             Maanedsutbetaling(
                 fraOgMedDato = LocalDate.parse("2026-02-01"),
@@ -78,8 +80,16 @@ class TjenestepensjonSimuleringV2025ControllerTest {
 
         `when`(service.simuler(any())).thenReturn(listOf("Statens pensjonskasse") to Result.success(mockRespons))
         `when`(aadClient.getToken("api://bogus")).thenReturn("")
+
+
+        postAndVerifyRespons(mockRespons, defaultSimulerTjenestepensjonHosSPKJson)
+        postAndVerifyRespons(mockRespons, simulerTjenestepensjonMedFremtidigeInntekterHosSPKJson)
+        postAndVerifyRespons(mockRespons, simulerTjenestepensjonMedTommeFremtidigeInntekterHosSPKJson)
+    }
+
+    private fun postAndVerifyRespons(mockRespons: SimulertTjenestepensjonMedMaanedsUtbetalinger, json: String) {
         mockMvc.post("/v2025/tjenestepensjon/v1/simulering") {
-            content = defaultSimulerTjenestepensjonHosSPKJson
+            content = json
             contentType = MediaType.APPLICATION_JSON
         }
             .andExpect {
@@ -87,54 +97,55 @@ class TjenestepensjonSimuleringV2025ControllerTest {
                 content {
                     json(
                         """
-                    {
-                        "simuleringsResultatStatus": {
-                            "resultatType": "SUCCESS",
-                            "feilmelding": null
-                        },
-                        "simuleringsResultat": {
-                                "tpLeverandoer": "${mockRespons.tpLeverandoer}",
-                                "utbetalingsperioder": [
-                                    {
-                                        "startAlder": {
-                                            "aar": 62,
-                                            "maaneder": 1
+                        {
+                            "simuleringsResultatStatus": {
+                                "resultatType": "SUCCESS",
+                                "feilmelding": null
+                            },
+                            "simuleringsResultat": {
+                                    "tpLeverandoer": "${mockRespons.tpLeverandoer}",
+                                    "utbetalingsperioder": [
+                                        {
+                                            "startAlder": {
+                                                "aar": 62,
+                                                "maaneder": 1
+                                            },
+                                            "sluttAlder": {
+                                                "aar": 63,
+                                                "maaneder": 3
+                                            },
+                                            "maanedligBeloep": 1000
                                         },
-                                        "sluttAlder": {
-                                            "aar": 63,
-                                            "maaneder": 3
+                                        {
+                                            "startAlder": {
+                                                "aar": 63,
+                                                "maaneder": 4
+                                            },
+                                            "sluttAlder": {
+                                                "aar": 63,
+                                                "maaneder": 6
+                                            },
+                                            "maanedligBeloep": 2000
                                         },
-                                        "maanedligBeloep": 1000
-                                    },
-                                    {
-                                        "startAlder": {
-                                            "aar": 63,
-                                            "maaneder": 4
-                                        },
-                                        "sluttAlder": {
-                                            "aar": 63,
-                                            "maaneder": 6
-                                        },
-                                        "maanedligBeloep": 2000
-                                    },
-                                    {
-                                        "startAlder": {
-                                            "aar": 63,
-                                            "maaneder": 7
-                                        },
-                                        "sluttAlder": null,
-                                        "maanedligBeloep": 3000
-                                    }
-                                ],
-                                "betingetTjenestepensjonErInkludert": true
-                        },
-                        "relevanteTpOrdninger": ["Statens pensjonskasse"]
-                    }
-                    """.trimIndent()
+                                        {
+                                            "startAlder": {
+                                                "aar": 63,
+                                                "maaneder": 7
+                                            },
+                                            "sluttAlder": null,
+                                            "maanedligBeloep": 3000
+                                        }
+                                    ],
+                                    "betingetTjenestepensjonErInkludert": true
+                            },
+                            "relevanteTpOrdninger": ["Statens pensjonskasse"]
+                        }
+                        """.trimIndent()
                     )
                 }
             }
     }
+
 
     @Test
     @WithMockUser
@@ -205,9 +216,5 @@ class TjenestepensjonSimuleringV2025ControllerTest {
             contentType = MediaType.APPLICATION_JSON
         }
             .andExpect { status { is5xxServerError() } }
-    }
-
-    companion object {
-        const val MAANEDER_I_AAR = 12
     }
 }
