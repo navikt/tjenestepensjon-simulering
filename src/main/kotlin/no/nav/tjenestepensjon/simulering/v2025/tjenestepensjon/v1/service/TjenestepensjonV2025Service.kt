@@ -17,6 +17,7 @@ class TjenestepensjonV2025Service(
     private val tp: TpClient,
     private val spk: SPKTjenestepensjonService,
     private val klp: KLPTjenestepensjonService,
+    private val finnSisteTpOrdningService: FinnSisteTpOrdningService,
     ) {
     private val log = KotlinLogging.logger {}
 
@@ -28,15 +29,13 @@ class TjenestepensjonV2025Service(
             return emptyList<String>() to Result.failure(e)
         }
 
-        val sisteTpOrdningNavn = tpOrdninger.flatMap { it.alias }.firstOrNull() //avventer siste ordning fra SPK
-
-        if (sisteTpOrdningNavn == null) {
+        val tpOrdningerNavn = tpOrdninger.map { it.navn }
+        if (tpOrdningerNavn.isEmpty()) {
             return emptyList<String>() to Result.failure(BrukerErIkkeMedlemException())
         }
 
+        val sisteTpOrdningNavn = finnSisteTpOrdningService.finnSisteOrdning(tpOrdninger)
         log.info { "Fant aktive tp-ordninger for bruker: $tpOrdninger, skal bruke $sisteTpOrdningNavn for å simulere" }
-
-        val tpOrdningerNavn = tpOrdninger.map { it.navn }
 
         return when (sisteTpOrdningNavn.lowercase()) {
             "spk" -> tpOrdningerNavn to spk.simuler(request)
