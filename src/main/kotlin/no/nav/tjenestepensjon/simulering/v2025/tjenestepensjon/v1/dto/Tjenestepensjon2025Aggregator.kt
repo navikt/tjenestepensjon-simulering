@@ -15,7 +15,8 @@ object Tjenestepensjon2025Aggregator {
                 tpLeverandoer = simulertTjenestepensjon.tpLeverandoer,
                 utbetalingsperioder = aggregerTilAarligePerioder(simulertTjenestepensjon.utbetalingsperioder),
                 betingetTjenestepensjonErInkludert = simulertTjenestepensjon.betingetTjenestepensjonErInkludert
-            )
+            ),
+            serviceData = simulertTjenestepensjon.serviceData
         )
 
     fun aggregerTilAarligePerioder(maanedsutbetalinger: List<Maanedsutbetaling>): List<UtbetalingPerAlder> {

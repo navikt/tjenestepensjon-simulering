@@ -31,6 +31,7 @@ class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, pr
                             ordningsListe = it.ordningsListe,
                             utbetalingsperioder = grupperMedDatoFra(fjerneAfp(it.utbetalingsperioder), request.foedselsdato),
                             betingetTjenestepensjonErInkludert = it.betingetTjenestepensjonErInkludert,
+                            serviceData = it.serviceData
                         )
                     )
                 },

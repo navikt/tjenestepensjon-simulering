@@ -36,7 +36,7 @@ class SPKTjenestepensjonClient(
                 .retrieve()
                 .bodyToMono<SPKSimulerTjenestepensjonResponse>()
                 .block()
-            return response?.let { Result.success(SPKMapper.mapToResponse(it)) } ?: Result.failure(TjenestepensjonSimuleringException("No response body"))
+            return response?.let { Result.success(SPKMapper.mapToResponse(it, dto)) } ?: Result.failure(TjenestepensjonSimuleringException("No response body"))
         } catch (e: WebClientResponseException) {
             val errorMsg = "Failed to simulate tjenestepensjon 2025 hos SPK ${e.responseBodyAsString}"
             log.error(e) { errorMsg }

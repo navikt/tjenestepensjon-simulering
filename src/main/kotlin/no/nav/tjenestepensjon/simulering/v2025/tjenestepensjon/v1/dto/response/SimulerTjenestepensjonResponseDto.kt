@@ -6,6 +6,7 @@ data class SimulerTjenestepensjonResponseDto(
     val simuleringsResultatStatus: SimuleringsResultatStatusDto,
     val simuleringsResultat: SimuleringsResultatDto? = null,
     val relevanteTpOrdninger: List<String> = emptyList(),
+    var serviceData: List<String> = emptyList(),
 ) {
     constructor(resultatTypeDto: ResultatTypeDto, feilmelding: String?, tpOrdninger: List<String>) : this(
         SimuleringsResultatStatusDto(resultatTypeDto, feilmelding), null, tpOrdninger

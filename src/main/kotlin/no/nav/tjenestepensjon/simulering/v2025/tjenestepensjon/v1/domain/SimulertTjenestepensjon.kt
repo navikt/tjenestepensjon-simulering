@@ -5,7 +5,8 @@ open class SimulertTjenestepensjon(
     var ordningsListe: List<Ordning> = emptyList(),
     var utbetalingsperioder: List<Utbetalingsperiode> = emptyList(),
     var aarsakIngenUtbetaling: List<String> = emptyList(),
-    val betingetTjenestepensjonErInkludert: Boolean
+    val betingetTjenestepensjonErInkludert: Boolean,
+    var serviceData: List<String> = emptyList(),
 )
 
 data class Ordning(val tpNummer: String)
@@ -15,5 +16,6 @@ open class SimulertTjenestepensjonMedMaanedsUtbetalinger(
     var ordningsListe: List<Ordning> = emptyList(),
     var utbetalingsperioder: List<Maanedsutbetaling> = emptyList(),
     var aarsakIngenUtbetaling: List<String> = emptyList(),
-    val betingetTjenestepensjonErInkludert: Boolean = false
+    val betingetTjenestepensjonErInkludert: Boolean = false,
+    var serviceData: List<String> = emptyList(),
 )
