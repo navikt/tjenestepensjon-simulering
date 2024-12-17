@@ -5,14 +5,10 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.FinnSi
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class FinnSisteTpOrdningNavServiceTest{
 
-    @Autowired
-    private lateinit var finnSisteTpOrdningNavService: FinnSisteTpOrdningService
+    private val finnSisteTpOrdningNavService = FinnSisteTpOrdningNavService()
 
     @Test
     fun `finn siste ordning for tp-ordning uten alias`(){
@@ -26,7 +22,7 @@ class FinnSisteTpOrdningNavServiceTest{
     }
 
     @Test
-    fun `finn siste ordning i en liste uten SPK retunerer foerste i listen`(){
+    fun `finn siste ordning i en liste uten SPK returnerer foerste i listen`(){
 
         val tpOrdning = TpOrdningDto("navn", "tpNr", "orgNr", listOf("navn"))
         val sisteOrdning = finnSisteTpOrdningNavService.finnSisteOrdning(listOf(
@@ -40,7 +36,7 @@ class FinnSisteTpOrdningNavServiceTest{
     }
 
     @Test
-    fun `finn siste ordning i en liste MED SPK retunerer SPK med lowercase`(){
+    fun `finn siste ordning i en liste MED SPK returnerer SPK med lowercase`(){
 
         val tpOrdning = TpOrdningDto("navn", "tpNr", "orgNr", listOf("navn"))
         val spk = TpOrdningDto("Statens Pensjonskasse", "tpNr2", "orgNr2", listOf("SPK"))
