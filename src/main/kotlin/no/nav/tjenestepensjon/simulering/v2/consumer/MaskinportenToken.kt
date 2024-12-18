@@ -15,6 +15,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.util.retry.Retry
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -61,6 +62,11 @@ class MaskinportenToken(
                 .with("assertion", signedJWT.serialize()))
             .retrieve()
             .bodyToMono(MaskinportenTokenResponse::class.java)
+            .retryWhen(Retry.backoff(3, java.time.Duration.ofSeconds(1))
+                .doBeforeRetry { retrySignal ->
+                    log.info { "Retrying due to: ${retrySignal.failure().message}, attempt: ${retrySignal.totalRetries() + 1}" }
+                }
+            )
             .block()
         log.info { "Hentet token fra maskinporten med scope(s): ${scope}" }
         return response!!.access_token
