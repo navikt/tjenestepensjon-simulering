@@ -15,6 +15,8 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientRequestException
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.util.retry.Retry
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -52,21 +54,30 @@ class MaskinportenToken(
                 .build()
         )
         signedJWT.sign(RSASSASigner(rsaKey.toRSAPrivateKey()))
-        val response = webClient.post().uri(endpoint)
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .header("Accept", "*/*")
-            .body(
-                BodyInserters
-                .fromFormData("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer")
-                .with("assertion", signedJWT.serialize()))
-            .retrieve()
-            .bodyToMono(MaskinportenTokenResponse::class.java)
-            .retryWhen(Retry.backoff(3, java.time.Duration.ofSeconds(1))
-                .doBeforeRetry { retrySignal ->
-                    log.info { "Retrying due to: ${retrySignal.failure().message}, attempt: ${retrySignal.totalRetries() + 1}" }
-                }
-            )
-            .block()
+        val response = try{
+            webClient.post().uri(endpoint)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .header("Accept", "*/*")
+                .body(
+                    BodyInserters
+                        .fromFormData("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer")
+                        .with("assertion", signedJWT.serialize()))
+                .retrieve()
+                .bodyToMono(MaskinportenTokenResponse::class.java)
+                .retryWhen(Retry.backoff(3, java.time.Duration.ofSeconds(1))
+                    .doBeforeRetry { retrySignal ->
+                        log.info { "Retrying due to: ${retrySignal.failure().message}, attempt: ${retrySignal.totalRetries() + 1}" }
+                    }
+                )
+                .block()
+        } catch (e: WebClientRequestException){
+            log.error(e) { "Failed to fetch token from maskinporten: ${e.message}" }
+            throw e
+        }
+        catch (e: WebClientResponseException){
+            log.error(e) { "Failed to fetch token from maskinporten: ${e.message} - ${e.responseBodyAsString}" }
+            throw e
+        }
         log.debug { "Hentet token fra maskinporten med scope(s): ${scope}" }
         return response!!.access_token
     }
