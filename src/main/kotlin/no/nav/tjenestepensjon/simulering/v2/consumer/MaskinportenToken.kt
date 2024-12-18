@@ -36,6 +36,7 @@ class MaskinportenToken(
     }
 
     fun fetchToken(scope: String): String {
+        log.debug { "Henter token fra maskinporten med scope(s): ${scope}" }
         val rsaKey = RSAKey.parse(clientJwk)
         val signedJWT = SignedJWT(
             JWSHeader.Builder(JWSAlgorithm.RS256)
@@ -47,7 +48,7 @@ class MaskinportenToken(
                 .issuer(clientId)
                 .claim("scope", scope)
                 .issueTime(Date())
-                .expirationTime(twoMinutesFromNow())
+                .expirationTime(getExpireAfter())
                 .build()
         )
         signedJWT.sign(RSASSASigner(rsaKey.toRSAPrivateKey()))
@@ -65,7 +66,7 @@ class MaskinportenToken(
         return response!!.access_token
     }
 
-    fun twoMinutesFromNow(): Date {
+    fun getExpireAfter(): Date {
         val calendar = Calendar.getInstance()
         calendar.time = Date();
         calendar.add(Calendar.SECOND, REQUEST_TOKEN_TO_EXPIRE_AFTER_SECONDS)
@@ -82,7 +83,7 @@ class MaskinportenToken(
 
     companion object {
         private val EXPIRE_AFTER_TIME_UNITS = TimeUnit.SECONDS
-        private const val EXPIRE_AFTER: Long = 100
+        private const val EXPIRE_AFTER: Long = 50
         private const val REQUEST_TOKEN_TO_EXPIRE_AFTER_SECONDS: Int = (EXPIRE_AFTER + 20).toInt()
     }
 
