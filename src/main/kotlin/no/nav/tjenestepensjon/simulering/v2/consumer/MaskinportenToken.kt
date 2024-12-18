@@ -37,7 +37,6 @@ class MaskinportenToken(
     }
 
     fun fetchToken(scope: String): String {
-        log.debug { "Henter token fra maskinporten med scope(s): ${scope}" }
         val rsaKey = RSAKey.parse(clientJwk)
         val signedJWT = SignedJWT(
             JWSHeader.Builder(JWSAlgorithm.RS256)
@@ -68,7 +67,7 @@ class MaskinportenToken(
                 }
             )
             .block()
-        log.info { "Hentet token fra maskinporten med scope(s): ${scope}" }
+        log.debug { "Hentet token fra maskinporten med scope(s): ${scope}" }
         return response!!.access_token
     }
 

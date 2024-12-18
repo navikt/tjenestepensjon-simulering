@@ -9,7 +9,6 @@ class MaskinportenTokenClient(val maskinportenToken: MaskinportenToken) {
     private val log = KotlinLogging.logger {}
 
     fun pensjonsimuleringToken(scope: String): String {
-        log.info { "Henter maskinporten token for $scope" }
         return try {
             maskinportenToken.getToken(scope)
         } catch (exc: Throwable) {
