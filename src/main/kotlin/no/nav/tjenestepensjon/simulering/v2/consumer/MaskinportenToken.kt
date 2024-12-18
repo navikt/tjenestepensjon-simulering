@@ -1,5 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2.consumer
 
+import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.benmanes.caffeine.cache.LoadingCache
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.JWSHeader
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @Service
 class MaskinportenToken(
@@ -24,8 +27,15 @@ class MaskinportenToken(
     @Value("\${maskinporten.token-endpoint-url}") val endpoint: String,
 ) {
     private val log = KotlinLogging.logger {}
+    private val tokenCache: LoadingCache<String, String> = Caffeine.newBuilder()
+        .expireAfterWrite(EXPIRE_AFTER, EXPIRE_AFTER_TIME_UNITS)
+        .build { k: String -> fetchToken(k) }
 
     fun getToken(scope: String): String {
+        return tokenCache.get(scope)
+    }
+
+    fun fetchToken(scope: String): String {
         val rsaKey = RSAKey.parse(clientJwk)
         val signedJWT = SignedJWT(
             JWSHeader.Builder(JWSAlgorithm.RS256)
@@ -37,7 +47,7 @@ class MaskinportenToken(
                 .issuer(clientId)
                 .claim("scope", scope)
                 .issueTime(Date())
-                .expirationTime(twoMinutesFromDate(Date()))
+                .expirationTime(twoMinutesFromNow())
                 .build()
         )
         signedJWT.sign(RSASSASigner(rsaKey.toRSAPrivateKey()))
@@ -55,13 +65,13 @@ class MaskinportenToken(
         return response!!.access_token
     }
 
-    fun twoMinutesFromDate(date: Date): Date {
+    fun twoMinutesFromNow(): Date {
         val calendar = Calendar.getInstance()
-        calendar.time = date;
-        calendar.add(Calendar.MINUTE, 2)
-
+        calendar.time = Date();
+        calendar.add(Calendar.SECOND, REQUEST_TOKEN_TO_EXPIRE_AFTER_SECONDS)
         return calendar.time
     }
+
 
     data class MaskinportenTokenResponse(
         val access_token: String,
@@ -69,5 +79,11 @@ class MaskinportenToken(
         val expires_in: Int,
         val scope: String,
     )
+
+    companion object {
+        private val EXPIRE_AFTER_TIME_UNITS = TimeUnit.SECONDS
+        private const val EXPIRE_AFTER: Long = 100
+        private const val REQUEST_TOKEN_TO_EXPIRE_AFTER_SECONDS: Int = (EXPIRE_AFTER + 20).toInt()
+    }
 
 }
