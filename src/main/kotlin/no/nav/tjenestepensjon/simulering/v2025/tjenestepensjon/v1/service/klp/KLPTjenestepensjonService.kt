@@ -18,10 +18,17 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient) : 
             fraOgMedAlder = bestemUttaksalderVedDato(fodselsdato = request.foedselsdato, date = request.uttaksdato),
             maanedsBeloep = 5000,
         )
+
+        val maanedsutbetalingMock2 = Maanedsutbetaling(
+            fraOgMedDato = request.uttaksdato.plusYears(5),
+            fraOgMedAlder = bestemUttaksalderVedDato(fodselsdato = request.foedselsdato, date = request.uttaksdato.plusYears(5)),
+            maanedsBeloep = 6000,
+        )
+
         val klpResponseMock = SimulertTjenestepensjonMedMaanedsUtbetalinger(
             tpLeverandoer = "Kommunal landspensjonskasse",
             ordningsListe = arrayListOf(Ordning("3100")),
-            utbetalingsperioder = arrayListOf(maanedsutbetalingMock),
+            utbetalingsperioder = arrayListOf(maanedsutbetalingMock, maanedsutbetalingMock2),
             aarsakIngenUtbetaling = emptyList(),
             betingetTjenestepensjonErInkludert = false,
             serviceData = emptyList()
