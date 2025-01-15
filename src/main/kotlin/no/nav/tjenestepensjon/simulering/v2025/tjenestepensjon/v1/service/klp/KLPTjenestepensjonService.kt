@@ -25,8 +25,9 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient) : 
             maanedsBeloep = 6000,
         )
 
+
         val klpResponseMock = SimulertTjenestepensjonMedMaanedsUtbetalinger(
-            tpLeverandoer = "Kommunal landspensjonskasse",
+            tpLeverandoer = "Kommunal Landspensjonskasse",
             ordningsListe = arrayListOf(Ordning("3100")),
             utbetalingsperioder = arrayListOf(maanedsutbetalingMock, maanedsutbetalingMock2),
             aarsakIngenUtbetaling = emptyList(),
