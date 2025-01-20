@@ -4,7 +4,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.common.AlderUtil.bestemUttaksalderVedDato
 import no.nav.tjenestepensjon.simulering.ping.Pingable
 import no.nav.tjenestepensjon.simulering.service.FeatureToggleService
-import no.nav.tjenestepensjon.simulering.service.FeatureToggleService.Companion.PEN_715_SIMULER_SPK
 import no.nav.tjenestepensjon.simulering.service.FeatureToggleService.Companion.SIMULER_KLP
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maanedsutbetaling
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
