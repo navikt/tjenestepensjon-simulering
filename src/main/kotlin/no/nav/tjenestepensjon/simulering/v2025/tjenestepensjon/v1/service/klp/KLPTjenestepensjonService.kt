@@ -9,12 +9,13 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maaneds
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
 import org.springframework.stereotype.Service
 
 @Service
 class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, private val featureToggleService: FeatureToggleService) : Pingable {
     private val log = KotlinLogging.logger {}
+    private val TP_ORDNING = "klp"
 
     fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
 
@@ -49,7 +50,7 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, pr
     private fun loggOgReturn(): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
         val message = "Simulering av tjenestepensjon hos KLP er slått av"
         log.warn { message }
-        return Result.failure(TjenestepensjonSimuleringException(message))
+        return Result.failure(TpOrdningStoettesIkkeException(TP_ORDNING))
     }
 
     override fun ping() = client.ping()
