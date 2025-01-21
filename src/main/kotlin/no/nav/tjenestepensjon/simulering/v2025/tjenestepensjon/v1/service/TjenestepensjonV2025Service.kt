@@ -39,7 +39,7 @@ class TjenestepensjonV2025Service(
 
         return when (sisteTpOrdningNavn.lowercase()) {
             "spk" -> tpOrdningerNavn to spk.simuler(request)
-            //"klp" -> tpOrdningerNavn to klp.simuler(request)
+            "klp" -> tpOrdningerNavn to klp.simuler(request)
             else -> tpOrdningerNavn to Result.failure(TpOrdningStoettesIkkeException(sisteTpOrdningNavn))
         }
     }

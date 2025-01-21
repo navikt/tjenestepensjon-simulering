@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 object KLPMapper {
 
-    private const val LEVERANDOER = "Kommunal landspensjonskasse"
+    private const val LEVERANDOER = "Kommunal Landspensjonskasse"
 
     fun mapToRequest(request: SimulerTjenestepensjonRequestDto) =
         KLPSimulerTjenestepensjonRequest(
