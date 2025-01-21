@@ -17,7 +17,7 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, pr
     private val log = KotlinLogging.logger {}
     private val TP_ORDNING = "klp"
 
-    fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
+    fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String? = "3200"): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
 
         if (!featureToggleService.isEnabled(SIMULER_KLP)) {
             return loggOgReturn()
@@ -47,7 +47,27 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, pr
         return Result.success(klpResponseMock)
     }
 
-    private fun loggOgReturn(): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
+    fun simulerv2(request: SimulerTjenestepensjonRequestDto, tpNummer: String? = null): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
+        return client.simuler(request, tpNummer)
+            .fold(
+                onSuccess = {
+                    Result.success(
+                        SimulertTjenestepensjonMedMaanedsUtbetalinger(
+                            tpLeverandoer = KLPMapper.PROVIDER_FULLT_NAVN,
+                            ordningsListe = emptyList(),
+                            utbetalingsperioder = emptyList(),
+                            aarsakIngenUtbetaling = emptyList(),
+                            betingetTjenestepensjonErInkludert = false,
+                            serviceData = it.serviceData
+                        ))
+                },
+                onFailure = { Result.failure(it) }
+            ).also { it.onSuccess { log.info { "Service data fra KLP: ${it.serviceData[1]}" } } }
+
+    }
+
+
+        private fun loggOgReturn(): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
         val message = "Simulering av tjenestepensjon hos KLP er slått av"
         log.warn { message }
         return Result.failure(TpOrdningStoettesIkkeException(TP_ORDNING))

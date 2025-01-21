@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningDto
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
@@ -20,6 +21,11 @@ class TjenestepensjonV2025Service(
     private val finnSisteTpOrdningService: FinnSisteTpOrdningService,
     ) {
     private val log = KotlinLogging.logger {}
+    private val tpOrdningNavn = mapOf(
+        "3010" to "spk",
+        "4080" to "klp",
+        "3200" to "klp",
+    )
 
     fun simuler(request: SimulerTjenestepensjonRequestDto): Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> {
         val tpOrdninger = try {
@@ -36,12 +42,35 @@ class TjenestepensjonV2025Service(
 
         val sisteTpOrdningNavn = finnSisteTpOrdningService.finnSisteOrdning(tpOrdninger)
         log.info { "Fant aktive tp-ordninger for bruker: $tpOrdninger, skal bruke $sisteTpOrdningNavn for å simulere" }
+        try {
+            simulerv2(request, tpOrdninger)
+        } catch (e: Exception) { //Midlertidig for test
+            log.info { "Feil ved simulering av tjenestepensjon i v2" }
+        }
 
         return when (sisteTpOrdningNavn.lowercase()) {
-            "spk" -> tpOrdningerNavn to spk.simuler(request)
+            "spk" -> tpOrdningerNavn to spk.simuler(request,"3010")
             "klp" -> tpOrdningerNavn to klp.simuler(request)
             else -> tpOrdningerNavn to Result.failure(TpOrdningStoettesIkkeException(sisteTpOrdningNavn))
         }
+    }
+
+    private fun simulerv2(request: SimulerTjenestepensjonRequestDto, tpOrdninger: List<TpOrdningDto>): Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> {
+        val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
+        val sisteOrdningerNavn = sisteOrdningerNr.mapNotNull { tpOrdningNavn[it] }
+
+        val simulertTpListe = sisteOrdningerNr.map { ordning ->
+            when (tpOrdningNavn[ordning]) {
+                "spk" ->  spk.simuler(request, ordning)
+                "klp" -> klp.simulerv2(request, ordning)
+                else -> Result.failure(TpOrdningStoettesIkkeException(ordning))
+            }.run {
+                onSuccess { if (it.utbetalingsperioder.isNotEmpty()) return sisteOrdningerNavn to this }
+            }
+        }
+        simulertTpListe.forEach { it -> it.onFailure { e -> return sisteOrdningerNavn to Result.failure(e) } }
+
+        return emptyList<String>() to Result.failure(TpOrdningStoettesIkkeException("Ingen støttede tjenestepensjonsordninger"))
     }
 
     fun ping(): List<PingResponse> {

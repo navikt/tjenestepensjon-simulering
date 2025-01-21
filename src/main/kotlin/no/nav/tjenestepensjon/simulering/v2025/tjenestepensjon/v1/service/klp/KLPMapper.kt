@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 object KLPMapper {
 
-    private const val LEVERANDOER = "Kommunal Landspensjonskasse"
+    const val PROVIDER_FULLT_NAVN = "Kommunal Landspensjonskasse"
 
     fun mapToRequest(request: SimulerTjenestepensjonRequestDto) =
         KLPSimulerTjenestepensjonRequest(
@@ -36,10 +36,11 @@ object KLPMapper {
 
     fun mapToResponse(response: KLPSimulerTjenestepensjonResponse) =
         SimulertTjenestepensjon(
-            tpLeverandoer = LEVERANDOER,
+            tpLeverandoer = PROVIDER_FULLT_NAVN,
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
             utbetalingsperioder = response.utbetalingsListe.map { Utbetalingsperiode(it.fraOgMedDato, it.manedligUtbetaling, it.ytelseType) },
             aarsakIngenUtbetaling = response.arsakIngenUtbetaling,
-            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name }
+            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name },
+            serviceData = listOf("Request","$response")
         )
 }
