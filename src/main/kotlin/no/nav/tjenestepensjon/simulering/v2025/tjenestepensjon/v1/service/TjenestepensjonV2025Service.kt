@@ -57,7 +57,7 @@ class TjenestepensjonV2025Service(
 
     private fun simulerv2(request: SimulerTjenestepensjonRequestDto, tpOrdninger: List<TpOrdningDto>): Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> {
         val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
-        val sisteOrdningerNavn = sisteOrdningerNr.mapNotNull { tpOrdningNavn[it] }
+        val sisteOrdningerNavn = tpOrdninger.map { it.navn }
 
         val simulertTpListe = sisteOrdningerNr.map { ordning ->
             when (tpOrdningNavn[ordning]) {
