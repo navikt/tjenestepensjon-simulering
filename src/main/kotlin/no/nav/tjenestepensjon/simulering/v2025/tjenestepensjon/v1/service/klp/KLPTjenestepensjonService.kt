@@ -62,7 +62,9 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, pr
                         ))
                 },
                 onFailure = { Result.failure(it) }
-            ).also { it.onSuccess { log.info { "Service data fra KLP: ${it.serviceData[1]}" } } }
+            ).also { it.onSuccess {
+                log.info { "${it.serviceData}" } }
+            }
 
     }
 
