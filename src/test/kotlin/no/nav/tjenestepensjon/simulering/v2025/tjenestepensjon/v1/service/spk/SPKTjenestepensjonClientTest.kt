@@ -53,9 +53,10 @@ class SPKTjenestepensjonClientTest{
     @Test
     fun `send request og les respons med tjenestepensjon fra spk`() {
         val mockResponse = spkSimulerTjenestepensjonResponse()
-        val stub = wireMockServer.stubFor(post(urlPathEqualTo(SIMULER_PATH)).willReturn(okJson(objectMapper.writeValueAsString(mockResponse))))
+        val tpNummer = "3010"
+        val stub = wireMockServer.stubFor(post(urlPathEqualTo("$SIMULER_PATH/$tpNummer")).willReturn(okJson(objectMapper.writeValueAsString(mockResponse))))
 
-        val response: Result<SimulertTjenestepensjon> = spkClient.simuler(dummyRequest("1963-02-05", brukerBaOmAfp = true),"3010")
+        val response: Result<SimulertTjenestepensjon> = spkClient.simuler(dummyRequest("1963-02-05", brukerBaOmAfp = true),tpNummer)
 
         assertTrue(response.isSuccess)
         val tjenestepensjon = response.getOrNull()
