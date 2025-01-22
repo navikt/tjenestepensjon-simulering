@@ -1,7 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningDto
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
@@ -21,11 +20,6 @@ class TjenestepensjonV2025Service(
     private val finnSisteTpOrdningService: FinnSisteTpOrdningService,
     ) {
     private val log = KotlinLogging.logger {}
-    private val tpOrdningNavn = mapOf(
-        "3010" to "spk",
-        "4080" to "klp",
-        "3200" to "klp",
-    )
 
     fun simuler(request: SimulerTjenestepensjonRequestDto): Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> {
         val tpOrdninger = try {
@@ -46,7 +40,7 @@ class TjenestepensjonV2025Service(
         val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
 
         val simulertTpListe = sisteOrdningerNr.map { ordning ->
-            when (tpOrdningNavn[ordning]) {
+            when (ordning) {
                 "3010" -> spk.simuler(request, "3010") //3010 -> TpNummer for SPK
                 "3060" -> spk.simuler(request, "3060") //3060 -> TpNummer for SPK
                 "4080" -> klp.simuler(request, "4080") //4080 -> TpNummer for KLP
