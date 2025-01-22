@@ -46,7 +46,7 @@ class TjenestepensjonV2025Service(
                 "4080" -> klp.simuler(request, "4080") //4080 -> TpNummer for KLP
                 "3200" -> klp.simuler(request, "3200") //3200 -> TpNummer for KLP
                 else -> Result.failure(TpOrdningStoettesIkkeException(ordning))
-            }.run {
+            }.also { log.info { "${it.getOrNull()}" } }.run {
                 onSuccess { if (it.utbetalingsperioder.isNotEmpty()) return tpOrdningerNavn to this }
             }
         }
