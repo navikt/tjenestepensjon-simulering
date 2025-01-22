@@ -10,17 +10,21 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
-class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, private val featureToggleService: FeatureToggleService) : Pingable {
+class KLPTjenestepensjonService(@Value("\${spring.profiles.active:}") private val activeProfiles: String, private val client: KLPTjenestepensjonClient, private val featureToggleService: FeatureToggleService) : Pingable {
     private val log = KotlinLogging.logger {}
     private val TP_ORDNING = "klp"
 
     fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
-
         if (!featureToggleService.isEnabled(SIMULER_KLP)) {
             return loggOgReturn()
+        }
+
+        if (activeProfiles.contains("prod-gcp")) {
+            return simulerv2(request, tpNummer)
         }
 
         val maanedsutbetalingMock = Maanedsutbetaling(
@@ -47,7 +51,7 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, pr
         return Result.success(klpResponseMock)
     }
 
-    fun simulerv2(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
+    private fun simulerv2(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
         return client.simuler(request, tpNummer)
             .fold(
                 onSuccess = {

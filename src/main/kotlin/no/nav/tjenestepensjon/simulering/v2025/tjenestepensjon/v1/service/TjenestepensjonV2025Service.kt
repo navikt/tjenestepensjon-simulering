@@ -42,35 +42,21 @@ class TjenestepensjonV2025Service(
 
         val sisteTpOrdningNavn = finnSisteTpOrdningService.finnSisteOrdning(tpOrdninger)
         log.info { "Fant aktive tp-ordninger for bruker: $tpOrdninger, skal bruke $sisteTpOrdningNavn for å simulere" }
-        try {
-            simulerv2(request, tpOrdninger)
-        } catch (e: Exception) { //Midlertidig for test
-            log.info { "Feil ved simulering av tjenestepensjon i v2" }
-        }
 
-        return when (sisteTpOrdningNavn.lowercase()) {
-            "spk" -> tpOrdningerNavn to spk.simuler(request,"3010")
-            "klp" -> tpOrdningerNavn to klp.simuler(request, "3200")
-            else -> tpOrdningerNavn to Result.failure(TpOrdningStoettesIkkeException(sisteTpOrdningNavn))
-        }
-    }
-
-    private fun simulerv2(request: SimulerTjenestepensjonRequestDto, tpOrdninger: List<TpOrdningDto>): Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> {
         val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
-        val tpOrdningerNavn = tpOrdninger.map { it.navn }
 
         val simulertTpListe = sisteOrdningerNr.map { ordning ->
             when (tpOrdningNavn[ordning]) {
                 "3010" -> spk.simuler(request, "3010") //3010 -> TpNummer for SPK
-                "4080" -> klp.simulerv2(request, "4080") //4080 -> TpNummer for KLP
-                "3200" -> klp.simulerv2(request, "3200") //3200 -> TpNummer for KLP
+                "3060" -> spk.simuler(request, "3060") //3060 -> TpNummer for SPK
+                "4080" -> klp.simuler(request, "4080") //4080 -> TpNummer for KLP
+                "3200" -> klp.simuler(request, "3200") //3200 -> TpNummer for KLP
                 else -> Result.failure(TpOrdningStoettesIkkeException(ordning))
             }.run {
                 onSuccess { if (it.utbetalingsperioder.isNotEmpty()) return tpOrdningerNavn to this }
             }
         }
         simulertTpListe.forEach { it -> it.onFailure { e -> return tpOrdningerNavn to Result.failure(e) } }
-
         return emptyList<String>() to Result.failure(TpOrdningStoettesIkkeException("Ingen støttede tjenestepensjonsordninger"))
     }
 
