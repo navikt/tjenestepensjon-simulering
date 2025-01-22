@@ -17,7 +17,7 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, pr
     private val log = KotlinLogging.logger {}
     private val TP_ORDNING = "klp"
 
-    fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String? = "3200"): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
+    fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
 
         if (!featureToggleService.isEnabled(SIMULER_KLP)) {
             return loggOgReturn()
@@ -47,7 +47,7 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, pr
         return Result.success(klpResponseMock)
     }
 
-    fun simulerv2(request: SimulerTjenestepensjonRequestDto, tpNummer: String? = null): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
+    fun simulerv2(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
         return client.simuler(request, tpNummer)
             .fold(
                 onSuccess = {

@@ -17,7 +17,7 @@ import java.time.LocalDate
 class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, private val featureToggleService: FeatureToggleService) : Pingable {
     private val log = KotlinLogging.logger {}
 
-    fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String? = "3010"): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
+    fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
         if (!featureToggleService.isEnabled(PEN_715_SIMULER_SPK)) {
             return loggOgReturn()
         }

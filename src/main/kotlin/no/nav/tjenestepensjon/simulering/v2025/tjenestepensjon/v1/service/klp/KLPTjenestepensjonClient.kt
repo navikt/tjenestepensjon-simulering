@@ -24,7 +24,7 @@ class KLPTjenestepensjonClient(
 ) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}
 
-    override fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String?): Result<SimulertTjenestepensjon> {
+    override fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjon> {
         val dto = KLPMapper.mapToRequest(request)
         sporingsloggService.loggUtgaaendeRequest(Organisasjon.KLP, request.pid, dto)
         try {

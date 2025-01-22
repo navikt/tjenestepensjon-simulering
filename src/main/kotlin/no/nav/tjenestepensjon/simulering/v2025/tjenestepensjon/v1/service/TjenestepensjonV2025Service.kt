@@ -50,25 +50,26 @@ class TjenestepensjonV2025Service(
 
         return when (sisteTpOrdningNavn.lowercase()) {
             "spk" -> tpOrdningerNavn to spk.simuler(request,"3010")
-            "klp" -> tpOrdningerNavn to klp.simuler(request)
+            "klp" -> tpOrdningerNavn to klp.simuler(request, "3200")
             else -> tpOrdningerNavn to Result.failure(TpOrdningStoettesIkkeException(sisteTpOrdningNavn))
         }
     }
 
     private fun simulerv2(request: SimulerTjenestepensjonRequestDto, tpOrdninger: List<TpOrdningDto>): Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> {
         val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
-        val sisteOrdningerNavn = tpOrdninger.map { it.navn }
+        val tpOrdningerNavn = tpOrdninger.map { it.navn }
 
         val simulertTpListe = sisteOrdningerNr.map { ordning ->
             when (tpOrdningNavn[ordning]) {
-                "spk" ->  spk.simuler(request, ordning)
-                "klp" -> klp.simulerv2(request, ordning)
+                "3010" -> spk.simuler(request, "3010") //3010 -> TpNummer for SPK
+                "4080" -> klp.simulerv2(request, "4080") //4080 -> TpNummer for KLP
+                "3200" -> klp.simulerv2(request, "3200") //3200 -> TpNummer for KLP
                 else -> Result.failure(TpOrdningStoettesIkkeException(ordning))
             }.run {
-                onSuccess { if (it.utbetalingsperioder.isNotEmpty()) return sisteOrdningerNavn to this }
+                onSuccess { if (it.utbetalingsperioder.isNotEmpty()) return tpOrdningerNavn to this }
             }
         }
-        simulertTpListe.forEach { it -> it.onFailure { e -> return sisteOrdningerNavn to Result.failure(e) } }
+        simulertTpListe.forEach { it -> it.onFailure { e -> return tpOrdningerNavn to Result.failure(e) } }
 
         return emptyList<String>() to Result.failure(TpOrdningStoettesIkkeException("Ingen støttede tjenestepensjonsordninger"))
     }

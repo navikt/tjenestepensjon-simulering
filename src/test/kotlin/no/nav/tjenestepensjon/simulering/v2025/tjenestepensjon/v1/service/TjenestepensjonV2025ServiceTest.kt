@@ -42,7 +42,7 @@ class TjenestepensjonV2025ServiceTest {
     fun `simuler success fra spk`() {
         val req = dummyRequest("1963-02-05")
         `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning()))
-        `when`(spk.simuler(req)).thenReturn(dummyResult())
+        `when`(spk.simuler(req,"3010")).thenReturn(dummyResult())
 
         val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
@@ -58,7 +58,7 @@ class TjenestepensjonV2025ServiceTest {
     fun `simuler failure fra spk`() {
         val req = dummyRequest("1963-02-05")
         `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning()))
-        `when`(spk.simuler(req)).thenReturn(Result.failure(WebClientResponseException("Failed to simulate", 500, "error", null, null, null)))
+        `when`(spk.simuler(req,"3010")).thenReturn(Result.failure(WebClientResponseException("Failed to simulate", 500, "error", null, null, null)))
 
         val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
