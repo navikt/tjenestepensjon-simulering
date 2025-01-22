@@ -6,6 +6,7 @@ import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonService
@@ -29,15 +30,12 @@ class TjenestepensjonV2025Service(
             return emptyList<String>() to Result.failure(e)
         }
 
+
         val tpOrdningerNavn = tpOrdninger.map { it.navn }
-        if (tpOrdningerNavn.isEmpty()) {
+        val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
+        if (sisteOrdningerNr.isEmpty()) {
             return emptyList<String>() to Result.failure(BrukerErIkkeMedlemException())
         }
-
-        val sisteTpOrdningNavn = finnSisteTpOrdningService.finnSisteOrdning(tpOrdninger)
-        log.info { "Fant aktive tp-ordninger for bruker: $tpOrdninger, skal bruke $sisteTpOrdningNavn for å simulere" }
-
-        val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
 
         val simulertTpListe = sisteOrdningerNr.map { ordning ->
             when (ordning) {
@@ -46,12 +44,12 @@ class TjenestepensjonV2025Service(
                 "4080" -> klp.simuler(request, "4080") //4080 -> TpNummer for KLP
                 "3200" -> klp.simuler(request, "3200") //3200 -> TpNummer for KLP
                 else -> Result.failure(TpOrdningStoettesIkkeException(ordning))
-            }.also { log.info { "Respons fra simulering: ${it.getOrNull()?.toString()}" } }.run {
+            }.also { log.info { "Respons fra simulering: ${it.getOrNull()?.serviceData}" } }.run {
                 onSuccess { if (it.utbetalingsperioder.isNotEmpty()) return tpOrdningerNavn to this }
             }
         }
-        simulertTpListe.forEach { it -> it.onFailure { e -> return tpOrdningerNavn to Result.failure(e) } }
-        return emptyList<String>() to Result.failure(TpOrdningStoettesIkkeException("Ingen støttede tjenestepensjonsordninger"))
+        return tpOrdningerNavn to (simulertTpListe.firstOrNull { it.isFailure } ?: Result.failure(TjenestepensjonSimuleringException("Ingen utbetalingsperioder")))
+
     }
 
     fun ping(): List<PingResponse> {
