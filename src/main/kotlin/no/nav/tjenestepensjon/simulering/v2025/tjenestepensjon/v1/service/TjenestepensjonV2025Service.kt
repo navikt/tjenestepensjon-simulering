@@ -37,6 +37,8 @@ class TjenestepensjonV2025Service(
             return emptyList<String>() to Result.failure(BrukerErIkkeMedlemException())
         }
 
+        log.info { "Fant tp ordninger med nummere: $sisteOrdningerNr" }
+
         val simulertTpListe = sisteOrdningerNr.map { ordning ->
             when (ordning) {
                 "3010" -> spk.simuler(request, "3010") //3010 -> TpNummer for SPK
