@@ -5,15 +5,10 @@ import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.*
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonService
 import org.springframework.stereotype.Service
-import kotlin.reflect.typeOf
-
 @Service
 class TjenestepensjonV2025Service(
     private val tp: TpClient,
@@ -52,15 +47,12 @@ class TjenestepensjonV2025Service(
             }
         }
 
-        val simulertTpListeFeil = simulertTpListe.filter { it.isFailure }
         // Returnerer først tekniske feil hvis funnet
-        simulertTpListeFeil.find { it.exceptionOrNull() is TjenestepensjonSimuleringException}?.let { return tpOrdningerNavn to it }
-        // Returnerer vi feil for tp ordninger som ikke støttes hvis funnet
-        simulertTpListeFeil.find { it.exceptionOrNull() is TpOrdningStoettesIkkeException}?.let { return tpOrdningerNavn to it }
+        simulertTpListe.find { it.exceptionOrNull() !is TpOrdningStoettesIkkeException}?.let { return tpOrdningerNavn to it }
 
-        // Returnerer første tomme resultat
-        val firstEmptyResult = simulertTpListe.first()
-        return tpOrdningerNavn to firstEmptyResult
+        // Returnerer TomSimuleringFraTpOrdningException derom alle utbetalingsperioder er tomme og/eller tp-ordninger ikke er støttet
+        log.info { "Simulering fra ${tpOrdningerNavn} inneholder ingen utbetalingsperioder" }
+        return tpOrdningerNavn to Result.failure(TomSimuleringFraTpOrdningException(tpOrdningerNavn))
     }
 
     fun ping(): List<PingResponse> {
