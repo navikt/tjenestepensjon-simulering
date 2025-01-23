@@ -48,7 +48,11 @@ class TjenestepensjonV2025Service(
         }
 
         // Returnerer først tekniske feil hvis funnet
-        simulertTpListe.find { it.exceptionOrNull() !is TpOrdningStoettesIkkeException}?.let { return tpOrdningerNavn to it }
+        simulertTpListe.forEach { simulering ->
+            simulering.onFailure {
+                if (it !is TpOrdningStoettesIkkeException) return tpOrdningerNavn to simulering
+            }
+        }
 
         // Returnerer TomSimuleringFraTpOrdningException derom alle utbetalingsperioder er tomme og/eller tp-ordninger ikke er støttet
         log.info { "Simulering fra ${tpOrdningerNavn} inneholder ingen utbetalingsperioder" }
