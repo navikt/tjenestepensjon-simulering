@@ -12,6 +12,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.Tpre
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonService
 import org.springframework.stereotype.Service
+import kotlin.reflect.typeOf
 
 @Service
 class TjenestepensjonV2025Service(
@@ -50,8 +51,16 @@ class TjenestepensjonV2025Service(
                 onSuccess { if (it.utbetalingsperioder.isNotEmpty()) return tpOrdningerNavn to this }
             }
         }
-        return tpOrdningerNavn to (simulertTpListe.firstOrNull { it.isFailure } ?: Result.failure(TjenestepensjonSimuleringException("Ingen utbetalingsperioder")))
 
+        val simulertTpListeFeil = simulertTpListe.filter { it.isFailure }
+        // Returnerer først tekniske feil hvis funnet
+        simulertTpListeFeil.find { it.exceptionOrNull() is TjenestepensjonSimuleringException}?.let { return tpOrdningerNavn to it }
+        // Returnerer vi feil for tp ordninger som ikke støttes hvis funnet
+        simulertTpListeFeil.find { it.exceptionOrNull() is TpOrdningStoettesIkkeException}?.let { return tpOrdningerNavn to it }
+
+        // Returnerer første tomme resultat
+        val firstEmptyResult = simulertTpListe.first()
+        return tpOrdningerNavn to firstEmptyResult
     }
 
     fun ping(): List<PingResponse> {
