@@ -42,8 +42,8 @@ class TjenestepensjonV2025Service(
                 "4080" -> klp.simuler(request, "4080") //4080 -> TpNummer for KLP
                 "3200" -> klp.simuler(request, "3200") //3200 -> TpNummer for KLP
                 else -> Result.failure(TpOrdningStoettesIkkeException(ordning))
-            }.also { log.info { "Respons fra simulering: ${it.getOrNull()?.serviceData}" } }.run {
-                onSuccess { if (it.utbetalingsperioder.isNotEmpty()) return tpOrdningerNavn to this }
+            }.also { log.info { "Respons fra ordning $ordning: ${it.getOrNull()?.serviceData}" } }.run {
+                onSuccess { return tpOrdningerNavn to this }
             }
         }
 
@@ -56,7 +56,7 @@ class TjenestepensjonV2025Service(
 
         // Returnerer TomSimuleringFraTpOrdningException derom alle utbetalingsperioder er tomme og/eller tp-ordninger ikke er støttet
         log.info { "Simulering fra ${tpOrdningerNavn} inneholder ingen utbetalingsperioder" }
-        return tpOrdningerNavn to Result.failure(TomSimuleringFraTpOrdningException(tpOrdningerNavn))
+        return tpOrdningerNavn to simulertTpListe.first()
     }
 
     fun ping(): List<PingResponse> {

@@ -38,7 +38,7 @@ class TjenestepensjonSimuleringV2025Controller(
                     is BrukerErIkkeMedlemException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.BRUKER_ER_IKKE_MEDLEM_HOS_TP_ORDNING, e.message, relevanteTpOrdninger)
                     is TpOrdningStoettesIkkeException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.TP_ORDNING_ER_IKKE_STOTTET, e.message, relevanteTpOrdninger)
                     is TjenestepensjonSimuleringException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.TEKNISK_FEIL_FRA_TP_ORDNING, e.message, relevanteTpOrdninger)
-                    is TomSimuleringFraTpOrdningException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.INGEN_UTBETALINGSPERIODER_FRA_TP_ORDNING, "Simulering fra ${e.tpOrdninger} inneholder ingen utbetalingsperioder", relevanteTpOrdninger)
+                    is TomSimuleringFraTpOrdningException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.INGEN_UTBETALINGSPERIODER_FRA_TP_ORDNING, "Simulering fra ${e.tpOrdning} inneholder ingen utbetalingsperioder", relevanteTpOrdninger)
                     is TpregisteretException -> loggOgReturnerTekniskFeil(e)
                     else -> loggOgReturnerTekniskFeil(RuntimeException(e))
                 }

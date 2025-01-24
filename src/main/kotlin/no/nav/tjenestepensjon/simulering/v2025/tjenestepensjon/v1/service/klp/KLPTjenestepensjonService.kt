@@ -9,6 +9,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maaneds
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TomSimuleringFraTpOrdningException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -55,15 +56,18 @@ class KLPTjenestepensjonService(@Value("\${spring.profiles.active:}") private va
         return client.simuler(request, tpNummer)
             .fold(
                 onSuccess = {
-                    Result.success(
-                        SimulertTjenestepensjonMedMaanedsUtbetalinger(
-                            tpLeverandoer = KLPMapper.PROVIDER_FULLT_NAVN,
-                            ordningsListe = emptyList(),
-                            utbetalingsperioder = emptyList(),
-                            aarsakIngenUtbetaling = emptyList(),
-                            betingetTjenestepensjonErInkludert = false,
-                            serviceData = it.serviceData
-                        ))
+                    if (it.utbetalingsperioder.isEmpty())
+                        Result.failure(TomSimuleringFraTpOrdningException(TP_ORDNING))
+                    else
+                        Result.success(
+                            SimulertTjenestepensjonMedMaanedsUtbetalinger(
+                                tpLeverandoer = KLPMapper.PROVIDER_FULLT_NAVN,
+                                ordningsListe = emptyList(),
+                                utbetalingsperioder = emptyList(),
+                                aarsakIngenUtbetaling = emptyList(),
+                                betingetTjenestepensjonErInkludert = false,
+                                serviceData = it.serviceData
+                            ))
                 },
                 onFailure = { Result.failure(it) }
             ).also { it.onSuccess {
