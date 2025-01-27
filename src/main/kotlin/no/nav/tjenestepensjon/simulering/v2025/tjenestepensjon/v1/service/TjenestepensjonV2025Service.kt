@@ -50,7 +50,7 @@ class TjenestepensjonV2025Service(
         // Returnerer først tekniske feil hvis funnet
         simulertTpListe.forEach { simulering ->
             simulering.onFailure {
-                if (it !is TpOrdningStoettesIkkeException) return tpOrdningerNavn to simulering
+                if (it !is TpOrdningStoettesIkkeException && it !is TomSimuleringFraTpOrdningException) return tpOrdningerNavn to simulering
             }
         }
 
