@@ -14,4 +14,14 @@ data class SimulerTjenestepensjonRequestDto(
     val fremtidigeInntekter: List<SimulerTjenestepensjonFremtidigInntektDto>? = null //kun i V2
 )
 
+data class LoggableSimulerTjenestepensjonRequestDto(
+    val uttaksdato: LocalDate,
+    val sisteInntekt: Int,
+    val aarIUtlandetEtter16: Int,
+    val brukerBaOmAfp: Boolean,
+    val epsPensjon: Boolean,
+    val eps2G: Boolean,
+    val fremtidigeInntekter: List<SimulerTjenestepensjonFremtidigInntektDto>? = null //kun i V2
+)
+
 data class SimulerTjenestepensjonFremtidigInntektDto(val fraOgMed: LocalDate, val aarligInntekt: Int)

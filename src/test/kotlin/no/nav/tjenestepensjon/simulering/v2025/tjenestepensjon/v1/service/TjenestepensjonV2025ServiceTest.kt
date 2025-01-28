@@ -7,6 +7,9 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maaneds
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TomSimuleringFraTpOrdningException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonService
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -14,8 +17,8 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.http.HttpStatus
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
@@ -41,8 +44,8 @@ class TjenestepensjonV2025ServiceTest {
     @Test
     fun `simuler success fra spk`() {
         val req = dummyRequest("1963-02-05")
-        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning()))
-        `when`(spk.simuler(req)).thenReturn(dummyResult())
+        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("3010")))
+        `when`(spk.simuler(req,"3010")).thenReturn(dummyResult("spk"))
 
         val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
@@ -57,8 +60,8 @@ class TjenestepensjonV2025ServiceTest {
     @Test
     fun `simuler failure fra spk`() {
         val req = dummyRequest("1963-02-05")
-        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning()))
-        `when`(spk.simuler(req)).thenReturn(Result.failure(WebClientResponseException("Failed to simulate", 500, "error", null, null, null)))
+        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("3010")))
+        `when`(spk.simuler(req,"3010")).thenReturn(Result.failure(WebClientResponseException("Failed to simulate", 500, "error", null, null, null)))
 
         val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
@@ -70,12 +73,28 @@ class TjenestepensjonV2025ServiceTest {
 
     @Test
     fun `simuler naar tp-ordning stoettes ikke`() {
-        //TODO før prodsetting
+        val req = dummyRequest("1963-02-05")
+        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("9999")))
+
+        val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
+
+        assertTrue(res.second.isFailure)
+        val tjenestepensjonFailure = res.second.exceptionOrNull()
+        assertNotNull(tjenestepensjonFailure)
+        assertTrue(tjenestepensjonFailure is TpOrdningStoettesIkkeException)
     }
 
     @Test
     fun `simuler tp naar bruker ikke er medlem i tp ordning`() {
-        //TODO før prodsetting
+        val req = dummyRequest("1963-02-05")
+        `when`(tp.findTPForhold(req.pid)).thenReturn(emptyList())
+
+        val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
+
+        assertTrue(res.second.isFailure)
+        val tjenestepensjonFailure = res.second.exceptionOrNull()
+        assertNotNull(tjenestepensjonFailure)
+        assertTrue(tjenestepensjonFailure is BrukerErIkkeMedlemException)
     }
 
     @Test
@@ -93,6 +112,55 @@ class TjenestepensjonV2025ServiceTest {
         }
     }
 
+    @Test
+    fun `simuler success fra klp 4080`() {
+        val req = dummyRequest("1963-02-05")
+        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("4080")))
+        `when`(klp.simuler(req, "4080")).thenReturn(dummyResult("klp"))
+
+        val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
+
+        assertTrue(res.second.isSuccess)
+        val tjenestepensjon = res.second.getOrNull()
+        assertNotNull(tjenestepensjon)
+        assertEquals("klp", tjenestepensjon.tpLeverandoer)
+        assertEquals(1, tjenestepensjon.ordningsListe.size)
+        assertEquals(1, tjenestepensjon.utbetalingsperioder.size)
+    }
+
+    @Test
+    fun `simuler success fra klp 3200`() {
+        val req = dummyRequest("1963-02-05")
+        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("3200")))
+        `when`(klp.simuler(req, "3200")).thenReturn(dummyResult("klp"))
+
+        val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
+
+        assertTrue(res.second.isSuccess)
+        val tjenestepensjon = res.second.getOrNull()
+        assertNotNull(tjenestepensjon)
+        assertEquals("klp", tjenestepensjon.tpLeverandoer)
+        assertEquals(1, tjenestepensjon.ordningsListe.size)
+        assertEquals(1, tjenestepensjon.utbetalingsperioder.size)
+    }
+
+    @Test
+    fun `simulering feiler naar spk og klp returnerer tomt resultat`() {
+        val req = dummyRequest("1963-02-05")
+        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("3010"), dummyTpOrdning("4080")))
+        `when`(spk.simuler(req, "3010")).thenReturn(Result.failure(TomSimuleringFraTpOrdningException("3010")))
+        `when`(klp.simuler(req, "4080")).thenReturn(Result.failure(TomSimuleringFraTpOrdningException("4080")))
+
+        val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
+
+        assertTrue(res.second.isFailure)
+        val tjenestepensjonFailure = res.second.exceptionOrNull()
+        assertNotNull(tjenestepensjonFailure)
+        assertTrue(tjenestepensjonFailure is TomSimuleringFraTpOrdningException)
+    }
+
+
+
     companion object {
         fun dummyRequest(foedselsdato: String, brukerBaOmAfp: Boolean = false) = SimulerTjenestepensjonRequestDto(
             "12345678910",
@@ -105,11 +173,11 @@ class TjenestepensjonV2025ServiceTest {
             false
         )
 
-        fun dummyTpOrdning() = TpOrdningDto("Statens pensjonskasse", "3010", "123456789", listOf("spk"))
+        fun dummyTpOrdning(tpNummer: String) = TpOrdningDto("Statens pensjonskasse", tpNummer, "123456789", listOf("spk"))
 
-        fun dummyResult() = Result.success(
+        fun dummyResult(leverandoer: String) = Result.success(
             SimulertTjenestepensjonMedMaanedsUtbetalinger(
-                "spk",
+                leverandoer,
                 listOf(Ordning("3010")),
                 listOf(
                     Maanedsutbetaling(

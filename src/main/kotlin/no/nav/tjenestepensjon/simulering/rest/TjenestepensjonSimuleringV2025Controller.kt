@@ -6,10 +6,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.Tjenestepe
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.response.ResultatTypeDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.response.SimulerTjenestepensjonResponseDto
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.*
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Service
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
@@ -32,20 +29,16 @@ class TjenestepensjonSimuleringV2025Controller(
         val relevanteTpOrdninger = simuleringsresultat.first
         return simuleringsresultat.second.fold(
             onSuccess = {
-                if (it.utbetalingsperioder.isNotEmpty()) {
-                    val aggregerVellykketRespons: SimulerTjenestepensjonResponseDto = aggregerVellykketRespons(it, relevanteTpOrdninger)
-                    log.debug { "Simulering vellykket: $aggregerVellykketRespons" }
-                    aggregerVellykketRespons
-                } else {
-                    log.info { "Simulering fra ${it.tpLeverandoer} inneholder ingen utbetalingsperioder" }
-                    SimulerTjenestepensjonResponseDto(ResultatTypeDto.INGEN_UTBETALINGSPERIODER_FRA_TP_ORDNING, "Simulering fra ${it.tpLeverandoer} inneholder ingen utbetalingsperioder", relevanteTpOrdninger)
-                }
+                val aggregerVellykketRespons: SimulerTjenestepensjonResponseDto = aggregerVellykketRespons(it, relevanteTpOrdninger)
+                log.debug { "Simulering vellykket: $aggregerVellykketRespons" }
+                aggregerVellykketRespons
             },
             onFailure = { e ->
                 when (e) {
                     is BrukerErIkkeMedlemException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.BRUKER_ER_IKKE_MEDLEM_HOS_TP_ORDNING, e.message, relevanteTpOrdninger)
                     is TpOrdningStoettesIkkeException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.TP_ORDNING_ER_IKKE_STOTTET, e.message, relevanteTpOrdninger)
                     is TjenestepensjonSimuleringException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.TEKNISK_FEIL_FRA_TP_ORDNING, e.message, relevanteTpOrdninger)
+                    is TomSimuleringFraTpOrdningException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.INGEN_UTBETALINGSPERIODER_FRA_TP_ORDNING, "Simulering fra ${e.tpOrdning} inneholder ingen utbetalingsperioder", relevanteTpOrdninger)
                     is TpregisteretException -> loggOgReturnerTekniskFeil(e)
                     else -> loggOgReturnerTekniskFeil(RuntimeException(e))
                 }

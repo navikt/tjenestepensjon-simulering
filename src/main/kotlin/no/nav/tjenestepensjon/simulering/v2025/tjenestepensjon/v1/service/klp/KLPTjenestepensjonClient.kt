@@ -24,18 +24,18 @@ class KLPTjenestepensjonClient(
 ) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}
 
-    override fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjon> {
+    override fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjon> {
         val dto = KLPMapper.mapToRequest(request)
         sporingsloggService.loggUtgaaendeRequest(Organisasjon.KLP, request.pid, dto)
         try {
             val response = klpWebClient
                 .post()
-                .uri(SIMULER_PATH)
+                .uri("$SIMULER_PATH/$tpNummer")
                 .bodyValue(dto)
                 .retrieve()
                 .bodyToMono<KLPSimulerTjenestepensjonResponse>()
                 .block()
-            return response?.let { Result.success(KLPMapper.mapToResponse(it)) } ?: Result.failure(TjenestepensjonSimuleringException("No response body"))
+            return response?.let { Result.success(KLPMapper.mapToResponse(it, KLPMapper.mapToLoggableRequestDto(request)) ) } ?: Result.failure(TjenestepensjonSimuleringException("No response body"))
         } catch (e: WebClientResponseException) {
             val errorMsg = "Failed to simulate tjenestepensjon 2025 hos KLP ${e.responseBodyAsString}"
             log.error(e) { errorMsg }
@@ -51,7 +51,7 @@ class KLPTjenestepensjonClient(
     }
 
     companion object {
-        private const val SIMULER_PATH = "/api/oftp/simulering/3200"
+        private const val SIMULER_PATH = "/api/oftp/simulering"
         private const val PING_PATH = ""
         private const val PROVIDER = "KLP"
     }

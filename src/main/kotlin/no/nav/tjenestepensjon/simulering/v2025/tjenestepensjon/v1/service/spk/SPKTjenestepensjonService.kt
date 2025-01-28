@@ -10,30 +10,36 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Simuler
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TomSimuleringFraTpOrdningException
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
 class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, private val featureToggleService: FeatureToggleService) : Pingable {
     private val log = KotlinLogging.logger {}
+    private val TP_ORDNING = "spk"
 
-    fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
+
+    fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
         if (!featureToggleService.isEnabled(PEN_715_SIMULER_SPK)) {
             return loggOgReturn()
         }
 
-        return client.simuler(request)
+        return client.simuler(request, tpNummer)
             .fold(
                 onSuccess = {
-                    Result.success(
-                        SimulertTjenestepensjonMedMaanedsUtbetalinger(
-                            tpLeverandoer = SPKMapper.PROVIDER_FULLT_NAVN,
-                            ordningsListe = it.ordningsListe,
-                            utbetalingsperioder = grupperMedDatoFra(fjerneAfp(it.utbetalingsperioder), request.foedselsdato),
-                            betingetTjenestepensjonErInkludert = it.betingetTjenestepensjonErInkludert,
-                            serviceData = it.serviceData
+                    if (it.utbetalingsperioder.isEmpty())
+                        Result.failure(TomSimuleringFraTpOrdningException(TP_ORDNING))
+                    else
+                        Result.success(
+                            SimulertTjenestepensjonMedMaanedsUtbetalinger(
+                                tpLeverandoer = SPKMapper.PROVIDER_FULLT_NAVN,
+                                ordningsListe = it.ordningsListe,
+                                utbetalingsperioder = grupperMedDatoFra(fjerneAfp(it.utbetalingsperioder), request.foedselsdato),
+                                betingetTjenestepensjonErInkludert = it.betingetTjenestepensjonErInkludert,
+                                serviceData = it.serviceData
+                            )
                         )
-                    )
                 },
                 onFailure = { Result.failure(it) }
             )

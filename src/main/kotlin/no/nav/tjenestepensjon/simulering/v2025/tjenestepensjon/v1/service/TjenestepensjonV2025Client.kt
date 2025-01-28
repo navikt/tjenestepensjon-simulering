@@ -6,7 +6,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.Tjen
 
 interface TjenestepensjonV2025Client {
     @Throws(TjenestepensjonSimuleringException::class)
-    fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjon>
+    fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjon>
 
     companion object {
         const val TJENESTE = "tjenestepensjonV2025"

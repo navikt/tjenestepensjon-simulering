@@ -5,13 +5,10 @@ import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.*
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonService
 import org.springframework.stereotype.Service
-
 @Service
 class TjenestepensjonV2025Service(
     private val tp: TpClient,
@@ -29,19 +26,37 @@ class TjenestepensjonV2025Service(
             return emptyList<String>() to Result.failure(e)
         }
 
+
         val tpOrdningerNavn = tpOrdninger.map { it.navn }
-        if (tpOrdningerNavn.isEmpty()) {
+        val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
+        if (sisteOrdningerNr.isEmpty()) {
             return emptyList<String>() to Result.failure(BrukerErIkkeMedlemException())
         }
 
-        val sisteTpOrdningNavn = finnSisteTpOrdningService.finnSisteOrdning(tpOrdninger)
-        log.info { "Fant aktive tp-ordninger for bruker: $tpOrdninger, skal bruke $sisteTpOrdningNavn for å simulere" }
+        log.info { "Fant tp ordninger med nummere: $sisteOrdningerNr" }
 
-        return when (sisteTpOrdningNavn.lowercase()) {
-            "spk" -> tpOrdningerNavn to spk.simuler(request)
-            "klp" -> tpOrdningerNavn to klp.simuler(request)
-            else -> tpOrdningerNavn to Result.failure(TpOrdningStoettesIkkeException(sisteTpOrdningNavn))
+        val simulertTpListe = sisteOrdningerNr.map { ordning ->
+            when (ordning) {
+                "3010" -> spk.simuler(request, "3010") //3010 -> TpNummer for SPK
+                "3060" -> spk.simuler(request, "3060") //3060 -> TpNummer for SPK
+                "4080" -> klp.simuler(request, "4080") //4080 -> TpNummer for KLP
+                "3200" -> klp.simuler(request, "3200") //3200 -> TpNummer for KLP
+                else -> Result.failure(TpOrdningStoettesIkkeException(ordning))
+            }.run {
+                onSuccess { return tpOrdningerNavn to this }
+            }
         }
+
+        // Returnerer først tekniske feil hvis funnet
+        simulertTpListe.forEach { simulering ->
+            simulering.onFailure {
+                if (it !is TpOrdningStoettesIkkeException && it !is TomSimuleringFraTpOrdningException) return tpOrdningerNavn to simulering
+            }
+        }
+
+        // Returnerer TomSimuleringFraTpOrdningException derom alle utbetalingsperioder er tomme og/eller tp-ordninger ikke er støttet
+        log.info { "Simulering fra ${tpOrdningerNavn} inneholder ingen utbetalingsperioder" }
+        return tpOrdningerNavn to simulertTpListe.first()
     }
 
     fun ping(): List<PingResponse> {

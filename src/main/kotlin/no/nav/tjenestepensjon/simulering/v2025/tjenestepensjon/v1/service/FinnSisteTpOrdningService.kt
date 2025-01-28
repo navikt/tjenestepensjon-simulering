@@ -18,6 +18,8 @@ interface FinnSisteTpOrdningService {
         return if (sisteOrdning) "spk" else tpOrdninger.flatMap { it.alias }.firstOrNull() ?: TP_ORDNING_UTEN_ALIAS
     }
 
+    fun finnSisteOrdningKandidater(tpOrdninger: List<TpOrdningDto>): List<String>
+
     companion object{
         const val TP_ORDNING_UTEN_ALIAS = "tp-ordning er uten alias i tpregisteret"
     }

@@ -24,14 +24,14 @@ class SPKTjenestepensjonClient(
 ) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}
 
-    override fun simuler(request: SimulerTjenestepensjonRequestDto): Result<SimulertTjenestepensjon> {
+    override fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjon> {
         val dto = SPKMapper.mapToRequest(request)
         log.debug { "Simulating tjenestepensjon 2025 hos SPK with request $dto" }
         sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, request.pid, dto)
         try {
             val response = spkWebClient
                 .post()
-                .uri(SIMULER_PATH)
+                .uri("$SIMULER_PATH/$tpNummer")
                 .bodyValue(dto)
                 .retrieve()
                 .bodyToMono<SPKSimulerTjenestepensjonResponse>()
@@ -69,7 +69,7 @@ class SPKTjenestepensjonClient(
     }
 
     companion object {
-        const val SIMULER_PATH = "/nav/v2/tjenestepensjon/simuler/3010"
+        const val SIMULER_PATH = "/nav/v2/tjenestepensjon/simuler"
         private const val PING_PATH = "/nav/admin/ping"
         private const val PROVIDER = "SPK"
     }

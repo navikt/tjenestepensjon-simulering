@@ -11,7 +11,7 @@ import java.time.LocalDate
 object SPKMapper {
     private val log = KotlinLogging.logger {}
 
-    const val PROVIDER_FULLT_NAVN = "Statens Pensjonskasse"
+    const val PROVIDER_FULLT_NAVN = "Statens pensjonskasse"
 
     fun mapToRequest(request: SimulerTjenestepensjonRequestDto): SPKSimulerTjenestepensjonRequest {
         return request.fremtidigeInntekter

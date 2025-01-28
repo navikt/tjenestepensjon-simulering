@@ -3,13 +3,14 @@ package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.LoggableSimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.*
 import java.time.LocalDate
 
 object KLPMapper {
 
-    private const val LEVERANDOER = "Kommunal Landspensjonskasse"
+    const val PROVIDER_FULLT_NAVN = "Kommunal Landspensjonskasse"
 
     fun mapToRequest(request: SimulerTjenestepensjonRequestDto) =
         KLPSimulerTjenestepensjonRequest(
@@ -32,14 +33,28 @@ object KLPMapper {
             eps2G = request.eps2G,
         )
 
+    fun mapToLoggableRequestDto(dto: SimulerTjenestepensjonRequestDto) =
+        LoggableSimulerTjenestepensjonRequestDto(
+            uttaksdato = dto.uttaksdato,
+            sisteInntekt = dto.sisteInntekt,
+            aarIUtlandetEtter16 = dto.aarIUtlandetEtter16,
+            brukerBaOmAfp = dto.brukerBaOmAfp,
+            epsPensjon = dto.epsPensjon,
+            eps2G = dto.eps2G,
+            fremtidigeInntekter = dto.fremtidigeInntekter
+        )
+
     private fun aarUtenRegistrertInntektHosSkatteetaten(): LocalDate = LocalDate.now().minusYears(2).withDayOfYear(1)
 
-    fun mapToResponse(response: KLPSimulerTjenestepensjonResponse) =
+    fun mapToResponse(response: KLPSimulerTjenestepensjonResponse, dto: LoggableSimulerTjenestepensjonRequestDto? = null) =
         SimulertTjenestepensjon(
-            tpLeverandoer = LEVERANDOER,
+            tpLeverandoer = PROVIDER_FULLT_NAVN,
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
             utbetalingsperioder = response.utbetalingsListe.map { Utbetalingsperiode(it.fraOgMedDato, it.manedligUtbetaling, it.ytelseType) },
             aarsakIngenUtbetaling = response.arsakIngenUtbetaling,
-            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name }
+            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name },
+            serviceData = listOf("Request: ${dto?.toString()}","Response: $response")
         )
+
+
 }
