@@ -47,7 +47,7 @@ dependencies {
     implementation("org.springframework.boot", "spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.ws", "spring-ws-core", "4.0.11")
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.wiremock:wiremock-standalone:3.10.0")
+    testImplementation("org.wiremock:wiremock-standalone:3.11.0")
     testImplementation("org.mockito.kotlin", "mockito-kotlin", "5.2.1")
     testImplementation("org.springframework.boot", "spring-boot-starter-test")
     testImplementation("org.springframework.security", "spring-security-test")
