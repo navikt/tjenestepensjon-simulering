@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.bodyToMono
 @Service
 class RestClient(
     private val restGatewayWebClient: WebClient,
+    private val spkWebClient: WebClient,
     @Value("\${oftp.before2025.spk.maskinportenscope}") private val scope: String,
     private val sporingsloggService: SporingsloggService,
 ) {
@@ -33,9 +34,9 @@ class RestClient(
             ?: SimulerOffentligTjenestepensjonResponse(request.sisteTpnr, tpOrdning.tpId)
     }
 
-    fun ping(): String = restGatewayWebClient
+    fun ping(): String = spkWebClient
         .post()
-        .uri("/medlem/pensjon/prognose/v1")
+        .uri("/nav/pensjon/prognose/v1")
         .header("scope", scope)
         .bodyValue(dummyRequest())
         .retrieve()
