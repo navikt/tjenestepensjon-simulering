@@ -69,6 +69,9 @@ class MaskinportenToken(
                         log.info { "Retrying due to: ${retrySignal.failure().message}, attempt: ${retrySignal.totalRetries() + 1}" }
                     }
                 )
+                .doOnError(WebClientResponseException::class.java) { e ->
+                    log.error(e) { "Final failure: ${e.message} - ${e.responseBodyAsString}" }
+                }
                 .block()
         } catch (e: WebClientRequestException){
             log.error(e) { "Failed to fetch token from maskinporten: ${e.message}" }
