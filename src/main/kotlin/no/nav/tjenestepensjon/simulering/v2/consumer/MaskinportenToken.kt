@@ -32,10 +32,25 @@ class MaskinportenToken(
     private val log = KotlinLogging.logger {}
     private val tokenCache: LoadingCache<String, String> = Caffeine.newBuilder()
         .expireAfterWrite(EXPIRE_AFTER, EXPIRE_AFTER_TIME_UNITS)
-        .build { k: String -> fetchToken(k) }
+        .build { k: String ->
+            try {
+                fetchToken(k)
+            } catch (e: WebClientRequestException) {
+                log.error(e) { "Failed to fetch token from maskinporten: ${e.message}" }
+                throw e
+            } catch (e: WebClientResponseException) {
+                log.error(e) { "Failed to fetch token from maskinporten: ${e.message} - ${e.responseBodyAsString}" }
+                throw e
+            }
+        }
 
     fun getToken(scope: String): String {
-        return tokenCache.get(scope)
+        try {
+            return tokenCache.get(scope)
+        } catch (e: Exception) {
+            log.error(e) { "Failed to fetch token from cache: ${e.message}" }
+            throw e
+        }
     }
 
     fun fetchToken(scope: String): String {
@@ -54,33 +69,24 @@ class MaskinportenToken(
                 .build()
         )
         signedJWT.sign(RSASSASigner(rsaKey.toRSAPrivateKey()))
-        val response = try{
+        val response =
             webClient.post().uri(endpoint)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .header("Accept", "*/*")
                 .body(
                     BodyInserters
                         .fromFormData("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer")
-                        .with("assertion", signedJWT.serialize()))
+                        .with("assertion", signedJWT.serialize())
+                )
                 .retrieve()
                 .bodyToMono(MaskinportenTokenResponse::class.java)
-                .retryWhen(Retry.backoff(3, java.time.Duration.ofSeconds(1))
-                    .doBeforeRetry { retrySignal ->
-                        log.info { "Retrying due to: ${retrySignal.failure().message}, attempt: ${retrySignal.totalRetries() + 1}" }
-                    }
+                .retryWhen(
+                    Retry.backoff(3, java.time.Duration.ofSeconds(1))
+                        .doBeforeRetry { retrySignal ->
+                            log.info { "Retrying due to: ${retrySignal.failure().message}, attempt: ${retrySignal.totalRetries() + 1}" }
+                        }
                 )
-                .doOnError(WebClientResponseException::class.java) { e ->
-                    log.error(e) { "Final failure: ${e.message} - ${e.responseBodyAsString}" }
-                }
                 .block()
-        } catch (e: WebClientRequestException){
-            log.error(e) { "Failed to fetch token from maskinporten: ${e.message}" }
-            throw e
-        }
-        catch (e: WebClientResponseException){
-            log.error(e) { "Failed to fetch token from maskinporten: ${e.message} - ${e.responseBodyAsString}" }
-            throw e
-        }
         log.debug { "Hentet token fra maskinporten med scope(s): ${scope}" }
         return response!!.access_token
     }
