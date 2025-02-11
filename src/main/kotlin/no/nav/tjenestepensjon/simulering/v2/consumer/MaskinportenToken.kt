@@ -10,6 +10,7 @@ import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -17,6 +18,7 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.core.Exceptions
 import reactor.util.retry.Retry
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -32,24 +34,14 @@ class MaskinportenToken(
     private val log = KotlinLogging.logger {}
     private val tokenCache: LoadingCache<String, String> = Caffeine.newBuilder()
         .expireAfterWrite(EXPIRE_AFTER, EXPIRE_AFTER_TIME_UNITS)
-        .build { k: String ->
-            try {
-                fetchToken(k)
-            } catch (e: WebClientRequestException) {
-                log.error(e) { "Failed to fetch token from maskinporten: ${e.message}" }
-                throw e
-            } catch (e: WebClientResponseException) {
-                log.error(e) { "Failed to fetch token from maskinporten: ${e.message} - ${e.responseBodyAsString}" }
-                throw e
-            }
-        }
+        .build { k: String -> fetchToken(k) }
 
     fun getToken(scope: String): String {
-        try {
+        try{
             return tokenCache.get(scope)
-        } catch (e: Exception) {
-            log.error(e) { "Failed to fetch token from cache: ${e.message}" }
-            throw e
+        } catch (e: IllegalStateException) {
+            log.error (e) { "IllegalStateException after retries exhausted ${Exceptions.isRetryExhausted(e)}" }
+            throw ConnectToMaskinPortenException("Failed to connect to maskinporten after retries exhausted")
         }
     }
 
@@ -85,6 +77,7 @@ class MaskinportenToken(
                         .doBeforeRetry { retrySignal ->
                             log.info { "Retrying due to: ${retrySignal.failure().message}, attempt: ${retrySignal.totalRetries() + 1}" }
                         }
+                        .onRetryExhaustedThrow { _, r -> ConnectToMaskinPortenException("Failed to connect to maskinporten after ${r.totalRetries()} retries and failure due to ${r.failure().localizedMessage}") }
                 )
                 .block()
         log.debug { "Hentet token fra maskinporten med scope(s): ${scope}" }
