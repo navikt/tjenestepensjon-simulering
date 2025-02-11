@@ -8,9 +8,11 @@ import no.nav.tjenestepensjon.simulering.service.FeatureToggleService.Companion.
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maanedsutbetaling
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TomSimuleringFraTpOrdningException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TpUtil
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
@@ -62,9 +64,12 @@ class KLPTjenestepensjonService(@Value("\${spring.profiles.active:}") private va
                         Result.success(
                             SimulertTjenestepensjonMedMaanedsUtbetalinger(
                                 tpLeverandoer = KLPMapper.PROVIDER_FULLT_NAVN,
-                                ordningsListe = emptyList(),
-                                utbetalingsperioder = emptyList(),
-                                aarsakIngenUtbetaling = emptyList(),
+                                ordningsListe = it.ordningsListe,
+                                utbetalingsperioder = TpUtil.grupperMedDatoFra(
+                                    eksluderYtelser(it.utbetalingsperioder),
+                                    request.foedselsdato
+                                ),
+                                aarsakIngenUtbetaling = it.aarsakIngenUtbetaling,
                                 betingetTjenestepensjonErInkludert = false,
                                 serviceData = it.serviceData
                             ))
@@ -76,8 +81,11 @@ class KLPTjenestepensjonService(@Value("\${spring.profiles.active:}") private va
 
     }
 
+  private fun eksluderYtelser(utbetalingsperiode: List<Utbetalingsperiode>): List<Utbetalingsperiode> {
+    return utbetalingsperiode.filter { it.ytelseType !in setOf("OAFP", "BTP") }
+}
 
-        private fun loggOgReturn(): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
+    private fun loggOgReturn(): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
         val message = "Simulering av tjenestepensjon hos KLP er slått av"
         log.warn { message }
         return Result.failure(TpOrdningStoettesIkkeException(TP_ORDNING))

@@ -52,9 +52,10 @@ object KLPMapper {
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
             utbetalingsperioder = response.utbetalingsListe.map { Utbetalingsperiode(it.fraOgMedDato, it.manedligUtbetaling, it.ytelseType) },
             aarsakIngenUtbetaling = response.arsakIngenUtbetaling,
-            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name },
-            serviceData = listOf("Request: ${dto?.toString()}","Response: $response")
-        )
+            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name }
+        ).apply {
+            serviceData = listOf("Request: ${dto?.toString()}","Response: $response", "Mapped to: $this")
+        }
 
 
 }
