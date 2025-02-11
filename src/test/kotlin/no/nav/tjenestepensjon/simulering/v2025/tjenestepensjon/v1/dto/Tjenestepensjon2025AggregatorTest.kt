@@ -17,6 +17,7 @@ class Tjenestepensjon2025AggregatorTest {
     fun `aggreger varierende maanedsperioder inkludert ved aarskifte til perioder med slutt alder`() {
         val simulertTjenestepensjon = SimulertTjenestepensjonMedMaanedsUtbetalinger(
             tpLeverandoer = "tpLeverandoer",
+            tpNummer = "5555",
             ordningsListe = listOf(Ordning("3010")),
             utbetalingsperioder = listOf(
                 Maanedsutbetaling(
@@ -44,6 +45,7 @@ class Tjenestepensjon2025AggregatorTest {
         assertEquals(ResultatTypeDto.SUCCESS, result.simuleringsResultatStatus.resultatType)
         assertEquals(simulertTjenestepensjon.utbetalingsperioder.size, result.simuleringsResultat?.utbetalingsperioder?.size)
         assertEquals(simulertTjenestepensjon.tpLeverandoer, result.simuleringsResultat?.tpLeverandoer)
+        assertEquals(simulertTjenestepensjon.tpNummer, result.simuleringsResultat?.tpNummer)
 
         assertEquals(simulertTjenestepensjon.utbetalingsperioder[0].fraOgMedAlder, result.simuleringsResultat?.utbetalingsperioder?.get(0)?.startAlder)
         assertEquals(simulertTjenestepensjon.utbetalingsperioder[1].fraOgMedAlder.aar - 1, result.simuleringsResultat?.utbetalingsperioder?.get(0)?.sluttAlder?.aar)
@@ -64,6 +66,7 @@ class Tjenestepensjon2025AggregatorTest {
     fun `aggregering haandterer tom liste`() {
         val simulertTjenestepensjon = SimulertTjenestepensjonMedMaanedsUtbetalinger(
             tpLeverandoer = "pensjonskasse",
+            tpNummer = "999999",
             ordningsListe = listOf(Ordning("3010")),
             utbetalingsperioder = emptyList(),
             aarsakIngenUtbetaling = listOf("Ingen utbetaling"),
@@ -75,5 +78,6 @@ class Tjenestepensjon2025AggregatorTest {
         assertEquals(ResultatTypeDto.SUCCESS, result.simuleringsResultatStatus.resultatType)
         assertTrue(result.simuleringsResultat!!.utbetalingsperioder.isEmpty())
         assertEquals(simulertTjenestepensjon.tpLeverandoer, result.simuleringsResultat!!.tpLeverandoer)
+        assertEquals(simulertTjenestepensjon.tpNummer, result.simuleringsResultat!!.tpNummer)
     }
 }

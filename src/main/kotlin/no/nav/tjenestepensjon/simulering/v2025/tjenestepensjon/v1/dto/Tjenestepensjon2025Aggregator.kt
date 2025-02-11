@@ -13,6 +13,7 @@ object Tjenestepensjon2025Aggregator {
             simuleringsResultatStatus = SimuleringsResultatStatusDto(ResultatTypeDto.SUCCESS),
             simuleringsResultat = SimuleringsResultatDto(
                 tpLeverandoer = simulertTjenestepensjon.tpLeverandoer,
+                tpNummer = simulertTjenestepensjon.tpNummer,
                 utbetalingsperioder = aggregerTilAarligePerioder(simulertTjenestepensjon.utbetalingsperioder),
                 betingetTjenestepensjonErInkludert = simulertTjenestepensjon.betingetTjenestepensjonErInkludert
             ),

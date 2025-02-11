@@ -28,6 +28,7 @@ enum class ResultatTypeDto {
 
 data class SimuleringsResultatDto(
     val tpLeverandoer: String,
+    val tpNummer: String,
     val utbetalingsperioder: List<UtbetalingPerAlder>,
     val betingetTjenestepensjonErInkludert: Boolean,
 )
