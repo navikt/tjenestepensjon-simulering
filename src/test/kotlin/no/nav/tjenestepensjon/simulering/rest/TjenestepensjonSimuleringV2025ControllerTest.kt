@@ -72,6 +72,7 @@ class TjenestepensjonSimuleringV2025ControllerTest {
         )
         val mockRespons = SimulertTjenestepensjonMedMaanedsUtbetalinger(
             tpLeverandoer = "pensjonskasse",
+            tpNummer = "123456",
             ordningsListe = emptyList(),
             utbetalingsperioder = perioder,
             aarsakIngenUtbetaling = emptyList(),
@@ -104,6 +105,7 @@ class TjenestepensjonSimuleringV2025ControllerTest {
                             },
                             "simuleringsResultat": {
                                     "tpLeverandoer": "${mockRespons.tpLeverandoer}",
+                                    "tpNummer": "${mockRespons.tpNummer}",
                                     "utbetalingsperioder": [
                                         {
                                             "startAlder": {

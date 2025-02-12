@@ -1,6 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningDto
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
@@ -54,8 +55,7 @@ class TjenestepensjonV2025Service(
             }
         }
 
-        // Returnerer TomSimuleringFraTpOrdningException derom alle utbetalingsperioder er tomme og/eller tp-ordninger ikke er støttet
-        log.info { "Simulering fra ${tpOrdningerNavn} inneholder ingen utbetalingsperioder" }
+        log.info { "Ingen simulering fra ${tpOrdninger}: ${simulertTpListe.map { it.exceptionOrNull()?.message }.joinToString(";")}" }
         return tpOrdningerNavn to simulertTpListe.first()
     }
 

@@ -13,6 +13,7 @@ data class Ordning(val tpNummer: String)
 
 open class SimulertTjenestepensjonMedMaanedsUtbetalinger(
     val tpLeverandoer: String,
+    val tpNummer: String,
     var ordningsListe: List<Ordning> = emptyList(),
     var utbetalingsperioder: List<Maanedsutbetaling> = emptyList(),
     var aarsakIngenUtbetaling: List<String> = emptyList(),

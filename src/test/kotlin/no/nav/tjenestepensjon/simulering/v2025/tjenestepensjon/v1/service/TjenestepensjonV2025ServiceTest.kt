@@ -45,7 +45,7 @@ class TjenestepensjonV2025ServiceTest {
     fun `simuler success fra spk`() {
         val req = dummyRequest("1963-02-05")
         `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("3010")))
-        `when`(spk.simuler(req,"3010")).thenReturn(dummyResult("spk"))
+        `when`(spk.simuler(req,"3010")).thenReturn(dummyResult("spk", "3010"))
 
         val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
@@ -53,6 +53,7 @@ class TjenestepensjonV2025ServiceTest {
         val tjenestepensjon = res.second.getOrNull()
         assertNotNull(tjenestepensjon)
         assertEquals("spk", tjenestepensjon.tpLeverandoer)
+        assertEquals("3010", tjenestepensjon.tpNummer)
         assertEquals(1, tjenestepensjon.ordningsListe.size)
         assertEquals(1, tjenestepensjon.utbetalingsperioder.size)
     }
@@ -116,7 +117,7 @@ class TjenestepensjonV2025ServiceTest {
     fun `simuler success fra klp 4080`() {
         val req = dummyRequest("1963-02-05")
         `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("4080")))
-        `when`(klp.simuler(req, "4080")).thenReturn(dummyResult("klp"))
+        `when`(klp.simuler(req, "4080")).thenReturn(dummyResult("klp", "4080"))
 
         val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
@@ -124,6 +125,7 @@ class TjenestepensjonV2025ServiceTest {
         val tjenestepensjon = res.second.getOrNull()
         assertNotNull(tjenestepensjon)
         assertEquals("klp", tjenestepensjon.tpLeverandoer)
+        assertEquals("4080", tjenestepensjon.tpNummer)
         assertEquals(1, tjenestepensjon.ordningsListe.size)
         assertEquals(1, tjenestepensjon.utbetalingsperioder.size)
     }
@@ -132,7 +134,7 @@ class TjenestepensjonV2025ServiceTest {
     fun `simuler success fra klp 3200`() {
         val req = dummyRequest("1963-02-05")
         `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("3200")))
-        `when`(klp.simuler(req, "3200")).thenReturn(dummyResult("klp"))
+        `when`(klp.simuler(req, "3200")).thenReturn(dummyResult("klp", "3200"))
 
         val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
@@ -140,6 +142,7 @@ class TjenestepensjonV2025ServiceTest {
         val tjenestepensjon = res.second.getOrNull()
         assertNotNull(tjenestepensjon)
         assertEquals("klp", tjenestepensjon.tpLeverandoer)
+        assertEquals("3200", tjenestepensjon.tpNummer)
         assertEquals(1, tjenestepensjon.ordningsListe.size)
         assertEquals(1, tjenestepensjon.utbetalingsperioder.size)
     }
@@ -175,9 +178,10 @@ class TjenestepensjonV2025ServiceTest {
 
         fun dummyTpOrdning(tpNummer: String) = TpOrdningDto("Statens pensjonskasse", tpNummer, "123456789", listOf("spk"))
 
-        fun dummyResult(leverandoer: String) = Result.success(
+        fun dummyResult(leverandoer: String, tpNummer: String) = Result.success(
             SimulertTjenestepensjonMedMaanedsUtbetalinger(
                 leverandoer,
+                tpNummer,
                 listOf(Ordning("3010")),
                 listOf(
                     Maanedsutbetaling(

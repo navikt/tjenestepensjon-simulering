@@ -44,6 +44,7 @@ class KLPTjenestepensjonService(@Value("\${spring.profiles.active:}") private va
 
         val klpResponseMock = SimulertTjenestepensjonMedMaanedsUtbetalinger(
             tpLeverandoer = "Kommunal Landspensjonskasse",
+            tpNummer = tpNummer,
             ordningsListe = arrayListOf(Ordning("3100")),
             utbetalingsperioder = arrayListOf(maanedsutbetalingMock, maanedsutbetalingMock2),
             aarsakIngenUtbetaling = emptyList(),
@@ -64,6 +65,7 @@ class KLPTjenestepensjonService(@Value("\${spring.profiles.active:}") private va
                         Result.success(
                             SimulertTjenestepensjonMedMaanedsUtbetalinger(
                                 tpLeverandoer = KLPMapper.PROVIDER_FULLT_NAVN,
+                                tpNummer = tpNummer,
                                 ordningsListe = it.ordningsListe,
                                 utbetalingsperioder = TpUtil.grupperMedDatoFra(
                                     eksluderYtelser(it.utbetalingsperioder),

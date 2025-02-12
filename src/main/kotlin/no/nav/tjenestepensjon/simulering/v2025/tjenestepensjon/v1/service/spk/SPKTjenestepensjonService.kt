@@ -32,6 +32,7 @@ class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, pr
                         Result.success(
                             SimulertTjenestepensjonMedMaanedsUtbetalinger(
                                 tpLeverandoer = SPKMapper.PROVIDER_FULLT_NAVN,
+                                tpNummer = tpNummer,
                                 ordningsListe = it.ordningsListe,
                                 utbetalingsperioder = TpUtil.grupperMedDatoFra(fjerneAfp(it.utbetalingsperioder), request.foedselsdato),
                                 betingetTjenestepensjonErInkludert = it.betingetTjenestepensjonErInkludert,
