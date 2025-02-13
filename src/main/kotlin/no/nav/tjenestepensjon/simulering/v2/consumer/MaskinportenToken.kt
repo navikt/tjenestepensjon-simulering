@@ -16,9 +16,6 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClientRequestException
-import org.springframework.web.reactive.function.client.WebClientResponseException
-import reactor.core.Exceptions
 import reactor.util.retry.Retry
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -38,19 +35,14 @@ class MaskinportenToken(
             try {
                 fetchToken(k)
             } catch (e: RuntimeException) {
-                val rootCause = e.cause ?: e
-                log.error(rootCause) { "Caught exception: ${rootCause.message}" }
-                throw rootCause
+                val exc = e.cause ?: e
+                log.error(exc) { "Failed to fetch maskinporten token due to ${e.message}" }
+                throw exc
             }
         }
 
     fun getToken(scope: String): String {
-        try {
-            return tokenCache.get(scope)
-        } catch (e: RuntimeException) {
-            log.error(e) { "Got ${e.javaClass.simpleName} after retries exhausted ${Exceptions.isRetryExhausted(e)}" }
-            throw ConnectToMaskinPortenException("Failed to connect to maskinporten after retries exhausted")
-        }
+        return tokenCache.get(scope)
     }
 
     fun fetchToken(scope: String): String {
@@ -81,11 +73,13 @@ class MaskinportenToken(
                 .retrieve()
                 .bodyToMono(MaskinportenTokenResponse::class.java)
                 .retryWhen(
-                    Retry.backoff(3, java.time.Duration.ofSeconds(1))
+                    Retry.backoff(4, java.time.Duration.ofSeconds(2))
+                        .maxBackoff(java.time.Duration.ofSeconds(10))
+                        .jitter(0.3) // 30% tilfeldig forsinkelse
                         .doBeforeRetry { retrySignal ->
-                            log.info { "Retrying due to: ${retrySignal.failure().message}, attempt: ${retrySignal.totalRetries() + 1}" }
+                            log.warn { "Retrying due to: ${retrySignal.failure().message}, attempt: ${retrySignal.totalRetries() + 1}" }
                         }
-                        .onRetryExhaustedThrow { _, r -> ConnectToMaskinPortenException("Failed to connect to maskinporten after ${r.totalRetries()} retries and failure due to ${r.failure().localizedMessage}") }
+                        .onRetryExhaustedThrow { _, r -> ConnectToMaskinPortenException("Failed to connect to maskinporten after ${r.totalRetries()} retries and failure due to ${r.failure().message}") }
                 )
                 .block()
         log.debug { "Hentet token fra maskinporten med scope(s): ${scope}" }
