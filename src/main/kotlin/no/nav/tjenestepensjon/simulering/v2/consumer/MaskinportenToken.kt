@@ -34,13 +34,21 @@ class MaskinportenToken(
     private val log = KotlinLogging.logger {}
     private val tokenCache: LoadingCache<String, String> = Caffeine.newBuilder()
         .expireAfterWrite(EXPIRE_AFTER, EXPIRE_AFTER_TIME_UNITS)
-        .build { k: String -> fetchToken(k) }
+        .build { k: String ->
+            try {
+                fetchToken(k)
+            } catch (e: RuntimeException) {
+                val rootCause = e.cause ?: e
+                log.error(rootCause) { "Caught exception: ${rootCause.message}" }
+                throw rootCause
+            }
+        }
 
     fun getToken(scope: String): String {
-        try{
+        try {
             return tokenCache.get(scope)
-        } catch (e: IllegalStateException) {
-            log.error (e) { "IllegalStateException after retries exhausted ${Exceptions.isRetryExhausted(e)}" }
+        } catch (e: RuntimeException) {
+            log.error(e) { "Got ${e.javaClass.simpleName} after retries exhausted ${Exceptions.isRetryExhausted(e)}" }
             throw ConnectToMaskinPortenException("Failed to connect to maskinporten after retries exhausted")
         }
     }
