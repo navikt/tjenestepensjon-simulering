@@ -63,7 +63,7 @@ class SPKTjenestepensjonClientTest{
         assertNotNull(tjenestepensjon)
         assertEquals(PROVIDER_FULLT_NAVN, tjenestepensjon!!.tpLeverandoer)
         assertEquals(1, tjenestepensjon.ordningsListe.size)
-        assertEquals("3010", tjenestepensjon.ordningsListe[0].tpNummer)
+        assertEquals(tpNummer, tjenestepensjon.ordningsListe[0].tpNummer)
         assertEquals(5, tjenestepensjon.utbetalingsperioder.size)
         assertEquals(mockResponse.utbetalingListe[0].fraOgMedDato, tjenestepensjon.utbetalingsperioder[0].fom)
         assertEquals(mockResponse.utbetalingListe[0].delytelseListe[0].maanedligBelop, tjenestepensjon.utbetalingsperioder[0].maanedligBelop)

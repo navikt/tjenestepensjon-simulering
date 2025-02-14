@@ -7,7 +7,11 @@ open class SimulertTjenestepensjon(
     var aarsakIngenUtbetaling: List<String> = emptyList(),
     val betingetTjenestepensjonErInkludert: Boolean,
     var serviceData: List<String> = emptyList(),
-)
+){
+    override fun toString(): String {
+        return "(tpLeverandoer='$tpLeverandoer', ordningsListe=$ordningsListe, utbetalingsperioder=$utbetalingsperioder, aarsakIngenUtbetaling=$aarsakIngenUtbetaling, betingetTjenestepensjonErInkludert=$betingetTjenestepensjonErInkludert"
+    }
+}
 
 data class Ordning(val tpNummer: String)
 
@@ -19,4 +23,8 @@ open class SimulertTjenestepensjonMedMaanedsUtbetalinger(
     var aarsakIngenUtbetaling: List<String> = emptyList(),
     val betingetTjenestepensjonErInkludert: Boolean = false,
     var serviceData: List<String> = emptyList(),
-)
+){
+    override fun toString(): String {
+        return "SimulertTjenestepensjonMedMaanedsUtbetalinger(tpLeverandoer='$tpLeverandoer', tpNummer='$tpNummer', ordningsListe=$ordningsListe, utbetalingsperioder=$utbetalingsperioder, aarsakIngenUtbetaling=$aarsakIngenUtbetaling, betingetTjenestepensjonErInkludert=$betingetTjenestepensjonErInkludert"
+    }
+}

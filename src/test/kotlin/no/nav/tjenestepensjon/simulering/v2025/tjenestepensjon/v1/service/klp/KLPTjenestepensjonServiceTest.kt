@@ -9,13 +9,11 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetal
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025ServiceTest.Companion.dummyRequest
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import org.springframework.test.util.ReflectionTestUtils.setField
 import java.time.LocalDate
 import kotlin.test.assertEquals
 
@@ -30,11 +28,6 @@ class KLPTjenestepensjonServiceTest {
 
     @MockitoBean
     private lateinit var client: KLPTjenestepensjonClient
-
-    @BeforeEach
-    fun initialize() {
-        setField(klpTjenestepensjonService, "activeProfiles", "prod-gcp")
-    }
 
     @Test
     fun `simulering skal ikke skje naar feature toggle er av`() {
