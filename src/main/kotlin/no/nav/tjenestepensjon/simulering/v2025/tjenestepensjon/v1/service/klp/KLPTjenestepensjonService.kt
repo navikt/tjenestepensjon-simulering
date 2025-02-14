@@ -1,23 +1,19 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tjenestepensjon.simulering.common.AlderUtil.bestemUttaksalderVedDato
 import no.nav.tjenestepensjon.simulering.ping.Pingable
 import no.nav.tjenestepensjon.simulering.service.FeatureToggleService
 import no.nav.tjenestepensjon.simulering.service.FeatureToggleService.Companion.SIMULER_KLP
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maanedsutbetaling
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TomSimuleringFraTpOrdningException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TpUtil
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
-class KLPTjenestepensjonService(@Value("\${spring.profiles.active:}") private val activeProfiles: String, private val client: KLPTjenestepensjonClient, private val featureToggleService: FeatureToggleService) : Pingable {
+class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, private val featureToggleService: FeatureToggleService) : Pingable {
     private val log = KotlinLogging.logger {}
     private val TP_ORDNING = "klp"
 
@@ -26,36 +22,6 @@ class KLPTjenestepensjonService(@Value("\${spring.profiles.active:}") private va
             return loggOgReturn()
         }
 
-        if (activeProfiles.contains("prod-gcp")) {
-            return simulerv2(request, tpNummer)
-        }
-
-        val maanedsutbetalingMock = Maanedsutbetaling(
-            fraOgMedDato = request.uttaksdato,
-            fraOgMedAlder = bestemUttaksalderVedDato(fodselsdato = request.foedselsdato, date = request.uttaksdato),
-            maanedsBeloep = 5000,
-        )
-
-        val maanedsutbetalingMock2 = Maanedsutbetaling(
-            fraOgMedDato = request.uttaksdato.plusYears(5),
-            fraOgMedAlder = bestemUttaksalderVedDato(fodselsdato = request.foedselsdato, date = request.uttaksdato.plusYears(5)),
-            maanedsBeloep = 6000,
-        )
-
-        val klpResponseMock = SimulertTjenestepensjonMedMaanedsUtbetalinger(
-            tpLeverandoer = "Kommunal Landspensjonskasse",
-            tpNummer = tpNummer,
-            ordningsListe = arrayListOf(Ordning("3100")),
-            utbetalingsperioder = arrayListOf(maanedsutbetalingMock, maanedsutbetalingMock2),
-            aarsakIngenUtbetaling = emptyList(),
-            betingetTjenestepensjonErInkludert = false,
-            serviceData = emptyList()
-        )
-
-        return Result.success(klpResponseMock)
-    }
-
-    private fun simulerv2(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> {
         return client.simuler(request, tpNummer)
             .fold(
                 onSuccess = {

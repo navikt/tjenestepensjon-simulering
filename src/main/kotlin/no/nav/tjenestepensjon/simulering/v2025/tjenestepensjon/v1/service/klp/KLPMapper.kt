@@ -54,7 +54,7 @@ object KLPMapper {
             aarsakIngenUtbetaling = response.arsakIngenUtbetaling,
             betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name }
         ).apply {
-            serviceData = listOf("Request: ${dto?.toString()}","Response: $response", "Mapped to: $this")
+            serviceData = listOf("Request: ${dto?.toString()}","Response: $response")
         }
 
 

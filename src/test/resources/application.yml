@@ -64,7 +64,7 @@ oftp:
   2025:
     klp:
       endpoint:
-        url: https://api-test.klp.no
+        url: http://localhost:8080
         maskinportenscope: klp:oftp/simulering
     spk:
       endpoint:
