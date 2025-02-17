@@ -5,26 +5,21 @@ import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.tjenestepensjon.simulering.*
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.service.TokenService
-import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import no.nav.tjenestepensjon.simulering.v1.models.defaultLeverandor
 import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerPensjonRequestJson
-import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulertPensjonList
-import no.nav.tjenestepensjon.simulering.v1.models.defaultStillingsprosentListe
 import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
-import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
@@ -89,24 +84,6 @@ class SimuleringEndpointSecurityTest {
             headers { setBearerAuth("abc1234") }
         }.andExpect {
             status { isUnauthorized() }
-        }
-    }
-
-    @Test
-    @WithMockUser
-    fun secureEndpointOkWithValidToken() {
-        `when`(aadClient.getToken("api://bogus")).thenReturn("")
-        `when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
-            defaultStillingsprosentListe
-        )
-        `when`(soapClient.simulerPensjon(anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
-            defaultSimulertPensjonList
-        )
-        mockMvc.post("/simulering") {
-            content = defaultSimulerPensjonRequestJson
-            contentType = APPLICATION_JSON
-        }.andExpect {
-            status { isOk() }
         }
     }
 

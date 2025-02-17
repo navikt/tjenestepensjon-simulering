@@ -3,11 +3,8 @@ package no.nav.tjenestepensjon.simulering.v1.models.request
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
 import no.nav.tjenestepensjon.simulering.v1.models.defaultHentStillingsprosentListeRequest
 import no.nav.tjenestepensjon.simulering.v1.models.defaultHentStillingsprosentListeRequestXML
-import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerOffentligTjenestepensjonRequest
-import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerOffentligTjenestepensjonRequestXML
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.SOAPAdapter
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLHentStillingsprosentListeRequestWrapper
-import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLSimulerOffentligTjenestepensjonRequestWrapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -50,18 +47,6 @@ class SOAPRequestMappingTest {
     }
 
     @Test
-    fun `Test marshalling of SimulerOffentligTjenestepensjonRequest`(){
-        marshaller.marshal(
-                SOAPAdapter.marshal(defaultSimulerOffentligTjenestepensjonRequest),
-                result
-        )
-        val output = writer.toString()
-        println("result  :$output")
-        println("expected:$defaultSimulerOffentligTjenestepensjonRequestXML")
-        assertEquals(defaultSimulerOffentligTjenestepensjonRequestXML, output)
-    }
-
-    @Test
     fun `Test unmarshalling of HentStillingsprosentListeRequest`(){
         val wrapper = marshaller.unmarshal(StringSource(defaultHentStillingsprosentListeRequestXML))
         val castWrapper = wrapper as XMLHentStillingsprosentListeRequestWrapper
@@ -69,10 +54,4 @@ class SOAPRequestMappingTest {
         assertEquals(defaultHentStillingsprosentListeRequest, output)
     }
 
-    @Test
-    fun `Test unmarshalling of SimulerOffentligTjenestepensjonRequest`(){
-        val wrapper = marshaller.unmarshal(StringSource(defaultSimulerOffentligTjenestepensjonRequestXML)) as XMLSimulerOffentligTjenestepensjonRequestWrapper
-        val output = SOAPAdapter.unmarshal(wrapper)
-        assertEquals(defaultSimulerOffentligTjenestepensjonRequest, output)
-    }
 }

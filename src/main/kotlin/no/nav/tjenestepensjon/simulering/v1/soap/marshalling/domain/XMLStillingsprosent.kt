@@ -1,9 +1,11 @@
 package no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain
 
-import jakarta.xml.bind.annotation.*
-import jakarta.xml.bind.annotation.XmlAccessType.*
+import jakarta.xml.bind.annotation.XmlAccessType.FIELD
+import jakarta.xml.bind.annotation.XmlAccessorType
+import jakarta.xml.bind.annotation.XmlElement
+import jakarta.xml.bind.annotation.XmlSchemaType
+import jakarta.xml.bind.annotation.XmlType
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
-import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.Utvidelse
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.toLocalDate
 import javax.xml.datatype.XMLGregorianCalendar
 
@@ -14,8 +16,7 @@ import javax.xml.datatype.XMLGregorianCalendar
     "datoTom",
     "faktiskHovedlonn",
     "stillingsuavhengigTilleggslonn",
-    "aldersgrense",
-    "utvidelse"
+    "aldersgrense"
 ])
 class XMLStillingsprosent {
     @XmlElement(required = true)
@@ -32,8 +33,6 @@ class XMLStillingsprosent {
     var faktiskHovedlonn: String? = null
     @XmlElement(required = false)
     var stillingsuavhengigTilleggslonn: String? = null
-    @XmlElement(required = false)
-    var utvidelse: Utvidelse.StillingsprosentUtvidelse1? = null
 
     fun toStillingsprosent() = Stillingsprosent(
             datoFom = datoFom.toLocalDate(),

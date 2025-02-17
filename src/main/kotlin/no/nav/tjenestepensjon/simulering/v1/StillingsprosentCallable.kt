@@ -1,7 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.v1.exceptions.StillingsprosentCallableException
@@ -10,7 +9,7 @@ import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
 import java.util.concurrent.Callable
 
 class StillingsprosentCallable(
-    private val fnr: FNR,
+    private val fnr: String,
     private val tpOrdning: TPOrdningIdDto,
     private val tpLeverandor: TpLeverandor,
     private val soapClient: SoapClient

@@ -1,11 +1,10 @@
 package no.nav.tjenestepensjon.simulering.v1.models.response
 
 import no.nav.tjenestepensjon.simulering.TjenestepensjonSimuleringApplication
-import no.nav.tjenestepensjon.simulering.defaultFNR
-import no.nav.tjenestepensjon.simulering.v1.models.*
+import no.nav.tjenestepensjon.simulering.v1.models.defaultHentStillingsprosentListeResponse
+import no.nav.tjenestepensjon.simulering.v1.models.defaultHentStillingsprosentListeResponseXML
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.SOAPAdapter
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.response.XMLHentStillingsprosentListeResponseWrapper
-import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.response.XMLSimulerOffentligTjenestepensjonResponseWrapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,27 +46,10 @@ class SOAPResponseMappingTest {
     }
 
     @Test
-    fun `Test marshalling of SimulerOffentligTjenestepensjonResponse`() {
-        marshaller.marshal(
-            SOAPAdapter.marshal(defaultSimulerOffentligTjenestepensjonResponse, defaultFNR), result
-        )
-        val output = writer.toString()
-        assertEquals(defaultSimulerOffentligTjenestepensjonResponseXML, output)
-    }
-
-    @Test
     fun `Test unmarshalling of HentStillingsprosentListeResponse`() {
         val wrapper =
             marshaller.unmarshal(StringSource(defaultHentStillingsprosentListeResponseXML)) as XMLHentStillingsprosentListeResponseWrapper
         val output = SOAPAdapter.unmarshal(wrapper)
         assertEquals(defaultHentStillingsprosentListeResponse, output)
-    }
-
-    @Test
-    fun `Test unmarshalling of SimulerOffentligTjenestepensjonResponse`() {
-        val wrapper =
-            marshaller.unmarshal(StringSource(defaultSimulerOffentligTjenestepensjonResponseXML)) as XMLSimulerOffentligTjenestepensjonResponseWrapper
-        val output = SOAPAdapter.unmarshal(wrapper, defaultFNR)
-        assertEquals(defaultSimulerOffentligTjenestepensjonResponse, output)
     }
 }

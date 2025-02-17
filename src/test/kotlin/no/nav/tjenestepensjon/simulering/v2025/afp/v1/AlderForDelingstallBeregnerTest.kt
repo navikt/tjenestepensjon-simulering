@@ -1,9 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2025.afp.v1
 
-import no.nav.tjenestepensjon.simulering.v2025.afp.v1.AlderForDelingstallBeregner
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import java.time.LocalDate
 
 class AlderForDelingstallBeregnerTest {

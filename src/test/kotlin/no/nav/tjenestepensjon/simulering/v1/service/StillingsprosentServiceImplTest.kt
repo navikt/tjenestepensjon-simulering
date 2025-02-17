@@ -6,7 +6,6 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_OPPTJENING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_TIME
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.AsyncExecutor.AsyncResponse
-import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
@@ -24,8 +23,8 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate
 
@@ -43,7 +42,7 @@ internal class StillingsprosentServiceImplTest {
     @InjectMocks
     lateinit var stillingsprosentService: StillingsprosentServiceImpl
 
-    private val fnr = FNR("01011234567")
+    private val fnr = "01011234567"
     private val tpOrdningIdDto1 = TPOrdningIdDto("1", "1")
     private val tpOrdningIdDto2 = TPOrdningIdDto("2", "2")
     private val tpOrdningIdDto3 = TPOrdningIdDto("3", "3")

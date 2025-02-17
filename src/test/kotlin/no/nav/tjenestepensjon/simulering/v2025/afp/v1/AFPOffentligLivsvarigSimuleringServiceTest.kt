@@ -6,7 +6,6 @@ import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLiv
 import no.nav.tjenestepensjon.simulering.model.domain.popp.AFPGrunnlagBeholdningPeriode
 import no.nav.tjenestepensjon.simulering.service.AFPBeholdningClient
 import no.nav.tjenestepensjon.simulering.service.PenClient
-import no.nav.tjenestepensjon.simulering.v2025.afp.v1.AFPOffentligLivsvarigSimuleringService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -16,7 +15,7 @@ import java.time.LocalDate
 class AFPOffentligLivsvarigSimuleringServiceTest {
 
     @Test
-    fun `simuler beregning av AFP Offentlig med uttak ved 62 år`() {
+    fun `simuler beregning av AFP Offentlig med uttak ved 62 aar`() {
         val afpBeholdningGrunnlagResponse = listOf(
             AFPGrunnlagBeholdningPeriode(5441510, LocalDate.of(2026, 1, 1)),
             AFPGrunnlagBeholdningPeriode(5513910, LocalDate.of(2027, 1, 1)

@@ -19,13 +19,10 @@ import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerOffentligTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
-import no.nav.tjenestepensjon.simulering.v1.models.DtoToV1DomainMapper.toSimulerPensjonRequestV1
-import no.nav.tjenestepensjon.simulering.v1.service.SimuleringServiceV1
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
@@ -50,7 +47,6 @@ import java.lang.reflect.UndeclaredThrowableException
 
 @RestController
 class SimuleringEndpoint(
-    private val service: SimuleringServiceV1,
     private val service2: SimuleringServiceV2,
     private val tpClient: TpClient,
     private val restClient: RestClient,
@@ -72,7 +68,7 @@ class SimuleringEndpoint(
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
         return try {
-            val fnr = FNR(body.fnr)
+            val fnr = body.fnr
             val tpOrdningAndLeverandorMap = tpClient.findForhold(fnr)
                 .mapNotNull { forhold -> tpClient.findTssId(forhold.ordning)?.let { TPOrdningIdDto(tpId = forhold.ordning, tssId = it) } }//tpClient.findTpLeverandorName(tpOrdning)
                 .let(::getTpLeverandorer)
@@ -82,30 +78,18 @@ class SimuleringEndpoint(
             metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_OK)
             val tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
 
-            if (tpLeverandor.impl == REST) {
-                log.debug { "Request simulation from ${tpLeverandor.name} using REST" }
-                val response = service2.simulerOffentligTjenestepensjon(
-                    body.toSimulerPensjonRequestV2(),
-                    stillingsprosentResponse,
-                    tpOrdning,
-                    tpLeverandor
-                )
-                metrics.incrementRestCounter(tpLeverandor.name, "OK")
-                log.debug { "Returning response: ${filterFnr(response.toString())}" }
-                ResponseEntity(response, OK)
-            } else {
-                log.debug { "Request simulation from ${tpLeverandor.name} using SOAP" }
-                val response = service.simulerOffentligTjenestepensjon(
-                    body.toSimulerPensjonRequestV1(),
-                    stillingsprosentResponse,
-                    tpOrdning,
-                    tpLeverandor
-                )
-                log.debug { "Returning response: ${filterFnr(response.toString())}" }
-                ResponseEntity(response, OK)
-            }
+            log.debug { "Request simulation from ${tpLeverandor.name} using REST" }
+            val response = service2.simulerOffentligTjenestepensjon(
+                body.toSimulerPensjonRequestV2(),
+                stillingsprosentResponse,
+                tpOrdning,
+                tpLeverandor
+            )
+            metrics.incrementRestCounter(tpLeverandor.name, "OK")
+            log.debug { "Returning response: ${filterFnr(response.toString())}" }
+            ResponseEntity(response, OK)
         } catch (e: TpregisteretException) {
-            log.error (e) { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. failed.""" }
+            log.error(e) { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. failed.""" }
             ResponseEntity.internalServerError().build()
         } catch (e: NoTpOrdningerFoundException) {
             log.debug { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No TP-forhold found for person.""" }
@@ -176,12 +160,12 @@ class SimuleringEndpoint(
     }
 
     @GetMapping("/simulering/ping")
-    fun ping() : List<PingResponse> {
-        try{
+    fun ping(): List<PingResponse> {
+        try {
             val resp = restClient.ping()
             return listOf(PingResponse(PROVIDER, TJENESTE, resp))
         } catch (e: WebClientResponseException) {
-            if (e.statusCode.is4xxClientError || e.statusCode.value() == 502 || e.statusCode.is2xxSuccessful){
+            if (e.statusCode.is4xxClientError || e.statusCode.value() == 502 || e.statusCode.is2xxSuccessful) {
                 val melding = "Successfully connected to $PROVIDER, received ${e.statusText} (${e.statusCode})"
                 log.info(e) { melding }
                 return listOf(PingResponse(PROVIDER, TJENESTE, melding))
