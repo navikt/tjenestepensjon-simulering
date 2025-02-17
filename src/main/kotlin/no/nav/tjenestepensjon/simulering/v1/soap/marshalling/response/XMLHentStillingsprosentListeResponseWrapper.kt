@@ -1,7 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v1.soap.marshalling.response
 
 import jakarta.xml.bind.annotation.*
-import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.Utvidelse.HentStillingsprosentListeUtvidelse1
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain.XMLStillingsprosent
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -12,9 +11,8 @@ class XMLHentStillingsprosentListeResponseWrapper {
     lateinit var response: XMLHentStillingsprosentListeResponse
 
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(propOrder = ["stillingsprosentListe", "utvidelse"])
+    @XmlType(propOrder = ["stillingsprosentListe"])
     class XMLHentStillingsprosentListeResponse {
         lateinit var stillingsprosentListe: List<XMLStillingsprosent>
-        lateinit var utvidelse: HentStillingsprosentListeUtvidelse1
     }
 }

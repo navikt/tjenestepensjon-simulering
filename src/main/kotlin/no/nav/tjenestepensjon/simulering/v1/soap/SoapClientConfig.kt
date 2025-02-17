@@ -3,9 +3,7 @@ package no.nav.tjenestepensjon.simulering.v1.soap
 import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.domain.*
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLHentStillingsprosentListeRequestWrapper
-import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLSimulerOffentligTjenestepensjonRequestWrapper
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.response.XMLHentStillingsprosentListeResponseWrapper
-import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.response.XMLSimulerOffentligTjenestepensjonResponseWrapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -23,18 +21,8 @@ class SoapClientConfig(
     fun jaxb2Marshaller() = Jaxb2Marshaller().apply {
         setClassesToBeBound(
                 XMLHentStillingsprosentListeRequestWrapper::class.java,
-                XMLSimulerOffentligTjenestepensjonRequestWrapper::class.java,
                 XMLHentStillingsprosentListeResponseWrapper::class.java,
-                XMLSimulerOffentligTjenestepensjonResponseWrapper::class.java,
-                XMLSimuleringsdata::class.java,
-                XMLSimulertAFPPrivat::class.java,
-                XMLSimulertAP2011::class.java,
-                XMLSimulertPensjon::class.java,
-                XMLStillingsprosent::class.java,
-                XMLTpForhold::class.java,
-                XMLUtbetalingsperiode::class.java)
-        //setMarshallerProperties(mapOf(JAXB_ENCODING to ENCODING))
-        // setPackagesToScan("no.nav.tjenestepensjon.simulering.v1.soap.marshalling")
+                XMLStillingsprosent::class.java)
     }
 
     @Bean

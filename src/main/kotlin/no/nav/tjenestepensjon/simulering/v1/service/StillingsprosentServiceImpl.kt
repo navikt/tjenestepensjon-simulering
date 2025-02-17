@@ -3,7 +3,6 @@ package no.nav.tjenestepensjon.simulering.v1.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AsyncExecutor
-import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.v1.StillingsprosentCallable
 import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
@@ -21,7 +20,7 @@ class StillingsprosentServiceImpl(
         private val metrics: AppMetrics) : StillingsprosentService {
     private val log = KotlinLogging.logger {}
 
-    override fun getStillingsprosentListe(fnr: FNR, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap): StillingsprosentResponse {
+    override fun getStillingsprosentListe(fnr: String, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap): StillingsprosentResponse {
         val callableMap = toCallableMap(fnr, tpOrdningAndLeverandorMap)
         metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_CALLS)
         val startTime = metrics.startTime()
@@ -55,7 +54,7 @@ class StillingsprosentServiceImpl(
         else -> latest
     }
 
-    private fun toCallableMap(fnr: FNR, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap) =
+    private fun toCallableMap(fnr: String, tpOrdningAndLeverandorMap: TPOrdningTpLeverandorMap) =
         tpOrdningAndLeverandorMap.map { (tpOrdning, tpLeverandor) ->
             tpOrdning to StillingsprosentCallable(fnr, tpOrdning, tpLeverandor, soapClient)
         }.toMap()

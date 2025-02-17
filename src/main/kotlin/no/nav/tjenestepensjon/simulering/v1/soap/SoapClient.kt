@@ -7,16 +7,11 @@ import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.service.TokenService
 import no.nav.tjenestepensjon.simulering.sporingslogg.Organisasjon
 import no.nav.tjenestepensjon.simulering.sporingslogg.SporingsloggService
-import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.Tjenestepensjonsimulering
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.models.request.HentStillingsprosentListeRequest
-import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerOffentligTjenestepensjonRequest
-import no.nav.tjenestepensjon.simulering.v1.models.request.SimulerPensjonRequestV1
-import no.nav.tjenestepensjon.simulering.v1.models.response.SimulertPensjon
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.SOAPAdapter
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.response.XMLHentStillingsprosentListeResponseWrapper
-import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.response.XMLSimulerOffentligTjenestepensjonResponseWrapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Controller
@@ -39,9 +34,6 @@ class SoapClient(
         this.webServiceTemplate = webServiceTemplate
     }
 
-    @Value("\${tjenestepensjon.url}")
-    lateinit var simulerOffentlingTjenestepensjonUrl: String
-
     @Value("\${stillingsprosent.url}")
     lateinit var hentStillingsprosentUrl: String
 
@@ -49,10 +41,10 @@ class SoapClient(
     lateinit var samlConfig: SamlConfig
 
     override fun getStillingsprosenter(
-        fnr: FNR, tpOrdning: TPOrdningIdDto, tpLeverandor: TpLeverandor
+        fnr: String, tpOrdning: TPOrdningIdDto, tpLeverandor: TpLeverandor
     ): List<Stillingsprosent> {
-        val dto = HentStillingsprosentListeRequest(fnr, tpOrdning)
-        sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, fnr.fnr, dto) //Det kalles kun SPK - må oppdateres med riktig organisasjon, hvis flere organisasjoner vil levere stillingsprosenter
+        val dto = HentStillingsprosentListeRequest(FNR(fnr), tpOrdning)
+        sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, fnr, dto) //Det kalles kun SPK - må oppdateres med riktig organisasjon, hvis flere organisasjoner vil levere stillingsprosenter
         try {
             return webServiceTemplate.marshalSendAndReceive(
                 dto.let(SOAPAdapter::marshal), SOAPCallback(
@@ -78,55 +70,6 @@ class SoapClient(
             throw ex
         } catch (ex: Exception) {
             log.error(ex) { "Unexpected error occurred while calling getStillingsprosenter: ${ex.message}" }
-            throw ex
-        }
-    }
-
-    override fun simulerPensjon(
-        request: SimulerPensjonRequestV1,
-        tpOrdning: TPOrdningIdDto,
-        tpLeverandor: TpLeverandor,
-        tpOrdningStillingsprosentMap: TPOrdningStillingsprosentMap
-    ): List<SimulertPensjon> {
-        try {
-            return webServiceTemplate.marshalSendAndReceive(
-                with(request.simuleringsperioder) {
-                    if (size > 1 && minOrNull()!!.isGradert()) SimulerOffentligTjenestepensjonRequest(
-                        simulerPensjonRequest = request,
-                        tpOrdning = tpOrdning,
-                        tpOrdningStillingsprosentMap = tpOrdningStillingsprosentMap,
-                        forsteUttak = minOrNull()!!,
-                        heltUttak = maxOrNull()!!
-                    )
-                    else SimulerOffentligTjenestepensjonRequest(
-                        simulerPensjonRequest = request,
-                        tpOrdning = tpOrdning,
-                        tpOrdningStillingsprosentMap = tpOrdningStillingsprosentMap,
-                        forsteUttak = minOrNull()!!
-                    )
-                }.let(SOAPAdapter::marshal), SOAPCallback(
-                    simulerOffentlingTjenestepensjonUrl,
-                    tpLeverandor.simuleringUrl,
-                    tokenService.samlAccessToken.accessToken,
-                    samlConfig
-                )
-            ).let {
-                SOAPAdapter.unmarshal(it as XMLSimulerOffentligTjenestepensjonResponseWrapper, request.fnr)
-            }.simulertPensjonListe
-        } catch (ex: WebServiceTransportException) {
-            log.error(ex) { "Transport error occurred while calling simulerPensjon: ${ex.message}" }
-            throw ex
-        } catch (ex: SoapFaultClientException) {
-            // Handle SOAP faults returned from the server
-            log.error(ex) { "SOAP fault occurred at simulerPensjon: ${ex.faultStringOrReason}" }
-            // Optionally, return a custom response or throw a custom exception
-            throw ex
-        } catch (ex: WebServiceIOException) {
-            // Handle IO exceptions related to SOAP calls (e.g., timeout)
-            log.error(ex) { "IO error occurred while calling simulerPensjon: ${ex.message}" }
-            throw ex
-        } catch (ex: Exception) {
-            log.error(ex) { "Unexpected error occurred while calling simulerPensjon: ${ex.message}" }
             throw ex
         }
     }

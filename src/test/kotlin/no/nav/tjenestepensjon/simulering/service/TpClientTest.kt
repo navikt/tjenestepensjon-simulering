@@ -2,13 +2,10 @@ package no.nav.tjenestepensjon.simulering.service
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
+import no.nav.tjenestepensjon.simulering.*
 import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
 import no.nav.tjenestepensjon.simulering.config.TestConfig
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
-import no.nav.tjenestepensjon.simulering.defaultFNR
-import no.nav.tjenestepensjon.simulering.defaultForhold
-import no.nav.tjenestepensjon.simulering.defaultTjenestepensjonRequest
-import no.nav.tjenestepensjon.simulering.defaultTpid
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
@@ -59,7 +56,7 @@ class TpClientTest {
             defaultTjenestepensjonRequest.willReturn(okJson(defaultForhold))
         )
 
-        val response = tpClient.findForhold(defaultFNR)
+        val response = tpClient.findForhold(defaultFNRString)
 
         assertEquals(defaultTpid, response.first().ordning)
 
@@ -72,7 +69,7 @@ class TpClientTest {
             defaultTjenestepensjonRequest.willReturn(okJson("""{"_embedded":{"forholdModelList":[]}}"""))
         )
 
-        assertThrows<NoTpOrdningerFoundException> { tpClient.findForhold(defaultFNR) }
+        assertThrows<NoTpOrdningerFoundException> { tpClient.findForhold(defaultFNRString) }
 
         wireMockServer.removeStub(stub.uuid)
     }
@@ -83,7 +80,7 @@ class TpClientTest {
             defaultTjenestepensjonRequest.willReturn(notFound())
         )
 
-        assertThrows<NoTpOrdningerFoundException> { tpClient.findForhold(defaultFNR) }
+        assertThrows<NoTpOrdningerFoundException> { tpClient.findForhold(defaultFNRString) }
 
         wireMockServer.removeStub(stub.uuid)
     }
@@ -94,7 +91,7 @@ class TpClientTest {
             defaultTjenestepensjonRequest.willReturn(unauthorized())
         )
 
-        assertThrows<TpregisteretException> { tpClient.findForhold(defaultFNR) }
+        assertThrows<TpregisteretException> { tpClient.findForhold(defaultFNRString) }
 
         wireMockServer.removeStub(stub.uuid)
 

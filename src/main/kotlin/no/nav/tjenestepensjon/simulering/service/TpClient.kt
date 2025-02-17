@@ -34,11 +34,11 @@ class TpClient(
     private val log = KotlinLogging.logger {}
 
     @Cacheable(TP_ORDNING_PERSON_CACHE)
-    fun findForhold(fnr: FNR) = try {
+    fun findForhold(fnr: String) = try {
         webClient.get()
             .uri("$tpUrl/api/tjenestepensjon/forhold")
             .headers {
-                it["fnr"] = fnr.fnr
+                it["fnr"] = fnr
                 it.setBearerAuth(aadClient.getToken(tpScope))
             }.exchangeToFlux { clientResponse ->
                 when (clientResponse.statusCode().value()) {

@@ -11,7 +11,7 @@ import org.springframework.ws.client.core.FaultMessageResolver
 import org.springframework.ws.soap.SoapMessage
 
 @Component
-class SoapFaultHandler constructor(private val jaxb2Marshaller: Jaxb2Marshaller) : FaultMessageResolver {
+class SoapFaultHandler(private val jaxb2Marshaller: Jaxb2Marshaller) : FaultMessageResolver {
     private val log = KotlinLogging.logger {}
 
     override fun resolveFault(message: WebServiceMessage) =
