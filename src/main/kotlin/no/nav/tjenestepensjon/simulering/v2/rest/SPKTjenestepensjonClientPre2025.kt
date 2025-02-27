@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 
 @Service
-class RestClient(
+class SPKTjenestepensjonClientPre2025(
     private val restGatewayWebClient: WebClient,
     private val spkWebClient: WebClient,
     @Value("\${oftp.before2025.spk.maskinportenscope}") private val scope: String,
