@@ -61,6 +61,16 @@ class WebClientConfig {
         return opprettWebClient(client, baseUrl, maskinportenTokenClient, scope)
     }
 
+    @Bean
+    fun spkWebClientPre2025(
+        client: HttpClient,
+        maskinportenTokenClient: MaskinportenTokenClient,
+        @Value("\${oftp.before2025.spk.endpoint.url}") baseUrl: String,
+        @Value("\${oftp.before2025.spk.endpoint.maskinportenscope}") scope: String,
+    ): WebClient {
+        return opprettWebClient(client, baseUrl, maskinportenTokenClient, scope)
+    }
+
     private fun opprettWebClient(
         client: HttpClient,
         baseUrl: String,

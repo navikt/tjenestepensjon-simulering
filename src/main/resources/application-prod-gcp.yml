@@ -7,5 +7,5 @@ simulering:
 spk:
   name: SPK
   implementation: REST
-  simuleringUrl: https://api.prod.spk.no/medlem/pensjon/prognose/v1
+  simuleringUrl: https://api.spk.no/medlem/pensjon/prognose/v1
   stillingsprosentUrl: https://partner-gw.spk.no:443/nav/SimulereTjenestepensjon

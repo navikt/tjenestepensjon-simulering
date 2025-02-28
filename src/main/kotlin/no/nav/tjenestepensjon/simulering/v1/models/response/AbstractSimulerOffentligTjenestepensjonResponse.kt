@@ -1,3 +1,0 @@
-package no.nav.tjenestepensjon.simulering.v1.models.response
-
-abstract class AbstractSimulerOffentligTjenestepensjonResponse

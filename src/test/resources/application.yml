@@ -72,7 +72,9 @@ oftp:
         maskinportenscope: spk:nav
   before2025:
     spk:
-      maskinportenscope: spk:nav
+      endpoint:
+        url: http://localhost:8080
+        maskinportenscope: spk:nav
 unleash:
   server:
     api:

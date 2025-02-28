@@ -11,7 +11,7 @@ class AuthAttachingHttpRequestInterceptor(private val fssGatewayAuthService: Fss
     private val logger = KotlinLogging.logger {}
 
     override fun handleRequest(messageContext: MessageContext): Boolean {
-        fssGatewayAuthService.hentToken()?.let {
+        fssGatewayAuthService.hentToken().let {
             val transportContext = TransportContextHolder.getTransportContext()
             val connection = transportContext.connection as HttpUrlConnection
             connection.connection.addRequestProperty("Authorization", "Bearer $it")

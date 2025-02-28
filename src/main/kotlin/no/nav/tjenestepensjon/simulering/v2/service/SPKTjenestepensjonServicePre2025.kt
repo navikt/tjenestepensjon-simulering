@@ -10,14 +10,14 @@ import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequestV2
 import no.nav.tjenestepensjon.simulering.v2.models.request.TpForhold
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
-import no.nav.tjenestepensjon.simulering.v2.rest.RestClient
+import no.nav.tjenestepensjon.simulering.v2.rest.SPKTjenestepensjonClientPre2025
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import org.springframework.web.reactive.function.client.WebClientResponseException
 
 @Service
-class SimuleringServiceV2(
-    private val restClient: RestClient, private val opptjeningsperiodeService: OpptjeningsperiodeService
+class SPKTjenestepensjonServicePre2025(
+    private val SPKTjenestepensjonClientPre2025: SPKTjenestepensjonClientPre2025, private val opptjeningsperiodeService: OpptjeningsperiodeService
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -34,7 +34,7 @@ class SimuleringServiceV2(
         val requestWithFilteredFnr = SimuleringEndpoint.filterFnr(request.toString())
         log.debug { "Populated request: $requestWithFilteredFnr" }
         return try {
-            restClient.getResponse(request = request, tpOrdning = tpOrdning)
+            SPKTjenestepensjonClientPre2025.getResponse(request = request, tpOrdning = tpOrdning)
         } catch (e: WebClientResponseException) {
             val responseBody = e.responseBodyAsString.let { StringUtils.replace(it, "Ã¥", "å") }
                 .let { StringUtils.replace(it, "Ã\u0083Â¥", "å") }
@@ -49,6 +49,8 @@ class SimuleringServiceV2(
             throw e
         }
     }
+
+    fun ping() : String = SPKTjenestepensjonClientPre2025.ping()
 
     private fun buildTpForhold(tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap) =
         tpOrdningOpptjeningsperiodeMap.map { entry -> TpForhold(entry.key.tpId, entry.value) }

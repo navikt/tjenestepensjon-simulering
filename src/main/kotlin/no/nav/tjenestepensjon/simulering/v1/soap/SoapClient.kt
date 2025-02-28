@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.service.TokenService
+import no.nav.tjenestepensjon.simulering.service.SamlTokenService
 import no.nav.tjenestepensjon.simulering.sporingslogg.Organisasjon
 import no.nav.tjenestepensjon.simulering.sporingslogg.SporingsloggService
 import no.nav.tjenestepensjon.simulering.v1.Tjenestepensjonsimulering
@@ -25,7 +25,7 @@ import org.springframework.ws.soap.client.SoapFaultClientException
 @Service
 @Controller
 class SoapClient(
-    webServiceTemplate: WebServiceTemplate, private val tokenService: TokenService,
+    webServiceTemplate: WebServiceTemplate, private val samlTokenService: SamlTokenService,
     private val sporingsloggService: SporingsloggService
 ) : WebServiceGatewaySupport(), Tjenestepensjonsimulering {
     private val log = KotlinLogging.logger {}
@@ -50,7 +50,7 @@ class SoapClient(
                 dto.let(SOAPAdapter::marshal), SOAPCallback(
                     hentStillingsprosentUrl,
                     tpLeverandor.stillingsprosentUrl,
-                    tokenService.samlAccessToken.accessToken,
+                    samlTokenService.samlAccessToken.accessToken,
                     samlConfig
                 )
             ).let {
