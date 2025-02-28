@@ -7,10 +7,9 @@ import org.springframework.stereotype.Service
 @Service
 class FssGatewayAuthService(
     @Value("\${pen.fss.gateway.scope}") private val scope: String,
-    private val adClient: AADClient,
-    @Value("\${spring.profiles.active:}") private val activeProfiles: String //TODO fjern etter flytting til gcp
+    private val adClient: AADClient
 ) {
-    fun hentToken(): String? {
-        return if (activeProfiles.contains("gcp")) adClient.getToken(scope) else null
+    fun hentToken(): String {
+        return adClient.getToken(scope)
     }
 }
