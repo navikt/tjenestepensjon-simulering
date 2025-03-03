@@ -2,39 +2,11 @@ package no.nav.tjenestepensjon.simulering.v1.models
 
 import no.nav.tjenestepensjon.simulering.*
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
-import no.nav.tjenestepensjon.simulering.v1.models.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v1.models.request.HentStillingsprosentListeRequest
 import no.nav.tjenestepensjon.simulering.v1.models.response.HentStillingsprosentListeResponse
-import no.nav.tjenestepensjon.simulering.v1.models.response.SimulerOffentligTjenestepensjonResponse
-import no.nav.tjenestepensjon.simulering.v1.models.response.SimulertPensjon
 import no.nav.tjenestepensjon.simulering.v1.soap.SoapClientConfig.Companion.ENCODING
 
 const val defaultLeverandor = "leverandor1"
-
-val defaultUtbetalingsperiode
-    get() = Utbetalingsperiode(
-        grad = 0,
-        arligUtbetaling = 0.0,
-        datoFom = defaultDatoFom,
-        datoTom = defaultDatoTom,
-        ytelsekode = "bogus",
-        mangelfullSimuleringkode = "bogus"
-    )
-
-val defaultUtbetalingsperiodeListe
-    get() = listOf(defaultUtbetalingsperiode, null)
-
-val defaultSimulertPensjon
-    get() = SimulertPensjon(
-        tpnr = defaultTpid,
-        navnOrdning = "bogus",
-        inkluderteOrdninger = listOf("bogus"),
-        leverandorUrl = "bogus",
-        utbetalingsperioder = defaultUtbetalingsperiodeListe
-    )
-
-val defaultSimulertPensjonList
-    get() = listOf(defaultSimulertPensjon)
 
 val defaultStillingsprosent
     get() = Stillingsprosent(
@@ -57,9 +29,6 @@ val defaultStillingsprosentListe
 
 val defaultHentStillingsprosentListeResponse
     get() = HentStillingsprosentListeResponse(defaultStillingsprosentListe)
-
-val defaultSimulerOffentligTjenestepensjonResponse
-    get() = SimulerOffentligTjenestepensjonResponse(defaultSimulertPensjonList)
 
 const val defaultDelytelseJson = """{"pensjonstype":"basistp","belop":0.0}"""
 const val defaultSimuleringsperiodeJson =
@@ -88,5 +57,3 @@ const val defaultHentStillingsprosentListeRequestXML =
     """$defaultXMLMetadata<ns2:hentStillingsprosentListe $defaultPackageXML"><request><tssEksternId>$defaultTssid</tssEksternId><fnr>$defaultFNRString</fnr><tpnr>$defaultTpid</tpnr><simuleringsKode>bogus</simuleringsKode></request></ns2:hentStillingsprosentListe>"""
 const val defaultHentStillingsprosentListeResponseXML =
     """$defaultXMLMetadata<ns2:hentStillingsprosentListeResponse $defaultPackageXML"><response><stillingsprosentListe><stillingsprosent>0.0</stillingsprosent><datoFom>$defaultFomDateXML</datoFom><datoTom>$defaultTomDateXML</datoTom><faktiskHovedlonn>bogus</faktiskHovedlonn><stillingsuavhengigTilleggslonn>bogus</stillingsuavhengigTilleggslonn><aldersgrense>0</aldersgrense></stillingsprosentListe></response></ns2:hentStillingsprosentListeResponse>"""
-const val defaultSimulerOffentligTjenestepensjonResponseXML =
-    """$defaultXMLMetadata<ns2:simulerOffentligTjenestepensjonResponse $defaultPackageXML"><response><simulertPensjonListe><tpnr>$defaultTpid</tpnr><navnOrdning>bogus</navnOrdning><inkludertOrdningListe>bogus</inkludertOrdningListe><leverandorUrl>bogus</leverandorUrl><utbetalingsperiodeListe><startAlder>0</startAlder><sluttAlder>0</sluttAlder><startManed>0</startManed><sluttManed>0</sluttManed><grad>0</grad><arligUtbetaling>0.0</arligUtbetaling><ytelseKode>bogus</ytelseKode><mangelfullSimuleringKode>bogus</mangelfullSimuleringKode></utbetalingsperiodeListe><utbetalingsperiodeListe xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/></simulertPensjonListe></response></ns2:simulerOffentligTjenestepensjonResponse>"""

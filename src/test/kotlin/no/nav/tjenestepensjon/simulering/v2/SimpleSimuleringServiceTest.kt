@@ -13,10 +13,10 @@ import no.nav.tjenestepensjon.simulering.v2.models.domain.SivilstandCodeEnum
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequestV2
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
-import no.nav.tjenestepensjon.simulering.v2.rest.RestClient
+import no.nav.tjenestepensjon.simulering.v2.rest.SPKTjenestepensjonClientPre2025
 import no.nav.tjenestepensjon.simulering.v2.service.OpptjeningsperiodeResponse
 import no.nav.tjenestepensjon.simulering.v2.service.OpptjeningsperiodeService
-import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
+import no.nav.tjenestepensjon.simulering.v2.service.SPKTjenestepensjonServicePre2025
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -35,14 +35,14 @@ internal class SimpleSimuleringServiceTest {
     private lateinit var opptjeningsperiodeService: OpptjeningsperiodeService
 
     @Mock
-    private lateinit var restClient: RestClient
+    private lateinit var SPKTjenestepensjonClientPre2025: SPKTjenestepensjonClientPre2025
 
     @Mock
     @Suppress("unused")
     private lateinit var metrics: AppMetrics
 
     @InjectMocks
-    private lateinit var simuleringService: SimuleringServiceV2
+    private lateinit var simuleringService: SPKTjenestepensjonServicePre2025
 
     private lateinit var request: SimulerPensjonRequestV2
 
@@ -85,7 +85,7 @@ internal class SimpleSimuleringServiceTest {
         )
         val tpOrdningIdDto = TPOrdningIdDto("fake", "faker")
         val tpLeverandor = TpLeverandor("fake", REST, "faker", "faker")
-        `when`(restClient.getResponse(anyNonNull(), anyNonNull())).thenReturn(s1)
+        `when`(SPKTjenestepensjonClientPre2025.getResponse(anyNonNull(), anyNonNull())).thenReturn(s1)
 
         val response = simuleringService.simulerOffentligTjenestepensjon(
             request, StillingsprosentResponse(emptyMap(), emptyList()), tpOrdningIdDto, tpLeverandor
@@ -108,7 +108,7 @@ internal class SimpleSimuleringServiceTest {
         val tpOrdningIdDto = TPOrdningIdDto("fake", "faker")
         val tpLeverandor = TpLeverandor("fake", REST, "faker", "faker")
 
-        `when`(restClient.getResponse(anyNonNull(), anyNonNull())).thenReturn(s1)
+        `when`(SPKTjenestepensjonClientPre2025.getResponse(anyNonNull(), anyNonNull())).thenReturn(s1)
         assertNotNull(
             simuleringService.simulerOffentligTjenestepensjon(
                 request, StillingsprosentResponse(emptyMap(), emptyList()), tpOrdningIdDto, tpLeverandor
