@@ -16,7 +16,6 @@ import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTje
 import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
-import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerOffentligTjenestepensjonRequest
@@ -30,8 +29,7 @@ import no.nav.tjenestepensjon.simulering.v2.models.DtoToV2DomainMapper.toSimuler
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.ikkeMedlem
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.tpOrdningStoettesIkke
-import no.nav.tjenestepensjon.simulering.v2.rest.RestClient
-import no.nav.tjenestepensjon.simulering.v2.service.SimuleringServiceV2
+import no.nav.tjenestepensjon.simulering.v2.service.SPKTjenestepensjonServicePre2025
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
@@ -47,9 +45,8 @@ import java.lang.reflect.UndeclaredThrowableException
 
 @RestController
 class SimuleringEndpoint(
-    private val service2: SimuleringServiceV2,
+    private val spkTjenestepensjonServicePre2025: SPKTjenestepensjonServicePre2025,
     private val tpClient: TpClient,
-    private val restClient: RestClient,
     private val stillingsprosentService: StillingsprosentService,
     @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>,
     private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
@@ -79,7 +76,7 @@ class SimuleringEndpoint(
             val tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
 
             log.debug { "Request simulation from ${tpLeverandor.name} using REST" }
-            val response = service2.simulerOffentligTjenestepensjon(
+            val response = spkTjenestepensjonServicePre2025.simulerOffentligTjenestepensjon(
                 body.toSimulerPensjonRequestV2(),
                 stillingsprosentResponse,
                 tpOrdning,
@@ -162,7 +159,7 @@ class SimuleringEndpoint(
     @GetMapping("/simulering/ping")
     fun ping(): List<PingResponse> {
         try {
-            val resp = restClient.ping()
+            val resp = spkTjenestepensjonServicePre2025.ping()
             return listOf(PingResponse(PROVIDER, TJENESTE, resp))
         } catch (e: WebClientResponseException) {
             if (e.statusCode.is4xxClientError || e.statusCode.value() == 502 || e.statusCode.is2xxSuccessful) {

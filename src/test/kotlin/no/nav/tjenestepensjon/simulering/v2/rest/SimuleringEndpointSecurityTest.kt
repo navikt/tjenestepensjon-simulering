@@ -41,7 +41,7 @@ class SimuleringEndpointSecurityTest {
     private lateinit var soapClient: SoapClient
 
     @MockitoBean
-    private lateinit var restClient: RestClient
+    private lateinit var SPKTjenestepensjonClientPre2025: SPKTjenestepensjonClientPre2025
 
     private var wireMockServer = WireMockServer().apply {
         start()
@@ -91,7 +91,7 @@ class SimuleringEndpointSecurityTest {
         `when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
             defaultStillingsprosentListe
         )
-        `when`(restClient.getResponse(anyNonNull(), anyNonNull())).thenReturn(
+        `when`(SPKTjenestepensjonClientPre2025.getResponse(anyNonNull(), anyNonNull())).thenReturn(
             SimulerOffentligTjenestepensjonResponse("", "")
         )
         mockMvc.post("/simulering") {
