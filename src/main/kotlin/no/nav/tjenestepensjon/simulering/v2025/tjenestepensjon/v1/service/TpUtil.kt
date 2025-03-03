@@ -8,10 +8,11 @@ import no.nav.tjenestepensjon.simulering.v2025.afp.v1.AFPOffentligLivsvarigSimul
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Maanedsutbetaling
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
+import org.springframework.stereotype.Component
 import java.time.LocalDate
 
-object TpUtil {
-    private lateinit var afp: AFPOffentligLivsvarigSimuleringService
+@Component
+class TpUtil(private val afp: AFPOffentligLivsvarigSimuleringService) {
     private val log = KotlinLogging.logger {}
     fun grupperMedDatoFra(utbetalingsliste: List<Utbetalingsperiode>, foedselsdato: LocalDate): List<Maanedsutbetaling> {
         return utbetalingsliste

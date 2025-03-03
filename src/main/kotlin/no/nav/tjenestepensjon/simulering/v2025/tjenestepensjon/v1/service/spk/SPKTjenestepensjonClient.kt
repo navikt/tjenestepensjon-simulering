@@ -21,7 +21,8 @@ import org.springframework.web.reactive.function.client.bodyToMono
 @Service
 class SPKTjenestepensjonClient(
     private val spkWebClient: WebClient,
-    private val sporingsloggService: SporingsloggService
+    private val sporingsloggService: SporingsloggService,
+    private val TpUtil: TpUtil
 ) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}
 
