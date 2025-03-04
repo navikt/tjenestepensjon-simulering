@@ -69,5 +69,5 @@ jobs:
         env:
           CLUSTER: dev-gcp
           IMAGE: ${{ needs.build.outputs.image }}
-          RESOURCE: .nais/nais-dev-gcp.yml,.nais/unleash-apitoken-dev.yml
+          RESOURCE: .nais/nais-dev-gcp.yaml,.nais/unleash-apitoken-dev.yaml
 
