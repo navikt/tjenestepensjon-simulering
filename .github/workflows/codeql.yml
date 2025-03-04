@@ -1,0 +1,39 @@
+name: CodeQL
+
+on:
+  schedule:
+    - cron: '31 6 * * 5'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java' ]
+        # 'java' covers Java and Kotlin
+    steps:
+      # Checkout
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      # Build
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+      - name: Build
+        run: ./gradlew clean build
+        env:
+          GITHUB_TOKEN: ${{ secrets.READER_TOKEN }}
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
