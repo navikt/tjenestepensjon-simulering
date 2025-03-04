@@ -19,23 +19,21 @@ jobs:
     steps:
       # Checkout
       - uses: actions/checkout@v4
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: java
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
           cache: 'gradle'
-
-      # Build
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
       - name: Build
-        run: ./gradlew clean build
+        run: ./gradlew clean build -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=512m"
         env:
           GITHUB_TOKEN: ${{ secrets.READER_TOKEN }}
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v3
         with:
