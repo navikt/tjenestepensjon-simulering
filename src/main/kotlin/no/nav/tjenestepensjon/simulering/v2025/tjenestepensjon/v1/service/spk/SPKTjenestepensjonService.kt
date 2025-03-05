@@ -13,7 +13,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TpUtil
 import org.springframework.stereotype.Service
 
 @Service
-class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, private val featureToggleService: FeatureToggleService) : Pingable {
+class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, private val featureToggleService: FeatureToggleService, private val TpUtil: TpUtil) : Pingable {
     private val log = KotlinLogging.logger {}
     private val TP_ORDNING = "spk"
 
