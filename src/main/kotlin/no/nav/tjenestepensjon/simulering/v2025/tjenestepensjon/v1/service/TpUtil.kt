@@ -30,10 +30,23 @@ class TpUtil(private val afp: AFPOffentligLivsvarigSimuleringService) {
             fnr = request.pid,
             fom = request.uttaksdato,
             fodselsdato = request.foedselsdato,
-            fremtidigeInntekter = request.fremtidigeInntekter?.map { FremtidigInntekt(it.aarligInntekt,it.fraOgMed) } ?: emptyList()
+            fremtidigeInntekter = listOf(
+                opprettNaaverendeInntektFoerUttak(request),
+                FremtidigInntekt(
+                    0,
+                    request.uttaksdato
+                )
+            ),
             )
         )
         val afpFraTpOrdning = utbetalingsperiode.filter { it.ytelseType == "OAFP" }
         log.info { "AFP fra Tp ordning: $afpFraTpOrdning \n AFP fra lokal $afpLokal" }
     }
+
+    private fun opprettNaaverendeInntektFoerUttak(request: SimulerTjenestepensjonRequestDto) = FremtidigInntekt(
+        request.sisteInntekt,
+        fjorAarSomManglerOpptjeningIPopp()
+    )
+
+    private fun fjorAarSomManglerOpptjeningIPopp(): LocalDate = LocalDate.now().minusYears(1).withDayOfYear(1)
 }
