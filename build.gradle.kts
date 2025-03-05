@@ -4,7 +4,7 @@ description = "tjenestepensjon-simulering"
 plugins {
     kotlin("jvm") version "2.1.0"
     kotlin("plugin.spring") version "2.1.0"
-    id("org.springframework.boot") version "3.4.0"
+    id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -22,9 +22,9 @@ dependencies {
     implementation("jakarta.annotation", "jakarta.annotation-api", "2.1.1")
     implementation("javax.xml.soap", "javax.xml.soap-api", "1.4.0")
     implementation("net.logstash.logback", "logstash-logback-encoder", "8.0")
-    implementation("ch.qos.logback.access:logback-access-common:2.0.4")
-    implementation("ch.qos.logback:logback-core:1.5.12")
-    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.4"){
+    implementation("ch.qos.logback.access:logback-access-common:2.0.6")
+    implementation("ch.qos.logback:logback-core:1.5.17")
+    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6"){
         exclude("org.apache.tomcat","tomcat-catalina") //classes supplied by spring-boot (tomcat-embed-core) use a newer version (10.1.26 vs 10.0.27 supplied here)
         exclude("org.apache.tomcat","tomcat-coyote") //classes supplied by spring-boot (tomcat-embed-core) use a newer version (10.1.26 vs 10.0.27 supplied here)
     }
@@ -39,7 +39,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-tomcat") // Spring Boot manages Tomcat
 
     // Exclude older versions of Tomcat
-    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.30")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.4")
     implementation("org.springframework.boot", "spring-boot-starter-actuator")
     implementation("org.springframework.boot", "spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-web")
