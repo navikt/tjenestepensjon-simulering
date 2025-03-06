@@ -1,7 +1,5 @@
 package no.nav.tjenestepensjon.simulering.rest
 
-import com.fasterxml.jackson.core.JsonParseException
-import com.fasterxml.jackson.databind.JsonMappingException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_NAME
@@ -11,27 +9,22 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING_TP_ORDNING_STOTTES_IKKE
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
-import no.nav.tjenestepensjon.simulering.AsyncExecutor
 import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTjenestepensjonException
-import no.nav.tjenestepensjon.simulering.exceptions.LeveradoerNotFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerOffentligTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
-import no.nav.tjenestepensjon.simulering.v1.consumer.FindTpLeverandorCallable
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
-import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToIdPortenException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenException
 import no.nav.tjenestepensjon.simulering.v2.models.DtoToV2DomainMapper.toSimulerPensjonRequestV2
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.ikkeMedlem
+import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.tomStillingsprosentListe
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.tpOrdningStoettesIkke
 import no.nav.tjenestepensjon.simulering.v2.service.SPKTjenestepensjonServicePre2025
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.OK
@@ -47,9 +40,7 @@ import java.lang.reflect.UndeclaredThrowableException
 class SimuleringEndpoint(
     private val spkTjenestepensjonServicePre2025: SPKTjenestepensjonServicePre2025,
     private val tpClient: TpClient,
-    private val stillingsprosentService: StillingsprosentService,
-    @Qualifier("tpLeverandor") private val tpLeverandorList: List<TpLeverandor>,
-    private val asyncExecutor: AsyncExecutor<TpLeverandor, FindTpLeverandorCallable>,
+    private val spkStillingsprosentService: StillingsprosentService,
     private val metrics: AppMetrics,
 ) {
     private val log = KotlinLogging.logger {}
@@ -64,50 +55,47 @@ class SimuleringEndpoint(
         log.debug { "Received request: $body" }
         metrics.incrementCounter(APP_NAME, APP_TOTAL_SIMULERING_CALLS)
 
-        return try {
+        try {
             val fnr = body.fnr
-            val tpOrdningAndLeverandorMap = tpClient.findForhold(fnr)
-                .mapNotNull { forhold -> tpClient.findTssId(forhold.ordning)?.let { TPOrdningIdDto(tpId = forhold.ordning, tssId = it) } }//tpClient.findTpLeverandorName(tpOrdning)
-                .let(::getTpLeverandorer)
-            val stillingsprosentResponse = stillingsprosentService.getStillingsprosentListe(fnr, tpOrdningAndLeverandorMap)
-            val tpOrdning = stillingsprosentService.getLatestFromStillingsprosent(stillingsprosentResponse.tpOrdningStillingsprosentMap)
+            val spkMedlemskap = tpClient.findForhold(fnr)
+                .mapNotNull { forhold -> tpClient.findTssId(forhold.ordning)?.let { TPOrdningIdDto(tpId = forhold.ordning, tssId = it) } }
+                .firstOrNull { it.tpId == "3010" }
 
+            if (spkMedlemskap == null) {
+                metrics.incrementCounter(APP_TOTAL_SIMULERING_TP_ORDNING_STOTTES_IKKE)
+                log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No supported TP-Ordning found.""" }
+                return ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.tpOrdningStoettesIkke())
+            }
+
+            val stillingsprosentListe = spkStillingsprosentService.getStillingsprosentListe(fnr, spkMedlemskap)
+
+            if (stillingsprosentListe.isEmpty()){
+                log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No stillingsprosent found.""" }
+                return ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.tomStillingsprosentListe())
+            }
             metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_OK)
-            val tpLeverandor = tpOrdningAndLeverandorMap[tpOrdning]!!
 
-            log.debug { "Request simulation from ${tpLeverandor.name} using REST" }
+            log.debug { "Request simulation from SPK using REST" }
             val response = spkTjenestepensjonServicePre2025.simulerOffentligTjenestepensjon(
                 body.toSimulerPensjonRequestV2(),
-                stillingsprosentResponse,
-                tpOrdning,
-                tpLeverandor
+                stillingsprosentListe,
+                spkMedlemskap,
             )
-            metrics.incrementRestCounter(tpLeverandor.name, "OK")
+            metrics.incrementRestCounter(PROVIDER, "OK")
             log.debug { "Returning response: ${filterFnr(response.toString())}" }
-            ResponseEntity(response, OK)
+            return ResponseEntity(response, OK)
         } catch (e: TpregisteretException) {
             log.error(e) { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. failed.""" }
-            ResponseEntity.internalServerError().build()
+            return ResponseEntity.internalServerError().build()
         } catch (e: NoTpOrdningerFoundException) {
             log.debug { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No TP-forhold found for person.""" }
-            ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.ikkeMedlem())
-        } catch (e: JsonParseException) {
-            log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Unable to parse body to request.""" }
-            ResponseEntity.badRequest().build()
-        } catch (e: JsonMappingException) {
-            log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Unable to map body to request.""" }
-            ResponseEntity.badRequest().build()
-        } catch (e: LeveradoerNotFoundException) {
-            metrics.incrementCounter(APP_TOTAL_SIMULERING_TP_ORDNING_STOTTES_IKKE)
-            log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No supported TP-Ordning found.""" }
-            ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.tpOrdningStoettesIkke())
+            return ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.ikkeMedlem())
         } catch (e: BrukerKvalifisererIkkeTilTjenestepensjonException) {
             metrics.incrementCounter(APP_TOTAL_SIMULERING_BRUKER_KVALIFISERER_IKKE)
             log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Bruker kvalifiserer ikke til tjenestepensjon. ${e.message}""" }
-            ResponseEntity.status(HttpStatus.CONFLICT).body(e.message ?: "Bruker kvalifiserer ikke til tjenestepensjon")
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.message ?: "Bruker kvalifiserer ikke til tjenestepensjon")
         } catch (e: Throwable) {
             when (e) {
-                is ConnectToIdPortenException -> "Unable to to connect with idPorten." to INTERNAL_SERVER_ERROR
                 is ConnectToMaskinPortenException -> "Unable to to get token from maskinporten." to INTERNAL_SERVER_ERROR
                 is WebClientResponseException -> "Caught WebClientResponseException in version 1" to INTERNAL_SERVER_ERROR
                 is SimuleringException -> e.message to INTERNAL_SERVER_ERROR
@@ -135,7 +123,7 @@ class SimuleringEndpoint(
                     metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_ERROR)
                 }
 
-                ResponseEntity(first, second)
+                return ResponseEntity(first, second)
             }
         }
     }
@@ -146,15 +134,6 @@ class SimuleringEndpoint(
 
     fun getHeaderFromRequestContext(key: String) =
         currentRequestAttributes().getAttribute(key, SCOPE_REQUEST)?.toString()
-
-    private fun getTpLeverandorer(tpOrdningIdDtoList: List<TPOrdningIdDto>): MutableMap<TPOrdningIdDto, TpLeverandor> {
-        if (tpOrdningIdDtoList.isEmpty()) throw LeveradoerNotFoundException("TSSnr not found for any tpOrdning.")
-        return asyncExecutor.executeAsync(tpOrdningIdDtoList.associateWith { tpOrdning ->
-            FindTpLeverandorCallable(tpOrdning, tpClient, tpLeverandorList, metrics)
-        }).resultMap.apply {
-            if (isEmpty()) throw LeveradoerNotFoundException("No Tp-leverandoer found for person.")
-        }
-    }
 
     @GetMapping("/simulering/ping")
     fun ping(): List<PingResponse> {

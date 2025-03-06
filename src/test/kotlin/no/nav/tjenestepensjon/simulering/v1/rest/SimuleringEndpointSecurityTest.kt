@@ -8,7 +8,7 @@ import no.nav.tjenestepensjon.simulering.service.SamlTokenService
 import no.nav.tjenestepensjon.simulering.v1.consumer.FssGatewayAuthService
 import no.nav.tjenestepensjon.simulering.v1.models.defaultLeverandor
 import no.nav.tjenestepensjon.simulering.v1.models.defaultSimulerPensjonRequestJson
-import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
+import no.nav.tjenestepensjon.simulering.v1.soap.SPKStillingsprosentSoapClient
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -44,7 +44,7 @@ class SimuleringEndpointSecurityTest {
     private lateinit var samlTokenService: SamlTokenService
 
     @MockitoBean
-    private lateinit var soapClient: SoapClient
+    private lateinit var SPKStillingsprosentSoapClient: SPKStillingsprosentSoapClient
 
     private var wireMockServer = WireMockServer().apply {
         start()
