@@ -10,7 +10,6 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_SIMULERING
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_ERROR
 import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSPROSENT_OK
 import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTjenestepensjonException
-import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerOffentligTjenestepensjonRequest
@@ -57,15 +56,26 @@ class SimuleringEndpoint(
 
         try {
             val fnr = body.fnr
-            val spkMedlemskap = tpClient.findForhold(fnr)
+            val alleForhold = tpClient.findForhold(fnr)
                 .mapNotNull { forhold -> tpClient.findTssId(forhold.ordning)?.let { TPOrdningIdDto(tpId = forhold.ordning, tssId = it) } }
-                .firstOrNull { it.tpId == "3010" }
+
+            if (alleForhold.isEmpty()){
+                log.debug { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No TP-forhold found for person.""" }
+                return ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.ikkeMedlem())
+            }
+
+            val spkMedlemskap = alleForhold.firstOrNull { it.tpId == "3010" || it.tpId == "3060" }
 
             if (spkMedlemskap == null) {
+                val firstTPOrdningPaaListen = alleForhold.first()
+                val tpNr = firstTPOrdningPaaListen.tpId
+                val name = tpClient.findTpLeverandorName(firstTPOrdningPaaListen)
+                metrics.incrementCounterWithTag(AppMetrics.Metrics.TP_REQUESTED_LEVERANDOR, "$tpNr $name")
                 metrics.incrementCounter(APP_TOTAL_SIMULERING_TP_ORDNING_STOTTES_IKKE)
                 log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No supported TP-Ordning found.""" }
                 return ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.tpOrdningStoettesIkke())
             }
+            metrics.incrementCounterWithTag(AppMetrics.Metrics.TP_REQUESTED_LEVERANDOR, "${spkMedlemskap.tpId} $PROVIDER")
 
             val stillingsprosentListe = spkStillingsprosentService.getStillingsprosentListe(fnr, spkMedlemskap)
 
@@ -87,9 +97,6 @@ class SimuleringEndpoint(
         } catch (e: TpregisteretException) {
             log.error(e) { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. failed.""" }
             return ResponseEntity.internalServerError().build()
-        } catch (e: NoTpOrdningerFoundException) {
-            log.debug { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No TP-forhold found for person.""" }
-            return ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.ikkeMedlem())
         } catch (e: BrukerKvalifisererIkkeTilTjenestepensjonException) {
             metrics.incrementCounter(APP_TOTAL_SIMULERING_BRUKER_KVALIFISERER_IKKE)
             log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. Bruker kvalifiserer ikke til tjenestepensjon. ${e.message}""" }
