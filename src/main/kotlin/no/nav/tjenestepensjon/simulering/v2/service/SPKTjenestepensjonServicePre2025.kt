@@ -3,9 +3,8 @@ package no.nav.tjenestepensjon.simulering.v2.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTjenestepensjonException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
 import no.nav.tjenestepensjon.simulering.rest.SimuleringEndpoint
-import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentResponse
+import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
 import no.nav.tjenestepensjon.simulering.v2.models.request.SimulerPensjonRequestV2
 import no.nav.tjenestepensjon.simulering.v2.models.request.TpForhold
@@ -23,11 +22,10 @@ class SPKTjenestepensjonServicePre2025(
 
     fun simulerOffentligTjenestepensjon(
         request: SimulerPensjonRequestV2,
-        stillingsprosentResponse: StillingsprosentResponse,
+        stillingsprosentListe: List<Stillingsprosent>,
         tpOrdning: TPOrdningIdDto,
-        tpLeverandor: TpLeverandor
     ): SimulerOffentligTjenestepensjonResponse {
-        val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(stillingsprosentResponse)
+        val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(tpOrdning, stillingsprosentListe)
 
         request.tpForholdListe = buildTpForhold(opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap)
         request.sisteTpnr = tpOrdning.tpId
@@ -42,7 +40,7 @@ class SPKTjenestepensjonServicePre2025(
                 .let { StringUtils.replace(it, "Ã¸", "ø") }
                 .let { StringUtils.replace(it, "Ã\u0083Â¸", "ø") }
 
-            log.error(e) { "Error <$responseBody> while calling ${tpLeverandor.name} with request: $requestWithFilteredFnr" }
+            log.warn(e) { "Error <$responseBody> while calling SPK with request: $requestWithFilteredFnr" }
             if (responseBody.contains("Validation problem")) {
                 throw BrukerKvalifisererIkkeTilTjenestepensjonException(responseBody)
             }

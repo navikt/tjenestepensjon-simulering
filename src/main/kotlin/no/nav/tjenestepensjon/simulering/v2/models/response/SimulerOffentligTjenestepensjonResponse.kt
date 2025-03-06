@@ -15,5 +15,6 @@ data class SimulerOffentligTjenestepensjonResponse(
     companion object {
         fun Companion.ikkeMedlem() = SimulerOffentligTjenestepensjonResponse("", "", emptyList(), brukerErIkkeMedlemAvTPOrdning = true)
         fun Companion.tpOrdningStoettesIkke() = SimulerOffentligTjenestepensjonResponse("", "", emptyList(), brukerErMedlemAvTPOrdningSomIkkeStoettes = true)
+        fun Companion.tomStillingsprosentListe() = SimulerOffentligTjenestepensjonResponse("", "", emptyList())
     }
 }

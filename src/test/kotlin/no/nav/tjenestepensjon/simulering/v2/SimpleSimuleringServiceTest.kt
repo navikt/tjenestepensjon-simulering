@@ -3,10 +3,7 @@ package no.nav.tjenestepensjon.simulering.v2
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.REST
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
-import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentResponse
 import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
 import no.nav.tjenestepensjon.simulering.v2.models.domain.SivilstandCodeEnum
@@ -72,7 +69,7 @@ internal class SimpleSimuleringServiceTest {
         )
         val opptjeningsperiodeResponse = OpptjeningsperiodeResponse(map, exceptions)
 
-        `when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull())).thenReturn(
+        `when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull())).thenReturn(
             opptjeningsperiodeResponse
         )
 
@@ -84,12 +81,9 @@ internal class SimpleSimuleringServiceTest {
             )
         )
         val tpOrdningIdDto = TPOrdningIdDto("fake", "faker")
-        val tpLeverandor = TpLeverandor("fake", REST, "faker", "faker")
         `when`(SPKTjenestepensjonClientPre2025.getResponse(anyNonNull(), anyNonNull())).thenReturn(s1)
 
-        val response = simuleringService.simulerOffentligTjenestepensjon(
-            request, StillingsprosentResponse(emptyMap(), emptyList()), tpOrdningIdDto, tpLeverandor
-        )
+        val response = simuleringService.simulerOffentligTjenestepensjon(request, emptyList(), tpOrdningIdDto)
 
         assertNotNull(response)
     }
@@ -99,20 +93,15 @@ internal class SimpleSimuleringServiceTest {
         val map = mapOf(TPOrdningIdDto("tssInkluder", "tpInkluder") to emptyList<Opptjeningsperiode>())
         val opptjeningsperiodeResponse = OpptjeningsperiodeResponse(map, listOf())
 
-        `when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull())).thenReturn(opptjeningsperiodeResponse)
+        `when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull())).thenReturn(opptjeningsperiodeResponse)
 
         val s1 = SimulerOffentligTjenestepensjonResponse(
             utbetalingsperiodeListe = listOf(), tpnr = "", navnOrdning = ""
         )
 
         val tpOrdningIdDto = TPOrdningIdDto("fake", "faker")
-        val tpLeverandor = TpLeverandor("fake", REST, "faker", "faker")
 
         `when`(SPKTjenestepensjonClientPre2025.getResponse(anyNonNull(), anyNonNull())).thenReturn(s1)
-        assertNotNull(
-            simuleringService.simulerOffentligTjenestepensjon(
-                request, StillingsprosentResponse(emptyMap(), emptyList()), tpOrdningIdDto, tpLeverandor
-            )
-        )
+        assertNotNull(simuleringService.simulerOffentligTjenestepensjon(request, emptyList(), tpOrdningIdDto))
     }
 }

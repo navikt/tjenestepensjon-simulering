@@ -17,6 +17,7 @@ import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import kotlin.test.assertTrue
 
 @SpringBootTest(classes = [TpClient::class, WebClientConfig::class, ObjectMapperConfig::class, TestConfig::class])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -69,7 +70,7 @@ class TpClientTest {
             defaultTjenestepensjonRequest.willReturn(okJson("""{"_embedded":{"forholdModelList":[]}}"""))
         )
 
-        assertThrows<NoTpOrdningerFoundException> { tpClient.findForhold(defaultFNRString) }
+        assertTrue(tpClient.findForhold(defaultFNRString).isEmpty())
 
         wireMockServer.removeStub(stub.uuid)
     }
@@ -80,7 +81,7 @@ class TpClientTest {
             defaultTjenestepensjonRequest.willReturn(notFound())
         )
 
-        assertThrows<NoTpOrdningerFoundException> { tpClient.findForhold(defaultFNRString) }
+        assertTrue(tpClient.findForhold(defaultFNRString).isEmpty())
 
         wireMockServer.removeStub(stub.uuid)
     }

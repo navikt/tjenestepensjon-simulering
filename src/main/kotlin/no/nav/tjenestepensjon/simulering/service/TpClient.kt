@@ -62,7 +62,7 @@ class TpClient(
             }.onErrorMap {
                 if (it !is ResponseStatusException && it !is NoTpOrdningerFoundException) handleRemoteError(it.message) else it
             }.toIterable().toList().takeUnless { it.isEmpty() }
-            ?: throw NoTpOrdningerFoundException("No Tp-ordning found for person.")
+            ?: emptyList()
     } catch (ex: RuntimeException) {
         throw Exceptions.unwrap(ex)
     }

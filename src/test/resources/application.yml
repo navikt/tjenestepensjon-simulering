@@ -4,8 +4,6 @@ management:
   endpoints.web.exposure.include: prometheus, health
   metrics.use-global-registry: true
 
-sts:
-  url: http://localhost:8080
 tp:
   url: http://localhost:8080
   scope: api://bogus
@@ -18,10 +16,6 @@ azure:
   openid-config-issuer: https://localhost:8080/bogus
 provider:
   uri: http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
-SERVICE_USER: serviceuser
-SERVICE_USER_PASSWORD: password
-tjenestepensjon:
-  url: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/simulerOffentligTjenestepensjonRequest
 stillingsprosent:
   url: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListeRequest
 security:
@@ -39,16 +33,6 @@ maskinporten:
   client-jwk: ${MASKINPORTEN_CLIENT_JWK:clientJwk}
   scope: ${MASKINPORTEN_SCOPES:"nav:scope:no"}
   issuer: ${MASKINPORTEN_ISSUER:https://test.maskinporten.no}
-spk:
-  name: leverandor1
-  implementation: SOAP
-  simuleringUrl: http://simulering.com
-  stillingsprosentUrl: http://opptjening.com
-klp:
-  name: leverandor2
-  implementation: REST
-  simuleringUrl: http://simulering.com
-  stillingsprosentUrl: http://opptjening.com
 afp:
   beholdning:
     url: http://localhost:8080
@@ -75,6 +59,7 @@ oftp:
       endpoint:
         url: http://localhost:8080
         maskinportenscope: spk:nav
+        stillingsprosentUrl: http://opptjening.com
 unleash:
   server:
     api:

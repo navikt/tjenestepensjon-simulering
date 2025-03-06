@@ -1,9 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2.service
 
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
-import no.nav.tjenestepensjon.simulering.v1.TPOrdningStillingsprosentMap
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
-import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentResponse
 import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
 import no.nav.tjenestepensjon.simulering.v2.exceptions.DuplicateOpptjeningsperiodeEndDateException
 import no.nav.tjenestepensjon.simulering.v2.exceptions.MissingOpptjeningsperiodeException
@@ -13,10 +11,10 @@ import org.springframework.stereotype.Component
 @Component
 class OpptjeningsperiodeServiceImpl: OpptjeningsperiodeService {
 
-    override fun getOpptjeningsperiodeListe(stillingsprosentResponse: StillingsprosentResponse) =
+    override fun getOpptjeningsperiodeListe(tpOrdning: TPOrdningIdDto, stillingsprosentListe: List<Stillingsprosent>) =
             OpptjeningsperiodeResponse(
-                    mapStillingsprosentToOpptjeningsperiodeMap(stillingsprosentResponse.tpOrdningStillingsprosentMap),
-                    stillingsprosentResponse.exceptions
+                    mapOf(tpOrdning to mapStillingsprosentToOpptjeningsperiodeList(stillingsprosentListe)),
+                    emptyList()
             )
 
     @Throws(
@@ -39,11 +37,6 @@ class OpptjeningsperiodeServiceImpl: OpptjeningsperiodeService {
         latest.second.datoTom!! < other.second.datoTom -> other
         else -> latest
     }
-
-    fun mapStillingsprosentToOpptjeningsperiodeMap(tpOrdningStillingsprosentMap: TPOrdningStillingsprosentMap) =
-            tpOrdningStillingsprosentMap.entries.map {
-                it.key to mapStillingsprosentToOpptjeningsperiodeList(it.value)
-            }.toMap()
 
     fun mapStillingsprosentToOpptjeningsperiodeList(stillingsprosentList: List<Stillingsprosent>): List<Opptjeningsperiode> {
         return stillingsprosentList.map {
