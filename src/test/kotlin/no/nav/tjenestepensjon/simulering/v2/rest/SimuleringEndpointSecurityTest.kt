@@ -6,7 +6,7 @@ import no.nav.tjenestepensjon.simulering.*
 import no.nav.tjenestepensjon.simulering.service.AADClient
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.models.defaultStillingsprosentListe
-import no.nav.tjenestepensjon.simulering.v1.soap.SoapClient
+import no.nav.tjenestepensjon.simulering.v1.soap.SPKStillingsprosentSoapClient
 import no.nav.tjenestepensjon.simulering.v2.models.defaultLeverandor
 import no.nav.tjenestepensjon.simulering.v2.models.defaultSimulerOffentligTjenestepensjonRequestJson
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
@@ -38,7 +38,7 @@ class SimuleringEndpointSecurityTest {
     private lateinit var aadClient: AADClient
 
     @MockitoBean
-    private lateinit var soapClient: SoapClient
+    private lateinit var SPKStillingsprosentSoapClient: SPKStillingsprosentSoapClient
 
     @MockitoBean
     private lateinit var SPKTjenestepensjonClientPre2025: SPKTjenestepensjonClientPre2025
@@ -88,7 +88,7 @@ class SimuleringEndpointSecurityTest {
     @WithMockUser
     fun secureEndpointOkWithValidToken() {
         `when`(aadClient.getToken("api://bogus")).thenReturn("")
-        `when`(soapClient.getStillingsprosenter(anyNonNull(), anyNonNull(), anyNonNull())).thenReturn(
+        `when`(SPKStillingsprosentSoapClient.getStillingsprosenter(anyNonNull(), anyNonNull())).thenReturn(
             defaultStillingsprosentListe
         )
         `when`(SPKTjenestepensjonClientPre2025.getResponse(anyNonNull(), anyNonNull())).thenReturn(
