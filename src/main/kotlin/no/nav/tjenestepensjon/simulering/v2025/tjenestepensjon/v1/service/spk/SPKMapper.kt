@@ -7,7 +7,6 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetal
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto.*
 import java.time.LocalDate
-import java.time.Period
 
 object SPKMapper {
     private val log = KotlinLogging.logger {}
@@ -20,24 +19,20 @@ object SPKMapper {
             ?: mapToRequestV1(request)
     }
 
-    private fun mapToRequestV1(request: SimulerTjenestepensjonRequestDto): SPKSimulerTjenestepensjonRequest {
-        val fom = fjorAarSomManglerOpptjeningIPopp()
-        val til = request.foedselsdato.plusYears(62)
-
-        val fremtidigeInntekter = genererAarligInntektListe(fom, til, request.sisteInntekt) + FremtidigInntekt(
-            fraOgMedDato = request.uttaksdato,
-            aarligInntekt = 0
-        )
-
-        return SPKSimulerTjenestepensjonRequest(
-            personId = request.pid,
-            uttaksListe = opprettUttaksliste(request),
-            fremtidigInntektListe = fremtidigeInntekter,
-            aarIUtlandetEtter16 = request.aarIUtlandetEtter16,
-            epsPensjon = request.epsPensjon,
-            eps2G = request.eps2G,
-        )
-    }
+    private fun mapToRequestV1(request: SimulerTjenestepensjonRequestDto) = SPKSimulerTjenestepensjonRequest(
+        personId = request.pid,
+        uttaksListe = opprettUttaksliste(request),
+        fremtidigInntektListe = listOf(
+            opprettNaaverendeInntektFoerUttak(request),
+            FremtidigInntekt(
+                fraOgMedDato = request.uttaksdato,
+                aarligInntekt = 0
+            )
+        ),
+        aarIUtlandetEtter16 = request.aarIUtlandetEtter16,
+        epsPensjon = request.epsPensjon,
+        eps2G = request.eps2G,
+    )
 
     private fun mapToRequestV2(request: SimulerTjenestepensjonRequestDto): SPKSimulerTjenestepensjonRequest {
         val fremtidigeInntekter: MutableList<FremtidigInntekt> = mutableListOf(opprettNaaverendeInntektFoerUttak(request))
@@ -78,11 +73,6 @@ object SPKMapper {
             serviceData = listOf("Request: " + dto?.toString(), "Response: $response")
         )
     }
-
-    private fun genererAarligInntektListe(fom: LocalDate, til: LocalDate, aarligBeloep: Int): List<FremtidigInntekt> =
-        fom.datesUntil(til, Period.ofYears(1))
-            .map { FremtidigInntekt(fraOgMedDato = it.withDayOfYear(1), aarligInntekt = aarligBeloep) }
-            .toList()
 
     fun opprettUttaksliste(request: SimulerTjenestepensjonRequestDto): List<Uttak> {
         return SPKYtelse.hentAlleUnntattType(if (request.brukerBaOmAfp) SPKYtelse.BTP else SPKYtelse.OAFP)
