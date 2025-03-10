@@ -4,8 +4,6 @@ import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
 import no.nav.tjenestepensjon.simulering.defaultFNRString
 import no.nav.tjenestepensjon.simulering.defaultTPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor
-import no.nav.tjenestepensjon.simulering.model.domain.TpLeverandor.EndpointImpl.SOAP
 import no.nav.tjenestepensjon.simulering.sporingslogg.SporingsloggService
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.consumer.GatewayTokenClient
@@ -22,8 +20,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.ws.client.core.WebServiceTemplate
 
 
-@SpringBootTest(classes = [WebServiceTemplate::class, SoapClient::class, SamlConfig::class, ObjectMapperConfig::class])
-internal class SoapClientTest {
+@SpringBootTest(classes = [WebServiceTemplate::class, SPKStillingsprosentSoapClient::class, SamlConfig::class, ObjectMapperConfig::class])
+internal class SPKStillingsprosentSoapClientTest {
 
     @MockitoBean
     lateinit var template: WebServiceTemplate
@@ -35,7 +33,7 @@ internal class SoapClientTest {
     lateinit var sporingsloggService: SporingsloggService
 
     @Autowired
-    lateinit var client: SoapClient
+    lateinit var client: SPKStillingsprosentSoapClient
 
     @Test
     fun `Stillingsprosenter shall return list`() {
@@ -47,9 +45,7 @@ internal class SoapClientTest {
 
         `when`(gatewayTokenClient.samlAccessToken).thenReturn(TokenImpl("bogus", 0))
 
-        val result = client.getStillingsprosenter(
-            defaultFNRString, defaultTPOrdningIdDto, TpLeverandor("name", SOAP, "sim", "stilling")
-        )
+        val result = client.getStillingsprosenter(defaultFNRString, defaultTPOrdningIdDto)
         defaultStillingsprosentListe.forEachIndexed { index, stillingsprosent ->
             assertEquals(stillingsprosent, result[index])
         }
