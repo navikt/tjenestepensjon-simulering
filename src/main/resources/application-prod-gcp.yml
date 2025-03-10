@@ -4,8 +4,3 @@ logging.level:
 simulering:
   security:
     issuers: ${azure.openid-config-issuer},https://navnob2c.b2clogin.com/8b7dfc8b-b52e-4741-bde4-d83ea366f94f/v2.0/
-spk:
-  name: SPK
-  implementation: REST
-  simuleringUrl: https://api.spk.no/medlem/pensjon/prognose/v1
-  stillingsprosentUrl: https://partner-gw.spk.no:443/nav/SimulereTjenestepensjon
