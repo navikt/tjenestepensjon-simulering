@@ -19,7 +19,7 @@ class SPKStillingsprosentServiceImpl(
         val startTime = metrics.startTime()
         val stillingsprosentList = SPKStillingsprosentSoapClient.getStillingsprosenter(fnr, tpOrdning)
         val elapsed = metrics.elapsedSince(startTime)
-        log.info { "Retrieved all stillingsprosenter in: $elapsed ms" }
+        log.info { "Executed call to stillingsprosenter in: $elapsed ms" }
         metrics.incrementCounter(AppMetrics.Metrics.APP_NAME, AppMetrics.Metrics.APP_TOTAL_OPPTJENINGSPERIODE_TIME, elapsed.toDouble())
         return stillingsprosentList
     }
