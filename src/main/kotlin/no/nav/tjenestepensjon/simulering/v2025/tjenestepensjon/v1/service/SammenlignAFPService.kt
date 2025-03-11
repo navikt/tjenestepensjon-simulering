@@ -18,16 +18,20 @@ class SammenlignAFPService(private val afp: AFPOffentligLivsvarigSimuleringServi
     fun sammenlignOgLoggAfp(request: SimulerTjenestepensjonRequestDto, utbetalingsperiode: List<Utbetalingsperiode>) {
         val fremtidigInntekt = SPKMapper.mapToRequest(request).fremtidigInntektListe
 
-        val afpLokal = afp.simuler(
-            SimulerAFPOffentligLivsvarigRequest(
-                fnr = request.pid,
-                fom = request.uttaksdato,
-                fodselsdato = request.foedselsdato,
-                fremtidigeInntekter = fremtidigInntekt.map { FremtidigInntekt(it.aarligInntekt, it.fraOgMedDato ) }
-            )
+        val simuleringRequest = SimulerAFPOffentligLivsvarigRequest(
+            fnr = request.pid,
+            fom = request.uttaksdato,
+            fodselsdato = request.foedselsdato,
+            fremtidigeInntekter = fremtidigInntekt.map { FremtidigInntekt(it.aarligInntekt, it.fraOgMedDato ) }
         )
+
+        val afpLokal = afp.simuler(simuleringRequest)
+
         val afpFraTpOrdning = utbetalingsperiode.filter { it.ytelseType == "OAFP" }
-        log.info { "AFP fra Tp ordning: $afpFraTpOrdning \n AFP fra lokal $afpLokal" }
+        log.info { "Request til Tp ordning AFP: $request" +
+                "\nRequest for Nav AFP: $simuleringRequest" +
+                "\nAFP fra Tp ordning: $afpFraTpOrdning" +
+                "\nAFP fra Nav $afpLokal" }
     }
 }
 
