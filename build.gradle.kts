@@ -35,7 +35,7 @@ dependencies {
     implementation("org.slf4j","slf4j-api", "2.0.12" )
     implementation("org.glassfish.jaxb", "jaxb-runtime", "4.0.1")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2")
-    implementation("io.getunleash:unleash-client-java:9.2.6")
+    implementation("io.getunleash:unleash-client-java:10.2.0")
     implementation("org.springframework.boot:spring-boot-starter-tomcat") // Spring Boot manages Tomcat
 
     // Exclude older versions of Tomcat
