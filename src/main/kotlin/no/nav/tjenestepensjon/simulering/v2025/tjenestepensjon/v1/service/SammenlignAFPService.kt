@@ -28,6 +28,13 @@ class SammenlignAFPService(private val afp: AFPOffentligLivsvarigSimuleringServi
         val afpLokal = afp.simuler(simuleringRequest)
 
         val afpFraTpOrdning = utbetalingsperiode.filter { it.ytelseType == "OAFP" }
+
+        val afpHverPeriode = afpFraTpOrdning.mapIndexed { i, it -> "Årlig AFP fra utbelaingsperiode $i: ${it.maanedligBelop * 12}" }.joinToString("\n")
+
+        log.info {
+            "$afpHverPeriode \n" +
+                    "AFP fra Nav: ${afpLokal.first().afpYtelsePerAar} \n"
+        }
         log.info { "Request til Tp ordning AFP: $request" +
                 "\nRequest for Nav AFP: $simuleringRequest" +
                 "\nAFP fra Tp ordning: $afpFraTpOrdning" +
