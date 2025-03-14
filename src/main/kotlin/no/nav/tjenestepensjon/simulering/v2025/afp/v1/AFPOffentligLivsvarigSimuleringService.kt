@@ -33,7 +33,8 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
                     delingstallListe.first { dt -> dt.alder == it.alderForDelingstall.alder }.delingstall
                 )
             }
-        log.info { "Request for beregning av AFP: $request" }
+        log.info { "Request for beregning av AFP: ${request.fremtidigeInntekter}\n" +
+                "${request.fom}" }
         log.info { "Beregningsgrunnlag for AFP: $beregningsgrunnlag" }
 
         return OffentligAFPYtelseBeregner.beregnAfpOffentligLivsvarigYtelser(beregningsgrunnlag)
