@@ -8,14 +8,18 @@ import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.SammenlignAFPService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025ServiceTest.Companion.dummyRequest
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPMapper.PROVIDER_FULLT_NAVN
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonClient.Companion.SIMULER_PATH
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.InkludertOrdning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.KLPSimulerTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.Utbetaling
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -26,6 +30,9 @@ import java.time.LocalDate
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class KLPTjenestepensjonClientTest {
+
+    @MockitoBean
+    private lateinit var sammenlignAFPService: SammenlignAFPService
 
     @MockitoBean
     private lateinit var aadClient: AADClient
@@ -46,6 +53,7 @@ class KLPTjenestepensjonClientTest {
     @BeforeAll
     fun beforeAll() {
         Mockito.`when`(maskinportenTokenClient.pensjonsimuleringToken(anyNonNull())).thenReturn("bogustoken")
+        Mockito.doNothing().`when`(sammenlignAFPService).sammenlignOgLoggAfp(anyNonNull(), anyNonNull())
     }
 
     @AfterAll

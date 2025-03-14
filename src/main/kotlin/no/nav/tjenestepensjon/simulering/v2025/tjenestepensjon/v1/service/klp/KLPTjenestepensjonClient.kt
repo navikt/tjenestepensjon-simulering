@@ -8,6 +8,7 @@ import no.nav.tjenestepensjon.simulering.sporingslogg.SporingsloggService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.SammenlignAFPService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client.Companion.TJENESTE
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.InkludertOrdning
@@ -25,6 +26,7 @@ class KLPTjenestepensjonClient(
     private val klpWebClient: WebClient,
     private val sporingsloggService: SporingsloggService,
     @Value("\${spring.profiles.active:}") private val activeProfiles: String,
+    private val sammenlign: SammenlignAFPService,
 ) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}
 
@@ -52,7 +54,9 @@ class KLPTjenestepensjonClient(
                 return Result.failure(TjenestepensjonSimuleringException("Failed to send request to simulate tjenestepensjon 2025 hos KLP"))
             }
         }
-        return response?.let { Result.success(KLPMapper.mapToResponse(it, KLPMapper.mapToLoggableRequestDto(request))) } ?: Result.failure(TjenestepensjonSimuleringException("No response body"))
+        return response?.let { Result.success(KLPMapper.mapToResponse(it, KLPMapper.mapToLoggableRequestDto(request))
+            .also { res -> sammenlign.sammenlignOgLoggAfp(request, res.utbetalingsperioder) }) }
+            ?: Result.failure(TjenestepensjonSimuleringException("No response body"))
     }
 
     override fun ping(): PingResponse {
