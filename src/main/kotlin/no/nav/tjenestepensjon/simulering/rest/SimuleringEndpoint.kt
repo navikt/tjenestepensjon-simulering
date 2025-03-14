@@ -20,7 +20,6 @@ import no.nav.tjenestepensjon.simulering.v2.exceptions.ConnectToMaskinPortenExce
 import no.nav.tjenestepensjon.simulering.v2.models.DtoToV2DomainMapper.toSimulerPensjonRequestV2
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.ikkeMedlem
-import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.tomStillingsprosentListe
 import no.nav.tjenestepensjon.simulering.v2.models.response.SimulerOffentligTjenestepensjonResponse.Companion.tpOrdningStoettesIkke
 import no.nav.tjenestepensjon.simulering.v2.service.SPKTjenestepensjonServicePre2025
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
@@ -81,7 +80,7 @@ class SimuleringEndpoint(
 
             if (stillingsprosentListe.isEmpty()){
                 log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No stillingsprosent found.""" }
-                return ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.tomStillingsprosentListe())
+                return ResponseEntity.internalServerError().build()
             }
             metrics.incrementCounter(APP_NAME, APP_TOTAL_STILLINGSPROSENT_OK)
 
