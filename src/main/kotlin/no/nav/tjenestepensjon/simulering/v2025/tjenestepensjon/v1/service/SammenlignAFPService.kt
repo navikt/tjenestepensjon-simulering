@@ -40,7 +40,7 @@ class SammenlignAFPService(private val afp: AFPOffentligLivsvarigSimuleringServi
         val loggableRequest = KLPMapper.mapToLoggableRequestDto(request)
 
         log.info { "Request til Tp ordning AFP: $loggableRequest" +
-                "\nRequest for Nav AFP: $simuleringRequest" +
+                "\nRequest for Nav AFP: ${simuleringRequest.fremtidigeInntekter}, ${simuleringRequest.fom}" +
                 "\nAFP fra Tp ordning: $afpFraTpOrdning" +
                 "\nAFP fra Nav $afpLokal" }
     }
