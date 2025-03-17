@@ -61,15 +61,11 @@ spec:
           cluster: dev-fss
         - application: pensjon-opptjening-afp-api
           namespace: pensjonopptjening
-        - application: pensjon-pen-q2
-          namespace: pensjon-q2
-          cluster: dev-fss
         - application: pensjon-selvbetjening-fss-gateway
           namespace: pensjonselvbetjening
           cluster: dev-fss
       external:
         - host: pensjon-selvbetjening-fss-gateway.dev-fss-pub.nais.io
-        - host: pensjon-pen-q2.dev-fss-pub.nais.io
         - host: tp-api-q2.dev-fss-pub.nais.io
         - host: api.preprod.spk.no
         - host: api.test.spk.no
@@ -113,10 +109,6 @@ spec:
       value: http://pensjon-opptjening-afp-api.pensjonopptjening
     - name: afp_beholdning_scope
       value: api://dev-gcp.pensjonopptjening.pensjon-opptjening-afp-api/.default
-    - name: pen_url
-      value: https://pensjon-pen-q2.dev-fss-pub.nais.io/pen/springapi
-    - name: pen_scope
-      value: api://dev-fss.pensjon-q2.pensjon-pen-q2/.default
     - name: pen_fss_gateway_url
       value: https://pensjon-selvbetjening-fss-gateway.dev-fss-pub.nais.io
     - name: pen_fss_gateway_scope

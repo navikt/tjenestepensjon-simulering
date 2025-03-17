@@ -110,9 +110,9 @@ class WebClientConfig {
         .build()
 
     @Bean
-    fun penWebClient(
-        @Value("\${pen.url}") baseUrl: String,
-        @Value("\${pen.scope}") scope: String,
+    fun reglerWebClient(
+        @Value("\${pen.fss.gateway.url}") baseUrl: String,
+        @Value("\${pen.fss.gateway.scope}") scope: String,
         builder: WebClient.Builder,
         httpClient: HttpClient,
         adClient: AADClient,

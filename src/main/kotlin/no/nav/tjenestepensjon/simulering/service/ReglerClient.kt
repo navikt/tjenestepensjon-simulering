@@ -10,20 +10,21 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.util.retry.Retry
+import java.time.Duration
 
 @Service
-class PenClient(val penWebClient: WebClient) {
+class ReglerClient(val reglerWebClient: WebClient) {
     private val log = KotlinLogging.logger {}
     fun hentDelingstall(aarskull: Int, alder: List<Alder>): List<Delingstall> {
         return try {
-            penWebClient.post()
-                .uri("/delingstall")
+            reglerWebClient.post()
+                .uri("/api/delingstall")
                 .bodyValue(HentDelingstallRequest(aarskull, alder))
                 .retrieve()
                 .bodyToMono(HentDelingstallResponse::class.java)
                 .retryWhen(
-                    Retry.backoff(3, java.time.Duration.ofSeconds(1))
-                        .maxBackoff(java.time.Duration.ofSeconds(10))
+                    Retry.backoff(3, Duration.ofSeconds(1))
+                        .maxBackoff(Duration.ofSeconds(10))
                         .jitter(0.2) // 20% tilfeldig forsinkelse
                         .doBeforeRetry { retrySignal ->
                             log.warn { "Retrying henting av delingstall due to: ${retrySignal.failure().message}, attempt: ${retrySignal.totalRetries() + 1}" }

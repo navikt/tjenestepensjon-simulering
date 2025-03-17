@@ -5,7 +5,7 @@ import no.nav.tjenestepensjon.simulering.model.domain.pen.Delingstall
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLivsvarigRequest
 import no.nav.tjenestepensjon.simulering.model.domain.popp.AFPGrunnlagBeholdningPeriode
 import no.nav.tjenestepensjon.simulering.service.AFPBeholdningClient
-import no.nav.tjenestepensjon.simulering.service.PenClient
+import no.nav.tjenestepensjon.simulering.service.ReglerClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -25,7 +25,7 @@ class AFPOffentligLivsvarigSimuleringServiceTest {
         val alderVedAarsskifte = Alder(62, 1)
 
         val afpBeholdningClient = mock<AFPBeholdningClient>{ on { simulerAFPBeholdningGrunnlag(any()) }.thenReturn(afpBeholdningGrunnlagResponse) }
-        val delingstallClient = mock<PenClient> { on { hentDelingstall(any(), any()) }.thenReturn(listOf(Delingstall(lavesteAlderVedUttak, 20.37), Delingstall(alderVedAarsskifte, 20.31))) }
+        val delingstallClient = mock<ReglerClient> { on { hentDelingstall(any(), any()) }.thenReturn(listOf(Delingstall(lavesteAlderVedUttak, 20.37), Delingstall(alderVedAarsskifte, 20.31))) }
         val service = AFPOffentligLivsvarigSimuleringService(afpBeholdningClient, delingstallClient)
 
         val resultat = service.simuler(SimulerAFPOffentligLivsvarigRequest("07516443469", fodselsdato, listOf(), LocalDate.of(2026, 12, 1)))
