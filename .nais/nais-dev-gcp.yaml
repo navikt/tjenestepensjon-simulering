@@ -61,10 +61,14 @@ spec:
           cluster: dev-fss
         - application: pensjon-opptjening-afp-api
           namespace: pensjonopptjening
+        - application: pensjon-regler-q2
+          namespace: pensjon-regler
+          cluster: dev-fss
         - application: pensjon-selvbetjening-fss-gateway
           namespace: pensjonselvbetjening
           cluster: dev-fss
       external:
+        - host: pensjon-regler-q2.dev-fss-pub.nais.io
         - host: pensjon-selvbetjening-fss-gateway.dev-fss-pub.nais.io
         - host: tp-api-q2.dev-fss-pub.nais.io
         - host: api.preprod.spk.no
@@ -101,6 +105,8 @@ spec:
       value: dev-gcp
     - name: provider_uri
       value: https://pensjon-selvbetjening-fss-gateway.dev-fss-pub.nais.io/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
+    - name: regler_url
+      value: https://pensjon-regler-q2.dev-fss-pub.nais.io
     - name: tp_url
       value: https://tp-api-q2.dev-fss-pub.nais.io
     - name: tp_scope

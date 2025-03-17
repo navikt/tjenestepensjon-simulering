@@ -41,8 +41,6 @@ afp:
     url: http://localhost:8080
     scope: api://bogus
 pen:
-  url: http://localhost:8080
-  scope: api://bogus
   fss:
     gateway:
       url: http://localhost:8080
@@ -63,6 +61,8 @@ oftp:
         url: https://api.prod.spk.no
         maskinportenscope: spk:nav
         stillingsprosentUrl: https://partner-gw.spk.no:443/nav/SimulereTjenestepensjon
+regler:
+  url: http://localhost:8080
 unleash:
   server:
     api:
