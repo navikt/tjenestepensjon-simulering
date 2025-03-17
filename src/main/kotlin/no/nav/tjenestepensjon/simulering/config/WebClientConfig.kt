@@ -111,18 +111,15 @@ class WebClientConfig {
 
     @Bean
     fun reglerWebClient(
-        @Value("\${pen.fss.gateway.url}") baseUrl: String,
-        @Value("\${pen.fss.gateway.scope}") scope: String,
+        @Value("\${regler.url}") baseUrl: String,
         builder: WebClient.Builder,
         httpClient: HttpClient,
-        adClient: AADClient,
     ): WebClient = builder
         .baseUrl(baseUrl)
         .clientConnector(ReactorClientHttpConnector(httpClient))
         .filter { request, next ->
             next.exchange(
                 ClientRequest.from(request)
-                    .headers { it.setBearerAuth(adClient.getToken(scope)) }
                     .build()
             )
         }

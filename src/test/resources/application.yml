@@ -38,8 +38,6 @@ afp:
     url: http://localhost:8080
     scope: api://bogus
 pen:
-  url: http://localhost:8080
-  scope: api://bogus
   fss:
     gateway:
       url: http://localhost:8080
@@ -60,6 +58,8 @@ oftp:
         url: http://localhost:8080
         maskinportenscope: spk:nav
         stillingsprosentUrl: http://opptjening.com
+regler:
+  url: http://localhost:8080
 unleash:
   server:
     api:
