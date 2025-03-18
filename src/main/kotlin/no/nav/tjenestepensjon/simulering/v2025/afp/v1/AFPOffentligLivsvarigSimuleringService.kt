@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2025.afp.v1
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.model.domain.AfpBeregningsgrunnlag
 import no.nav.tjenestepensjon.simulering.model.domain.PensjonsbeholdningMedDelingstallAlder
 import no.nav.tjenestepensjon.simulering.model.domain.pen.AfpOffentligLivsvarigYtelseMedDelingstall
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdningClient, val penClient: PenClient) {
-
+    private val log = KotlinLogging.logger {}
     fun simuler(request: SimulerAFPOffentligLivsvarigRequest): List<AfpOffentligLivsvarigYtelseMedDelingstall> {
         val aldreForDelingstall: List<AlderForDelingstall> =
             AlderForDelingstallBeregner.bestemAldreForDelingstall(request.fodselsdato, request.fom)
@@ -32,6 +33,9 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
                     delingstallListe.first { dt -> dt.alder == it.alderForDelingstall.alder }.delingstall
                 )
             }
+        log.info { "Request for beregning av AFP: ${request.fremtidigeInntekter}\n" +
+                "${request.fom}" }
+        log.info { "Beregningsgrunnlag for AFP: $beregningsgrunnlag" }
 
         return OffentligAFPYtelseBeregner.beregnAfpOffentligLivsvarigYtelser(beregningsgrunnlag)
     }
