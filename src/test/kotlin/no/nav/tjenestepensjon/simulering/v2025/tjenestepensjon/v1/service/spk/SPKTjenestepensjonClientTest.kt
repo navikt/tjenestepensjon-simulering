@@ -8,6 +8,7 @@ import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.SammenlignAFPService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025ServiceTest.Companion.dummyRequest
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKMapper.PROVIDER_FULLT_NAVN
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonClient.Companion.SIMULER_PATH
@@ -28,6 +29,8 @@ import java.time.LocalDate
 class SPKTjenestepensjonClientTest{
 
     @MockitoBean
+    private lateinit var sammenlignAFPService: SammenlignAFPService
+    @MockitoBean
     private lateinit var aadClient: AADClient
     @MockitoBean
     private lateinit var maskinportenTokenClient: MaskinportenTokenClient
@@ -43,6 +46,7 @@ class SPKTjenestepensjonClientTest{
     @BeforeAll
     fun beforeAll() {
         Mockito.`when`(maskinportenTokenClient.pensjonsimuleringToken(anyNonNull())).thenReturn("bogustoken")
+        Mockito.doNothing().`when`(sammenlignAFPService).sammenlignOgLoggAfp(anyNonNull(), anyNonNull())
     }
 
     @AfterAll
