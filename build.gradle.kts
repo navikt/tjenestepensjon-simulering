@@ -2,10 +2,10 @@ group = "no.nav.tjenestepensjon"
 description = "tjenestepensjon-simulering"
 
 plugins {
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.spring") version "2.1.0"
+    kotlin("jvm") version "2.1.10"
+    kotlin("plugin.spring") version "2.1.10"
     id("org.springframework.boot") version "3.4.3"
-    id("io.spring.dependency-management") version "1.1.6"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 repositories {
@@ -24,7 +24,7 @@ dependencies {
     implementation("net.logstash.logback", "logstash-logback-encoder", "8.0")
     implementation("ch.qos.logback.access:logback-access-common:2.0.6")
     implementation("ch.qos.logback:logback-core:1.5.17")
-    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6"){
+    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6") {
         exclude("org.apache.tomcat","tomcat-catalina") //classes supplied by spring-boot (tomcat-embed-core) use a newer version (10.1.26 vs 10.0.27 supplied here)
         exclude("org.apache.tomcat","tomcat-coyote") //classes supplied by spring-boot (tomcat-embed-core) use a newer version (10.1.26 vs 10.0.27 supplied here)
     }
@@ -58,5 +58,3 @@ tasks {
         useJUnitPlatform()
     }
 }
-
-
