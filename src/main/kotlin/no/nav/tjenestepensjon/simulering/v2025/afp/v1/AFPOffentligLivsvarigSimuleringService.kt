@@ -9,21 +9,23 @@ import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLiv
 import no.nav.tjenestepensjon.simulering.model.domain.popp.InntektPeriode
 import no.nav.tjenestepensjon.simulering.model.domain.popp.SimulerAFPBeholdningGrunnlagRequest
 import no.nav.tjenestepensjon.simulering.service.AFPBeholdningClient
-import no.nav.tjenestepensjon.simulering.service.PenClient
+import no.nav.tjenestepensjon.simulering.service.ReglerClient
+import no.nav.tjenestepensjon.simulering.v2025.afp.v1.AlderForDelingstallBeregner.bestemAldreForDelingstall
+import no.nav.tjenestepensjon.simulering.v2025.afp.v1.OffentligAFPYtelseBeregner.beregnAfpOffentligLivsvarigYtelser
 import org.springframework.stereotype.Service
 
 @Service
-class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdningClient, val penClient: PenClient) {
+class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdningClient, val reglerClient: ReglerClient) {
     private val log = KotlinLogging.logger {}
     fun simuler(request: SimulerAFPOffentligLivsvarigRequest): List<AfpOffentligLivsvarigYtelseMedDelingstall> {
-        val aldreForDelingstall: List<AlderForDelingstall> =
-            AlderForDelingstallBeregner.bestemAldreForDelingstall(request.fodselsdato, request.fom)
+        val aldreForDelingstall: List<AlderForDelingstall> = bestemAldreForDelingstall(request.fodselsdato, request.fom)
 
         val requestToAFPBeholdninger = SimulerAFPBeholdningGrunnlagRequest(request.fnr, request.fom, request.fremtidigeInntekter.map { InntektPeriode(it.fom, it.belop) })
+
         val beholdningerMedAldreForDelingstall: List<PensjonsbeholdningMedDelingstallAlder> = afpBeholdningClient.simulerAFPBeholdningGrunnlag(requestToAFPBeholdninger)
             .map { periode -> PensjonsbeholdningMedDelingstallAlder(periode.pensjonsBeholdning, aldreForDelingstall.first { it.datoVedAlder.year == periode.fom.year }) }
 
-        val delingstallListe = penClient.hentDelingstall(request.fodselsdato.year, beholdningerMedAldreForDelingstall.map { it.alderForDelingstall.alder }.toList())
+        val delingstallListe = reglerClient.hentDelingstall(request.fodselsdato.year, beholdningerMedAldreForDelingstall.map { it.alderForDelingstall.alder })
 
         val beregningsgrunnlag = beholdningerMedAldreForDelingstall
             .map {
@@ -37,6 +39,6 @@ class AFPOffentligLivsvarigSimuleringService(val afpBeholdningClient: AFPBeholdn
                 "${request.fom}" }
         log.info { "Beregningsgrunnlag for AFP: $beregningsgrunnlag" }
 
-        return OffentligAFPYtelseBeregner.beregnAfpOffentligLivsvarigYtelser(beregningsgrunnlag)
+        return beregnAfpOffentligLivsvarigYtelser(beregningsgrunnlag)
     }
 }

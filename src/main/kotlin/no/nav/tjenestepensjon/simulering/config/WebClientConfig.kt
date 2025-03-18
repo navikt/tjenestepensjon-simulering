@@ -110,19 +110,16 @@ class WebClientConfig {
         .build()
 
     @Bean
-    fun penWebClient(
-        @Value("\${pen.url}") baseUrl: String,
-        @Value("\${pen.scope}") scope: String,
+    fun reglerWebClient(
+        @Value("\${regler.url}") baseUrl: String,
         builder: WebClient.Builder,
         httpClient: HttpClient,
-        adClient: AADClient,
     ): WebClient = builder
         .baseUrl(baseUrl)
         .clientConnector(ReactorClientHttpConnector(httpClient))
         .filter { request, next ->
             next.exchange(
                 ClientRequest.from(request)
-                    .headers { it.setBearerAuth(adClient.getToken(scope)) }
                     .build()
             )
         }
