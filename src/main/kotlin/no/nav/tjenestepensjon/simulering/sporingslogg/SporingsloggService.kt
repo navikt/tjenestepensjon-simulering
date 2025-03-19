@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.util.retry.Retry
+import java.time.Duration
 
 @Service
 class SporingsloggService(val sporingsloggGatewayWebClient: WebClient, val objectMapper: ObjectMapper, private val environment: Environment) {
@@ -31,7 +32,7 @@ class SporingsloggService(val sporingsloggGatewayWebClient: WebClient, val objec
 
     private fun rapporter(sporingsrapport: Sporingsrapport) {
         sporingsloggGatewayWebClient.post()
-            .uri("/sporingslogg")
+            .uri("/sporingslogg/api/post")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(toDto(sporingsrapport))
             .retrieve()
@@ -51,6 +52,6 @@ class SporingsloggService(val sporingsloggGatewayWebClient: WebClient, val objec
     }
 
     companion object {
-        private val RETRY = Retry.backoff(3, java.time.Duration.ofSeconds(1))
+        private val RETRY = Retry.backoff(3, Duration.ofSeconds(1))
     }
 }
