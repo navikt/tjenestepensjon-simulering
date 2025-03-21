@@ -26,7 +26,7 @@ class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, pr
         return client.simuler(request, tpNummer)
             .fold(
                 onSuccess = {
-                    if (it.utbetalingsperioder.isEmpty())
+                    if (!it.erSisteOrdning)
                         Result.failure(TomSimuleringFraTpOrdningException(TP_ORDNING))
                     else
                         Result.success(

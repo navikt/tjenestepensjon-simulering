@@ -83,7 +83,8 @@ class SPKTjenestepensjonServiceTest {
                     ytelseType = "OAFP"
                 ),
             ),
-            betingetTjenestepensjonErInkludert = false
+            betingetTjenestepensjonErInkludert = false,
+            erSisteOrdning = true
         )))
 
         val res : Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = spkTjenestepensjonService.simuler(req,"3010")
@@ -112,6 +113,28 @@ class SPKTjenestepensjonServiceTest {
         assertTrue(tjenestepensjonException!!.message!!.contains("Simulering av tjenestepensjon hos SPK er slått av"))
     }
 
+    @Test
+    fun `result skal vaere failure hvis ikke siste ordning`() {
+        val req = dummyRequest("1963-02-05")
+        `when`(client.simuler(req,"3010")).thenReturn(Result.success(SimulertTjenestepensjon(
+            tpLeverandoer = "spk",
+            ordningsListe = listOf(Ordning("3010")),
+            utbetalingsperioder = listOf(
+                Utbetalingsperiode(
+                    fom = LocalDate.parse("2026-03-01"),
+                    maanedligBelop = 3000,
+                    ytelseType = "SAERALDERSPAASLAG"
+                ),
+            ),
+            betingetTjenestepensjonErInkludert = false,
+            erSisteOrdning = false
+        )))
+
+        val res: Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = spkTjenestepensjonService.simuler(req,"3010")
+
+        assertTrue(res.isFailure)
+    }
+
     fun dummyResult(inkluderBTP: Boolean = false) : Result<SimulertTjenestepensjon> {
         return Result.success(SimulertTjenestepensjon(
             tpLeverandoer = "spk",
@@ -138,7 +161,8 @@ class SPKTjenestepensjonServiceTest {
                     ytelseType = "APOF2020"
                 ),
             ),
-            betingetTjenestepensjonErInkludert = inkluderBTP
+            betingetTjenestepensjonErInkludert = inkluderBTP,
+            erSisteOrdning = true
         ))
     }
 

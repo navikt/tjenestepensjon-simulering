@@ -60,7 +60,7 @@ object SPKMapper {
     private fun fjorAarSomManglerOpptjeningIPopp(): LocalDate = LocalDate.now().minusYears(1).withDayOfYear(1)
 
     fun mapToResponse(response: SPKSimulerTjenestepensjonResponse, dto: SPKSimulerTjenestepensjonRequest? = null): SimulertTjenestepensjon {
-        log.info { "Mapping response from SPK $response" }
+        log.debug { "Mapping response from SPK $response" }
         return SimulertTjenestepensjon(
             tpLeverandoer = PROVIDER_FULLT_NAVN,
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
@@ -70,6 +70,7 @@ object SPKMapper {
             },
             aarsakIngenUtbetaling = response.aarsakIngenUtbetaling.map { it.statusBeskrivelse + ": " + it.ytelseType },
             betingetTjenestepensjonErInkludert = response.utbetalingListe.flatMap { it.delytelseListe }.any { it.ytelseType == "BTP" },
+            erSisteOrdning = response.aarsakIngenUtbetaling.none { it.statusKode == "IKKE_SISTE_ORDNING" },
             serviceData = listOf("Request: " + dto?.toString(), "Response: $response")
         )
     }
