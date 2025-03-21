@@ -3,9 +3,8 @@ package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonFremtidigInntektDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto.*
-import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class SPKMapperTest {
@@ -149,6 +148,39 @@ class SPKMapperTest {
         assertEquals(LocalDate.of(2026, 3, 1), result.fremtidigInntektListe[2].fraOgMedDato)
         assertEquals(6, result.fremtidigInntektListe[3].aarligInntekt)
         assertEquals(LocalDate.of(2027, 4, 1), result.fremtidigInntektListe[3].fraOgMedDato)
+
+    }
+
+    @Test
+    fun `map response som er siste ordning`() {
+        val resp = SPKSimulerTjenestepensjonResponse(
+            listOf(InkludertOrdning("3010")),
+            listOf(
+                Utbetaling(LocalDate.of(2025, 2, 1), listOf(Delytelse("BTP", 141), Delytelse("PAASLAG", 268))),
+                Utbetaling(LocalDate.of(2030, 2, 1), listOf(Delytelse("OT6370", 779), Delytelse("PAASLAG", 268)))
+            ),
+            listOf(AarsakIngenUtbetaling("IKKE_STOETTET", "Ikke stoettet", "SAERALDERSPAASLAG"))
+        )
+
+        val result = SPKMapper.mapToResponse(resp)
+
+        assertTrue(result.erSisteOrdning)
+    }
+
+    @Test
+    fun `map response som ikke er siste ordning`() {
+        val resp = SPKSimulerTjenestepensjonResponse(
+            listOf(InkludertOrdning("3010")),
+            listOf(
+                Utbetaling(LocalDate.of(2025, 2, 1), listOf(Delytelse("BTP", 141), Delytelse("PAASLAG", 268))),
+                Utbetaling(LocalDate.of(2030, 2, 1), listOf(Delytelse("OT6370", 779), Delytelse("PAASLAG", 268)))
+            ),
+            listOf(AarsakIngenUtbetaling("IKKE_SISTE_ORDNING", "Ikke siste ordning", ""))
+        )
+
+        val result = SPKMapper.mapToResponse(resp)
+
+        assertFalse(result.erSisteOrdning)
 
     }
 }
