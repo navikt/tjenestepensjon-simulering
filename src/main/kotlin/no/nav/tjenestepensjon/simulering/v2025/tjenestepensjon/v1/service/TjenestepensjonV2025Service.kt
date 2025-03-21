@@ -5,7 +5,10 @@ import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.*
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.BrukerErIkkeMedlemException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TomSimuleringFraTpOrdningException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonService
 import org.springframework.stereotype.Service
@@ -45,7 +48,7 @@ class TjenestepensjonV2025Service(
                 else -> Result.failure(TpOrdningStoettesIkkeException(ordning))
             }.run {
                 onSuccess { return tpOrdningerNavn to this }
-                onFailure { if (it !is IkkeSisteOrdningException) return tpOrdningerNavn to this }
+                onFailure { if (it is TomSimuleringFraTpOrdningException) return tpOrdningerNavn to this } //Skjer kun hvis siste ordning
             }
         }
 
