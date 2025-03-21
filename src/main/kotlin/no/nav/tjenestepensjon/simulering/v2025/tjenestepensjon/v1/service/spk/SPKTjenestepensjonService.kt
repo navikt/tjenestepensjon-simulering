@@ -7,6 +7,7 @@ import no.nav.tjenestepensjon.simulering.service.FeatureToggleService.Companion.
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.IkkeSisteOrdningException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TomSimuleringFraTpOrdningException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TpUtil
@@ -27,6 +28,8 @@ class SPKTjenestepensjonService(private val client: SPKTjenestepensjonClient, pr
             .fold(
                 onSuccess = {
                     if (!it.erSisteOrdning)
+                        Result.failure(IkkeSisteOrdningException(TP_ORDNING))
+                    else if (it.utbetalingsperioder.isEmpty())
                         Result.failure(TomSimuleringFraTpOrdningException(TP_ORDNING))
                     else
                         Result.success(

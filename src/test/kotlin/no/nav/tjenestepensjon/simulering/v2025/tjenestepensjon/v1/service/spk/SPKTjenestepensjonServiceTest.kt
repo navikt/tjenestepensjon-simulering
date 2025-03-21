@@ -6,6 +6,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjonMedMaanedsUtbetalinger
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.IkkeSisteOrdningException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TjenestepensjonSimuleringException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025ServiceTest.Companion.dummyRequest
 import org.junit.jupiter.api.Assertions.*
@@ -116,6 +117,7 @@ class SPKTjenestepensjonServiceTest {
     @Test
     fun `result skal vaere failure hvis ikke siste ordning`() {
         val req = dummyRequest("1963-02-05")
+        `when`(featureToggleService.isEnabled(PEN_715_SIMULER_SPK)).thenReturn(true)
         `when`(client.simuler(req,"3010")).thenReturn(Result.success(SimulertTjenestepensjon(
             tpLeverandoer = "spk",
             ordningsListe = listOf(Ordning("3010")),
@@ -133,6 +135,28 @@ class SPKTjenestepensjonServiceTest {
         val res: Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = spkTjenestepensjonService.simuler(req,"3010")
 
         assertTrue(res.isFailure)
+    }
+
+    @Test
+    fun `result should be failure with IkkeSisteOrdningException if not the last arrangement`() {
+        val req = dummyRequest("1963-02-05")
+        `when`(featureToggleService.isEnabled(PEN_715_SIMULER_SPK)).thenReturn(true)
+        `when`(client.simuler(req, "3010")).thenReturn(Result.success(SimulertTjenestepensjon(
+            tpLeverandoer = "spk",
+            ordningsListe = listOf(Ordning("3010")),
+            utbetalingsperioder = emptyList(),
+            betingetTjenestepensjonErInkludert = false,
+            erSisteOrdning = false
+        )))
+
+        val res: Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = spkTjenestepensjonService.simuler(req, "3010")
+
+        println(res)
+        assertTrue(res.isFailure)
+        val exception = res.exceptionOrNull()
+        assertNotNull(exception)
+        assertTrue(exception is IkkeSisteOrdningException)
+        assertEquals("spk", (exception as IkkeSisteOrdningException).tpOrdning)
     }
 
     fun dummyResult(inkluderBTP: Boolean = false) : Result<SimulertTjenestepensjon> {
