@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
@@ -10,6 +11,7 @@ import java.time.LocalDate
 
 object KLPMapper {
 
+    private val log = KotlinLogging.logger {}
     const val PROVIDER_FULLT_NAVN = "Kommunal Landspensjonskasse"
 
     fun mapToRequest(request: SimulerTjenestepensjonRequestDto) =
@@ -46,8 +48,9 @@ object KLPMapper {
 
     private fun aarUtenRegistrertInntektHosSkatteetaten(): LocalDate = LocalDate.now().minusYears(2).withDayOfYear(1)
 
-    fun mapToResponse(response: KLPSimulerTjenestepensjonResponse, dto: LoggableSimulerTjenestepensjonRequestDto? = null) =
-        SimulertTjenestepensjon(
+    fun mapToResponse(response: KLPSimulerTjenestepensjonResponse, dto: LoggableSimulerTjenestepensjonRequestDto? = null) : SimulertTjenestepensjon {
+        log.info { "Mapping response from KLP $response" }
+        return SimulertTjenestepensjon(
             tpLeverandoer = PROVIDER_FULLT_NAVN,
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
             utbetalingsperioder = response.utbetalingsListe.map { Utbetalingsperiode(it.fraOgMedDato, it.manedligUtbetaling, it.ytelseType) },
@@ -56,6 +59,7 @@ object KLPMapper {
         ).apply {
             serviceData = listOf("Request: ${dto?.toString()}","Response: $response")
         }
+    }
 
 
 }
