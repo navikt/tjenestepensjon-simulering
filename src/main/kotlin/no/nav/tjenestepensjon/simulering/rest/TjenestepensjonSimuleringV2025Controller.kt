@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import java.lang.RuntimeException
 
 @RestController
 class TjenestepensjonSimuleringV2025Controller(
@@ -39,6 +38,7 @@ class TjenestepensjonSimuleringV2025Controller(
                     is TpOrdningStoettesIkkeException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.TP_ORDNING_ER_IKKE_STOTTET, e.message, relevanteTpOrdninger)
                     is TjenestepensjonSimuleringException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.TEKNISK_FEIL_FRA_TP_ORDNING, e.message, relevanteTpOrdninger)
                     is TomSimuleringFraTpOrdningException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.INGEN_UTBETALINGSPERIODER_FRA_TP_ORDNING, "Simulering fra ${e.tpOrdning} inneholder ingen utbetalingsperioder", relevanteTpOrdninger)
+                    is IkkeSisteOrdningException -> SimulerTjenestepensjonResponseDto(ResultatTypeDto.INGEN_UTBETALINGSPERIODER_FRA_TP_ORDNING, "Simulering fra ${e.tpOrdning} inneholder ingen utbetalingsperioder", relevanteTpOrdninger)
                     is TpregisteretException -> loggOgReturnerTekniskFeil(e)
                     else -> loggOgReturnerTekniskFeil(RuntimeException(e))
                 }

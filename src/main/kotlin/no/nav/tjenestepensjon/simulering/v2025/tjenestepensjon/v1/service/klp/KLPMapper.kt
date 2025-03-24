@@ -54,15 +54,12 @@ object KLPMapper {
             tpLeverandoer = PROVIDER_FULLT_NAVN,
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
             utbetalingsperioder = response.utbetalingsListe.map { Utbetalingsperiode(it.fraOgMedDato, it.manedligUtbetaling, it.ytelseType) },
-            aarsakIngenUtbetaling = response.arsakIngenUtbetaling.map { it as? String ?: unexpected(it) ?: "?" },
+            aarsakIngenUtbetaling = response.arsakIngenUtbetaling.map { it.statusBeskrivelse + ": " + it.ytelseType },
             betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name }
         ).apply {
             serviceData = listOf("Request: ${dto?.toString()}", "Response: $response")
         }
     }
 
-    private fun unexpected(arsakObject: Any?): String? =
-        arsakObject?.toString()?.also {
-            log.warn { "Unexpected arsakIngenUtbetaling object: $it" }
-        }
+
 }

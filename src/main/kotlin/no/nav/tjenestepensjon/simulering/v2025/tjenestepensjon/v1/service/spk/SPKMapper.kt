@@ -70,6 +70,7 @@ object SPKMapper {
             },
             aarsakIngenUtbetaling = response.aarsakIngenUtbetaling.map { it.statusBeskrivelse + ": " + it.ytelseType },
             betingetTjenestepensjonErInkludert = response.utbetalingListe.flatMap { it.delytelseListe }.any { it.ytelseType == "BTP" },
+            erSisteOrdning = response.aarsakIngenUtbetaling.none { it.statusKode == "IKKE_SISTE_ORDNING" },
             serviceData = listOf("Request: " + dto?.toString(), "Response: $response")
         )
     }

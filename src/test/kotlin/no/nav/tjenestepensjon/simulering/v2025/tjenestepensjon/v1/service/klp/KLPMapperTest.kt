@@ -2,11 +2,9 @@ package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp
 
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonFremtidigInntektDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.InkludertOrdning
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.KLPSimulerTjenestepensjonRequest
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.KLPSimulerTjenestepensjonResponse
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.Utbetaling
-import org.junit.jupiter.api.Assertions.*
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -21,7 +19,7 @@ class KLPMapperTest {
                 Utbetaling(LocalDate.of(2028, 3, 7), manedligUtbetaling = 2, arligUtbetaling = 24, ytelseType = "PAASLAG"),
                 Utbetaling(LocalDate.of(2030, 4, 8), manedligUtbetaling = 3, arligUtbetaling = 36, ytelseType = "OT6370"),
             ),
-            listOf("SAERALDERSPAASLAG ikke støttet"), true
+            listOf(ArsakIngenUtbetaling(statusKode = "IKKE_STOETTET", statusBeskrivelse = "Ikke stoettet", ytelseType = "SAERALDERSPAASLAG")), true
         )
 
         val result = KLPMapper.mapToResponse(resp)
@@ -41,7 +39,7 @@ class KLPMapperTest {
         assertEquals(resp.utbetalingsListe[2].ytelseType, result.utbetalingsperioder[2].ytelseType)
 
         assertEquals(1, result.aarsakIngenUtbetaling.size)
-        assertEquals(resp.arsakIngenUtbetaling[0], result.aarsakIngenUtbetaling[0])
+        assertEquals("Ikke stoettet: SAERALDERSPAASLAG", result.aarsakIngenUtbetaling.first())
 
     }
 

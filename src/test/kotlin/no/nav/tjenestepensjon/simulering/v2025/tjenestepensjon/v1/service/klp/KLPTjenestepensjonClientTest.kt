@@ -12,6 +12,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.Sammen
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025ServiceTest.Companion.dummyRequest
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPMapper.PROVIDER_FULLT_NAVN
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonClient.Companion.SIMULER_PATH
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.ArsakIngenUtbetaling
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.InkludertOrdning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.KLPSimulerTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.Utbetaling
@@ -89,8 +90,8 @@ class KLPTjenestepensjonClientTest {
         assertEquals(mockResponse.utbetalingsListe[3].fraOgMedDato, tjenestepensjon.utbetalingsperioder[3].fom)
         assertEquals(mockResponse.utbetalingsListe[3].manedligUtbetaling, tjenestepensjon.utbetalingsperioder[3].maanedligBelop)
         assertEquals(mockResponse.utbetalingsListe[3].ytelseType, tjenestepensjon.utbetalingsperioder[3].ytelseType)
-        assertEquals(3, tjenestepensjon.aarsakIngenUtbetaling.size)
-        assertTrue(tjenestepensjon.aarsakIngenUtbetaling.containsAll(mockResponse.arsakIngenUtbetaling))
+        assertEquals(1, tjenestepensjon.aarsakIngenUtbetaling.size)
+        assertTrue(tjenestepensjon.aarsakIngenUtbetaling.first().contains(mockResponse.arsakIngenUtbetaling.first().ytelseType))
 
         wireMockServer.removeStub(stub.uuid)
     }
@@ -168,7 +169,7 @@ class KLPTjenestepensjonClientTest {
                 ytelseType = "OT6370",
             )
         ),
-        arsakIngenUtbetaling = listOf("IKKE_STOETTET", "Ikke stoettet", "SAERALDERSPAASLAG"),
+        arsakIngenUtbetaling = listOf(ArsakIngenUtbetaling( "IKKE_STOETTET", "Ikke stoettet", "SAERALDERSPAASLAG")),
         betingetTjenestepensjonErInkludert = false,
     )
 
