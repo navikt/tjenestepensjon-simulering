@@ -5,7 +5,7 @@ import java.time.LocalDate
 data class KLPSimulerTjenestepensjonResponse(
     val inkludertOrdningListe: List<InkludertOrdning>,
     val utbetalingsListe: List<Utbetaling>,
-    val arsakIngenUtbetaling: List<String>,
+    val arsakIngenUtbetaling: List<ArsakIngenUtbetaling>,
     val betingetTjenestepensjonErInkludert: Boolean,
 )
 
@@ -18,4 +18,10 @@ data class Utbetaling(
     val manedligUtbetaling: Int,
     val arligUtbetaling: Int,
     val ytelseType: String
+)
+
+data class ArsakIngenUtbetaling(
+    val statusKode: String,
+    val statusBeskrivelse: String,
+    val ytelseType: String,
 )
