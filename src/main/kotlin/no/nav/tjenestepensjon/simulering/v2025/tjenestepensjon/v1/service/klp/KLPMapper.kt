@@ -48,8 +48,8 @@ object KLPMapper {
 
     private fun aarUtenRegistrertInntektHosSkatteetaten(): LocalDate = LocalDate.now().minusYears(2).withDayOfYear(1)
 
-    fun mapToResponse(response: KLPSimulerTjenestepensjonResponse, dto: LoggableSimulerTjenestepensjonRequestDto? = null) : SimulertTjenestepensjon {
-        log.debug { "Mapping response from KLP $response" }
+    fun mapToResponse(response: KLPSimulerTjenestepensjonResponse, dto: LoggableSimulerTjenestepensjonRequestDto? = null): SimulertTjenestepensjon {
+        log.info { "Mapping response from KLP $response" }
         return SimulertTjenestepensjon(
             tpLeverandoer = PROVIDER_FULLT_NAVN,
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
@@ -57,7 +57,7 @@ object KLPMapper {
             aarsakIngenUtbetaling = response.arsakIngenUtbetaling.map { it.statusBeskrivelse + ": " + it.ytelseType },
             betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name }
         ).apply {
-            serviceData = listOf("Request: ${dto?.toString()}","Response: $response")
+            serviceData = listOf("Request: ${dto?.toString()}", "Response: $response")
         }
     }
 
