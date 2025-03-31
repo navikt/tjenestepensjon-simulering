@@ -34,4 +34,35 @@ class AlderForDelingstallBeregnerTest {
         assertEquals(64, alderListe[0].alder.aar)
         assertEquals(8, alderListe[0].alder.maaneder)
     }
+
+    @Test
+    fun `bestem alder ved uttaksalder 67 aar 0 maaneder`() {
+        val alderListe =
+            AlderForDelingstallBeregner.bestemAldreForDelingstall(LocalDate.of(2001, 1, 1), LocalDate.of(2068, 2, 1))
+        assertEquals(1, alderListe.size)
+        assertEquals(67, alderListe[0].alder.aar)
+        assertEquals(0, alderListe[0].alder.maaneder)
+    }
+
+    @Test
+    fun `bestem alder ved uttaksalder 64 aar 8 maaneder`() {
+        val alderListe =
+            AlderForDelingstallBeregner.bestemAldreForDelingstall(LocalDate.of(2001, 4, 1), LocalDate.of(2066, 1, 1))
+        assertEquals(1, alderListe.size)
+        assertEquals(64, alderListe[0].alder.aar)
+        assertEquals(8, alderListe[0].alder.maaneder)
+    }
+
+    @Test
+    fun `bestem alder ved uttaksalder 64 aar 9 maaneder`() {
+        val alderListe =
+            AlderForDelingstallBeregner.bestemAldreForDelingstall(LocalDate.of(2001, 4, 1), LocalDate.of(2066, 1, 15))
+        assertEquals(1, alderListe.size)
+        assertEquals(64, alderListe[0].alder.aar)
+        assertEquals(9, alderListe[0].alder.maaneder)
+    }
+
+
+
+
 }
