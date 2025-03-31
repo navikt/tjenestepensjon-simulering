@@ -4,13 +4,13 @@ import no.nav.tjenestepensjon.simulering.common.AlderUtil.bestemAlderVedDato
 import no.nav.tjenestepensjon.simulering.model.domain.pen.Alder
 import no.nav.tjenestepensjon.simulering.model.domain.pen.AlderForDelingstall
 import java.time.LocalDate
-import java.time.Period
 
 object AlderForDelingstallBeregner {
     private val hoyesteAlderForDelingstall = Alder(70, 0)
     private val lavestMuligUttaksalder = 62
 
     fun bestemAldreForDelingstall(fodselsdato: LocalDate, uttaksdato: LocalDate): List<AlderForDelingstall> {
+
         val aarGammelVedUttak = uttaksdato.year - fodselsdato.year
 
         if (aarGammelVedUttak == lavestMuligUttaksalder) {
@@ -24,6 +24,11 @@ object AlderForDelingstallBeregner {
         if (aarGammelVedUttak >= hoyesteAlderForDelingstall.aar) {
             return listOf(AlderForDelingstall(hoyesteAlderForDelingstall, uttaksdato))
         }
-        return listOf(AlderForDelingstall(bestemAlderVedDato(fodselsdato, uttaksdato), uttaksdato))
+        val ufullstendigMaanedFratrekk = if (uttaksdato.dayOfMonth - fodselsdato.dayOfMonth == 0) 1 else 0
+
+        return listOf(AlderForDelingstall(
+            bestemAlderVedDato(fodselsdato, uttaksdato.minusMonths(ufullstendigMaanedFratrekk.toLong())),
+            uttaksdato)
+        )
     }
 }
