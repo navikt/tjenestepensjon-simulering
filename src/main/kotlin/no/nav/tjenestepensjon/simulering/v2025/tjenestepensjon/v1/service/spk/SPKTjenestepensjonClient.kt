@@ -1,7 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.SPK_CACHE
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.ping.Pingable
 import no.nav.tjenestepensjon.simulering.sporingslogg.Organisasjon
@@ -16,7 +15,6 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SP
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKMapper.mapToResponse
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto.SPKSimulerTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto.SPKSimulerTjenestepensjonResponse
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
@@ -31,7 +29,6 @@ class SPKTjenestepensjonClient(
 ) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}
 
-    @Cacheable(SPK_CACHE)
     override fun simuler(spec: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjon> {
         val request: SPKSimulerTjenestepensjonRequest = mapToRequest(spec)
         log.debug { "Simulating tjenestepensjon 2025 with $PROVIDER with request $request" }

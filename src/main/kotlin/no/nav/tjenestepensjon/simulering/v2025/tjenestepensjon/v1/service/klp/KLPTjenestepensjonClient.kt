@@ -1,7 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.KLP_CACHE
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.ping.Pingable
 import no.nav.tjenestepensjon.simulering.sporingslogg.Organisasjon
@@ -20,7 +19,6 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dt
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.KLPSimulerTjenestepensjonResponse
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.Utbetaling
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
@@ -36,7 +34,6 @@ class KLPTjenestepensjonClient(
 ) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}
 
-    @Cacheable(KLP_CACHE)
     override fun simuler(spec: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjon> {
         val response = if (activeProfiles.contains("dev-gcp")) {
             provideMockResponse(spec)
