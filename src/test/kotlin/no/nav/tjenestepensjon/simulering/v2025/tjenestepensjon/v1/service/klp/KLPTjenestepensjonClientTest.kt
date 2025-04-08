@@ -32,7 +32,7 @@ import java.time.LocalDate
 class KLPTjenestepensjonClientTest {
 
     @MockitoBean
-    private lateinit var sammenlignAFPService: SammenlignAFPService
+    private lateinit var sammenligner: SammenlignAFPService
 
     @MockitoBean
     private lateinit var tokenClient: AADClient
@@ -53,7 +53,7 @@ class KLPTjenestepensjonClientTest {
     @BeforeAll
     fun beforeAll() {
         Mockito.`when`(maskinportenTokenClient.pensjonsimuleringToken(anyNonNull())).thenReturn("bogustoken")
-        Mockito.doNothing().`when`(sammenlignAFPService).sammenlignOgLoggAfp(anyNonNull(), anyNonNull())
+        Mockito.doNothing().`when`(sammenligner).sammenlignOgLoggAfp(anyNonNull(), anyNonNull())
     }
 
     @AfterAll
@@ -99,7 +99,7 @@ class KLPTjenestepensjonClientTest {
     fun `send request og faa error fra klp`() {
         val stub = wireMockServer.stubFor(post(urlPathEqualTo(SIMULER_PATH)).willReturn(serverError()))
 
-        val response: Result<SimulertTjenestepensjon> = klpClient.simuler(dummyRequest("1963-02-05", brukerBaOmAfp = true), "3100")
+        val response: Result<SimulertTjenestepensjon> = klpClient.simuler(dummyRequest("1963-02-06", brukerBaOmAfp = true), "3100")
         assertTrue(response.isFailure)
         assertTrue(response.exceptionOrNull() is TjenestepensjonSimuleringException)
 
@@ -109,7 +109,7 @@ class KLPTjenestepensjonClientTest {
     @Test
     fun `ikke send request og returner mock i dev-gcp fra klp`() {
         setField(klpClient, "activeProfiles", "dev-gcp")
-        val request = dummyRequest("1963-02-05", brukerBaOmAfp = true)
+        val request = dummyRequest("1963-02-07", brukerBaOmAfp = true) // using unique request to avoid cache hit
         val tpNummer = "3100"
 
         val mockExpectedResponse = KLPTjenestepensjonClient.provideMockResponse(request)
