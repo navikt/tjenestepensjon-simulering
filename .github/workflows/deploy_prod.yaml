@@ -71,7 +71,7 @@ jobs:
         name: Deploy to prod
         env:
           CLUSTER: prod-gcp
-          RESOURCE: .nais/nais-prod-gcp.yaml,.nais/unleash-apitoken-prod.yaml
+          RESOURCE: .nais/nais-prod-gcp.yaml,.nais/unleash-apitoken-prod.yaml,.nais/alerts-prod-gcp.yml
           IMAGE: ${{ needs.build.outputs.image }}
 
   trivy-imagescan:
