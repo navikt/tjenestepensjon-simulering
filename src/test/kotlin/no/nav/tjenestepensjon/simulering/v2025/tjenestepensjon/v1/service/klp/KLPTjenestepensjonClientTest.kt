@@ -11,7 +11,6 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.Tjen
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.SammenlignAFPService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025ServiceTest.Companion.dummyRequest
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPMapper.PROVIDER_FULLT_NAVN
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonClient.Companion.SIMULER_PATH
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.ArsakIngenUtbetaling
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.InkludertOrdning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.KLPSimulerTjenestepensjonResponse
@@ -36,7 +35,7 @@ class KLPTjenestepensjonClientTest {
     private lateinit var sammenlignAFPService: SammenlignAFPService
 
     @MockitoBean
-    private lateinit var aadClient: AADClient
+    private lateinit var tokenClient: AADClient
 
     @MockitoBean
     private lateinit var maskinportenTokenClient: MaskinportenTokenClient
@@ -169,8 +168,11 @@ class KLPTjenestepensjonClientTest {
                 ytelseType = "OT6370",
             )
         ),
-        arsakIngenUtbetaling = listOf(ArsakIngenUtbetaling( "IKKE_STOETTET", "Ikke stoettet", "SAERALDERSPAASLAG")),
+        arsakIngenUtbetaling = listOf(ArsakIngenUtbetaling("IKKE_STOETTET", "Ikke stoettet", "SAERALDERSPAASLAG")),
         betingetTjenestepensjonErInkludert = false,
     )
 
+    private companion object {
+        private const val SIMULER_PATH = "/api/oftp/simulering"
+    }
 }
