@@ -3,6 +3,7 @@ package no.nav.tjenestepensjon.simulering.service
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_FORHOLD_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_TSSID_CACHE
@@ -61,6 +62,7 @@ class TpClient(
             .exchangeToMono(::handleStringResponse)
             .block()
 
+    @Cacheable(TP_FORHOLD_CACHE)
     fun findTPForhold(fnr: String): List<TpOrdningDto> {
         return webClient.get()
             .uri("$tpUrl/api/tjenestepensjon/aktiveOrdninger")

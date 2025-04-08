@@ -20,6 +20,9 @@ class CacheConfig {
     fun spkCache() = getCache(SPK_CACHE, SPK_CACHE_EXPIRES)
 
     @Bean
+    fun tpForholdCache() = getCache(TP_FORHOLD_CACHE, TP_FORHOLD_CACHE_EXPIRES)
+
+    @Bean
     fun tpOrdningLeverandorCache() = getCache(TP_ORDNING_LEVERANDOR_CACHE, TP_ORDNING_LEVERANDOR_CACHE_EXPIRES)
 
     @Bean
@@ -37,6 +40,8 @@ class CacheConfig {
         val KLP_CACHE_EXPIRES: Duration = DAYS.duration
         const val SPK_CACHE = "SPK_CACHE"
         val SPK_CACHE_EXPIRES: Duration = DAYS.duration
+        const val TP_FORHOLD_CACHE = "TP_FORHOLD_CACHE"
+        val TP_FORHOLD_CACHE_EXPIRES: Duration = DAYS.duration
         const val TP_ORDNING_LEVERANDOR_CACHE = "TP_ORDNING_LEVERANDOR_CACHE"
         val TP_ORDNING_LEVERANDOR_CACHE_EXPIRES: Duration = DAYS.duration
         const val TP_ORDNING_TSSID_CACHE = "TP_ORDNING_TSSID_CACHE"
