@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: tjenestepensjon-simulering-alert
+  namespace: pensjonskalkulator
+  labels:
+    team: pensjonskalkulator
+spec:
+  groups:
+    - name: tjenestepensjon-simulering-alert
+      rules:
+        - alert: Tjenestepensjon-simulering - Applikasjonen er nede
+          expr: kube_deployment_status_replicas_available{deployment="tjenestepensjon-simulering"} == 0
+          for: 2m
+          annotations:
+            consequence: "tjenestepensjon-simulering er utilgjengelig"
+            action: "`kubectl describe pod -l app=tjenestepensjon-simulering -n pensjonskalkulator` for events, `kubectl logs -l app=tjenestepensjon-simulering -n pensjonskalkulator` for logger"
+          labels:
+            namespace: pensjonskalkulator
+            severity: critical
+        - alert: tjenestepensjon-simulering - Høy feilrate i logger
+          expr: (100 * sum by (app, namespace) (rate(log_messages_errors{app="tjenestepensjon-simulering",level="Error"}[3m])) / sum by (app, namespace) (rate(log_messages_total{app="tjenestepensjon-simulering"}[3m]))) > 1
+          for: 3m
+          annotations:
+            consequence: "høy feilrate for tjenestepensjon-simulering"
+            action: "Sjekk loggene til tjenestepensjon-simulering for å se hvorfor det er så mange feil"
+          labels:
+            namespace: pensjonskalkulator
+            severity: warning
