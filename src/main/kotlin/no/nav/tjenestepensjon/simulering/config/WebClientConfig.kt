@@ -180,7 +180,7 @@ class WebClientConfig {
 
     companion object {
         private const val CONNECT_TIMEOUT_MILLIS = 3000
-        const val READ_TIMEOUT_SECONDS = 45
+        const val READ_TIMEOUT_SECONDS = 30
 
         fun addCorrelationId(
             next: ExchangeFunction,
