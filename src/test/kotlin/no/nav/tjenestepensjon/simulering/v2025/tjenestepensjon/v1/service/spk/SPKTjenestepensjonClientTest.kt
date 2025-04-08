@@ -97,7 +97,9 @@ class SPKTjenestepensjonClientTest {
     fun `send request og faa error fra spk`() {
         val stub = wireMockServer.stubFor(post(urlPathEqualTo(SIMULER_PATH)).willReturn(serverError()))
 
-        val response: Result<SimulertTjenestepensjon> = spkClient.simuler(dummyRequest("1963-02-05", brukerBaOmAfp = true), "3010")
+        // Use unique request to avoid cache hit:
+        val response: Result<SimulertTjenestepensjon> = spkClient.simuler(dummyRequest("1963-02-06", brukerBaOmAfp = true), "3010")
+
         assertTrue(response.isFailure)
         assertTrue(response.exceptionOrNull() is TjenestepensjonSimuleringException)
 
