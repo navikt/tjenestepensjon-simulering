@@ -14,6 +14,12 @@ import java.time.temporal.ChronoUnit.HOURS
 class CacheConfig {
 
     @Bean
+    fun klpCache() = getCache(KLP_CACHE, KLP_CACHE_EXPIRES)
+
+    @Bean
+    fun spkCache() = getCache(SPK_CACHE, SPK_CACHE_EXPIRES)
+
+    @Bean
     fun tpOrdningLeverandorCache() = getCache(TP_ORDNING_LEVERANDOR_CACHE, TP_ORDNING_LEVERANDOR_CACHE_EXPIRES)
 
     @Bean
@@ -27,6 +33,10 @@ class CacheConfig {
             name, newBuilder().recordStats().expireAfterWrite(duration).build()
         )
 
+        const val KLP_CACHE = "KLP_CACHE"
+        val KLP_CACHE_EXPIRES: Duration = DAYS.duration
+        const val SPK_CACHE = "SPK_CACHE"
+        val SPK_CACHE_EXPIRES: Duration = DAYS.duration
         const val TP_ORDNING_LEVERANDOR_CACHE = "TP_ORDNING_LEVERANDOR_CACHE"
         val TP_ORDNING_LEVERANDOR_CACHE_EXPIRES: Duration = DAYS.duration
         const val TP_ORDNING_TSSID_CACHE = "TP_ORDNING_TSSID_CACHE"
