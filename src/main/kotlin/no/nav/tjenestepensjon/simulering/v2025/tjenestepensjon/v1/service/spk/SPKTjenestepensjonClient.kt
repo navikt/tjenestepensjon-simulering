@@ -11,6 +11,9 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.Tjen
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.SammenlignAFPService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client.Companion.TJENESTE
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKMapper.mapToRequest
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKMapper.mapToResponse
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto.SPKSimulerTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto.SPKSimulerTjenestepensjonResponse
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -21,60 +24,79 @@ import org.springframework.web.reactive.function.client.bodyToMono
 @Service
 class SPKTjenestepensjonClient(
     private val spkWebClient: WebClient,
-    private val sporingsloggService: SporingsloggService,
-    private val sammenlign: SammenlignAFPService
+    private val sporingslogg: SporingsloggService,
+    private val sammenligner: SammenlignAFPService
 ) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}
 
-    override fun simuler(request: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjon> {
-        val dto = SPKMapper.mapToRequest(request)
-        log.debug { "Simulating tjenestepensjon 2025 hos SPK with request $dto" }
-        sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, request.pid, dto)
-        try {
-            val response = spkWebClient
+    override fun simuler(spec: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjon> {
+        val request: SPKSimulerTjenestepensjonRequest = mapToRequest(spec)
+        log.debug { "Simulating tjenestepensjon 2025 with $PROVIDER with request $request" }
+        sporingslogg.loggUtgaaendeRequest(Organisasjon.SPK, spec.pid, request)
+
+        return try {
+            spkWebClient
                 .post()
                 .uri("$SIMULER_PATH/$tpNummer")
-                .bodyValue(dto)
+                .bodyValue(request)
                 .retrieve()
                 .bodyToMono<SPKSimulerTjenestepensjonResponse>()
                 .block()
-            return response?.let { Result.success(SPKMapper.mapToResponse(it, dto)
-                .also { res -> sammenlign.sammenlignOgLoggAfp(request, res.utbetalingsperioder) }) }
+                ?.let { success(spec, request, response = it) }
                 ?: Result.failure(TjenestepensjonSimuleringException("No response body"))
         } catch (e: WebClientResponseException) {
-            val errorMsg = "Failed to simulate tjenestepensjon 2025 hos SPK ${e.responseBodyAsString}"
-            log.error(e) { errorMsg }
-            return Result.failure(TjenestepensjonSimuleringException(errorMsg))
+            "Failed to simulate tjenestepensjon 2025 with $PROVIDER ${e.responseBodyAsString}".let {
+                log.error(e) { it }
+                Result.failure(TjenestepensjonSimuleringException(it))
+            }
         } catch (e: WebClientRequestException) {
-            log.error(e) { "Failed to send request to simulate tjenestepensjon 2025 hos SPK med url ${e.uri}" }
-            return Result.failure(TjenestepensjonSimuleringException("Failed to send request to simulate tjenestepensjon 2025 hos SPK"))
+            "Failed to send request to simulate tjenestepensjon 2025 with $PROVIDER".let {
+                log.error(e) { "$it med url ${e.uri}" }
+                Result.failure(TjenestepensjonSimuleringException(it))
+            }
         }
     }
 
+    private fun success(
+        spec: SimulerTjenestepensjonRequestDto,
+        request: SPKSimulerTjenestepensjonRequest,
+        response: SPKSimulerTjenestepensjonResponse
+    ): Result<SimulertTjenestepensjon> =
+        Result.success(
+            mapToResponse(response, request)
+                .also { sammenligner.sammenlignOgLoggAfp(spec, it.utbetalingsperioder) }
+        )
+
     override fun ping(): PingResponse {
-        try {
+        return try {
             val response = spkWebClient.get()
                 .uri(PING_PATH)
                 .retrieve()
                 .bodyToMono<String>()
                 .block() ?: "PING OK, ingen response body"
-            return PingResponse(PROVIDER, TJENESTE, response)
+            pingResponse(response)
         } catch (e: WebClientResponseException) {
-            val errorMsg = "Failed to ping SPK ${e.responseBodyAsString}"
-            log.error(e) { errorMsg }
-            return PingResponse(PROVIDER, TJENESTE, errorMsg)
+            "Failed to ping $PROVIDER ${e.responseBodyAsString}".let {
+                log.error(e) { it }
+                pingResponse(it)
+            }
         } catch (e: WebClientRequestException) {
-            log.error(e) { "Failed to ping SPK with url ${e.uri}" }
-            return PingResponse(PROVIDER, TJENESTE, "Failed to ping to SPK")
+            "Failed to ping to $PROVIDER".let {
+                log.error(e) { "$it with url ${e.uri}" }
+                pingResponse(it)
+            }
         } catch (e: Exception) {
-            log.error(e) { "An unexpected error occurred while pinging ${PROVIDER} ${e.message}" }
-            return PingResponse(PROVIDER, TJENESTE, "Unexpected error: ${e.message}")
+            log.error(e) { "An unexpected error occurred while pinging $PROVIDER ${e.message}" }
+            pingResponse("Unexpected error: ${e.message}")
         }
     }
 
     companion object {
-        const val SIMULER_PATH = "/nav/v2/tjenestepensjon/simuler"
-        private const val PING_PATH = "/nav/admin/ping"
         private const val PROVIDER = "SPK"
+        private const val SIMULER_PATH = "/nav/v2/tjenestepensjon/simuler"
+        private const val PING_PATH = "/nav/admin/ping"
+
+        private fun pingResponse(message: String) =
+            PingResponse(provider = PROVIDER, tjeneste = TJENESTE, melding = message)
     }
 }

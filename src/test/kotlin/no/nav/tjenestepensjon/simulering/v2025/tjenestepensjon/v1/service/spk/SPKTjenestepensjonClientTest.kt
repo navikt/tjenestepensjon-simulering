@@ -11,7 +11,6 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.Tjen
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.SammenlignAFPService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025ServiceTest.Companion.dummyRequest
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKMapper.PROVIDER_FULLT_NAVN
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKTjenestepensjonClient.Companion.SIMULER_PATH
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.dto.*
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.*
@@ -26,16 +25,20 @@ import java.time.LocalDate
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class SPKTjenestepensjonClientTest{
+class SPKTjenestepensjonClientTest {
 
     @MockitoBean
-    private lateinit var sammenlignAFPService: SammenlignAFPService
+    private lateinit var sammenligner: SammenlignAFPService
+
     @MockitoBean
-    private lateinit var aadClient: AADClient
+    private lateinit var tokenClient: AADClient
+
     @MockitoBean
     private lateinit var maskinportenTokenClient: MaskinportenTokenClient
+
     @Autowired
     private lateinit var spkClient: SPKTjenestepensjonClient
+
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
@@ -46,7 +49,7 @@ class SPKTjenestepensjonClientTest{
     @BeforeAll
     fun beforeAll() {
         Mockito.`when`(maskinportenTokenClient.pensjonsimuleringToken(anyNonNull())).thenReturn("bogustoken")
-        Mockito.doNothing().`when`(sammenlignAFPService).sammenlignOgLoggAfp(anyNonNull(), anyNonNull())
+        Mockito.doNothing().`when`(sammenligner).sammenlignOgLoggAfp(anyNonNull(), anyNonNull())
     }
 
     @AfterAll
@@ -60,7 +63,7 @@ class SPKTjenestepensjonClientTest{
         val tpNummer = "3010"
         val stub = wireMockServer.stubFor(post(urlPathEqualTo("$SIMULER_PATH/$tpNummer")).willReturn(okJson(objectMapper.writeValueAsString(mockResponse))))
 
-        val response: Result<SimulertTjenestepensjon> = spkClient.simuler(dummyRequest("1963-02-05", brukerBaOmAfp = true),tpNummer)
+        val response: Result<SimulertTjenestepensjon> = spkClient.simuler(dummyRequest("1963-02-05", brukerBaOmAfp = true), tpNummer)
 
         assertTrue(response.isSuccess)
         val tjenestepensjon = response.getOrNull()
@@ -94,7 +97,9 @@ class SPKTjenestepensjonClientTest{
     fun `send request og faa error fra spk`() {
         val stub = wireMockServer.stubFor(post(urlPathEqualTo(SIMULER_PATH)).willReturn(serverError()))
 
-        val response: Result<SimulertTjenestepensjon> = spkClient.simuler(dummyRequest("1963-02-05", brukerBaOmAfp = true),"3010")
+        // Use unique request to avoid cache hit:
+        val response: Result<SimulertTjenestepensjon> = spkClient.simuler(dummyRequest("1963-02-06", brukerBaOmAfp = true), "3010")
+
         assertTrue(response.isFailure)
         assertTrue(response.exceptionOrNull() is TjenestepensjonSimuleringException)
 
@@ -130,5 +135,7 @@ class SPKTjenestepensjonClientTest{
         )
     )
 
-
+    private companion object {
+        private const val SIMULER_PATH = "/nav/v2/tjenestepensjon/simuler"
+    }
 }

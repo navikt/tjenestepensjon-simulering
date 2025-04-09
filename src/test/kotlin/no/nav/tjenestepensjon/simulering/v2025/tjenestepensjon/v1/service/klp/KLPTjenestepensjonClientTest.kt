@@ -11,7 +11,6 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.Tjen
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.SammenlignAFPService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025ServiceTest.Companion.dummyRequest
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPMapper.PROVIDER_FULLT_NAVN
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPTjenestepensjonClient.Companion.SIMULER_PATH
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.ArsakIngenUtbetaling
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.InkludertOrdning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.KLPSimulerTjenestepensjonResponse
@@ -33,10 +32,10 @@ import java.time.LocalDate
 class KLPTjenestepensjonClientTest {
 
     @MockitoBean
-    private lateinit var sammenlignAFPService: SammenlignAFPService
+    private lateinit var sammenligner: SammenlignAFPService
 
     @MockitoBean
-    private lateinit var aadClient: AADClient
+    private lateinit var tokenClient: AADClient
 
     @MockitoBean
     private lateinit var maskinportenTokenClient: MaskinportenTokenClient
@@ -54,7 +53,7 @@ class KLPTjenestepensjonClientTest {
     @BeforeAll
     fun beforeAll() {
         Mockito.`when`(maskinportenTokenClient.pensjonsimuleringToken(anyNonNull())).thenReturn("bogustoken")
-        Mockito.doNothing().`when`(sammenlignAFPService).sammenlignOgLoggAfp(anyNonNull(), anyNonNull())
+        Mockito.doNothing().`when`(sammenligner).sammenlignOgLoggAfp(anyNonNull(), anyNonNull())
     }
 
     @AfterAll
@@ -100,7 +99,7 @@ class KLPTjenestepensjonClientTest {
     fun `send request og faa error fra klp`() {
         val stub = wireMockServer.stubFor(post(urlPathEqualTo(SIMULER_PATH)).willReturn(serverError()))
 
-        val response: Result<SimulertTjenestepensjon> = klpClient.simuler(dummyRequest("1963-02-05", brukerBaOmAfp = true), "3100")
+        val response: Result<SimulertTjenestepensjon> = klpClient.simuler(dummyRequest("1963-02-06", brukerBaOmAfp = true), "3100")
         assertTrue(response.isFailure)
         assertTrue(response.exceptionOrNull() is TjenestepensjonSimuleringException)
 
@@ -110,7 +109,7 @@ class KLPTjenestepensjonClientTest {
     @Test
     fun `ikke send request og returner mock i dev-gcp fra klp`() {
         setField(klpClient, "activeProfiles", "dev-gcp")
-        val request = dummyRequest("1963-02-05", brukerBaOmAfp = true)
+        val request = dummyRequest("1963-02-07", brukerBaOmAfp = true) // using unique request to avoid cache hit
         val tpNummer = "3100"
 
         val mockExpectedResponse = KLPTjenestepensjonClient.provideMockResponse(request)
@@ -169,8 +168,11 @@ class KLPTjenestepensjonClientTest {
                 ytelseType = "OT6370",
             )
         ),
-        arsakIngenUtbetaling = listOf(ArsakIngenUtbetaling( "IKKE_STOETTET", "Ikke stoettet", "SAERALDERSPAASLAG")),
+        arsakIngenUtbetaling = listOf(ArsakIngenUtbetaling("IKKE_STOETTET", "Ikke stoettet", "SAERALDERSPAASLAG")),
         betingetTjenestepensjonErInkludert = false,
     )
 
+    private companion object {
+        private const val SIMULER_PATH = "/api/oftp/simulering"
+    }
 }
