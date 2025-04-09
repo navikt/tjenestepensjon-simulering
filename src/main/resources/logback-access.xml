@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="no.nav.tjenestepensjon.simulering.config.accesslog.AccessLogFilter">
-        </filter>
+        <filter class="no.nav.tjenestepensjon.simulering.config.accesslog.AccessLogFilter"/>
         <encoder class="net.logstash.logback.encoder.AccessEventCompositeJsonEncoder">
             <providers>
                 <provider class="no.nav.tjenestepensjon.simulering.config.accesslog.CorrelationIdProvider"/>
