@@ -19,8 +19,8 @@ spec:
             namespace: pensjonskalkulator
             severity: critical
         - alert: tjenestepensjon-simulering - Høy feilrate i logger
-          expr: (100 * sum by (app, namespace) (rate(log_messages_errors{app="tjenestepensjon-simulering",level="Error"}[3m])) / sum by (app, namespace) (rate(log_messages_total{app="tjenestepensjon-simulering"}[3m]))) > 1
-          for: 3m
+          expr: (100 * sum by (app, namespace) (rate(log_messages_errors{app="tjenestepensjon-simulering",level="Error"}[15m])) / sum by (app, namespace) (rate(log_messages_total{app="tjenestepensjon-simulering"}[15m]))) > 1
+          for: 15m
           annotations:
             consequence: "høy feilrate for tjenestepensjon-simulering"
             action: "Sjekk loggene til tjenestepensjon-simulering for å se hvorfor det er så mange feil"
