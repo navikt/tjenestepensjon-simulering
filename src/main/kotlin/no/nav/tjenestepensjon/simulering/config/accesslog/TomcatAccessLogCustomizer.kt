@@ -1,4 +1,4 @@
-package no.nav.tjenestepensjon.simulering.config
+package no.nav.tjenestepensjon.simulering.config.accesslog
 
 import ch.qos.logback.access.tomcat.LogbackValve
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
