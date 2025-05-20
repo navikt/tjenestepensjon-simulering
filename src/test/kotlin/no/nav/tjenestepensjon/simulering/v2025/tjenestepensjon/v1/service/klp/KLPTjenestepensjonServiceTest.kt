@@ -34,7 +34,7 @@ class KLPTjenestepensjonServiceTest {
         val req = dummyRequest("1963-02-05")
         `when`(featureToggleService.isEnabled(SIMULER_KLP)).thenReturn(false)
 
-        val res : Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = klpTjenestepensjonService.simuler(req,"4080")
+        val res : Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = klpTjenestepensjonService.simuler(req,"4082")
 
         val exception = res.exceptionOrNull()
         assertTrue(res.isFailure)
@@ -45,9 +45,9 @@ class KLPTjenestepensjonServiceTest {
     fun `BTP og OFTP skal ikke inkluderes i simulering`() {
         val req = dummyRequest("1963-02-05")
         `when`(featureToggleService.isEnabled(SIMULER_KLP)).thenReturn(true)
-        `when`(client.simuler(req, "4080")).thenReturn(dummyResult())
+        `when`(client.simuler(req, "4082")).thenReturn(dummyResult())
 
-        val res : Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = klpTjenestepensjonService.simuler(req,"4080")
+        val res : Result<SimulertTjenestepensjonMedMaanedsUtbetalinger> = klpTjenestepensjonService.simuler(req,"4082")
 
         assertTrue(res.isSuccess)
         val tjenestepensjon = res.getOrNull()

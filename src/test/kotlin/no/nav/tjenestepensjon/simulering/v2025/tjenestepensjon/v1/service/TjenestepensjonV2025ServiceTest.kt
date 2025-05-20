@@ -114,10 +114,10 @@ class TjenestepensjonV2025ServiceTest {
     }
 
     @Test
-    fun `simuler success fra klp 4080`() {
+    fun `simuler success fra klp 4082`() {
         val req = dummyRequest("1963-02-05")
-        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("4080")))
-        `when`(klp.simuler(req, "4080")).thenReturn(dummyResult("klp", "4080"))
+        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("4082")))
+        `when`(klp.simuler(req, "4082")).thenReturn(dummyResult("klp", "4082"))
 
         val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
@@ -125,7 +125,7 @@ class TjenestepensjonV2025ServiceTest {
         val tjenestepensjon = res.second.getOrNull()
         assertNotNull(tjenestepensjon)
         assertEquals("klp", tjenestepensjon.tpLeverandoer)
-        assertEquals("4080", tjenestepensjon.tpNummer)
+        assertEquals("4082", tjenestepensjon.tpNummer)
         assertEquals(1, tjenestepensjon.ordningsListe.size)
         assertEquals(1, tjenestepensjon.utbetalingsperioder.size)
     }
@@ -150,9 +150,9 @@ class TjenestepensjonV2025ServiceTest {
     @Test
     fun `simulering feiler naar spk og klp returnerer tomt resultat`() {
         val req = dummyRequest("1963-02-05")
-        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("3010"), dummyTpOrdning("4080")))
+        `when`(tp.findTPForhold(req.pid)).thenReturn(listOf(dummyTpOrdning("3010"), dummyTpOrdning("4082")))
         `when`(spk.simuler(req, "3010")).thenReturn(Result.failure(TomSimuleringFraTpOrdningException("3010")))
-        `when`(klp.simuler(req, "4080")).thenReturn(Result.failure(TomSimuleringFraTpOrdningException("4080")))
+        `when`(klp.simuler(req, "4082")).thenReturn(Result.failure(TomSimuleringFraTpOrdningException("4082")))
 
         val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
 
