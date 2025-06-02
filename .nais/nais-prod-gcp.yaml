@@ -106,3 +106,7 @@ spec:
       runtime: java
       destinations:
         - id: "grafana-lgtm"
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
