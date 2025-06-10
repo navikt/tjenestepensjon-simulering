@@ -1,52 +1,72 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service
 
-import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningDto
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.FinnSisteTpOrdningService.Companion.TP_ORDNING_UTEN_ALIAS
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningMedDato
+import java.time.LocalDate
 
-class FinnSisteTpOrdningNavServiceTest{
+class FinnSisteTpOrdningNavServiceTest : FunSpec({
+    val finnSisteTpOrdningNavService = FinnSisteTpOrdningNavService()
 
-    private val finnSisteTpOrdningNavService = FinnSisteTpOrdningNavService()
-
-    @Test
-    fun `finn siste ordning for tp-ordning uten alias`(){
-
-        val sisteOrdning = finnSisteTpOrdningNavService.finnSisteOrdning(listOf(
-            TpOrdningDto("navn", "tpNr", "orgNr", emptyList())
-        ))
-
-        assertNotNull(sisteOrdning)
-        assertEquals(TP_ORDNING_UTEN_ALIAS, sisteOrdning)
+    test("finn siste ordning fra tom liste returnerer tom liste") {
+        finnSisteTpOrdningNavService.finnSisteOrdningKandidater(emptyList()) shouldBe emptyList()
     }
 
-    @Test
-    fun `finn siste ordning i en liste uten SPK returnerer foerste i listen`(){
-
-        val tpOrdning = TpOrdningDto("navn", "tpNr", "orgNr", listOf("navn"))
-        val sisteOrdning = finnSisteTpOrdningNavService.finnSisteOrdning(listOf(
-            tpOrdning,
-            TpOrdningDto("navn2", "tpNr2", "orgNr2", listOf("navn2")),
-            TpOrdningDto("navn3", "tpNr3", "orgNr3", listOf("navn3"))
-        ))
-
-        assertNotNull(sisteOrdning)
-        assertEquals(tpOrdning.alias.first(), sisteOrdning)
+    test("finn siste ordning sorterer med siste dato foerst") {
+        val tpOrdninger = listOf(
+            TpOrdningMedDato(
+                tpNr = "tpNr2",
+                navn = "2",
+                datoSistOpptjening = LocalDate.now().minusYears(2)
+            ), TpOrdningMedDato(
+                tpNr = "tpNr1",
+                navn = "1",
+                datoSistOpptjening = LocalDate.now().minusYears(1),
+            ), TpOrdningMedDato(
+                tpNr = "tpNr3",
+                navn = "3",
+                datoSistOpptjening = LocalDate.now().minusYears(3)
+            )
+        )
+        finnSisteTpOrdningNavService.finnSisteOrdningKandidater(tpOrdninger) shouldBe listOf("tpNr1", "tpNr2", "tpNr3")
     }
 
-    @Test
-    fun `finn siste ordning i en liste MED SPK returnerer SPK med lowercase`(){
-
-        val tpOrdning = TpOrdningDto("navn", "tpNr", "orgNr", listOf("navn"))
-        val spk = TpOrdningDto("Statens Pensjonskasse", "tpNr2", "orgNr2", listOf("SPK"))
-        val sisteOrdning = finnSisteTpOrdningNavService.finnSisteOrdning(listOf(
-            tpOrdning,
-            spk,
-            TpOrdningDto("navn3", "tpNr3", "orgNr3", listOf("navn3"))
-        ))
-
-        assertNotNull(sisteOrdning)
-        assertEquals(spk.alias.first().lowercase(), sisteOrdning)
+    test("finn siste ordning returnerer tp-ordninger uten dato foerst") {
+        val tpOrdninger = listOf(
+            TpOrdningMedDato(
+                tpNr = "tpNr2",
+                navn = "2",
+                datoSistOpptjening = LocalDate.now().minusYears(2)
+            ), TpOrdningMedDato(
+                tpNr = "tpNr1",
+                navn = "1",
+                datoSistOpptjening = LocalDate.now().minusYears(1),
+            ), TpOrdningMedDato(
+                tpNr = "tpNr3",
+                navn = "3",
+                datoSistOpptjening = LocalDate.now().minusYears(3)
+            ), TpOrdningMedDato(
+                tpNr = "tpNr4",
+                navn = "4",
+                datoSistOpptjening = null
+            )
+        )
+        finnSisteTpOrdningNavService.finnSisteOrdningKandidater(tpOrdninger) shouldBe listOf("tpNr4", "tpNr1", "tpNr2", "tpNr3")
     }
-}
+
+    test("finn siste ordning taalererer flere tp-ordninger uten dato") {
+        val tpOrdninger = listOf(
+                TpOrdningMedDato(
+                tpNr = "tpNr4",
+                navn = "4",
+                datoSistOpptjening = null
+            ), TpOrdningMedDato(
+                tpNr = "tpNr5",
+                navn = "5",
+                datoSistOpptjening = null
+            )
+        )
+        finnSisteTpOrdningNavService.finnSisteOrdningKandidater(tpOrdninger) shouldBe listOf("tpNr4", "tpNr5")
+    }
+
+})
