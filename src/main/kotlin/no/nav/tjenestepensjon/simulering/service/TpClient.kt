@@ -156,7 +156,7 @@ class TpClient(
                     jsonMapper.readValue<HentAlleTPForholdResponseDto>(responseBody).forhold.map { forhold ->
                         TpOrdningMedDato(
                             tpNr = forhold.tpNr,
-                            navn = forhold.ordningNavn ?: forhold.tpNr,
+                            navn = forhold.tpOrdningNavn ?: forhold.tpNr,
                             datoSistOpptjening = forhold.datoSistOpptjening
                         )
                     }
