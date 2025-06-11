@@ -78,7 +78,7 @@ class TpClient(
     @Cacheable(ALLE_TP_FORHOLD_CACHE)
     fun findAlleTPForhold(fnr: String): List<TpOrdningMedDato> {
         return webClient.get()
-            .uri("$tpUrl/api/tjenestepensjon/finnTjenestepensjonsforhold")
+            .uri("$tpUrl/api/intern/tjenestepensjon/forhold/")
             .headers { setHeaders(it, fnr) }
             .exchangeToMono(::handleAlleTpForholdResponse)
             .onErrorMap(::handleRemoteError)
