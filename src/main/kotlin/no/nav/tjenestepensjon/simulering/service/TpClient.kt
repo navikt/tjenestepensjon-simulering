@@ -3,6 +3,7 @@ package no.nav.tjenestepensjon.simulering.service
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.ALLE_TP_FORHOLD_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_FORHOLD_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_LEVERANDOR_CACHE
 import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING_PERSON_CACHE
@@ -10,8 +11,10 @@ import no.nav.tjenestepensjon.simulering.config.CacheConfig.Companion.TP_ORDNING
 import no.nav.tjenestepensjon.simulering.exceptions.NoTpOrdningerFoundException
 import no.nav.tjenestepensjon.simulering.model.domain.Forhold
 import no.nav.tjenestepensjon.simulering.model.domain.HateoasWrapper
+import no.nav.tjenestepensjon.simulering.model.domain.HentAlleTPForholdResponseDto
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningDto
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningMedDato
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.ping.Pingable
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpregisteretException
@@ -68,6 +71,16 @@ class TpClient(
             .uri("$tpUrl/api/tjenestepensjon/aktiveOrdninger")
             .headers { setHeaders(it, fnr) }
             .exchangeToMono(::handleListResponse)
+            .onErrorMap(::handleRemoteError)
+            .block().orEmpty()
+    }
+
+    @Cacheable(ALLE_TP_FORHOLD_CACHE)
+    fun findAlleTPForhold(fnr: String): List<TpOrdningMedDato> {
+        return webClient.get()
+            .uri("$tpUrl/api/intern/tjenestepensjon/forhold/")
+            .headers { setHeaders(it, fnr) }
+            .exchangeToMono(::handleAlleTpForholdResponse)
             .onErrorMap(::handleRemoteError)
             .block().orEmpty()
     }
@@ -132,6 +145,28 @@ class TpClient(
             HttpStatus.NOT_FOUND -> Mono.empty()
             else -> Mono.error(handleRemoteError("Received status code ${response.statusCode()} fra $PROVIDER")) //TODO bedre feilhåndtering i alle funksjonene
         }
+
+    private fun handleAlleTpForholdResponse(response: ClientResponse): Mono<List<TpOrdningMedDato>> =
+        when (response.statusCode()) {
+            HttpStatus.OK -> response.bodyToMono<String>().map { responseBody ->
+                log.info { "Response from TP: $responseBody" }
+                if (responseBody.isBlank()) {
+                    emptyList()
+                } else {
+                    jsonMapper.readValue<HentAlleTPForholdResponseDto>(responseBody).forhold.map { forhold ->
+                        TpOrdningMedDato(
+                            tpNr = forhold.tpNr,
+                            navn = forhold.ordningNavn ?: forhold.tpNr,
+                            datoSistOpptjening = forhold.datoSistOpptjening
+                        )
+                    }
+                }
+            }
+
+            HttpStatus.NOT_FOUND -> Mono.empty()
+            else -> Mono.error(handleRemoteError("Received status code ${response.statusCode()} fra $PROVIDER"))
+        }
+
 
     private fun handleStringResponse(response: ClientResponse): Mono<String> =
         when (response.statusCode()) {

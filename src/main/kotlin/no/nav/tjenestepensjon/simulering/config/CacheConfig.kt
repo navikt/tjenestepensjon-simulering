@@ -17,6 +17,9 @@ class CacheConfig {
     fun tpForholdCache() = getCache(TP_FORHOLD_CACHE, TP_FORHOLD_CACHE_EXPIRES)
 
     @Bean
+    fun alleTpForholdCache() = getCache(ALLE_TP_FORHOLD_CACHE, ALLE_TP_FORHOLD_CACHE_EXPIRES)
+
+    @Bean
     fun tpOrdningLeverandorCache() = getCache(TP_ORDNING_LEVERANDOR_CACHE, TP_ORDNING_LEVERANDOR_CACHE_EXPIRES)
 
     @Bean
@@ -32,6 +35,8 @@ class CacheConfig {
 
         const val TP_FORHOLD_CACHE = "TP_FORHOLD_CACHE"
         val TP_FORHOLD_CACHE_EXPIRES: Duration = DAYS.duration
+        const val ALLE_TP_FORHOLD_CACHE = "ALLE_TP_FORHOLD_CACHE"
+        val ALLE_TP_FORHOLD_CACHE_EXPIRES: Duration = DAYS.duration
         const val TP_ORDNING_LEVERANDOR_CACHE = "TP_ORDNING_LEVERANDOR_CACHE"
         val TP_ORDNING_LEVERANDOR_CACHE_EXPIRES: Duration = DAYS.duration
         const val TP_ORDNING_TSSID_CACHE = "TP_ORDNING_TSSID_CACHE"
