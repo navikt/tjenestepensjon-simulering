@@ -152,7 +152,7 @@ class TpClient(
                 it.forhold.map { forhold ->
                     TpOrdningMedDato(
                         tpNr = forhold.tpNr,
-                        navn = forhold.ordningNavn,
+                        navn = forhold.ordningNavn ?: forhold.tpNr,
                         datoSistOpptjening = forhold.datoSistOpptjening
                     )
                 }

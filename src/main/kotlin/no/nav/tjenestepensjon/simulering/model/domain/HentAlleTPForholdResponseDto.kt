@@ -9,6 +9,6 @@ data class HentAlleTPForholdResponseDto(
 
 data class TPForholdResponseDto(
     val tpNr: String,
-    val ordningNavn: String,
+    val ordningNavn: String?,
     val datoSistOpptjening: LocalDate?,
 )
