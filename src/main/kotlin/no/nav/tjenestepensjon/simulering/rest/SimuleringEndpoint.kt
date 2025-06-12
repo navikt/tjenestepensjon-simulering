@@ -12,6 +12,9 @@ import no.nav.tjenestepensjon.simulering.AppMetrics.Metrics.APP_TOTAL_STILLINGSP
 import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTjenestepensjonException
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningFullDto
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningMapper.mapTilTpOrdningDto
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningMapper.mapTilTpOrdningFullDto
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerOffentligTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
 import no.nav.tjenestepensjon.simulering.service.TpClient
@@ -55,26 +58,28 @@ class SimuleringEndpoint(
 
         try {
             val fnr = body.fnr
-            val alleForhold = tpClient.findForhold(fnr)
-                .mapNotNull { forhold -> tpClient.findTssId(forhold.ordning)?.let { TPOrdningIdDto(tpId = forhold.ordning, tssId = it) } }
+            val alleForhold: List<TpOrdningFullDto> = tpClient.findAlleTPForhold(fnr)
+                .mapNotNull { forhold -> tpClient.findTssId(forhold.tpNr)
+                    ?.let { TPOrdningIdDto(tpId = forhold.tpNr, tssId = it) }
+                    ?.let { mapTilTpOrdningFullDto(forhold, it) } }
 
             if (alleForhold.isEmpty()){
                 log.debug { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No TP-forhold found for person.""" }
                 return ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.ikkeMedlem())
             }
 
-            val spkMedlemskap = alleForhold.firstOrNull { it.tpId == "3010" || it.tpId == "3060" }
+            val spkMedlemskap = alleForhold.firstOrNull { it.tpNr == "3010" || it.tpNr == "3060" }
 
             if (spkMedlemskap == null) {
                 val firstTPOrdningPaaListen = alleForhold.first()
-                val tpNr = firstTPOrdningPaaListen.tpId
-                val name = tpClient.findTpLeverandorName(firstTPOrdningPaaListen)
+                val tpNr = firstTPOrdningPaaListen.tpNr
+                val name = firstTPOrdningPaaListen.navn
                 metrics.incrementCounterWithTag(AppMetrics.Metrics.TP_REQUESTED_LEVERANDOR, "$tpNr $name")
                 metrics.incrementCounter(APP_TOTAL_SIMULERING_TP_ORDNING_STOTTES_IKKE)
                 log.warn { """Request with nav-call-id ${getHeaderFromRequestContext(NAV_CALL_ID)}. No supported TP-Ordning found.""" }
                 return ResponseEntity.ok(SimulerOffentligTjenestepensjonResponse.tpOrdningStoettesIkke())
             }
-            metrics.incrementCounterWithTag(AppMetrics.Metrics.TP_REQUESTED_LEVERANDOR, "${spkMedlemskap.tpId} $PROVIDER")
+            metrics.incrementCounterWithTag(AppMetrics.Metrics.TP_REQUESTED_LEVERANDOR, "${spkMedlemskap.tpNr} $PROVIDER")
 
             val stillingsprosentListe = spkStillingsprosentService.getStillingsprosentListe(fnr, spkMedlemskap)
 
