@@ -148,18 +148,13 @@ class TpClient(
 
     private fun handleAlleTpForholdResponse(response: ClientResponse): Mono<List<TpOrdningMedDato>> =
         when (response.statusCode()) {
-            HttpStatus.OK -> response.bodyToMono<String>().map { responseBody ->
-                log.info { "Response from TP: $responseBody" }
-                if (responseBody.isBlank()) {
-                    emptyList()
-                } else {
-                    jsonMapper.readValue<HentAlleTPForholdResponseDto>(responseBody).forhold.map { forhold ->
-                        TpOrdningMedDato(
-                            tpNr = forhold.tpNr,
-                            navn = forhold.tpOrdningNavn ?: forhold.tpNr,
-                            datoSistOpptjening = forhold.datoSistOpptjening
-                        )
-                    }
+            HttpStatus.OK -> response.bodyToMono<HentAlleTPForholdResponseDto>().map {
+                it.forhold.map { forhold ->
+                    TpOrdningMedDato(
+                        tpNr = forhold.tpNr,
+                        navn = forhold.tpOrdningNavn ?: forhold.tpNr,
+                        datoSistOpptjening = forhold.datoSistOpptjening
+                    )
                 }
             }
 
