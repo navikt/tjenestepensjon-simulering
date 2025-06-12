@@ -54,7 +54,7 @@ class FinnSisteTpOrdningNavServiceTest : FunSpec({
         finnSisteTpOrdningNavService.finnSisteOrdningKandidater(tpOrdninger) shouldBe listOf("tpNr4", "tpNr1", "tpNr2", "tpNr3")
     }
 
-    test("finn siste ordning taalererer flere tp-ordninger uten dato") {
+    test("finn siste ordning tolererer flere tp-ordninger uten dato") {
         val tpOrdninger = listOf(
                 TpOrdningMedDato(
                 tpNr = "tpNr4",
