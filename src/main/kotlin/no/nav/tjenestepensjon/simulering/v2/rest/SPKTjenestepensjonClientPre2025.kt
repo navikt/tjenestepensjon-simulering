@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v2.rest
 
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningFullDto
 import no.nav.tjenestepensjon.simulering.sporingslogg.Organisasjon
 import no.nav.tjenestepensjon.simulering.sporingslogg.SporingsloggService
 import no.nav.tjenestepensjon.simulering.v2.models.domain.SivilstandCodeEnum
@@ -17,7 +17,7 @@ class SPKTjenestepensjonClientPre2025(
     private val sporingsloggService: SporingsloggService,
 ) {
 
-    fun getResponse(request: SimulerPensjonRequestV2, tpOrdning: TPOrdningIdDto): SimulerOffentligTjenestepensjonResponse {
+    fun getResponse(request: SimulerPensjonRequestV2, tpOrdning: TpOrdningFullDto): SimulerOffentligTjenestepensjonResponse {
         sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, request.fnr.fnr, request)
         val response: SimulerOffentligTjenestepensjonResponse? = spkWebClientPre2025
             .post()
@@ -27,7 +27,7 @@ class SPKTjenestepensjonClientPre2025(
             .bodyToMono<SimulerOffentligTjenestepensjonResponse>()
             .block()
         return response
-            ?: SimulerOffentligTjenestepensjonResponse(request.sisteTpnr, tpOrdning.tpId)
+            ?: SimulerOffentligTjenestepensjonResponse(request.sisteTpnr, tpOrdning.tpNr)
     }
 
     fun ping(): String = spkWebClientPre2025
