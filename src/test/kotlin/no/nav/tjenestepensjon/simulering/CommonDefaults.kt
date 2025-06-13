@@ -11,12 +11,14 @@ const val defaultFNRString = "01010101010"
 val defaultFNR = FNR(defaultFNRString)
 const val fnrUtenMedlemskap = "01027701010"
 const val fnrMedEttMedlemskapITPOrdning = "01037701010"
+const val defaultTpOrdningNavn = "Test Ordning"
+const val defaultDatoSistOpptjening = "2023-01-01"
 
 const val defaultTpid = "4321"
 const val defaultTssid = "1234"
-const val defaultForhold = """{"_embedded": {"forholdModelList":[{"ytelser":"[]","ordning":"$defaultTpid"}]}}"""
+const val defaultForhold = """{"fnr":"$defaultFNRString","forhold":[{"tpNr":"$defaultTpid","tpOrdningNavn":"$defaultTpOrdningNavn","datoSistOpptjening":"$defaultDatoSistOpptjening"}]}"""
 
-const val defaultTjenestepensjonUrl = "/api/tjenestepensjon/forhold"
+const val defaultTjenestepensjonUrl = "/api/intern/tjenestepensjon/forhold/"
 const val defaultLeveradorUrl = "/api/tpconfig/tpleverandoer/$defaultTpid"
 const val defaultTssnrUrl = "/api/tpconfig/tssnr/$defaultTpid"
 val defaultTjenestepensjonRequest: MappingBuilder = get(urlPathEqualTo(defaultTjenestepensjonUrl))
@@ -28,4 +30,4 @@ val defaultDatoFom: LocalDate = LocalDate.parse(defaultFomDateString)
 val defaultDatoTom: LocalDate = LocalDate.parse(defaultTomDateString)
 
 val defaultTPOrdningIdDto = TPOrdningIdDto(defaultTssid, defaultTpid)
-val defaultTPOrdningFullDto = TpOrdningFullDto(tssId = defaultTssid, tpNr = defaultTpid, navn = "Test Ordning")
+val defaultTPOrdningFullDto = TpOrdningFullDto(tssId = defaultTssid, tpNr = defaultTpid, navn = defaultTpOrdningNavn)

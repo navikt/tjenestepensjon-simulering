@@ -13,7 +13,6 @@ import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTje
 import no.nav.tjenestepensjon.simulering.exceptions.SimuleringException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningFullDto
-import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningMapper.mapTilTpOrdningDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningMapper.mapTilTpOrdningFullDto
 import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerOffentligTjenestepensjonRequest
 import no.nav.tjenestepensjon.simulering.ping.PingResponse
