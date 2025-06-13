@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.v1.soap
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningFullDto
 import no.nav.tjenestepensjon.simulering.service.SamlTokenService
 import no.nav.tjenestepensjon.simulering.sporingslogg.Organisasjon
 import no.nav.tjenestepensjon.simulering.sporingslogg.SporingsloggService
@@ -33,7 +33,7 @@ class SPKStillingsprosentSoapClient(
     private val log = KotlinLogging.logger {}
 
     override fun getStillingsprosenter(
-        fnr: String, tpOrdning: TPOrdningIdDto
+        fnr: String, tpOrdning: TpOrdningFullDto
     ): List<Stillingsprosent> {
         val dto = HentStillingsprosentListeRequest(FNR(fnr), tpOrdning)
         sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, fnr, dto)

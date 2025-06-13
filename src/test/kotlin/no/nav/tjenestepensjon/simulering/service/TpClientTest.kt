@@ -6,9 +6,11 @@ import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
 import no.nav.tjenestepensjon.simulering.config.TestConfig
 import no.nav.tjenestepensjon.simulering.config.WebClientConfig
+import no.nav.tjenestepensjon.simulering.defaultDatoSistOpptjening
 import no.nav.tjenestepensjon.simulering.defaultFNRString
 import no.nav.tjenestepensjon.simulering.defaultForhold
 import no.nav.tjenestepensjon.simulering.defaultTjenestepensjonRequest
+import no.nav.tjenestepensjon.simulering.defaultTpOrdningNavn
 import no.nav.tjenestepensjon.simulering.defaultTpid
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v2.consumer.MaskinportenTokenClient
@@ -19,6 +21,7 @@ import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import java.time.LocalDate
 import kotlin.test.assertTrue
 
 @SpringBootTest(classes = [TpClient::class, WebClientConfig::class, ObjectMapperConfig::class, TestConfig::class])
@@ -33,10 +36,6 @@ class TpClientTest {
 
     @MockitoBean
     private lateinit var maskinportenTokenClient: MaskinportenTokenClient
-
-    private val aktiveOrdningerRequest: MappingBuilder =
-        get(urlPathEqualTo(AKTIVE_ORDNINGER_URL))
-            .withHeader("fnr", equalTo(defaultFNRString))
 
     private val server = WireMockServer().apply { start() }
 
@@ -54,19 +53,19 @@ class TpClientTest {
     fun `findForhold med ett forhold`() {
         val stub = server.stubFor(defaultTjenestepensjonRequest.willReturn(okJson(defaultForhold)))
 
-        val response = tpClient.findForhold(defaultFNRString)
+        val response = tpClient.findAlleTPForhold(defaultFNRString)
 
-        assertEquals(defaultTpid, response.first().ordning)
+        assertEquals(defaultTpid, response.first().tpNr)
         server.removeStub(stub.uuid)
     }
 
     @Test
     fun `findForhold uten forhold`() {
         val stub = server.stubFor(
-            defaultTjenestepensjonRequest.willReturn(okJson("""{"_embedded":{"forholdModelList":[]}}"""))
+            defaultTjenestepensjonRequest.willReturn(okJson("""{"fnr": "$defaultFNRString", "forhold":[]}"""))
         )
 
-        assertTrue(tpClient.findForhold(defaultFNRString).isEmpty())
+        assertTrue(tpClient.findAlleTPForhold(defaultFNRString).isEmpty())
         server.removeStub(stub.uuid)
     }
 
@@ -74,7 +73,7 @@ class TpClientTest {
     fun `findForhold person ikke funnet`() {
         val stub = server.stubFor(defaultTjenestepensjonRequest.willReturn(notFound()))
 
-        assertTrue(tpClient.findForhold(defaultFNRString).isEmpty())
+        assertTrue(tpClient.findAlleTPForhold(defaultFNRString).isEmpty())
 
         server.removeStub(stub.uuid)
     }
@@ -83,38 +82,22 @@ class TpClientTest {
     fun `findForhold unauthorized`() {
         val stub = server.stubFor(defaultTjenestepensjonRequest.willReturn(unauthorized()))
 
-        assertThrows<TpregisteretException> { tpClient.findForhold(defaultFNRString) }
+        assertThrows<TpregisteretException> { tpClient.findAlleTPForhold(defaultFNRString) }
 
         server.removeStub(stub.uuid)
     }
 
     @Test
     fun `findTPForhold med ett forhold`() {
-        val stub = server.stubFor(aktiveOrdningerRequest.willReturn(okJson(ORDNING)))
+        val stub = server.stubFor(defaultTjenestepensjonRequest.willReturn(okJson(defaultForhold)))
 
-        val response = tpClient.findTPForhold(fnr = defaultFNRString)
+        val response = tpClient.findAlleTPForhold(fnr = defaultFNRString)
 
         with(response.first()) {
-            assertEquals("foo", navn)
-            assertEquals("1234", tpNr)
-            assertEquals("2345", orgNr)
-            assertEquals("a1", alias[0])
+            assertEquals(defaultTpOrdningNavn, navn)
+            assertEquals(defaultTpid, tpNr)
+            assertEquals(LocalDate.parse(defaultDatoSistOpptjening), datoSistOpptjening)
         }
         server.removeStub(stub.uuid)
-    }
-
-    private companion object {
-        private const val AKTIVE_ORDNINGER_URL = "/api/tjenestepensjon/aktiveOrdninger"
-
-        private const val ORDNING = """[
-    {
-        "navn": "foo",
-        "tpNr": "1234",
-        "orgNr": "2345",
-        "alias": [
-            "a1"
-        ]
-    }
-]"""
     }
 }

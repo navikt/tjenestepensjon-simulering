@@ -2,6 +2,7 @@ package no.nav.tjenestepensjon.simulering.v1.soap
 
 import no.nav.tjenestepensjon.simulering.config.ObjectMapperConfig
 import no.nav.tjenestepensjon.simulering.defaultFNRString
+import no.nav.tjenestepensjon.simulering.defaultTPOrdningFullDto
 import no.nav.tjenestepensjon.simulering.defaultTPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.domain.TokenImpl
 import no.nav.tjenestepensjon.simulering.sporingslogg.SporingsloggService
@@ -45,7 +46,7 @@ internal class SPKStillingsprosentSoapClientTest {
 
         `when`(gatewayTokenClient.samlAccessToken).thenReturn(TokenImpl("bogus", 0))
 
-        val result = client.getStillingsprosenter(defaultFNRString, defaultTPOrdningIdDto)
+        val result = client.getStillingsprosenter(defaultFNRString, defaultTPOrdningFullDto)
         defaultStillingsprosentListe.forEachIndexed { index, stillingsprosent ->
             assertEquals(stillingsprosent, result[index])
         }
