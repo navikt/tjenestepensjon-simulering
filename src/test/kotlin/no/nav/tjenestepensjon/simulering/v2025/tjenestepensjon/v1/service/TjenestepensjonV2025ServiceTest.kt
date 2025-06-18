@@ -163,10 +163,27 @@ class TjenestepensjonV2025ServiceTest {
         assertTrue(tjenestepensjonFailure is TomSimuleringFraTpOrdningException)
     }
 
+    @Test
+    fun `simuler naar bruker er apoteker`() {
+        val req = dummyRequest("1963-02-05", erApoteker = true)
+        val tpOrdninger = listOf(dummyTpOrdning("3010"))
+        `when`(tp.findAlleTPForhold(req.pid)).thenReturn(tpOrdninger)
+
+        val res: Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> = tjenestepensjonV2025Service.simuler(req)
+
+        assertTrue(res.second.isFailure)
+        val tjenestepensjonFailure = res.second.exceptionOrNull()
+        assertNotNull(tjenestepensjonFailure)
+        assertTrue(tjenestepensjonFailure is TpOrdningStoettesIkkeException)
+        assertEquals("Apoteker støtter ikke simulering av tjenestepensjon v2025", tjenestepensjonFailure.message)
+        assertEquals("Apoteker", (tjenestepensjonFailure as TpOrdningStoettesIkkeException).tpOrdning)
+        assertEquals(tpOrdninger.map { it.navn }, res.first)
+    }
+
 
 
     companion object {
-        fun dummyRequest(foedselsdato: String, brukerBaOmAfp: Boolean = false) = SimulerTjenestepensjonRequestDto(
+        fun dummyRequest(foedselsdato: String, brukerBaOmAfp: Boolean = false, erApoteker: Boolean = false) = SimulerTjenestepensjonRequestDto(
             "12345678910",
             LocalDate.parse(foedselsdato),
             LocalDate.parse("2025-03-01"),
@@ -174,7 +191,9 @@ class TjenestepensjonV2025ServiceTest {
             0,
             brukerBaOmAfp,
             false,
-            false
+            false,
+            null,
+            erApoteker
         )
 
         fun dummyTpOrdning(tpNummer: String) = TpOrdningMedDato(tpNummer, "Statens pensjonskasse", null)

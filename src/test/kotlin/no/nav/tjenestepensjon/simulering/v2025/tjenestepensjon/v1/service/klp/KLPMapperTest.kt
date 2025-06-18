@@ -59,7 +59,8 @@ class KLPMapperTest {
                 SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2025, 2, 1), 4),
                 SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2026, 3, 1), 5),
                 SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2027, 4, 1), 6)
-            )
+            ),
+            erApoteker = false
         )
 
         val result: KLPSimulerTjenestepensjonRequest = KLPMapper.mapToRequest(request)
