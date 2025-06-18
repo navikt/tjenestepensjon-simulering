@@ -29,6 +29,9 @@ class TjenestepensjonV2025Service(
 
 
         val tpOrdningerNavn = tpOrdninger.map { it.navn }
+
+        if (request.erApoteker && request.foedselsdato.year < 1963) return tpOrdningerNavn to Result.failure(TpOrdningStoettesIkkeException("Apoteker"))
+
         val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
         if (sisteOrdningerNr.isEmpty()) {
             return emptyList<String>() to Result.failure(BrukerErIkkeMedlemException())

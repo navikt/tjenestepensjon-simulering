@@ -54,7 +54,8 @@ class SPKMapperTest {
             eps2G = true,
             brukerBaOmAfp = true,
             uttaksdato = uttaksdato,
-            foedselsdato = LocalDate.of(1990, 1, 1)
+            foedselsdato = LocalDate.of(1990, 1, 1),
+            erApoteker = false
         )
 
         val result: SPKSimulerTjenestepensjonRequest = SPKMapper.mapToRequest(request)
@@ -91,7 +92,8 @@ class SPKMapperTest {
             eps2G = true,
             brukerBaOmAfp = false,
             uttaksdato = uttaksdato,
-            foedselsdato = LocalDate.of(1990, 1, 1)
+            foedselsdato = LocalDate.of(1990, 1, 1),
+            erApoteker = false
         )
 
         val result: SPKSimulerTjenestepensjonRequest = SPKMapper.mapToRequest(request)
@@ -133,7 +135,8 @@ class SPKMapperTest {
                 SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2025, 2, 1), 4),
                 SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2026, 3, 1), 5),
                 SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2027, 4, 1), 6)
-            )
+            ),
+            erApoteker = false
         )
 
         val result: SPKSimulerTjenestepensjonRequest = SPKMapper.mapToRequest(request)
