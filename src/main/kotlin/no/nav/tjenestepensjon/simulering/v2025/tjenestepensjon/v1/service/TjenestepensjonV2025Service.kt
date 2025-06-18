@@ -30,6 +30,7 @@ class TjenestepensjonV2025Service(
 
         val tpOrdningerNavn = tpOrdninger.map { it.navn }
 
+        // Apotekere og brukere fodt for 1963 vil ikke kunne simulere tjenestepensjon enda
         if (request.erApoteker || request.foedselsdato.year < 1963) return tpOrdningerNavn to Result.failure(TpOrdningStoettesIkkeException("Apoteker"))
 
         val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
