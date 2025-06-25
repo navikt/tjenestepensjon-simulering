@@ -21,7 +21,7 @@ class TjenestepensjonV2025Service(
 
     fun simuler(request: SimulerTjenestepensjonRequestDto): Pair<List<String>, Result<SimulertTjenestepensjonMedMaanedsUtbetalinger>> {
         val tpOrdninger = try {
-            tp.findTPForhold(request.pid)
+            tp.findAlleTPForhold(request.pid)
         }
         catch (e: TpregisteretException) {
             return emptyList<String>() to Result.failure(e)
@@ -29,12 +29,17 @@ class TjenestepensjonV2025Service(
 
 
         val tpOrdningerNavn = tpOrdninger.map { it.navn }
+
         val sisteOrdningerNr = finnSisteTpOrdningService.finnSisteOrdningKandidater(tpOrdninger)
         if (sisteOrdningerNr.isEmpty()) {
             return emptyList<String>() to Result.failure(BrukerErIkkeMedlemException())
         }
 
         log.info { "Fant tp ordninger med nummere: $sisteOrdningerNr" }
+
+        // Apotekere og brukere fodt for 1963 vil ikke kunne simulere tjenestepensjon enda
+        if (request.erApoteker || request.foedselsdato.year < 1963) return tpOrdningerNavn to Result.failure(TpOrdningStoettesIkkeException("Apoteker"))
+
 
         val simulertTpListe = sisteOrdningerNr.map { ordning ->
             when (ordning) {
