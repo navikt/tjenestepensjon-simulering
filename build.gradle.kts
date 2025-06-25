@@ -2,9 +2,9 @@ group = "no.nav.tjenestepensjon"
 description = "tjenestepensjon-simulering"
 
 plugins {
-    kotlin("jvm") version "2.1.21"
-    kotlin("plugin.spring") version "2.1.21"
-    id("org.springframework.boot") version "3.5.0"
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.spring") version "2.2.0"
+    id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -34,8 +34,8 @@ dependencies {
     implementation ("io.github.oshai", "kotlin-logging-jvm", "5.1.0")
     implementation("org.slf4j","slf4j-api", "2.0.12" )
     implementation("org.glassfish.jaxb", "jaxb-runtime", "4.0.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.19.0")
-    implementation("io.getunleash:unleash-client-java:10.2.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.19.1")
+    implementation("io.getunleash:unleash-client-java:11.0.0")
     implementation("org.springframework.boot:spring-boot-starter-tomcat") // Spring Boot manages Tomcat
 
     // Exclude older versions of Tomcat
@@ -47,7 +47,7 @@ dependencies {
     implementation("org.springframework.boot", "spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.ws", "spring-ws-core", "4.0.11")
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.wiremock:wiremock-standalone:3.13.0")
+    testImplementation("org.wiremock:wiremock-standalone:3.13.1")
     testImplementation("org.mockito.kotlin", "mockito-kotlin", "5.2.1")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.1")
     testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.1")
