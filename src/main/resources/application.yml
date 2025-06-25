@@ -3,25 +3,24 @@ management:
   endpoint.health.probes.enabled: true
   endpoints.web.exposure.include: prometheus, health
   metrics.use-global-registry: true
-
 spring:
   jackson:
     mapper:
       accept-case-insensitive-enums: true
       accept-case-insensitive-values: true
+  main:
+    banner-mode: off
 simulering:
   security:
     issuers: https://localhost,https://localhost
 provider:
   uri: http://localhost:9080/ekstern-pensjon-tjeneste-tjenestepensjonSimuleringWeb/sca/TjenestepensjonSimuleringWSEXP
-
 maskinporten:
   token-endpoint-url: ${MASKINPORTEN_TOKEN_ENDPOINT:https://test.maskinporten.no}
   client-id: ${MASKINPORTEN_CLIENT_ID:clientId}
   client-jwk: ${MASKINPORTEN_CLIENT_JWK:clientJwk}
   scope: ${MASKINPORTEN_SCOPES:"nav:scope:no"}
   issuer: ${MASKINPORTEN_ISSUER:https://test.maskinporten.no}
-
 stillingsprosent:
   url: http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1/TjenestepensjonSimulering/hentStillingsprosentListeRequest
 security:
