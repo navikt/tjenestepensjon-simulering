@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver.fromTrustedIssuers
 import org.springframework.security.web.DefaultSecurityFilterChain
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 @Configuration
 @EnableWebSecurity
@@ -21,7 +20,7 @@ class SecurityConfig(
     fun configure(http: HttpSecurity): DefaultSecurityFilterChain = http.run {
         csrf { it.disable() }
         authorizeHttpRequests {
-            it.requestMatchers(antMatcher("/actuator/**"), antMatcher("/v2025/tjenestepensjon/ping"), antMatcher("/simulering/ping")).permitAll().anyRequest().authenticated()
+            it.requestMatchers("/actuator/**","/v2025/tjenestepensjon/ping","/simulering/ping").permitAll().anyRequest().authenticated()
         }
         oauth2ResourceServer {
             it.authenticationManagerResolver(issuerResolver)

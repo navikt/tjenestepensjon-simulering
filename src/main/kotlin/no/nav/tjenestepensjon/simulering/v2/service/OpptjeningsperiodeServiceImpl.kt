@@ -31,7 +31,7 @@ class OpptjeningsperiodeServiceImpl: OpptjeningsperiodeService {
 
     @Throws(DuplicateOpptjeningsperiodeEndDateException::class)
     private fun getLatest(latest: Pair<TpOrdningFullDto, Opptjeningsperiode>, other: Pair<TpOrdningFullDto, Opptjeningsperiode>) = when {
-        latest.second.datoTom == other.second.datoTom -> throw DuplicateOpptjeningsperiodeEndDateException("Could not decide latest stillingprosent due to multiple stillingsprosent having the same end date")
+        latest.second.datoTom?.equals(other.second.datoTom) == true -> throw DuplicateOpptjeningsperiodeEndDateException("Could not decide latest stillingprosent due to multiple stillingsprosent having the same end date")
         other.second.datoTom == null -> other
         latest.second.datoTom == null || latest.second.datoTom!! > other.second.datoTom -> latest
         latest.second.datoTom!! < other.second.datoTom -> other

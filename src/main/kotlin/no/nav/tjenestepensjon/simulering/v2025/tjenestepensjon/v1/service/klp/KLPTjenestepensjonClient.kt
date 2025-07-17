@@ -29,7 +29,7 @@ import org.springframework.web.reactive.function.client.bodyToMono
 class KLPTjenestepensjonClient(
     private val klpWebClient: WebClient,
     private val sporingslogg: SporingsloggService,
-    @Value("\${spring.profiles.active:}") private val activeProfiles: String,
+    @param:Value("\${spring.profiles.active:}") private val activeProfiles: String,
     private val sammenligner: SammenlignAFPService,
 ) : TjenestepensjonV2025Client, Pingable {
     private val log = KotlinLogging.logger {}

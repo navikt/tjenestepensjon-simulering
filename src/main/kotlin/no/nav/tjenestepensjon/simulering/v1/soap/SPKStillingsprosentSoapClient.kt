@@ -26,8 +26,8 @@ class SPKStillingsprosentSoapClient(
     private val webServiceTemplate: WebServiceTemplate,
     private val samlTokenService: SamlTokenService,
     private val sporingsloggService: SporingsloggService,
-    @Value("\${stillingsprosent.url}") private val hentStillingsprosentUrl: String,
-    @Value("\${oftp.before2025.spk.endpoint.stillingsprosentUrl}") private val url: String,
+    @param:Value("\${stillingsprosent.url}") private val hentStillingsprosentUrl: String,
+    @param:Value("\${oftp.before2025.spk.endpoint.stillingsprosentUrl}") private val url: String,
     private val samlConfig: SamlConfig
 ) : WebServiceGatewaySupport(), StillingsprosentHenting {
     private val log = KotlinLogging.logger {}
