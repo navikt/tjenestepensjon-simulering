@@ -1,7 +1,7 @@
 package no.nav.tjenestepensjon.simulering.v1
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningFullDto
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.service.StillingsprosentService
@@ -37,7 +37,7 @@ internal class OpptjeningsperiodeCallableTest {
 
     private companion object {
         val fnr = "01011234567"
-        val tpOrdning = TPOrdningIdDto("tss1", "tp1")
+        val tpOrdning = TpOrdningFullDto(tssId = "tss1", tpNr =  "tp1", navn = "Test Ordning")
 
         fun prepareStillingsprosenter() = listOf(
             Stillingsprosent(

@@ -2,7 +2,7 @@ package no.nav.tjenestepensjon.simulering.v2
 
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningFullDto
 import no.nav.tjenestepensjon.simulering.testHelper.anyNonNull
 import no.nav.tjenestepensjon.simulering.v2.exceptions.OpptjeningsperiodeCallableException
 import no.nav.tjenestepensjon.simulering.v2.models.domain.Opptjeningsperiode
@@ -59,11 +59,11 @@ internal class SimpleSimuleringServiceTest {
 
     @Test
     fun `Should return response object`() {
-        val map = mapOf(TPOrdningIdDto("tssInkluder", "tpInkluder") to emptyList<Opptjeningsperiode>())
+        val map = mapOf(TpOrdningFullDto(navn = "Test Ordning", tssId = "tssInkluder", tpNr = "tpInkluder") to emptyList<Opptjeningsperiode>())
         val exceptions = listOf(
             ExecutionException(
                 OpptjeningsperiodeCallableException(
-                    "msg", Throwable(), TPOrdningIdDto("tssUtelatt", "tpUtelatt")
+                    "msg", Throwable(), TpOrdningFullDto(navn = "Utelatt Test Ordning", tssId = "tssUtelatt", tpNr = "tpUtelatt")
                 )
             )
         )
@@ -80,17 +80,17 @@ internal class SimpleSimuleringServiceTest {
                 )
             )
         )
-        val tpOrdningIdDto = TPOrdningIdDto("fake", "faker")
+        val tpOrdning = TpOrdningFullDto(navn = "Fake Test Ordning", tssId = "fake", tpNr = "faker")
         `when`(SPKTjenestepensjonClientPre2025.getResponse(anyNonNull(), anyNonNull())).thenReturn(s1)
 
-        val response = simuleringService.simulerOffentligTjenestepensjon(request, emptyList(), tpOrdningIdDto)
+        val response = simuleringService.simulerOffentligTjenestepensjon(request, emptyList(), tpOrdning)
 
         assertNotNull(response)
     }
 
     @Test
     fun `Should increment metrics`() {
-        val map = mapOf(TPOrdningIdDto("tssInkluder", "tpInkluder") to emptyList<Opptjeningsperiode>())
+        val map = mapOf(TpOrdningFullDto(navn = "Test Ordning", tssId = "tssInkluder", tpNr = "tpInkluder") to emptyList<Opptjeningsperiode>())
         val opptjeningsperiodeResponse = OpptjeningsperiodeResponse(map, listOf())
 
         `when`(opptjeningsperiodeService.getOpptjeningsperiodeListe(anyNonNull(), anyNonNull())).thenReturn(opptjeningsperiodeResponse)
@@ -99,9 +99,9 @@ internal class SimpleSimuleringServiceTest {
             utbetalingsperiodeListe = listOf(), tpnr = "", navnOrdning = ""
         )
 
-        val tpOrdningIdDto = TPOrdningIdDto("fake", "faker")
+        val tpOrdning = TpOrdningFullDto(navn = "Fake Test Ordning", tssId = "fake", tpNr = "faker")
 
         `when`(SPKTjenestepensjonClientPre2025.getResponse(anyNonNull(), anyNonNull())).thenReturn(s1)
-        assertNotNull(simuleringService.simulerOffentligTjenestepensjon(request, emptyList(), tpOrdningIdDto))
+        assertNotNull(simuleringService.simulerOffentligTjenestepensjon(request, emptyList(), tpOrdning))
     }
 }

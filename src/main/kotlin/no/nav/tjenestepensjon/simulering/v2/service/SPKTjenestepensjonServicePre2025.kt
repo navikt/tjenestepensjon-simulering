@@ -3,6 +3,7 @@ package no.nav.tjenestepensjon.simulering.v2.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTjenestepensjonException
 import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
+import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningFullDto
 import no.nav.tjenestepensjon.simulering.rest.SimuleringEndpoint
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v2.TPOrdningOpptjeningsperiodeMap
@@ -23,12 +24,12 @@ class SPKTjenestepensjonServicePre2025(
     fun simulerOffentligTjenestepensjon(
         request: SimulerPensjonRequestV2,
         stillingsprosentListe: List<Stillingsprosent>,
-        tpOrdning: TPOrdningIdDto,
+        tpOrdning: TpOrdningFullDto,
     ): SimulerOffentligTjenestepensjonResponse {
         val opptjeningsperiodeResponse = opptjeningsperiodeService.getOpptjeningsperiodeListe(tpOrdning, stillingsprosentListe)
 
         request.tpForholdListe = buildTpForhold(opptjeningsperiodeResponse.tpOrdningOpptjeningsperiodeMap)
-        request.sisteTpnr = tpOrdning.tpId
+        request.sisteTpnr = tpOrdning.tpNr
         val requestWithFilteredFnr = SimuleringEndpoint.filterFnr(request.toString())
         log.debug { "Populated request: $requestWithFilteredFnr" }
         return try {
@@ -51,6 +52,6 @@ class SPKTjenestepensjonServicePre2025(
     fun ping() : String = SPKTjenestepensjonClientPre2025.ping()
 
     private fun buildTpForhold(tpOrdningOpptjeningsperiodeMap: TPOrdningOpptjeningsperiodeMap) =
-        tpOrdningOpptjeningsperiodeMap.map { entry -> TpForhold(entry.key.tpId, entry.value) }
+        tpOrdningOpptjeningsperiodeMap.map { entry -> TpForhold(entry.key.tpNr, entry.value) }
 
 }
