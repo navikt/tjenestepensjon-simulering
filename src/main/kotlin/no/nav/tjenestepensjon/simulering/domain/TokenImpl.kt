@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
 
 data class TokenImpl(
-        @JsonProperty("access_token")
+        @param:JsonProperty("access_token")
         override val accessToken: String,
-        @JsonProperty("expires_in")
+        @param:JsonProperty("expires_in")
         override val expiresIn: Long,
-        @JsonProperty("token_type")
+        @param:JsonProperty("token_type")
         override val tokenType: String? = null,
-        @JsonProperty("issued_token_type")
+        @param:JsonProperty("issued_token_type")
         override val issuedTokenType: String? = null
 ) : Token {
 

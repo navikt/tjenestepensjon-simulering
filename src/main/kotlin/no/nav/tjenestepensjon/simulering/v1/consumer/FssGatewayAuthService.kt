@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class FssGatewayAuthService(
-    @Value("\${pen.fss.gateway.scope}") private val scope: String,
+    @param:Value("\${pen.fss.gateway.scope}") private val scope: String,
     private val adClient: AADClient
 ) {
     fun hentToken(): String {

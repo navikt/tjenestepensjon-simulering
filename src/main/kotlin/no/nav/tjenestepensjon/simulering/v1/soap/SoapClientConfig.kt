@@ -13,7 +13,7 @@ import org.springframework.ws.transport.http.HttpUrlConnectionMessageSender
 
 @Configuration
 class SoapClientConfig(
-    @Value("\${provider.uri}") val providerUri: String,
+    @param:Value("\${provider.uri}") val providerUri: String,
     private val fssGatewayAuthService: FssGatewayAuthService,
 ) {
 

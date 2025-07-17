@@ -5,4 +5,4 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class FremtidigInntekt(val belop: Int, @JsonProperty("fraOgMed") val fom: LocalDate)
+data class FremtidigInntekt(val belop: Int, @param:JsonProperty("fraOgMed") val fom: LocalDate)
