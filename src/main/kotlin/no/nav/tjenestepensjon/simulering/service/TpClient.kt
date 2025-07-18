@@ -20,8 +20,8 @@ import reactor.core.publisher.Mono
 class TpClient(
     private val webClient: WebClient,
     private val tokenClient: AADClient,
-    @Value("\${tp.url}") private var tpUrl: String,
-    @Value("\${tp.scope}") private val tpScope: String,
+    @param:Value("\${tp.url}") private var tpUrl: String,
+    @param:Value("\${tp.scope}") private val tpScope: String,
 ) : Pingable {
     private val log = KotlinLogging.logger {}
 

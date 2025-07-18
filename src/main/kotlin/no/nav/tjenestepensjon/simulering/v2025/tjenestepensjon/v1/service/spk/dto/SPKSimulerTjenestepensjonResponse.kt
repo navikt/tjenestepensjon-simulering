@@ -14,7 +14,7 @@ data class InkludertOrdning(
 )
 
 data class Utbetaling(
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @param:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val fraOgMedDato: LocalDate,
     val delytelseListe: List<Delytelse>,
 )

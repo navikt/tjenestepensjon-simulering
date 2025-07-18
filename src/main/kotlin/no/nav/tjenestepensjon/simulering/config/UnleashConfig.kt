@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class UnleashConfig(
-    @Value("\${unleash.server.api.url}") private val endpoint: String,
-    @Value("\${unleash.server.api.token}") private val apiKey: String,
-    @Value("\${unleash.toggle.interval}") private val toggleInterval: String,
-    @Value("\${nais.cluster.name}") private val clusterName: String
+    @param:Value("\${unleash.server.api.url}") private val endpoint: String,
+    @param:Value("\${unleash.server.api.token}") private val apiKey: String,
+    @param:Value("\${unleash.toggle.interval}") private val toggleInterval: String,
+    @param:Value("\${nais.cluster.name}") private val clusterName: String
 ) {
     @Bean
     fun unleash(@Value("\${nais.app.name}") appName: String) =

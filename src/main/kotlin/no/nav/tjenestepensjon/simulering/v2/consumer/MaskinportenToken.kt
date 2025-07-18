@@ -23,10 +23,10 @@ import java.util.concurrent.TimeUnit
 @Service
 class MaskinportenToken(
     private val webClient: WebClient,
-    @Value("\${maskinporten.client-id}") val clientId: String,
-    @Value("\${maskinporten.client-jwk}") val clientJwk: String,
-    @Value("\${maskinporten.issuer}") val issuer: String,
-    @Value("\${maskinporten.token-endpoint-url}") val endpoint: String,
+    @param:Value("\${maskinporten.client-id}") val clientId: String,
+    @param:Value("\${maskinporten.client-jwk}") val clientJwk: String,
+    @param:Value("\${maskinporten.issuer}") val issuer: String,
+    @param:Value("\${maskinporten.token-endpoint-url}") val endpoint: String,
 ) {
     private val log = KotlinLogging.logger {}
     private val tokenCache: LoadingCache<String, String> = Caffeine.newBuilder()

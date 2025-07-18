@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 import java.util.*
+import kotlin.test.assertEquals
 
 class DtoToV2DomainMapperTest {
 
@@ -16,38 +17,46 @@ class DtoToV2DomainMapperTest {
         val req = DummyRequest.create()
 
         val res = req.toSimulerPensjonRequestV2()
-        assert(res.fnr.fnr == req.fnr)
-        assert(res.fodselsdato == req.fodselsdato)
-        assert(res.sisteTpnr == req.sisteTpnr)
-        assert(res.sprak == req.sprak)
-        assert(res.simulertAFPOffentlig!!.simulertAFPOffentligBrutto == req.simulertAFPOffentlig?.simulertAFPOffentligBrutto)
-        assert(res.simulertAFPOffentlig!!.tpi == req.simulertAFPOffentlig?.tpi)
-        assert(res.simulertAFPPrivat!!.afpOpptjeningTotalbelop == req.simulertAFPPrivat?.afpOpptjeningTotalbelop)
-        assert(res.simulertAFPPrivat!!.kompensasjonstillegg == req.simulertAFPPrivat?.kompensasjonstillegg)
-        assert(res.sivilstandkode == req.sivilstandkode)
-        assert(res.inntektListe[0].datoFom == req.inntektListe[0].datoFom.convertToLocalDate())
-        assert(res.inntektListe[0].inntekt == req.inntektListe[0].inntekt)
-        assert(res.pensjonsbeholdningsperiodeListe[0].datoFom == req.pensjonsbeholdningsperiodeListe[0].datoFom.convertToLocalDate())
-        assert(res.pensjonsbeholdningsperiodeListe[0].pensjonsbeholdning == req.pensjonsbeholdningsperiodeListe[0].pensjonsbeholdning.toInt())
-        assert(res.pensjonsbeholdningsperiodeListe[0].garantipensjonsbeholdning == req.pensjonsbeholdningsperiodeListe[0].garantipensjonsbeholdning.toInt())
-        assert(res.pensjonsbeholdningsperiodeListe[0].garantitilleggsbeholdning == req.pensjonsbeholdningsperiodeListe[0].garantitilleggsbeholdning.toInt())
-        assert(res.simuleringsperiodeListe[0].datoFom == req.simuleringsperiodeListe[0].datoFom.convertToLocalDate())
-        assert(res.simuleringsperiodeListe[0].folketrygdUttaksgrad == req.simuleringsperiodeListe[0].folketrygdUttaksgrad)
-        assert(res.simuleringsperiodeListe[0].stillingsprosentOffentlig == req.simuleringsperiodeListe[0].stillingsprosentOffentlig)
-        assert(res.simuleringsperiodeListe[0].simulerAFPOffentligEtterfulgtAvAlder == req.simuleringsperiodeListe[0].simulerAFPOffentligEtterfulgtAvAlder)
-        assert(res.simuleringsdataListe[0].datoFom == req.simuleringsdataListe[0].datoFom.convertToLocalDate())
-        assert(res.simuleringsdataListe[0].andvendtTrygdetid == req.simuleringsdataListe[0].andvendtTrygdetid)
-        assert(res.simuleringsdataListe[0].poengArTom1991 == req.simuleringsdataListe[0].poengArTom1991)
-        assert(res.simuleringsdataListe[0].poengArFom1992 == req.simuleringsdataListe[0].poengArFom1992)
-        assert(res.simuleringsdataListe[0].uforegradVedOmregning == req.simuleringsdataListe[0].uforegradVedOmregning)
+        assertEquals(req.fnr, res.fnr.fnr)
+        // Correctly parse the expected date string into a LocalDate for comparison
+        assertEquals(req.fodselsdato, res.fodselsdato)
+        assertEquals(req.sisteTpnr, res.sisteTpnr)
+        assertEquals(req.sprak, res.sprak)
+        assertEquals(req.simulertAFPOffentlig?.simulertAFPOffentligBrutto, res.simulertAFPOffentlig!!.simulertAFPOffentligBrutto)
+        assertEquals(req.simulertAFPOffentlig?.tpi, res.simulertAFPOffentlig!!.tpi)
+        assertEquals(req.simulertAFPPrivat?.afpOpptjeningTotalbelop, res.simulertAFPPrivat!!.afpOpptjeningTotalbelop)
+        assertEquals(req.simulertAFPPrivat?.kompensasjonstillegg, res.simulertAFPPrivat!!.kompensasjonstillegg)
+        assertEquals(req.sivilstandkode, res.sivilstandkode)
+
+        // Using assertEquals for all comparisons, including LocalDate
+        assertEquals(req.inntektListe[0].datoFom.convertToLocalDate(), res.inntektListe[0].datoFom)
+        assertEquals(req.inntektListe[0].inntekt, res.inntektListe[0].inntekt)
+
+        assertEquals(req.pensjonsbeholdningsperiodeListe[0].datoFom.convertToLocalDate(), res.pensjonsbeholdningsperiodeListe[0].datoFom)
+        assertEquals(req.pensjonsbeholdningsperiodeListe[0].pensjonsbeholdning.toInt(), res.pensjonsbeholdningsperiodeListe[0].pensjonsbeholdning)
+        assertEquals(req.pensjonsbeholdningsperiodeListe[0].garantipensjonsbeholdning.toInt(), res.pensjonsbeholdningsperiodeListe[0].garantipensjonsbeholdning)
+        assertEquals(req.pensjonsbeholdningsperiodeListe[0].garantitilleggsbeholdning.toInt(), res.pensjonsbeholdningsperiodeListe[0].garantitilleggsbeholdning)
+
+        assertEquals(req.simuleringsperiodeListe[0].datoFom.convertToLocalDate(), res.simuleringsperiodeListe[0].datoFom)
+        assertEquals(req.simuleringsperiodeListe[0].folketrygdUttaksgrad, res.simuleringsperiodeListe[0].folketrygdUttaksgrad)
+        assertEquals(req.simuleringsperiodeListe[0].stillingsprosentOffentlig, res.simuleringsperiodeListe[0].stillingsprosentOffentlig)
+        assertEquals(req.simuleringsperiodeListe[0].simulerAFPOffentligEtterfulgtAvAlder, res.simuleringsperiodeListe[0].simulerAFPOffentligEtterfulgtAvAlder)
+
+        assertEquals(req.simuleringsdataListe[0].datoFom.convertToLocalDate(), res.simuleringsdataListe[0].datoFom)
+        assertEquals(req.simuleringsdataListe[0].andvendtTrygdetid, res.simuleringsdataListe[0].andvendtTrygdetid)
+        assertEquals(req.simuleringsdataListe[0].poengArTom1991, res.simuleringsdataListe[0].poengArTom1991)
+        assertEquals(req.simuleringsdataListe[0].poengArFom1992, res.simuleringsdataListe[0].poengArFom1992)
+        assertEquals(req.simuleringsdataListe[0].uforegradVedOmregning, res.simuleringsdataListe[0].uforegradVedOmregning)
+
         val reqForholdsListe = req.tpForholdListe!!
-        assert(res.tpForholdListe[0].tpnr == reqForholdsListe[0].tpnr)
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].stillingsprosent.toInt() == reqForholdsListe[0].opptjeningsperiodeListe[0].stillingsprosent)
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].datoFom == reqForholdsListe[0].opptjeningsperiodeListe[0].datoFom.convertToLocalDate())
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].datoTom == reqForholdsListe[0].opptjeningsperiodeListe[0].datoTom.convertToLocalDate())
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].faktiskHovedlonn == reqForholdsListe[0].opptjeningsperiodeListe[0].faktiskHovedlonn)
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].stillingsuavhengigTilleggslonn == reqForholdsListe[0].opptjeningsperiodeListe[0].stillingsuavhengigTilleggslonn)
-        assert(res.tpForholdListe[0].opptjeningsperiodeListe[0].aldersgrense == reqForholdsListe[0].opptjeningsperiodeListe[0].aldersgrense)
+        assertEquals(reqForholdsListe[0].tpnr, res.tpForholdListe[0].tpnr)
+        assertEquals(reqForholdsListe[0].opptjeningsperiodeListe[0].stillingsprosent, res.tpForholdListe[0].opptjeningsperiodeListe[0].stillingsprosent.toInt())
+        assertEquals(reqForholdsListe[0].opptjeningsperiodeListe[0].datoFom.convertToLocalDate(), res.tpForholdListe[0].opptjeningsperiodeListe[0].datoFom)
+        assertEquals(reqForholdsListe[0].opptjeningsperiodeListe[0].datoTom.convertToLocalDate(), res.tpForholdListe[0].opptjeningsperiodeListe[0].datoTom)
+        assertEquals(reqForholdsListe[0].opptjeningsperiodeListe[0].faktiskHovedlonn, res.tpForholdListe[0].opptjeningsperiodeListe[0].faktiskHovedlonn)
+        assertEquals(reqForholdsListe[0].opptjeningsperiodeListe[0].stillingsuavhengigTilleggslonn, res.tpForholdListe[0].opptjeningsperiodeListe[0].stillingsuavhengigTilleggslonn)
+        assertEquals(reqForholdsListe[0].opptjeningsperiodeListe[0].aldersgrense, res.tpForholdListe[0].opptjeningsperiodeListe[0].aldersgrense)
+
 
     }
 
