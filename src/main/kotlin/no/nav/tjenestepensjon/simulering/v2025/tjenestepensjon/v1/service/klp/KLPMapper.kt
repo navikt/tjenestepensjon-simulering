@@ -13,6 +13,7 @@ object KLPMapper {
 
     private val log = KotlinLogging.logger {}
     const val PROVIDER_FULLT_NAVN = "Kommunal Landspensjonskasse"
+    const val ANNEN_TP_ORDNING_BURDE_SIMULERE = "IKKE_SISTE_ORDNING"
 
     fun mapToRequest(request: SimulerTjenestepensjonRequestDto) =
         KLPSimulerTjenestepensjonRequest(
@@ -55,7 +56,8 @@ object KLPMapper {
             ordningsListe = response.inkludertOrdningListe.map { Ordning(it.tpnr) },
             utbetalingsperioder = response.utbetalingsListe.map { Utbetalingsperiode(it.fraOgMedDato, it.manedligUtbetaling, it.ytelseType) },
             aarsakIngenUtbetaling = response.arsakIngenUtbetaling.map { it.statusBeskrivelse + ": " + it.ytelseType },
-            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name }
+            betingetTjenestepensjonErInkludert = response.utbetalingsListe.any { it.ytelseType == KLPYtelse.BTP.name },
+            erSisteOrdning = response.arsakIngenUtbetaling.none { it.statusKode == ANNEN_TP_ORDNING_BURDE_SIMULERE }
         ).apply {
             serviceData = listOf("Request: ${dto?.toString()}", "Response: $response")
         }

@@ -94,6 +94,7 @@ class KLPTjenestepensjonServiceTest {
                     ytelseType = "OAFP"
                 ),
             ),
+            erSisteOrdning = true,
             betingetTjenestepensjonErInkludert = true
         ))
     }
