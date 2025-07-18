@@ -1,12 +1,15 @@
 package no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp
 
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonFremtidigInntektDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPMapper.ANNEN_TP_ORDNING_BURDE_SIMULERE
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import kotlin.test.assertFalse
 
 class KLPMapperTest {
 
@@ -40,6 +43,29 @@ class KLPMapperTest {
 
         assertEquals(1, result.aarsakIngenUtbetaling.size)
         assertEquals("Ikke stoettet: SAERALDERSPAASLAG", result.aarsakIngenUtbetaling.first())
+        assertTrue { result.erSisteOrdning }
+
+    }
+
+    @Test
+    fun `map klp response med ikke siste ordning`() {
+        val statusBeskrivelse = "Ikke siste ordning. Statens pensjonskasse er siste ordning"
+        val ytelseType = "ALLE"
+        val resp = KLPSimulerTjenestepensjonResponse(
+            listOf(InkludertOrdning("1000")),
+            listOf(),
+            listOf(ArsakIngenUtbetaling(statusKode = ANNEN_TP_ORDNING_BURDE_SIMULERE, statusBeskrivelse = statusBeskrivelse, ytelseType = ytelseType)), false
+        )
+
+        val result: SimulertTjenestepensjon = KLPMapper.mapToResponse(resp)
+
+        assertEquals(1, result.ordningsListe.size)
+        assertEquals("1000", result.ordningsListe[0].tpNummer)
+        assertTrue(result.utbetalingsperioder.isEmpty())
+
+        assertEquals(1, result.aarsakIngenUtbetaling.size)
+        assertEquals("$statusBeskrivelse: $ytelseType", result.aarsakIngenUtbetaling.first())
+        assertFalse { result.erSisteOrdning }
 
     }
 
