@@ -121,10 +121,13 @@ class SPKMapperTest {
 
     @Test
     fun `map request hvor bruker har ulike fremtidige inntekter`() {
-        val uttaksdato = LocalDate.of(2025, 2, 1)
+        val foersteJanuarIAar = LocalDate.now().withMonth(1).withDayOfMonth(1)
+        val naavaerendeAar = foersteJanuarIAar.year
+        val uttaksdato = LocalDate.of(naavaerendeAar + 1, 2, 1)
+        val sisteInntekt = 100000
         val request = SimulerTjenestepensjonRequestDto(
             pid = "12345678901",
-            sisteInntekt = 100000,
+            sisteInntekt = sisteInntekt,
             aarIUtlandetEtter16 = 3,
             epsPensjon = true,
             eps2G = true,
@@ -132,19 +135,18 @@ class SPKMapperTest {
             uttaksdato = uttaksdato,
             foedselsdato = LocalDate.of(1990, 1, 1),
             fremtidigeInntekter = listOf(
-                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2025, 2, 1), 4),
-                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2026, 3, 1), 5),
-                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2027, 4, 1), 6)
-            ),
+                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(naavaerendeAar, 2, 1), 4),
+                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(naavaerendeAar + 1, 3, 1), 5),
+                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(naavaerendeAar + 2, 4, 1), 6)        ),
             erApoteker = false
         )
 
         val result: SPKSimulerTjenestepensjonRequest = SPKMapper.mapToRequest(request)
 
-        assertEquals("12345678901", result.personId)
+        assertEquals(request.pid, result.personId)
         assertEquals(4, result.fremtidigInntektListe.size)
         assertEquals(request.sisteInntekt, result.fremtidigInntektListe[0].aarligInntekt)
-        assertTrue(result.fremtidigInntektListe[0].fraOgMedDato.isBefore(LocalDate.now().minusYears(1)))
+        assertEquals(foersteJanuarIAar.minusYears(1),result.fremtidigInntektListe[0].fraOgMedDato)
         assertEquals(4, result.fremtidigInntektListe[1].aarligInntekt)
         assertEquals(LocalDate.of(2025, 2, 1), result.fremtidigInntektListe[1].fraOgMedDato)
         assertEquals(5, result.fremtidigInntektListe[2].aarligInntekt)
