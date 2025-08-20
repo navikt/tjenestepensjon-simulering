@@ -71,10 +71,13 @@ class KLPMapperTest {
 
     @Test
     fun `map request to klp request`() {
-        val uttaksdato = LocalDate.of(2025, 2, 1)
+        val foersteJanuarIAar = LocalDate.now().withMonth(1).withDayOfMonth(1)
+        val naavaerendeAar = foersteJanuarIAar.year
+        val uttaksdato = LocalDate.of(naavaerendeAar + 1, 2, 1)
+        val sisteInntekt = 100000
         val request = SimulerTjenestepensjonRequestDto(
             pid = "12345678901",
-            sisteInntekt = 100000,
+            sisteInntekt = sisteInntekt,
             aarIUtlandetEtter16 = 3,
             epsPensjon = true,
             eps2G = true,
@@ -82,9 +85,9 @@ class KLPMapperTest {
             uttaksdato = uttaksdato,
             foedselsdato = LocalDate.of(1990, 1, 1),
             fremtidigeInntekter = listOf(
-                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2025, 2, 1), 4),
-                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2026, 3, 1), 5),
-                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(2027, 4, 1), 6)
+                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(naavaerendeAar, 2, 1), 4),
+                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(naavaerendeAar + 1, 3, 1), 5),
+                SimulerTjenestepensjonFremtidigInntektDto(LocalDate.of(naavaerendeAar + 2, 4, 1), 6)
             ),
             erApoteker = false
         )
@@ -95,12 +98,14 @@ class KLPMapperTest {
         assertEquals(1, result.uttaksListe.size)
         assertEquals("ALLE", result.uttaksListe[0].ytelseType)
         assertEquals(uttaksdato, result.uttaksListe[0].fraOgMedDato)
-        assertEquals(request.fremtidigeInntekter!![0].aarligInntekt, result.fremtidigInntektsListe[0].arligInntekt)
-        assertEquals(request.fremtidigeInntekter!![0].fraOgMed, result.fremtidigInntektsListe[0].fraOgMedDato)
-        assertEquals(request.fremtidigeInntekter!![1].aarligInntekt, result.fremtidigInntektsListe[1].arligInntekt)
-        assertEquals(request.fremtidigeInntekter!![1].fraOgMed, result.fremtidigInntektsListe[1].fraOgMedDato)
-        assertEquals(request.fremtidigeInntekter!![2].aarligInntekt, result.fremtidigInntektsListe[2].arligInntekt)
-        assertEquals(request.fremtidigeInntekter!![2].fraOgMed, result.fremtidigInntektsListe[2].fraOgMedDato)
+        assertEquals(sisteInntekt, result.fremtidigInntektsListe[0].arligInntekt)
+        assertEquals(foersteJanuarIAar.minusYears(1), result.fremtidigInntektsListe[0].fraOgMedDato)
+        assertEquals(request.fremtidigeInntekter!![0].aarligInntekt, result.fremtidigInntektsListe[1].arligInntekt)
+        assertEquals(request.fremtidigeInntekter[0].fraOgMed, result.fremtidigInntektsListe[1].fraOgMedDato)
+        assertEquals(request.fremtidigeInntekter[1].aarligInntekt, result.fremtidigInntektsListe[2].arligInntekt)
+        assertEquals(request.fremtidigeInntekter[1].fraOgMed, result.fremtidigInntektsListe[2].fraOgMedDato)
+        assertEquals(request.fremtidigeInntekter[2].aarligInntekt, result.fremtidigInntektsListe[3].arligInntekt)
+        assertEquals(request.fremtidigeInntekter[2].fraOgMed, result.fremtidigInntektsListe[3].fraOgMedDato)
         assertEquals(request.aarIUtlandetEtter16, result.arIUtlandetEtter16)
         assertTrue(result.epsPensjon)
         assertTrue(result.eps2G)
