@@ -15,15 +15,8 @@ object KLPMapper {
     const val PROVIDER_FULLT_NAVN = "Kommunal Landspensjonskasse"
     const val ANNEN_TP_ORDNING_BURDE_SIMULERE = "IKKE_SISTE_ORDNING"
 
-    fun mapToRequest(request: SimulerTjenestepensjonRequestDto): KLPSimulerTjenestepensjonRequest {
-        val fremtidigeInntekter: MutableList<FremtidigInntekt> = mutableListOf(opprettNaaverendeInntektFoerUttak(request))
-        fremtidigeInntekter.addAll(request.fremtidigeInntekter?.map {
-            FremtidigInntekt(
-                fraOgMedDato = it.fraOgMed,
-                arligInntekt = it.aarligInntekt
-            )
-        } ?: emptyList())
-        return KLPSimulerTjenestepensjonRequest(
+    fun mapToRequest(request: SimulerTjenestepensjonRequestDto) =
+        KLPSimulerTjenestepensjonRequest(
             personId = request.pid,
             uttaksListe = listOf(
                 Uttak(
@@ -32,19 +25,16 @@ object KLPMapper {
                     uttaksgrad = 100
                 )
             ),
-            fremtidigInntektsListe = fremtidigeInntekter,
+            fremtidigInntektsListe = request.fremtidigeInntekter.orEmpty().map {
+                FremtidigInntekt(
+                    fraOgMedDato = it.fraOgMed,
+                    arligInntekt = it.aarligInntekt
+                )
+            },
             arIUtlandetEtter16 = request.aarIUtlandetEtter16,
             epsPensjon = request.epsPensjon,
             eps2G = request.eps2G,
         )
-    }
-
-    private fun opprettNaaverendeInntektFoerUttak(request: SimulerTjenestepensjonRequestDto) = FremtidigInntekt(
-        fraOgMedDato = fjorAarSomManglerOpptjeningIPopp(),
-        arligInntekt = request.sisteInntekt
-    )
-
-    private fun fjorAarSomManglerOpptjeningIPopp(): LocalDate = LocalDate.now().minusYears(1).withDayOfYear(1)
 
     fun mapToLoggableRequestDto(dto: SimulerTjenestepensjonRequestDto) =
         LoggableSimulerTjenestepensjonRequestDto(
@@ -56,6 +46,8 @@ object KLPMapper {
             eps2G = dto.eps2G,
             fremtidigeInntekter = dto.fremtidigeInntekter
         )
+
+    private fun aarUtenRegistrertInntektHosSkatteetaten(): LocalDate = LocalDate.now().minusYears(2).withDayOfYear(1)
 
     fun mapToResponse(response: KLPSimulerTjenestepensjonResponse, dto: LoggableSimulerTjenestepensjonRequestDto? = null): SimulertTjenestepensjon {
         log.info { "Mapping response from KLP $response" }
