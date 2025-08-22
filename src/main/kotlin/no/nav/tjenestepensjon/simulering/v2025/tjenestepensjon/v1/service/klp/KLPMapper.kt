@@ -4,7 +4,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Ordning
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.SimulertTjenestepensjon
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.LoggableSimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.*
 import java.time.LocalDate
@@ -36,20 +35,9 @@ object KLPMapper {
             eps2G = request.eps2G,
         )
 
-    fun mapToLoggableRequestDto(dto: SimulerTjenestepensjonRequestDto) =
-        LoggableSimulerTjenestepensjonRequestDto(
-            uttaksdato = dto.uttaksdato,
-            sisteInntekt = dto.sisteInntekt,
-            aarIUtlandetEtter16 = dto.aarIUtlandetEtter16,
-            brukerBaOmAfp = dto.brukerBaOmAfp,
-            epsPensjon = dto.epsPensjon,
-            eps2G = dto.eps2G,
-            fremtidigeInntekter = dto.fremtidigeInntekter
-        )
-
     private fun aarUtenRegistrertInntektHosSkatteetaten(): LocalDate = LocalDate.now().minusYears(2).withDayOfYear(1)
 
-    fun mapToResponse(response: KLPSimulerTjenestepensjonResponse, dto: LoggableSimulerTjenestepensjonRequestDto? = null): SimulertTjenestepensjon {
+    fun mapToResponse(response: KLPSimulerTjenestepensjonResponse, dto: KLPSimulerTjenestepensjonRequest? = null): SimulertTjenestepensjon {
         log.info { "Mapping response from KLP $response" }
         return SimulertTjenestepensjon(
             tpLeverandoer = PROVIDER_FULLT_NAVN,
