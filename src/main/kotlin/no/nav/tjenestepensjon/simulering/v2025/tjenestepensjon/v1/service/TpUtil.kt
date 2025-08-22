@@ -15,4 +15,7 @@ object TpUtil {
             }
             .sortedBy { it.fraOgMedDato }
     }
+
+    private val fnrRegex = Regex("\\d{11}")
+    fun redact(string: String): String = string.replace(fnrRegex) { "***********" }
 }
