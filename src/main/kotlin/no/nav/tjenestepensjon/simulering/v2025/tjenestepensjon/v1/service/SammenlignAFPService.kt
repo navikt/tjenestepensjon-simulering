@@ -6,7 +6,7 @@ import no.nav.tjenestepensjon.simulering.model.domain.pen.SimulerAFPOffentligLiv
 import no.nav.tjenestepensjon.simulering.v2025.afp.v1.AFPOffentligLivsvarigSimuleringService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.domain.Utbetalingsperiode
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.dto.request.SimulerTjenestepensjonRequestDto
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPMapper
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TpUtil.redact
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.spk.SPKMapper
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
@@ -37,9 +37,7 @@ class SammenlignAFPService(private val afp: AFPOffentligLivsvarigSimuleringServi
                     "AFP fra Nav: ${afpLokal.first().afpYtelsePerAar} \n"
         }
 
-        val loggableRequest = KLPMapper.mapToLoggableRequestDto(request)
-
-        log.info { "Request til Tp ordning AFP: $loggableRequest" +
+        log.info { "Request til Tp ordning AFP: ${redact(request.toString())}" +
                 "\nRequest for Nav AFP: ${simuleringRequest.fremtidigeInntekter}, ${simuleringRequest.fom}" +
                 "\nAFP fra Tp ordning: $afpFraTpOrdning" +
                 "\nAFP fra Nav $afpLokal" }

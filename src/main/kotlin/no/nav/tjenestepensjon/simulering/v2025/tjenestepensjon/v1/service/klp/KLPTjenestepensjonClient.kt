@@ -11,7 +11,6 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.Tjen
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.SammenlignAFPService
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TjenestepensjonV2025Client.Companion.TJENESTE
-import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPMapper.mapToLoggableRequestDto
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPMapper.mapToRequest
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.KLPMapper.mapToResponse
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.klp.dto.InkludertOrdning
@@ -35,10 +34,10 @@ class KLPTjenestepensjonClient(
     private val log = KotlinLogging.logger {}
 
     override fun simuler(spec: SimulerTjenestepensjonRequestDto, tpNummer: String): Result<SimulertTjenestepensjon> {
+        val request: KLPSimulerTjenestepensjonRequest = mapToRequest(spec)
         val response = if (activeProfiles.contains("dev-gcp")) {
             provideMockResponse(spec)
         } else {
-            val request: KLPSimulerTjenestepensjonRequest = mapToRequest(spec)
             sporingslogg.loggUtgaaendeRequest(Organisasjon.KLP, spec.pid, request)
 
             try {
@@ -61,7 +60,7 @@ class KLPTjenestepensjonClient(
                 }
             }
         }
-        return response?.let { success(spec, response = it) }
+        return response?.let { success(request, spec, it) }
             ?: Result.failure(TjenestepensjonSimuleringException("No response body"))
     }
 
@@ -69,11 +68,12 @@ class KLPTjenestepensjonClient(
         PingResponse(provider = PROVIDER, tjeneste = TJENESTE, melding = "Støttes ikke")
 
     private fun success(
+        request: KLPSimulerTjenestepensjonRequest,
         spec: SimulerTjenestepensjonRequestDto,
         response: KLPSimulerTjenestepensjonResponse
     ): Result<SimulertTjenestepensjon> =
         Result.success(
-            mapToResponse(response, dto = mapToLoggableRequestDto(spec))
+            mapToResponse(response, request)
                 .also { sammenligner.sammenlignOgLoggAfp(spec, it.utbetalingsperioder) })
 
     companion object {
