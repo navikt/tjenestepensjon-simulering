@@ -37,6 +37,7 @@ class SPKStillingsprosentSoapClient(
     ): List<Stillingsprosent> {
         val dto = HentStillingsprosentListeRequest(FNR(fnr), tpOrdning)
         sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, fnr, dto)
+        log.info { "Henter stillingsprosenter for fnr $fnr fra $url" }
         try {
             return webServiceTemplate.marshalSendAndReceive(
                 dto.let(SOAPAdapter::marshal), SOAPCallback(
