@@ -6,10 +6,10 @@ import jakarta.xml.bind.annotation.XmlAccessType.*
 @XmlAccessorType(FIELD)
 @XmlType(propOrder = ["request"])
 @XmlRootElement(name = "hentStillingsprosentListe", namespace = "http://nav.no/ekstern/pensjon/tjenester/tjenestepensjonSimulering/v1")
-class XMLHentStillingsprosentListeRequestWrapper {
-    @XmlElement(required = true)
-    lateinit var request: XMLHentStillingsprosentListeRequest
-
+data class XMLHentStillingsprosentListeRequestWrapper(
+    @field:XmlElement(required = true)
+    var request: XMLHentStillingsprosentListeRequest? = null
+){
     @XmlAccessorType(FIELD)
     @XmlType(propOrder = [
         "tssEksternId",
@@ -17,14 +17,14 @@ class XMLHentStillingsprosentListeRequestWrapper {
         "tpnr",
         "simuleringsKode"
     ])
-    class XMLHentStillingsprosentListeRequest {
-        @XmlElement(required = true)
-        lateinit var tssEksternId: String
-        @XmlElement(required = true)
-        lateinit var fnr: String
-        @XmlElement(required = true)
-        lateinit var tpnr: String
-        @XmlElement(required = true)
-        lateinit var simuleringsKode: String
-    }
+    data class XMLHentStillingsprosentListeRequest(
+        @field:XmlElement(required = true)
+        var tssEksternId: String? = null,
+        @field:XmlElement(required = true)
+        var fnr: String? = null,
+        @field:XmlElement(required = true)
+        var tpnr: String? = null,
+        @field:XmlElement(required = true)
+        var simuleringsKode: String? = null
+    )
 }

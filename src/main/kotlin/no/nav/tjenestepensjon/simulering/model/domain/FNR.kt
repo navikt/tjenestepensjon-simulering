@@ -9,7 +9,7 @@ import jakarta.xml.bind.annotation.XmlType
 @XmlType(name = "", propOrder = ["fnr"])
 
 data class FNR(
-        @get:JsonValue val fnr: String
+        @get:JsonValue val fnr: String? = null
 ) {
-    override fun toString() = fnr
+    override fun toString() = fnr ?: "fnr er null"
 }

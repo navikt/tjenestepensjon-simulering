@@ -18,7 +18,7 @@ class SPKTjenestepensjonClientPre2025(
 ) {
 
     fun getResponse(request: SimulerPensjonRequestV2, tpOrdning: TpOrdningFullDto): SimulerOffentligTjenestepensjonResponse {
-        sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, request.fnr.fnr, request)
+        sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, request.fnr.fnr!!, request)
         val response: SimulerOffentligTjenestepensjonResponse? = spkWebClientPre2025
             .post()
             .uri("/nav/pensjon/prognose/v1")

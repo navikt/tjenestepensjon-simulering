@@ -4,10 +4,10 @@ import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningFullDto
 
 data class HentStillingsprosentListeRequest(
-        val tssEksternId: String,
-        val fnr: FNR,
-        val tpnr: String,
-        val simuleringsKode: String
+        val tssEksternId: String? = null,
+        val fnr: FNR? = null,
+        val tpnr: String? = null,
+        val simuleringsKode: String? = null,
 ) {
     constructor(fnr: FNR, tpOrdning: TpOrdningFullDto) : this(
             fnr = fnr,

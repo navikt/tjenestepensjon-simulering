@@ -33,10 +33,10 @@ object SOAPAdapter {
 
     fun unmarshal(p0: XMLHentStillingsprosentListeRequestWrapper): HentStillingsprosentListeRequest = with(p0.request) {
         HentStillingsprosentListeRequest(
-                tssEksternId = tssEksternId,
-                fnr = FNR(fnr),
-                simuleringsKode = simuleringsKode,
-                tpnr = tpnr
+                tssEksternId = this?.tssEksternId,
+                fnr = FNR(this?.fnr),
+                simuleringsKode = this?.simuleringsKode,
+                tpnr = this?.tpnr
         )
     }
 

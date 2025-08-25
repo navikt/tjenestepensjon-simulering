@@ -10,6 +10,7 @@ import no.nav.tjenestepensjon.simulering.v1.StillingsprosentHenting
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
 import no.nav.tjenestepensjon.simulering.v1.models.request.HentStillingsprosentListeRequest
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.SOAPAdapter
+import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.request.XMLHentStillingsprosentListeRequestWrapper
 import no.nav.tjenestepensjon.simulering.v1.soap.marshalling.response.XMLHentStillingsprosentListeResponseWrapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Controller
@@ -39,8 +40,10 @@ class SPKStillingsprosentSoapClient(
         sporingsloggService.loggUtgaaendeRequest(Organisasjon.SPK, fnr, dto)
         log.info { "Henter stillingsprosenter for fnr $fnr fra $url" }
         try {
+            val requestPayload: XMLHentStillingsprosentListeRequestWrapper = dto.let(SOAPAdapter::marshal)
+            log.info { "RequestPayload to stillingsprosent: $requestPayload" }
             return webServiceTemplate.marshalSendAndReceive(
-                dto.let(SOAPAdapter::marshal), SOAPCallback(
+                requestPayload, SOAPCallback(
                     hentStillingsprosentUrl,
                     url,
                     samlTokenService.samlAccessToken.accessToken,
