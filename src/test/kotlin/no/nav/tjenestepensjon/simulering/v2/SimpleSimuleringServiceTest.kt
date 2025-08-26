@@ -1,5 +1,6 @@
 package no.nav.tjenestepensjon.simulering.v2
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.tjenestepensjon.simulering.AppMetrics
 import no.nav.tjenestepensjon.simulering.model.domain.FNR
 import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningFullDto
@@ -33,6 +34,9 @@ internal class SimpleSimuleringServiceTest {
 
     @Mock
     private lateinit var SPKTjenestepensjonClientPre2025: SPKTjenestepensjonClientPre2025
+
+    @Mock
+    private lateinit var objectMapper: ObjectMapper
 
     @Mock
     @Suppress("unused")
