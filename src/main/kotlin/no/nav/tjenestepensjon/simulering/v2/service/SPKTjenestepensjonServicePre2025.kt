@@ -1,8 +1,8 @@
 package no.nav.tjenestepensjon.simulering.v2.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tjenestepensjon.simulering.exceptions.BrukerKvalifisererIkkeTilTjenestepensjonException
-import no.nav.tjenestepensjon.simulering.model.domain.TPOrdningIdDto
 import no.nav.tjenestepensjon.simulering.model.domain.TpOrdningFullDto
 import no.nav.tjenestepensjon.simulering.rest.SimuleringEndpoint
 import no.nav.tjenestepensjon.simulering.v1.models.domain.Stillingsprosent
@@ -17,7 +17,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 @Service
 class SPKTjenestepensjonServicePre2025(
-    private val SPKTjenestepensjonClientPre2025: SPKTjenestepensjonClientPre2025, private val opptjeningsperiodeService: OpptjeningsperiodeService
+    private val SPKTjenestepensjonClientPre2025: SPKTjenestepensjonClientPre2025, private val opptjeningsperiodeService: OpptjeningsperiodeService,
+    private val objectMapper: ObjectMapper
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -32,6 +33,7 @@ class SPKTjenestepensjonServicePre2025(
         request.sisteTpnr = tpOrdning.tpNr
         val requestWithFilteredFnr = SimuleringEndpoint.filterFnr(request.toString())
         log.debug { "Populated request: $requestWithFilteredFnr" }
+        log.debug { "Populated request JSON: ${objectMapper.writeValueAsString(request)}" } //OBS: request logges som debug i dev, fnr må maskeres for logging i prod
         return try {
             SPKTjenestepensjonClientPre2025.getResponse(request = request, tpOrdning = tpOrdning)
         } catch (e: WebClientResponseException) {
