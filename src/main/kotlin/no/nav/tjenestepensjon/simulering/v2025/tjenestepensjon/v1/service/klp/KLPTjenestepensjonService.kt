@@ -11,6 +11,7 @@ import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.Ikke
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TomSimuleringFraTpOrdningException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.exception.TpOrdningStoettesIkkeException
 import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TpUtil
+import no.nav.tjenestepensjon.simulering.v2025.tjenestepensjon.v1.service.TpUtil.redact
 import org.springframework.stereotype.Service
 
 @Service
@@ -48,7 +49,7 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, pr
                 },
                 onFailure = { Result.failure(it) }
             ).also { it.onSuccess {
-                log.info { "${it.serviceData}" } }
+                log.info { "tjenestepensjonsrequest til KLP: ${redact(it.serviceData.toString())}" } }
             }
 
     }
@@ -64,6 +65,4 @@ class KLPTjenestepensjonService(private val client: KLPTjenestepensjonClient, pr
     }
 
     override fun ping() = client.ping()
-
-
 }
