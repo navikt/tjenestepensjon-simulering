@@ -49,8 +49,8 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.wiremock:wiremock-standalone:3.13.1")
     testImplementation("org.mockito.kotlin", "mockito-kotlin", "5.2.1")
-    testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.1")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.1")
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:6.0.2")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:6.0.2")
     testImplementation("org.springframework.boot", "spring-boot-starter-test")
     testImplementation("org.springframework.security", "spring-security-test")
 }
