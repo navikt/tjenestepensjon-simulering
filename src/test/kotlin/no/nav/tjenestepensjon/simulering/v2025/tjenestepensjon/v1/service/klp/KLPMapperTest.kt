@@ -70,7 +70,7 @@ class KLPMapperTest {
     }
 
     @Test
-    fun `map request to klp request`() {
+    fun `map request to klp request with fremtidigeInntekter`() {
         val uttaksdato = LocalDate.of(2025, 2, 1)
         val request = SimulerTjenestepensjonRequestDto(
             pid = "12345678901",
@@ -95,12 +95,55 @@ class KLPMapperTest {
         assertEquals(1, result.uttaksListe.size)
         assertEquals("ALLE", result.uttaksListe[0].ytelseType)
         assertEquals(uttaksdato, result.uttaksListe[0].fraOgMedDato)
-        assertEquals(request.fremtidigeInntekter!![0].aarligInntekt, result.fremtidigInntektsListe[0].arligInntekt)
-        assertEquals(request.fremtidigeInntekter!![0].fraOgMed, result.fremtidigInntektsListe[0].fraOgMedDato)
-        assertEquals(request.fremtidigeInntekter!![1].aarligInntekt, result.fremtidigInntektsListe[1].arligInntekt)
-        assertEquals(request.fremtidigeInntekter!![1].fraOgMed, result.fremtidigInntektsListe[1].fraOgMedDato)
-        assertEquals(request.fremtidigeInntekter!![2].aarligInntekt, result.fremtidigInntektsListe[2].arligInntekt)
-        assertEquals(request.fremtidigeInntekter!![2].fraOgMed, result.fremtidigInntektsListe[2].fraOgMedDato)
+
+        assertEquals(4, result.fremtidigInntektsListe.size)
+
+        assertEquals(request.sisteInntekt, result.fremtidigInntektsListe[0].arligInntekt)
+        assertTrue(result.fremtidigInntektsListe[0].fraOgMedDato.isEqual(LocalDate.now()) || 
+                  result.fremtidigInntektsListe[0].fraOgMedDato.isBefore(LocalDate.now().plusDays(1)))
+
+
+        assertEquals(request.fremtidigeInntekter!![0].aarligInntekt, result.fremtidigInntektsListe[1].arligInntekt)
+        assertEquals(request.fremtidigeInntekter!![0].fraOgMed, result.fremtidigInntektsListe[1].fraOgMedDato)
+        assertEquals(request.fremtidigeInntekter!![1].aarligInntekt, result.fremtidigInntektsListe[2].arligInntekt)
+        assertEquals(request.fremtidigeInntekter!![1].fraOgMed, result.fremtidigInntektsListe[2].fraOgMedDato)
+        assertEquals(request.fremtidigeInntekter!![2].aarligInntekt, result.fremtidigInntektsListe[3].arligInntekt)
+        assertEquals(request.fremtidigeInntekter!![2].fraOgMed, result.fremtidigInntektsListe[3].fraOgMedDato)
+
+        assertEquals(request.aarIUtlandetEtter16, result.arIUtlandetEtter16)
+        assertTrue(result.epsPensjon)
+        assertTrue(result.eps2G)
+    }
+
+    @Test
+    fun `map request to klp request without fremtidigeInntekter`() {
+        val uttaksdato = LocalDate.of(2025, 2, 1)
+        val request = SimulerTjenestepensjonRequestDto(
+            pid = "12345678901",
+            sisteInntekt = 100000,
+            aarIUtlandetEtter16 = 3,
+            epsPensjon = true,
+            eps2G = true,
+            brukerBaOmAfp = true,
+            uttaksdato = uttaksdato,
+            foedselsdato = LocalDate.of(1990, 1, 1),
+            fremtidigeInntekter = null,
+            erApoteker = false
+        )
+
+        val result: KLPSimulerTjenestepensjonRequest = KLPMapper.mapToRequest(request)
+
+        assertEquals(request.pid, result.personId)
+        assertEquals(1, result.uttaksListe.size)
+        assertEquals("ALLE", result.uttaksListe[0].ytelseType)
+        assertEquals(uttaksdato, result.uttaksListe[0].fraOgMedDato)
+
+        assertEquals(1, result.fremtidigInntektsListe.size)
+
+        assertEquals(request.sisteInntekt, result.fremtidigInntektsListe[0].arligInntekt)
+        assertTrue(result.fremtidigInntektsListe[0].fraOgMedDato.isEqual(LocalDate.now()) || 
+                  result.fremtidigInntektsListe[0].fraOgMedDato.isBefore(LocalDate.now().plusDays(1)))
+
         assertEquals(request.aarIUtlandetEtter16, result.arIUtlandetEtter16)
         assertTrue(result.epsPensjon)
         assertTrue(result.eps2G)
