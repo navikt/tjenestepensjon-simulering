@@ -41,7 +41,7 @@ class SPKStillingsprosentSoapClient(
         log.info { "Henter stillingsprosenter for fnr $fnr fra $url" }
         try {
             val requestPayload: XMLHentStillingsprosentListeRequestWrapper = dto.let(SOAPAdapter::marshal)
-            log.info { "RequestPayload to stillingsprosent: $requestPayload" }
+            log.info { "RequestPayload to stillingsprosent action: $hentStillingsprosentUrl url: $url payload: $requestPayload" }
             return webServiceTemplate.marshalSendAndReceive(
                 requestPayload, SOAPCallback(
                     hentStillingsprosentUrl,
