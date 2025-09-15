@@ -2,9 +2,9 @@ group = "no.nav.tjenestepensjon"
 description = "tjenestepensjon-simulering"
 
 plugins {
-    kotlin("jvm") version "2.2.0"
-    kotlin("plugin.spring") version "2.2.0"
-    id("org.springframework.boot") version "3.5.3"
+    kotlin("jvm") version "2.2.20"
+    kotlin("plugin.spring") version "2.2.20"
+    id("org.springframework.boot") version "3.5.5"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -34,8 +34,8 @@ dependencies {
     implementation ("io.github.oshai", "kotlin-logging-jvm", "5.1.0")
     implementation("org.slf4j","slf4j-api", "2.0.12" )
     implementation("org.glassfish.jaxb", "jaxb-runtime", "4.0.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.19.1")
-    implementation("io.getunleash:unleash-client-java:11.0.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.20.0")
+    implementation("io.getunleash:unleash-client-java:11.1.0")
     implementation("org.springframework.boot:spring-boot-starter-tomcat") // Spring Boot manages Tomcat
 
     // Exclude older versions of Tomcat
